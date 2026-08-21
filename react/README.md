@@ -45,10 +45,11 @@ your own `/public` folder is simplest.
 
 | prop         | default     | notes                                          |
 | ------------ | ----------- | ---------------------------------------------- |
-| `src`        | —           | image URL; omit for the procedural skyline     |
+| `src`        | —           | image URL; omit for the procedural skyline (photos use histogram equalization, the skyline uses silhouette normalization) |
 | `ink`        | `#6f7075`   | glyph color                                    |
+| `accent`     | `#0066FF`   | color of the few brightest glyphs that glow blue |
 | `background` | `#0a0a0b`   | canvas background                              |
-| `cell`       | `11`        | glyph cell size in px (smaller = denser)       |
+| `cell`       | `9`         | glyph cell size in px (smaller = denser)       |
 | `className`  | `""`        | extra classes on the `<canvas>`                |
 
 ## Performance

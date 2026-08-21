@@ -24,6 +24,7 @@ export default function AsciiBackground({
   src,
   ink = "#6f7075",
   background = "#0a0a0b",
+  accent = "#0066FF",
   cell = 9,
   className = "",
 }) {
@@ -37,6 +38,8 @@ export default function AsciiBackground({
       cell,
       ramp: " .·:-=+*#%@", // darkest→brightest; leading blank stays black
       color: ink,
+      blue: accent, // a few of the brightest glyphs glow this color
+      blueFrac: 0.06,
       background,
       gamma: 0.82,
       minScale: 1.0,
@@ -239,11 +242,16 @@ export default function AsciiBackground({
       cols = 0,
       rows = 0;
     const STEPS = 8;
+    const equalize = !!src; // photos self-adjust; the procedural scene doesn't
     let fonts = null,
       bufX = null,
       bufY = null,
       bufC = null,
       bufN = null,
+      bufBX = null,
+      bufBY = null,
+      bufBC = null,
+      bufBN = null,
       chars = null;
 
     function buildGrid(w, h) {
@@ -275,21 +283,38 @@ export default function AsciiBackground({
         lum[i] =
           (data[o] * 0.299 + data[o + 1] * 0.587 + data[o + 2] * 0.114) / 255;
       }
-      // Normalise + gentle contrast/gamma. Keeps the authored silhouette's
-      // black areas black instead of equalising them up into mid-ink.
-      let maxL = 0;
-      for (let m = 0; m < lum.length; m++) if (lum[m] > maxL) maxL = lum[m];
-      const inv = maxL > 0 ? 1 / maxL : 1;
-      for (let k = 0; k < lum.length; k++) {
-        let v = lum[k] * inv;
-        v = (v - 0.04) / 0.96;
-        if (v < 0) v = 0;
-        if (v > 1) v = 1;
-        lum[k] = Math.pow(v, CONFIG.gamma);
+      if (equalize) {
+        // Histogram equalisation — for real photographs (self-adjusts).
+        const BINS = 256;
+        const hist = new Uint32Array(BINS);
+        for (let hb = 0; hb < lum.length; hb++)
+          hist[Math.min(255, (lum[hb] * 255) | 0)]++;
+        const cdf = new Float32Array(BINS);
+        let run = 0;
+        for (let b = 0; b < BINS; b++) {
+          run += hist[b];
+          cdf[b] = run / lum.length;
+        }
+        for (let k = 0; k < lum.length; k++)
+          lum[k] = Math.pow(cdf[Math.min(255, (lum[k] * 255) | 0)], CONFIG.gamma);
+      } else {
+        // Authored silhouette — keep black areas black (normalise + contrast).
+        let maxL = 0;
+        for (let m = 0; m < lum.length; m++) if (lum[m] > maxL) maxL = lum[m];
+        const inv = maxL > 0 ? 1 / maxL : 1;
+        for (let k = 0; k < lum.length; k++) {
+          let v = lum[k] * inv;
+          v = (v - 0.04) / 0.96;
+          if (v < 0) v = 0;
+          if (v > 1) v = 1;
+          lum[k] = Math.pow(v, CONFIG.gamma);
+        }
       }
       const phase = new Float32Array(w * h);
       for (let p = 0; p < phase.length; p++) phase[p] = Math.random() * 6.2831853;
-      grid = { w, h, lum, phase };
+      const blue = new Uint8Array(w * h);
+      for (let q = 0; q < blue.length; q++) blue[q] = Math.random() < CONFIG.blueFrac ? 1 : 0;
+      grid = { w, h, lum, phase, blue };
     }
 
     function layout() {
@@ -312,6 +337,10 @@ export default function AsciiBackground({
       bufY = new Array(STEPS);
       bufC = new Array(STEPS);
       bufN = new Int32Array(STEPS);
+      bufBX = new Array(STEPS);
+      bufBY = new Array(STEPS);
+      bufBC = new Array(STEPS);
+      bufBN = new Int32Array(STEPS);
       for (let s = 0; s < STEPS; s++) {
         const mid = (s + 0.5) / STEPS;
         const size =
@@ -321,6 +350,9 @@ export default function AsciiBackground({
         bufX[s] = new Float32Array(n);
         bufY[s] = new Float32Array(n);
         bufC[s] = new Uint8Array(n);
+        bufBX[s] = new Float32Array(n);
+        bufBY[s] = new Float32Array(n);
+        bufBC[s] = new Uint8Array(n);
       }
       chars = CONFIG.ramp.split("");
       return true;
@@ -329,19 +361,23 @@ export default function AsciiBackground({
     function paint(t, extra) {
       ctx.fillStyle = CONFIG.background;
       ctx.fillRect(0, 0, cssW, cssH);
-      ctx.fillStyle = CONFIG.color;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       const cellSz = CONFIG.cell,
         half = cellSz / 2,
         lum = grid.lum,
         phase = grid.phase,
+        blue = grid.blue,
         gw = grid.w;
       const last = CONFIG.ramp.length - 1,
         nRamp = CONFIG.ramp.length,
         waveAmp = CONFIG.wave,
         twAmp = CONFIG.twinkle + extra;
-      for (let s = 0; s < STEPS; s++) bufN[s] = 0;
+      const blueMin = last - 2; // only the brightest few glyphs may go blue
+      for (let s = 0; s < STEPS; s++) {
+        bufN[s] = 0;
+        bufBN[s] = 0;
+      }
       for (let r = 0; r < rows; r++) {
         const y = r * cellSz + half,
           wa = r * 0.09 - t * 1.6,
@@ -361,20 +397,35 @@ export default function AsciiBackground({
           if (idx === 0) continue;
           let step = (v * STEPS) | 0;
           if (step > STEPS - 1) step = STEPS - 1;
-          const m = bufN[step]++;
-          bufX[step][m] = c * cellSz + half;
-          bufY[step][m] = y;
-          bufC[step][m] = idx;
+          const x = c * cellSz + half;
+          if (blue[i] && idx >= blueMin) {
+            const mb = bufBN[step]++;
+            bufBX[step][mb] = x;
+            bufBY[step][mb] = y;
+            bufBC[step][mb] = idx;
+          } else {
+            const m = bufN[step]++;
+            bufX[step][m] = x;
+            bufY[step][m] = y;
+            bufC[step][m] = idx;
+          }
         }
       }
       for (let k = 0; k < STEPS; k++) {
-        const count = bufN[k];
-        if (!count) continue;
+        const count = bufN[k],
+          cb = bufBN[k];
+        if (!count && !cb) continue;
         ctx.font = fonts[k];
-        const xs = bufX[k],
-          ys = bufY[k],
-          cs = bufC[k];
-        for (let m = 0; m < count; m++) ctx.fillText(chars[cs[m]], xs[m], ys[m]);
+        if (count) {
+          ctx.fillStyle = CONFIG.color;
+          const xs = bufX[k], ys = bufY[k], cs = bufC[k];
+          for (let m = 0; m < count; m++) ctx.fillText(chars[cs[m]], xs[m], ys[m]);
+        }
+        if (cb) {
+          ctx.fillStyle = CONFIG.blue;
+          const xb = bufBX[k], yb = bufBY[k], cbs = bufBC[k];
+          for (let nb = 0; nb < cb; nb++) ctx.fillText(chars[cbs[nb]], xb[nb], yb[nb]);
+        }
       }
     }
 
@@ -485,7 +536,7 @@ export default function AsciiBackground({
         img.onerror = null;
       }
     };
-  }, [src, ink, background, cell]);
+  }, [src, ink, background, accent, cell]);
 
   return (
     <canvas
