@@ -65,8 +65,10 @@ export default function AsiloBuildersHero() {
 
         {/* Hero content */}
         <main className="flex flex-1 flex-col items-center justify-center px-6 pb-20 text-center">
-          <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[1.03] tracking-tight text-white md:text-7xl">
-            La comunidad de builders de Venezuela
+          <h1 className="max-w-5xl text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-7xl">
+            La comunidad de
+            <br />
+            builders de Venezuela
           </h1>
 
           <h2 className="mt-6 max-w-2xl text-lg font-normal leading-relaxed text-gray-400 md:text-xl">
