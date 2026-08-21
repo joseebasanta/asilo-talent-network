@@ -25,6 +25,7 @@ export default function AsciiBackground({
   ink = "#6f7075",
   background = "#0a0a0b",
   accent = "#0066FF",
+  invert = false,
   cell = 9,
   className = "",
 }) {
@@ -310,6 +311,18 @@ export default function AsciiBackground({
           lum[k] = Math.pow(v, CONFIG.gamma);
         }
       }
+      if (equalize) {
+        // Photo finish: (optional invert) + contrast so the sky goes truly
+        // black and the subject reads as a crisp silhouette, not a flat wash.
+        const lift = 0.22, gain = 1.5;
+        for (let k = 0; k < lum.length; k++) {
+          let v = invert ? 1 - lum[k] : lum[k];
+          v = (v - lift) * gain;
+          if (v < 0) v = 0;
+          else if (v > 1) v = 1;
+          lum[k] = v * v * (3 - 2 * v);
+        }
+      }
       const phase = new Float32Array(w * h);
       for (let p = 0; p < phase.length; p++) phase[p] = Math.random() * 6.2831853;
       const blue = new Uint8Array(w * h);
@@ -536,7 +549,7 @@ export default function AsciiBackground({
         img.onerror = null;
       }
     };
-  }, [src, ink, background, accent, cell]);
+  }, [src, ink, background, accent, invert, cell]);
 
   return (
     <canvas

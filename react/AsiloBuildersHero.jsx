@@ -22,8 +22,9 @@ const NAV = [
 export default function AsiloBuildersHero() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0b]">
-      {/* z-0 — ASCII background */}
-      <AsciiBackground />
+      {/* z-0 — ASCII background (El Ávila photo, inverted so it reads on a
+          black sky). Omit src+invert to fall back to the procedural skyline. */}
+      <AsciiBackground src="/3_avila.png" invert />
 
       {/* z-1 — vignette so centered content stays legible */}
       <div
