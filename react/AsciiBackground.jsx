@@ -24,7 +24,7 @@ export default function AsciiBackground({
   src,
   ink = "#6f7075",
   background = "#0a0a0b",
-  cell = 11,
+  cell = 9,
   className = "",
 }) {
   const canvasRef = useRef(null);
@@ -35,15 +35,15 @@ export default function AsciiBackground({
 
     const CONFIG = {
       cell,
-      ramp: " .·-+=*#", // darkest→brightest; leading blank stays black
+      ramp: " .·:-=+*#%@", // darkest→brightest; leading blank stays black
       color: ink,
       background,
-      gamma: 0.85,
+      gamma: 0.82,
       minScale: 1.0,
       maxScale: 1.5,
       fps: 24,
-      wave: 0.05,
-      twinkle: 0.05,
+      wave: 0.045,
+      twinkle: 0.045,
       revealMs: 1400,
       revealAmp: 0.55,
     };
@@ -65,8 +65,8 @@ export default function AsciiBackground({
       };
     }
 
-    // A grayscale El Ávila + Caracas scene. Brighter = more ink; sky/ground
-    // stay black so they read as empty and the skyline reads as a silhouette.
+    // A grayscale El Ávila + Caracas scene, layered front-to-back and filling
+    // the full height. Brighter = more ink; sky stays black so it reads empty.
     function buildScene(W, H) {
       const cv = document.createElement("canvas");
       cv.width = W;
@@ -76,74 +76,157 @@ export default function AsciiBackground({
       g.fillRect(0, 0, W, H);
 
       const rnd = mulberry32(20261120);
-      const horizon = H * 0.82;
       const cl = (l) => ((l = l | 0), l < 0 ? 0 : l > 255 ? 255 : l);
       const put = (x, y, l) => {
         if (x < 0 || y < 0 || x >= W || y >= H) return;
         g.fillStyle = `rgb(${cl(l)},${cl(l)},${cl(l)})`;
-        g.fillRect(x, y, 1, 1);
+        g.fillRect(x | 0, y | 0, 1, 1);
       };
       const box = (x, y, w, h, l) => {
         g.fillStyle = `rgb(${cl(l)},${cl(l)},${cl(l)})`;
-        g.fillRect(x | 0, y | 0, w, h);
+        g.fillRect(x | 0, y | 0, Math.max(1, w | 0), Math.max(1, h | 0));
+      };
+      const line = (x0, y0, x1, y1, l) => {
+        const dx = x1 - x0, dy = y1 - y0;
+        const n = Math.max(1, Math.max(Math.abs(dx), Math.abs(dy)));
+        for (let k = 0; k <= n; k++) put(x0 + (dx * k) / n, y0 + (dy * k) / n, l);
+      };
+      const blob = (cx, cy, r, l) => {
+        for (let yy = -r; yy <= r; yy++)
+          for (let xx = -r; xx <= r; xx++)
+            if (xx * xx + yy * yy <= r * r && rnd() < 0.72)
+              put(cx + xx, cy + yy, l * (0.55 + rnd() * 0.45));
+      };
+
+      const street = H * 0.7; // where buildings meet the ground
+
+      // A building with bright edges (outline) and floors of windows.
+      const building = (bx, bw, top, body, winL, floor, gap) => {
+        box(bx, top, bw, street - top, body);
+        box(bx, top, 1, street - top, body + 45);
+        box(bx + bw - 1, top, 1, street - top, body + 45);
+        box(bx, top, bw, 1, body + 75);
+        for (let wy = top + 3; wy < street - 2; wy += floor)
+          for (let wx = bx + 2; wx < bx + bw - 2; wx += gap)
+            if (rnd() < 0.72)
+              box(wx, wy, Math.max(1, gap - 2), Math.max(1, floor - 2), winL - (rnd() < 0.3 ? 55 : 0));
       };
 
       const ridgeY = (x) => {
         const t = x / W;
-        const a = Math.sin(t * Math.PI * 1.15 + 0.5);
-        const b = Math.sin(t * Math.PI * 3.1 + 1.2) * 0.3;
-        const c = Math.sin(t * Math.PI * 7.0) * 0.05;
-        return H * 0.4 - (a * 0.13 + b * 0.13 + c) * H;
+        const a = Math.sin(t * Math.PI * 1.1 + 0.6);
+        const b = Math.sin(t * Math.PI * 3.0 + 1.2) * 0.28;
+        const c = Math.sin(t * Math.PI * 6.5) * 0.06;
+        return H * 0.3 - (a * 0.13 + b * 0.12 + c) * H;
       };
 
-      // El Ávila: faint mass, dark base, with a crisp ridgeline edge
+      // El Ávila: faint mass behind the city, with a crisp ridgeline
       for (let x = 0; x < W; x++) {
         const ry = ridgeY(x);
-        for (let y = Math.floor(ry); y < horizon; y++) {
-          const depth = (y - ry) / (horizon - ry);
-          let l = 44 - depth * 32 + (rnd() * 2 - 1) * 7;
-          if (((x * 5) & 31) < 1) l += 14; // faint "quebrada" streaks
-          put(x, y, l);
+        for (let y = Math.floor(ry); y < street; y++) {
+          const d = (y - ry) / (street - ry);
+          put(x, y, 34 - d * 28 + (rnd() * 2 - 1) * 5);
         }
       }
       for (let x = 0; x < W; x++) {
         const rr = Math.floor(ridgeY(x));
-        put(x, rr, 112);
-        put(x, rr + 1, 72);
+        put(x, rr, 92);
+        put(x, rr + 1, 58);
       }
 
-      // Caracas skyline: overlapping buildings on the horizon
-      let bx = -10;
-      while (bx < W + 10) {
-        const bw = 8 + Math.floor(rnd() * 30);
-        const bh = 30 + Math.floor(rnd() * rnd() * 160);
-        const top = horizon - bh;
-        box(bx, top, bw, bh, 90 + rnd() * 45);
-        for (let wy = top + 4; wy < horizon - 3; wy += 5) {
-          for (let wx = bx + 3; wx < bx + bw - 2; wx += 4) {
-            if (rnd() < 0.5) box(wx, wy, 2, 2, 205 + rnd() * 50);
-          }
-        }
-        box(bx, top, bw, 1, 220); // roofline
-        bx += bw + (rnd() < 0.35 ? Math.floor(rnd() * 6) : 0);
+      // Background skyline: many thin, faint towers
+      let bx = -6;
+      while (bx < W + 6) {
+        const bw = 6 + Math.floor(rnd() * 16);
+        const bh = 40 + Math.floor(rnd() * rnd() * (H * 0.42));
+        building(bx, bw, Math.max(H * 0.14, street - bh), 44 + rnd() * 22, 120 + rnd() * 40, 4, 3);
+        bx += bw + Math.floor(rnd() * 3);
       }
-      // landmark towers
-      for (let t = 0; t < 5; t++) {
-        const tx = 60 + Math.floor(rnd() * (W - 120));
-        const tw = 6 + Math.floor(rnd() * 8);
-        const th = 160 + Math.floor(rnd() * 150);
-        box(tx, horizon - th, tw, th, 110);
-        for (let yy = horizon - th + 6; yy < horizon - 4; yy += 6)
-          box(tx + tw / 2 - 1, yy, 2, 2, 245);
-        box(tx + tw / 2 - 1, horizon - th - 6, 2, 6, 210); // antenna
+      // Midground skyline: taller, brighter, more detailed
+      bx = -8;
+      while (bx < W + 8) {
+        const bw2 = 14 + Math.floor(rnd() * 30);
+        const bh2 = 70 + Math.floor(rnd() * rnd() * (H * 0.6));
+        const top2 = Math.max(H * 0.08, street - bh2);
+        building(bx, bw2, top2, 78 + rnd() * 28, 190 + rnd() * 45, 6, 5);
+        if (rnd() < 0.4) box(bx + bw2 / 2 - 1, top2 - 8 - Math.floor(rnd() * 10), 2, 12, 150);
+        bx += bw2 + Math.floor(rnd() * 10);
+      }
+      // Signature towers
+      for (let t = 0; t < 6; t++) {
+        const tx = 40 + Math.floor(rnd() * (W - 80));
+        const tw = 8 + Math.floor(rnd() * 10);
+        const th = H * 0.42 + Math.floor(rnd() * H * 0.32);
+        building(tx, tw, Math.max(H * 0.05, street - th), 95, 235, 6, 4);
+        box(tx + tw / 2 - 1, street - th - 14, 2, 14, 210);
+      }
+      // Billboards / signage
+      for (let s = 0; s < 10; s++) {
+        const sx = 20 + Math.floor(rnd() * (W - 140)),
+          sy = H * 0.18 + rnd() * H * 0.35,
+          sw = 26 + rnd() * 48,
+          sh = 12 + rnd() * 20;
+        box(sx, sy, 1, sh, 200);
+        box(sx + sw - 1, sy, 1, sh, 200);
+        box(sx, sy, sw, 1, 200);
+        box(sx, sy + sh - 1, sw, 1, 200);
+        for (let yy = sy + 3; yy < sy + sh - 2; yy += 3)
+          for (let xx = sx + 3; xx < sx + sw - 2; xx += 2) if (rnd() < 0.5) put(xx, yy, 150);
       }
 
-      box(0, horizon, W, H - horizon, 0); // ground: black
+      // Elevated rail / boulevard across the scene
+      const railY = street - 7;
+      box(0, railY, W, 3, 120);
+      for (let rx = 0; rx < W; rx += 6) put(rx, railY + 1, 205);
+      for (let sp = 20; sp < W; sp += 94) box(sp, railY + 3, 3, street - (railY + 3), 88);
 
-      for (let s = 0; s < 70; s++) {
-        const sx = Math.floor(rnd() * W);
-        const sy = Math.floor(rnd() * ridgeY(sx) * 0.9);
-        put(sx, sy, 70 + rnd() * 80);
+      // ===== Foreground — fills to the bottom edge =====
+      box(0, street, W, H - street, 15);
+      const vpx = W * 0.5,
+        vpy = street + 3;
+      for (let i = -6; i <= 6; i++) line(vpx, vpy, vpx + i * W * 0.095, H, 58 + (i % 2 ? 0 : 22));
+      for (let ly = street + 18; ly < H; ly += Math.max(7, (ly - street) * 0.13))
+        box(vpx - 1, ly, 2, Math.max(2, (ly - street) * 0.05), 175);
+      for (let cw = 0; cw < W; cw += 28) {
+        box(cw, H * 0.88, 13, 6, 195);
+        box(cw + 6, H * 0.985, 15, 7, 150);
+      }
+      for (let gy = street + 6; gy < H; gy += 3)
+        for (let gx = 0; gx < W; gx += 4)
+          if (rnd() < (gy > H * 0.85 ? 0.32 : 0.14)) put(gx, gy, 28 + rnd() * 34);
+      for (let pty = H - Math.floor(H * 0.15); pty < H; pty += 7) box(0, pty, W, 1, 36);
+
+      for (let tr = 0; tr < 30; tr++) {
+        const trx = rnd() * W,
+          try_ = street + 10 + rnd() * (H - street - 18),
+          rad = 5 + rnd() * 11;
+        blob(trx, try_, rad, 66 + rnd() * 30);
+        box(trx - 1, try_ + rad, 2, rad * 0.6, 58);
+      }
+      for (let sl = 0; sl < 16; sl++) {
+        const slx = rnd() * W,
+          sly = street + 12 + rnd() * (H - street - 44),
+          slh = 18 + rnd() * 16;
+        box(slx, sly - slh, 2, slh, 118);
+        put(slx + 2, sly - slh, 220);
+        put(slx + 3, sly - slh, 175);
+      }
+      for (let ca = 0; ca < 9; ca++) {
+        const cx = rnd() * W,
+          cyy = street + 30 + rnd() * (H - street - 42),
+          cwd = 14 + rnd() * 10;
+        box(cx, cyy, cwd, 6, 88);
+        box(cx + 2, cyy - 3, cwd - 6, 3, 66);
+        put(cx + cwd - 1, cyy + 2, 230);
+        put(cx, cyy + 2, 200);
+        put(cx + 2, cyy + 6, 140);
+        put(cx + cwd - 3, cyy + 6, 140);
+      }
+
+      for (let st = 0; st < 130; st++) {
+        const stx = rnd() * W,
+          sty = rnd() * ridgeY(stx) * 0.85;
+        put(stx, sty, 50 + rnd() * 90);
       }
 
       return { data: g.getImageData(0, 0, W, H).data, w: W, h: H };
@@ -363,7 +446,7 @@ export default function AsciiBackground({
     let ro = null;
     let img = null;
     function buildSceneOrImage() {
-      return buildScene(900, 460);
+      return buildScene(1500, 760);
     }
 
     if (src) {
@@ -383,7 +466,7 @@ export default function AsciiBackground({
         boot();
       };
       img.onerror = () => {
-        SRC = buildScene(900, 460); // fall back to the procedural skyline
+        SRC = buildScene(1500, 760); // fall back to the procedural skyline
         boot();
       };
       img.src = src;

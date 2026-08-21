@@ -31,7 +31,7 @@ export default function AsiloBuildersHero() {
         style={{
           zIndex: 1,
           background:
-            "radial-gradient(110% 80% at 50% 44%, rgba(10,10,11,.86) 0%, rgba(10,10,11,.5) 38%, rgba(10,10,11,.2) 70%, rgba(10,10,11,.55) 100%)",
+            "radial-gradient(100% 72% at 50% 42%, rgba(10,10,11,.92) 0%, rgba(10,10,11,.6) 30%, rgba(10,10,11,.22) 62%, rgba(10,10,11,.4) 100%)",
         }}
       />
 
