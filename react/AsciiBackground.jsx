@@ -24,7 +24,7 @@ export default function AsciiBackground({
   src,
   ink = "#6f7075",
   background = "#0a0a0b",
-  accent = "#0066FF",
+  accent = "#CEE2FF",
   invert = false,
   cell = 9,
   className = "",

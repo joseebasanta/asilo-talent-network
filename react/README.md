@@ -52,6 +52,20 @@ your own `/public` folder is simplest.
 | `cell`       | `9`         | glyph cell size in px (smaller = denser)       |
 | `className`  | `""`        | extra classes on the `<canvas>`                |
 
+## Fonts
+
+The hero uses **Doto** for the H1 and **IBM Plex Sans** for body text (applied via
+inline `fontFamily`). Load both in your app's `index.html`:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+```
+
+The self-contained `builders-hero.html` at the repo root already inlines these
+fonts (subset), so it needs no network fonts.
+
 ## Performance
 
 The animation runs at 24fps, only while the tab is visible, and not at all

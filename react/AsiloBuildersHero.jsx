@@ -21,7 +21,10 @@ const NAV = [
 
 export default function AsiloBuildersHero() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0b]">
+    <div
+      className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0b]"
+      style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif' }}
+    >
       {/* z-0 — ASCII background (El Ávila photo, inverted so it reads on a
           black sky). Omit src+invert to fall back to the procedural skyline. */}
       <AsciiBackground src="/3_avila.png" invert />
@@ -66,7 +69,10 @@ export default function AsiloBuildersHero() {
 
         {/* Hero content */}
         <main className="flex flex-1 flex-col items-center justify-center px-6 pb-20 text-center">
-          <h1 className="max-w-5xl text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-7xl">
+          <h1
+            className="max-w-5xl text-5xl leading-[1.05] tracking-tight text-white md:text-7xl"
+            style={{ fontFamily: '"Doto", system-ui, monospace', fontWeight: 700 }}
+          >
             La comunidad de
             <br />
             builders de Venezuela
