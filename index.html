@@ -25,9 +25,10 @@
       </a>
 
       <nav class="nav-links" aria-label="Principal">
+        <a class="navlink" href="#builders" data-es="Builders" data-en="Builders">Builders</a>
+        <a class="navlink" href="#mapa" data-es="Mapa" data-en="Map">Mapa</a>
+        <a class="navlink" href="#proyectos" data-es="Proyectos" data-en="Projects">Proyectos</a>
         <a class="navlink" href="#como-funciona" data-es="Cómo funciona" data-en="How it works">Cómo funciona</a>
-        <a class="navlink" href="#para-quien" data-es="Para quién" data-en="Who it's for">Para quién</a>
-        <a class="navlink" href="#faq" data-es="Preguntas" data-en="FAQ">Preguntas</a>
       </nav>
 
       <div class="nav-actions">
@@ -88,6 +89,55 @@
             <div class="l" data-es="Sin costo para el talento, siempre" data-en="No cost for talent, ever">Sin costo para el talento, siempre</div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ================= MEMBERS CAROUSEL ================= -->
+    <section class="section section-members" id="builders">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="La red" data-en="The network">La red</span>
+          <h2 data-es="Conoce a los builders" data-en="Meet the builders">Conoce a los builders</h2>
+          <p data-es="Ingenieros, diseñadores y product people construyendo desde Venezuela." data-en="Engineers, designers and product people building from Venezuela.">Ingenieros, diseñadores y product people construyendo desde Venezuela.</p>
+        </div>
+      </div>
+      <!-- rendered from data.js -->
+      <div class="marquee reveal" id="members-marquee" aria-label="Builders de la red">
+        <div class="marquee-track" id="members-track"></div>
+      </div>
+    </section>
+
+    <!-- ================= MAP ================= -->
+    <section class="section" id="mapa">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="En todo el país" data-en="Across the country">En todo el país</span>
+          <h2 data-es="Talento en cada rincón de Venezuela" data-en="Talent in every corner of Venezuela">Talento en cada rincón de Venezuela</h2>
+          <p data-es="Nuestros builders construyen desde Caracas hasta los Andes y Guayana." data-en="Our builders create from Caracas to the Andes and Guayana.">Nuestros builders construyen desde Caracas hasta los Andes y Guayana.</p>
+        </div>
+
+        <div class="map-grid reveal">
+          <div class="map-canvas">
+            <svg id="ve-map" viewBox="0 0 800 460" role="img"
+                 aria-label="Mapa de Venezuela con la ubicación de los builders">
+              <!-- graticule + pins injected by script.js -->
+            </svg>
+            <div class="map-tooltip" id="map-tooltip" hidden></div>
+          </div>
+          <ul class="map-cities" id="map-cities" aria-label="Ciudades"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROJECTS SHOWCASE ================= -->
+    <section class="section" id="proyectos">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="Lo que construyen" data-en="What they build">Lo que construyen</span>
+          <h2 data-es="Proyectos hechos en Venezuela" data-en="Projects made in Venezuela">Proyectos hechos en Venezuela</h2>
+          <p data-es="Una muestra de lo que los builders de la red están construyendo hoy." data-en="A glimpse of what the network's builders are shipping today.">Una muestra de lo que los builders de la red están construyendo hoy.</p>
+        </div>
+        <div class="projects-grid" id="projects-grid"><!-- rendered from data.js --></div>
       </div>
     </section>
 
@@ -277,6 +327,7 @@
     </div>
   </footer>
 
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
