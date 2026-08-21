@@ -65,21 +65,13 @@ export default function AsiloBuildersHero() {
 
         {/* Hero content */}
         <main className="flex flex-1 flex-col items-center justify-center px-6 pb-20 text-center">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            <span className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_0_3px_rgba(87,208,106,0.18)]" />
-            <span className="text-[0.7rem] font-medium uppercase tracking-[0.1em] text-gray-400">
-              Activa desde agosto 2026 · 40+ miembros
-            </span>
-          </div>
-
           <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[1.03] tracking-tight text-white md:text-7xl">
             La comunidad de builders de Venezuela
           </h1>
 
           <h2 className="mt-6 max-w-2xl text-lg font-normal leading-relaxed text-gray-400 md:text-xl">
             Un espacio para developers, diseñadores y founders venezolanos que
-            se conocen, se apoyan y construyen juntos. La extensión builder del
-            medio que cubre tech en Venezuela desde 2021.
+            se conocen, se apoyan y construyen juntos. Impulsado por Asilo Digital
           </h2>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
