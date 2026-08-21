@@ -234,7 +234,7 @@ export default function AsciiBackground({
         const size =
           CONFIG.cell *
           (CONFIG.minScale + mid * (CONFIG.maxScale - CONFIG.minScale));
-        fonts[s] = size.toFixed(2) + 'px "JetBrains Mono", ui-monospace, monospace';
+        fonts[s] = size.toFixed(2) + 'px ui-monospace, "SFMono-Regular", Menlo, monospace';
         bufX[s] = new Float32Array(n);
         bufY[s] = new Float32Array(n);
         bufC[s] = new Uint8Array(n);

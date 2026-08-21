@@ -67,7 +67,7 @@ export default function AsiloBuildersHero() {
         <main className="flex flex-1 flex-col items-center justify-center px-6 pb-20 text-center">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1">
             <span className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_0_3px_rgba(87,208,106,0.18)]" />
-            <span className="font-mono text-[0.68rem] uppercase tracking-[0.14em] text-gray-400">
+            <span className="text-[0.7rem] font-medium uppercase tracking-[0.1em] text-gray-400">
               Activa desde agosto 2026 · 40+ miembros
             </span>
           </div>
