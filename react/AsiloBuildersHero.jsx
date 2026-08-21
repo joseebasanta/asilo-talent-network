@@ -71,7 +71,7 @@ export default function AsiloBuildersHero() {
             builders de Venezuela
           </h1>
 
-          <h2 className="mt-6 max-w-2xl text-lg font-normal leading-relaxed text-gray-400 md:text-xl">
+          <h2 className="mt-6 max-w-3xl text-balance text-lg font-normal leading-relaxed text-gray-400 md:text-xl">
             Un espacio para developers, diseñadores y founders venezolanos que
             se conocen, se apoyan y construyen juntos. Impulsado por Asilo Digital
           </h2>
