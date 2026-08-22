@@ -16,7 +16,7 @@ import { useEffect } from "react";
  * Pass `boundsRef` (a ref to the hero element) to scope the trail to it; omit
  * to trail across the whole viewport.
  */
-export default function CursorTrail({ boundsRef, ink = "#DFFF2F" }) {
+export default function CursorTrail({ boundsRef, ink = "#CEE2FF" }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
