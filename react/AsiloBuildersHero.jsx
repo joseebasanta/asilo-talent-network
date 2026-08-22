@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import AsciiBackground from "./AsciiBackground";
+import CursorTrail from "./CursorTrail";
 
 /**
  * AsiloBuildersHero
@@ -20,14 +22,20 @@ const NAV = [
 ];
 
 export default function AsiloBuildersHero() {
+  const heroRef = useRef(null);
+
   return (
     <div
+      ref={heroRef}
       className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0b]"
       style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif' }}
     >
       {/* z-0 — ASCII background (El Ávila photo, inverted so it reads on a
           black sky). Omit src+invert to fall back to the procedural skyline. */}
       <AsciiBackground src="/3_avila.png" invert />
+
+      {/* ASCII cursor trail, scoped to the hero (z-9999, above everything) */}
+      <CursorTrail boundsRef={heroRef} />
 
       {/* z-1 — vignette so centered content stays legible */}
       <div
