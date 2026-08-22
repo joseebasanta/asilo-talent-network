@@ -1,25 +1,333 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Asilo Talent Network</title>
+  <title>Asilo — Red de talento tech de Venezuela</title>
+  <meta name="description" content="Asilo conecta al mejor talento tecnológico venezolano con las empresas que están creciendo dentro del país. Aplica y da el siguiente paso en tu carrera, sin salir de casa." />
+
+  <meta property="og:title" content="Asilo — Red de talento tech de Venezuela" />
+  <meta property="og:description" content="Conectamos al talento tech venezolano con empresas que crecen dentro del país." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
-    <h1>Asilo Talent Network</h1>
-    <p>Connecting exceptional talent with the opportunities that matter.</p>
-    <a href="#contact" class="cta">Get Started</a>
+  <!-- ================= NAV ================= -->
+  <header class="nav" id="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top" aria-label="Asilo — inicio">
+        <span class="dot" aria-hidden="true"></span>
+        <b>Asilo</b>
+      </a>
+
+      <nav class="nav-links" aria-label="Principal">
+        <a class="navlink" href="#builders" data-es="Builders" data-en="Builders">Builders</a>
+        <a class="navlink" href="#mapa" data-es="Mapa" data-en="Map">Mapa</a>
+        <a class="navlink" href="#proyectos" data-es="Proyectos" data-en="Projects">Proyectos</a>
+        <a class="navlink" href="#como-funciona" data-es="Cómo funciona" data-en="How it works">Cómo funciona</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="lang" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="es" aria-pressed="true">ES</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <a class="btn btn-primary" data-apply href="#" data-es="Aplica" data-en="Apply">Aplica</a>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section id="contact">
-      <h2>Contact</h2>
-      <p>More coming soon.</p>
+  <main id="top">
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <span class="eyebrow" data-es="Red de talento · Venezuela" data-en="Talent network · Venezuela">Red de talento · Venezuela</span>
+
+        <h1
+          data-es-html="El futuro tech de Venezuela se <em>construye aquí</em>."
+          data-en-html="Venezuela's tech future is <em>built here</em>.">
+          El futuro tech de Venezuela se <em>construye aquí</em>.
+        </h1>
+
+        <p class="hero-sub"
+          data-es="Asilo conecta al mejor talento tecnológico venezolano con las empresas que están creciendo dentro del país. Crece tu carrera sin salir de casa."
+          data-en="Asilo connects the best Venezuelan tech talent with the companies growing inside the country. Grow your career without leaving home.">
+          Asilo conecta al mejor talento tecnológico venezolano con las empresas que están creciendo dentro del país. Crece tu carrera sin salir de casa.
+        </p>
+
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" data-apply href="#"
+             data-es-html="Aplica al network <span class='arrow'>→</span>"
+             data-en-html="Apply to the network <span class='arrow'>→</span>">
+            Aplica al network <span class="arrow">→</span>
+          </a>
+          <a class="btn btn-ghost btn-lg" href="#para-empresas" data-es="Soy una empresa" data-en="I'm a company">Soy una empresa</a>
+        </div>
+
+        <p class="hero-note" data-es="Gratis para el talento · Ingeniería, producto, diseño y data" data-en="Free for talent · Engineering, product, design & data">
+          Gratis para el talento · Ingeniería, producto, diseño y data
+        </p>
+      </div>
+
+      <!-- Stat strip -->
+      <div class="wrap">
+        <div class="stats reveal">
+          <div class="stat">
+            <div class="n" data-es="1 misión" data-en="1 mission">1 misión</div>
+            <div class="l" data-es="Fortalecer el ecosistema tech venezolano" data-en="Strengthen Venezuela's tech ecosystem">Fortalecer el ecosistema tech venezolano</div>
+          </div>
+          <div class="stat">
+            <div class="n" data-es="4 áreas" data-en="4 areas">4 áreas</div>
+            <div class="l" data-es="Ingeniería, producto, diseño y data" data-en="Engineering, product, design & data">Ingeniería, producto, diseño y data</div>
+          </div>
+          <div class="stat">
+            <div class="n" data-es="$0" data-en="$0">$0</div>
+            <div class="l" data-es="Sin costo para el talento, siempre" data-en="No cost for talent, ever">Sin costo para el talento, siempre</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MEMBERS CAROUSEL ================= -->
+    <section class="section section-members" id="builders">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="La red" data-en="The network">La red</span>
+          <h2 data-es="Conoce a los builders" data-en="Meet the builders">Conoce a los builders</h2>
+          <p data-es="Ingenieros, diseñadores y product people construyendo desde Venezuela." data-en="Engineers, designers and product people building from Venezuela.">Ingenieros, diseñadores y product people construyendo desde Venezuela.</p>
+        </div>
+      </div>
+      <!-- rendered from data.js -->
+      <div class="marquee reveal" id="members-marquee" aria-label="Builders de la red">
+        <div class="marquee-track" id="members-track"></div>
+      </div>
+    </section>
+
+    <!-- ================= MAP ================= -->
+    <section class="section" id="mapa">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="En todo el país" data-en="Across the country">En todo el país</span>
+          <h2 data-es="Talento en cada rincón de Venezuela" data-en="Talent in every corner of Venezuela">Talento en cada rincón de Venezuela</h2>
+          <p data-es="Nuestros builders construyen desde Caracas hasta los Andes y Guayana." data-en="Our builders create from Caracas to the Andes and Guayana.">Nuestros builders construyen desde Caracas hasta los Andes y Guayana.</p>
+        </div>
+
+        <div class="map-grid reveal">
+          <div class="map-canvas">
+            <svg id="ve-map" viewBox="0 0 800 460" role="img"
+                 aria-label="Mapa de Venezuela con la ubicación de los builders">
+              <!-- graticule + pins injected by script.js -->
+            </svg>
+            <div class="map-tooltip" id="map-tooltip" hidden></div>
+          </div>
+          <ul class="map-cities" id="map-cities" aria-label="Ciudades"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROJECTS SHOWCASE ================= -->
+    <section class="section" id="proyectos">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="Lo que construyen" data-en="What they build">Lo que construyen</span>
+          <h2 data-es="Proyectos hechos en Venezuela" data-en="Projects made in Venezuela">Proyectos hechos en Venezuela</h2>
+          <p data-es="Una muestra de lo que los builders de la red están construyendo hoy." data-en="A glimpse of what the network's builders are shipping today.">Una muestra de lo que los builders de la red están construyendo hoy.</p>
+        </div>
+        <div class="projects-grid" id="projects-grid"><!-- rendered from data.js --></div>
+      </div>
+    </section>
+
+    <!-- ================= VALUE / WHAT ================= -->
+    <section class="section" id="que-es">
+      <div class="wrap value-grid">
+        <div class="reveal">
+          <span class="eyebrow" data-es="Qué es Asilo" data-en="What Asilo is">Qué es Asilo</span>
+          <p class="lead"
+            data-es-html="No es una fuga de talento. Es una <span class='hl'>apuesta por quedarse</span> y construir."
+            data-en-html="This isn't a brain drain. It's a <span class='hl'>bet on staying</span> and building.">
+            No es una fuga de talento. Es una <span class="hl">apuesta por quedarse</span> y construir.
+          </p>
+        </div>
+
+        <div class="value-points reveal">
+          <div class="value-point">
+            <span class="ico">01</span>
+            <div>
+              <h3 data-es="Talento verificado" data-en="Vetted talent">Talento verificado</h3>
+              <p data-es="Revisamos perfil, experiencia y habilidades para que las empresas confíen en cada match." data-en="We review profile, experience and skills so companies can trust every match.">Revisamos perfil, experiencia y habilidades para que las empresas confíen en cada match.</p>
+            </div>
+          </div>
+          <div class="value-point">
+            <span class="ico">02</span>
+            <div>
+              <h3 data-es="100% dentro de Venezuela" data-en="100% inside Venezuela">100% dentro de Venezuela</h3>
+              <p data-es="Conectamos talento local con empresas locales. Oportunidades reales, aquí." data-en="We connect local talent with local companies. Real opportunities, here.">Conectamos talento local con empresas locales. Oportunidades reales, aquí.</p>
+            </div>
+          </div>
+          <div class="value-point">
+            <span class="ico">03</span>
+            <div>
+              <h3 data-es="Una comunidad, no una bolsa de empleo" data-en="A community, not a job board">Una comunidad, no una bolsa de empleo</h3>
+              <p data-es="Acompañamos a cada profesional y a cada empresa en el proceso, de principio a fin." data-en="We support every professional and every company through the process, end to end.">Acompañamos a cada profesional y a cada empresa en el proceso, de principio a fin.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="section" id="como-funciona">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="Cómo funciona" data-en="How it works">Cómo funciona</span>
+          <h2 data-es="Tres pasos para entrar al network" data-en="Three steps to join the network">Tres pasos para entrar al network</h2>
+          <p data-es="Diseñado para el talento. Aplicar toma unos minutos." data-en="Built for talent. Applying takes a few minutes.">Diseñado para el talento. Aplicar toma unos minutos.</p>
+        </div>
+
+        <div class="steps">
+          <div class="step reveal">
+            <div class="num">01</div>
+            <h3 data-es="Aplica" data-en="Apply">Aplica</h3>
+            <p data-es="Cuéntanos sobre ti, tu experiencia y lo que buscas. Es rápido y gratis." data-en="Tell us about you, your experience and what you're looking for. Quick and free.">Cuéntanos sobre ti, tu experiencia y lo que buscas. Es rápido y gratis.</p>
+          </div>
+          <div class="step reveal">
+            <div class="num">02</div>
+            <h3 data-es="Verificamos" data-en="We verify">Verificamos</h3>
+            <p data-es="Revisamos tu perfil y habilidades para entender dónde encajas mejor." data-en="We review your profile and skills to understand where you fit best.">Revisamos tu perfil y habilidades para entender dónde encajas mejor.</p>
+          </div>
+          <div class="step reveal">
+            <div class="num">03</div>
+            <h3 data-es="Conecta" data-en="Connect">Conecta</h3>
+            <p data-es="Te presentamos a empresas venezolanas que buscan exactamente tu talento." data-en="We introduce you to Venezuelan companies looking for exactly your talent.">Te presentamos a empresas venezolanas que buscan exactamente tu talento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TWO-SIDED ================= -->
+    <section class="section" id="para-quien">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="Para quién" data-en="Who it's for">Para quién</span>
+          <h2 data-es="Dos lados de la misma red" data-en="Two sides of the same network">Dos lados de la misma red</h2>
+        </div>
+
+        <div class="split">
+          <div class="panel accent reveal" id="para-talento">
+            <span class="tag" data-es="Para el talento" data-en="For talent">Para el talento</span>
+            <h3 data-es="Crece sin salir del país" data-en="Grow without leaving the country">Crece sin salir del país</h3>
+            <p data-es="Acceso a empresas reales que están contratando, y acompañamiento en cada paso." data-en="Access to real companies that are hiring, plus support at every step.">Acceso a empresas reales que están contratando, y acompañamiento en cada paso.</p>
+            <ul>
+              <li data-es="Sin costo, siempre" data-en="Free, always">Sin costo, siempre</li>
+              <li data-es="Roles remotos y presenciales" data-en="Remote and on-site roles">Roles remotos y presenciales</li>
+              <li data-es="Empresas verificadas" data-en="Verified companies">Empresas verificadas</li>
+            </ul>
+            <a class="btn btn-primary" data-apply href="#" data-es="Aplica al network" data-en="Apply to the network">Aplica al network</a>
+          </div>
+
+          <div class="panel reveal" id="para-empresas">
+            <span class="tag" data-es="Para empresas" data-en="For companies">Para empresas</span>
+            <h3 data-es="Contrata talento local, más rápido" data-en="Hire local talent, faster">Contrata talento local, más rápido</h3>
+            <p data-es="Accede a una red curada de profesionales tech venezolanos, listos para sumar." data-en="Tap a curated network of Venezuelan tech professionals, ready to contribute.">Accede a una red curada de profesionales tech venezolanos, listos para sumar.</p>
+            <ul>
+              <li data-es="Perfiles verificados" data-en="Vetted profiles">Perfiles verificados</li>
+              <li data-es="Búsqueda enfocada en Venezuela" data-en="Venezuela-focused search">Búsqueda enfocada en Venezuela</li>
+              <li data-es="Apoya el ecosistema local" data-en="Support the local ecosystem">Apoya el ecosistema local</li>
+            </ul>
+            <a class="btn btn-ghost" data-company href="#" data-es="Habla con nosotros" data-en="Talk to us">Habla con nosotros</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section" id="faq">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow" data-es="Preguntas frecuentes" data-en="FAQ">Preguntas frecuentes</span>
+          <h2 data-es="Lo esencial, claro" data-en="The essentials, clear">Lo esencial, claro</h2>
+        </div>
+
+        <div class="faq reveal">
+          <details>
+            <summary>
+              <span data-es="¿Tiene algún costo para el talento?" data-en="Is there any cost for talent?">¿Tiene algún costo para el talento?</span>
+              <span class="plus" aria-hidden="true">+</span>
+            </summary>
+            <p data-es="No. Aplicar y ser parte del network es completamente gratis para los profesionales, siempre." data-en="No. Applying and being part of the network is completely free for professionals, always.">No. Aplicar y ser parte del network es completamente gratis para los profesionales, siempre.</p>
+          </details>
+          <details>
+            <summary>
+              <span data-es="¿Necesito estar en Venezuela?" data-en="Do I need to be in Venezuela?">¿Necesito estar en Venezuela?</span>
+              <span class="plus" aria-hidden="true">+</span>
+            </summary>
+            <p data-es="Asilo está enfocado en el ecosistema venezolano. Hay roles remotos y presenciales dentro del país." data-en="Asilo is focused on the Venezuelan ecosystem. There are remote and on-site roles within the country.">Asilo está enfocado en el ecosistema venezolano. Hay roles remotos y presenciales dentro del país.</p>
+          </details>
+          <details>
+            <summary>
+              <span data-es="¿Qué perfiles están buscando?" data-en="What profiles are you looking for?">¿Qué perfiles están buscando?</span>
+              <span class="plus" aria-hidden="true">+</span>
+            </summary>
+            <p data-es="Ingeniería, producto, diseño y data, en distintos niveles de experiencia. Si tienes talento tech, aplica." data-en="Engineering, product, design and data, across experience levels. If you have tech talent, apply.">Ingeniería, producto, diseño y data, en distintos niveles de experiencia. Si tienes talento tech, aplica.</p>
+          </details>
+          <details>
+            <summary>
+              <span data-es="¿Cómo verifican a las personas?" data-en="How do you verify people?">¿Cómo verifican a las personas?</span>
+              <span class="plus" aria-hidden="true">+</span>
+            </summary>
+            <p data-es="Revisamos cada perfil y experiencia, y conversamos con cada persona antes de presentarla a una empresa." data-en="We review each profile and background, and talk with every person before introducing them to a company.">Revisamos cada perfil y experiencia, y conversamos con cada persona antes de presentarla a una empresa.</p>
+          </details>
+          <details>
+            <summary>
+              <span data-es="Soy una empresa, ¿cómo participo?" data-en="I'm a company, how do I join?">Soy una empresa, ¿cómo participo?</span>
+              <span class="plus" aria-hidden="true">+</span>
+            </summary>
+            <p data-es="Escríbenos y te contamos cómo acceder a la red de talento. Estamos sumando empresas fundadoras." data-en="Get in touch and we'll show you how to access the talent network. We're onboarding founding companies.">Escríbenos y te contamos cómo acceder a la red de talento. Estamos sumando empresas fundadoras.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CLOSING CTA ================= -->
+    <section class="section cta-final">
+      <div class="wrap">
+        <div class="cta-card reveal">
+          <span class="eyebrow" style="justify-content:center" data-es="Da el siguiente paso" data-en="Take the next step">Da el siguiente paso</span>
+          <h2 data-es="Tu próxima oportunidad puede estar más cerca de lo que crees." data-en="Your next opportunity may be closer than you think.">Tu próxima oportunidad puede estar más cerca de lo que crees.</h2>
+          <p data-es="Únete a la primera cohorte del talento tech venezolano. Aplicar toma unos minutos." data-en="Join the first cohort of Venezuelan tech talent. Applying takes a few minutes.">Únete a la primera cohorte del talento tech venezolano. Aplicar toma unos minutos.</p>
+          <a class="btn btn-primary btn-lg" data-apply href="#"
+             data-es-html="Aplica al network <span class='arrow'>→</span>"
+             data-en-html="Apply to the network <span class='arrow'>→</span>">
+            Aplica al network <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
     </section>
   </main>
 
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="#top">
+        <span class="dot" aria-hidden="true"></span>
+        <b>Asilo</b>
+      </a>
+      <div class="footer-links">
+        <a data-apply href="#" data-es="Aplica" data-en="Apply">Aplica</a>
+        <a data-company href="#" data-es="Empresas" data-en="Companies">Empresas</a>
+        <a href="mailto:hola@asilo.network" data-es="Contacto" data-en="Contact">Contacto</a>
+      </div>
+      <div class="footer-meta">
+        <span data-es="Asilo · Red de talento tech · Venezuela" data-en="Asilo · Tech talent network · Venezuela">Asilo · Red de talento tech · Venezuela</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
