@@ -85,8 +85,8 @@ export default function AsiloBuildersHero() {
         className="relative flex w-full flex-col"
         style={{ zIndex: 10, minHeight: "100svh" }}
       >
-        {/* Header — full-width bar with a bottom stroke; content capped at 1280 */}
-        <header className="w-full" style={{ borderBottom: `0.5px solid ${C.blue800}` }}>
+        {/* Header — full-width bar; content capped at 1280 */}
+        <header className="w-full">
         <div
           className="mx-auto flex w-full items-center justify-between"
           style={{ maxWidth: 1280, padding: "22px clamp(20px,4vw,64px)" }}
@@ -97,7 +97,7 @@ export default function AsiloBuildersHero() {
             <img
               src="/logo-asilo-builders.svg"
               alt="Asilo Builders"
-              style={{ height: 20, width: "auto", display: "block" }}
+              style={{ height: 24, width: "auto", display: "block" }}
             />
           </a>
 
