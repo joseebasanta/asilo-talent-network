@@ -1,0 +1,49 @@
+name: Deploy Revision 1 to GitHub Pages
+
+# Publishes the self-contained hero (index.html) to GitHub Pages on every
+# push to revision-one. The first successful run auto-enables Pages
+# (requires the repository to be public, or GitHub Pro for private Pages).
+on:
+  push:
+    branches: [revision-one]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; let an in-progress run finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout revision-one
+        uses: actions/checkout@v4
+
+      - name: Assemble site (index.html only — it is fully self-contained)
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          touch _site/.nojekyll
+
+      - name: Configure Pages (auto-enable if needed)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
