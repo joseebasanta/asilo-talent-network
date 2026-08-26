@@ -33,24 +33,20 @@ const NAV = [
   { label: "Talent Network", href: "#talent" },
 ];
 
-/** Outline smiley glyph used in the CTA + header buttons. */
+/** Pixel smile (pixelarticons) used in the CTA + header buttons. Inherits the
+ *  button's text color via `currentColor`. */
 function Smiley({ className = "" }) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 17 17"
       fill="none"
       aria-hidden="true"
       className={className}
       style={{ width: "1.15em", height: "1.15em", flex: "none", verticalAlign: "middle" }}
     >
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx="9" cy="10.5" r="1.05" fill="currentColor" />
-      <circle cx="15" cy="10.5" r="1.05" fill="currentColor" />
       <path
-        d="M8.5 14.3c.95 1.15 2.1 1.7 3.5 1.7s2.55-.55 3.5-1.7"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
+        d="M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z"
+        fill="currentColor"
       />
     </svg>
   );
@@ -93,18 +89,15 @@ export default function AsiloBuildersHero() {
           className="mx-auto flex w-full items-center justify-between"
           style={{ maxWidth: 1280, padding: "22px clamp(20px,4vw,64px)" }}
         >
-          <div
-            style={{
-              fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, monospace',
-              fontWeight: 600,
-              fontSize: 15,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: C.blue50,
-            }}
-          >
-            Asilo Builders
-          </div>
+          {/* Uploaded pixel wordmark (Blue Builder palette). Put the SVG in
+              your app's public folder; rename the space out of the filename. */}
+          <a href="#" aria-label="Asilo Builders" className="inline-flex items-center">
+            <img
+              src="/logo-asilo-builders.svg"
+              alt="Asilo Builders"
+              style={{ height: 20, width: "auto", display: "block" }}
+            />
+          </a>
 
           <nav className="hidden md:flex" style={{ gap: 34 }}>
             {NAV.map((item) => (
