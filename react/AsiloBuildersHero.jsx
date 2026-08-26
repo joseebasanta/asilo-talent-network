@@ -5,14 +5,26 @@ import CursorTrail from "./CursorTrail";
 /**
  * AsiloBuildersHero
  * -----------------
- * Full-screen hero for the Asilo Builders community. An interactive ASCII
- * canvas (El Ávila + Caracas skyline) sits at z-0; the header and centered
- * hero content sit at z-10 over a vignette that keeps the copy legible.
+ * Full-screen hero for the Asilo Builders community, matching the Figma hero
+ * (text, layout and colors) laid over the interactive true-tone ASCII El Ávila
+ * background. The ASCII canvas sits at z-0; a vignette (z-1) keeps the copy
+ * legible; the header and upper-middle hero content sit at z-10. An ASCII
+ * cursor trail (z-9999) follows the pointer over the hero.
  *
- * To use a real photo instead of the procedural skyline, pass a src:
- *   <AsciiBackground src="/images/avila.jpg" />
- * The luminance mapping self-adjusts to photographs.
+ * Colors come from the Figma "Blue Builder" scale; type from Doto (title) +
+ * Google Sans Flex (everything else). Load the fonts once in your app head:
+ *   <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Google+Sans+Flex:wght@400..700&display=swap" rel="stylesheet">
  */
+
+// ---- Figma "Blue Builder" tokens ----
+const C = {
+  blue50: "#FAFCFF", // title / on-dark text
+  blue500: "#CEE2FF", // brand accent / primary button
+  blue700: "#92A0B5", // paragraph / nav
+  bg: "#0a0a0b",
+};
+const TITLE_FONT = '"Doto", system-ui, monospace';
+const SANS = '"Google Sans Flex", system-ui, -apple-system, "Segoe UI", sans-serif';
 
 const NAV = [
   { label: "Comunidad", href: "#comunidad" },
@@ -21,24 +33,48 @@ const NAV = [
   { label: "Talent Network", href: "#talent" },
 ];
 
+/** Outline smiley glyph used in the CTA + header buttons. */
+function Smiley({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={className}
+      style={{ width: "1.15em", height: "1.15em", flex: "none", verticalAlign: "middle" }}
+    >
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="9" cy="10.5" r="1.05" fill="currentColor" />
+      <circle cx="15" cy="10.5" r="1.05" fill="currentColor" />
+      <path
+        d="M8.5 14.3c.95 1.15 2.1 1.7 3.5 1.7s2.55-.55 3.5-1.7"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export default function AsiloBuildersHero() {
   const heroRef = useRef(null);
 
   return (
     <div
       ref={heroRef}
-      className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0b]"
-      style={{ fontFamily: '"IBM Plex Sans", system-ui, sans-serif' }}
+      className="relative w-full overflow-hidden"
+      style={{ minHeight: "100svh", background: C.bg, fontFamily: SANS }}
     >
-      {/* z-0 — ASCII background (El Ávila photo, inverted so it reads on a
-          black sky). Omit src+invert to fall back to the procedural skyline. */}
-      <AsciiBackground src="/3_avila.png" invert />
+      {/* z-0 — true-tone ASCII background (El Ávila photo). Omit src for the
+          procedural skyline fallback. */}
+      <AsciiBackground src="/8_avila.png" ink="#6f7075" blue={C.blue500} background={C.bg} />
 
       {/* ASCII cursor trail, scoped to the hero (z-9999, above everything) */}
-      <CursorTrail boundsRef={heroRef} />
+      <CursorTrail boundsRef={heroRef} ink={C.blue500} />
 
       {/* z-1 — vignette so centered content stays legible */}
       <div
+        aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           zIndex: 1,
@@ -48,19 +84,45 @@ export default function AsiloBuildersHero() {
       />
 
       {/* z-10 — foreground */}
-      <div className="relative z-10 flex min-h-screen w-full flex-col">
-        {/* Header */}
-        <header className="flex items-center justify-between px-8 py-6">
-          <div className="text-sm tracking-[0.14em] text-gray-400">
-            <span className="font-bold text-white">ASILO</span> BUILDERS
+      <div
+        className="relative flex w-full flex-col"
+        style={{ zIndex: 10, minHeight: "100svh" }}
+      >
+        {/* Header — container-large 1280 · page padding 64 */}
+        <header
+          className="mx-auto flex w-full items-center justify-between"
+          style={{ maxWidth: 1280, padding: "22px clamp(20px,4vw,64px)" }}
+        >
+          <div
+            style={{
+              fontFamily: 'ui-monospace, "SFMono-Regular", Menlo, monospace',
+              fontWeight: 600,
+              fontSize: 15,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: C.blue50,
+            }}
+          >
+            Asilo Builders
           </div>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden md:flex" style={{ gap: 34 }}>
             {NAV.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                className="text-xs uppercase tracking-[0.12em] text-gray-400 transition-colors hover:text-white"
+                className="transition-colors"
+                style={{
+                  fontWeight: 500,
+                  fontSize: 12,
+                  lineHeight: "16px",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                  color: C.blue700,
+                  textDecoration: "none",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = C.blue50)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = C.blue700)}
               >
                 {item.label}
               </a>
@@ -69,38 +131,77 @@ export default function AsiloBuildersHero() {
 
           <a
             href="#unete"
-            className="rounded-md border border-white/20 px-4 py-2 text-sm tracking-wide text-white transition-colors hover:border-white/50 hover:bg-white/5"
+            className="inline-flex items-center transition-colors"
+            style={{
+              gap: ".5em",
+              fontWeight: 500,
+              fontSize: 14,
+              letterSpacing: "0.02em",
+              textTransform: "uppercase",
+              color: C.blue50,
+              textDecoration: "none",
+              border: "1px solid rgba(255,255,255,.22)",
+              borderRadius: 12,
+              padding: "10px 16px",
+            }}
           >
-            ÚNETE ↗
+            Únete <Smiley />
           </a>
         </header>
 
-        {/* Hero content */}
-        <main className="flex flex-1 flex-col items-center justify-center px-6 pb-20 text-center">
+        {/* Hero content — upper-middle, matching Figma */}
+        <main
+          className="flex flex-1 flex-col items-center text-center"
+          style={{
+            justifyContent: "flex-start",
+            padding: "clamp(72px,15vh,150px) clamp(20px,4vw,64px) 6rem",
+          }}
+        >
           <h1
-            className="max-w-5xl text-5xl leading-[1.05] tracking-tight text-white md:text-7xl"
-            style={{ fontFamily: '"Doto", system-ui, monospace', fontWeight: 700 }}
+            style={{
+              fontFamily: TITLE_FONT,
+              fontWeight: 500,
+              fontSize: "clamp(2.4rem,5.4vw,64px)",
+              lineHeight: 1.06,
+              letterSpacing: "0.01em",
+              textTransform: "uppercase",
+              color: C.blue50,
+              maxWidth: "22ch",
+              margin: 0,
+            }}
           >
             La comunidad de
             <br />
             builders de Venezuela
           </h1>
 
-          <h2 className="mt-6 max-w-3xl text-balance text-lg font-normal leading-relaxed text-gray-400 md:text-xl">
-            Un espacio para developers, diseñadores y founders venezolanos que
-            se conocen, se apoyan y construyen juntos. Impulsado por Asilo Digital
+          <h2
+            style={{
+              fontWeight: 400,
+              fontSize: 16,
+              lineHeight: "24px",
+              letterSpacing: "-0.011em",
+              color: C.blue700,
+              maxWidth: 750,
+              margin: "36px 0 0",
+              textWrap: "balance",
+            }}
+          >
+            Un espacio para developers, diseñadores y emprendedores que se conocen, se apoyan y
+            construyen con IA juntos. Impulsado por Asilo Digital.
           </h2>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#unete"
-              className="rounded-lg bg-white px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-neutral-200"
-            >
-              Únete a la comunidad ↗
+          <div
+            className="flex flex-wrap items-center justify-center"
+            style={{ gap: 16, marginTop: 44 }}
+          >
+            <a href="#unete" className="inline-flex items-center" style={btn(C.blue500, "#000A11")}>
+              Únete a la comunidad <Smiley />
             </a>
             <a
               href="#proyectos"
-              className="rounded-lg border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              className="inline-flex items-center"
+              style={btn("transparent", C.blue50, "rgba(255,255,255,.22)")}
             >
               Ver proyectos
             </a>
@@ -109,4 +210,24 @@ export default function AsiloBuildersHero() {
       </div>
     </div>
   );
+}
+
+/** Shared button style — Label/Medium type, radius 12. */
+function btn(background, color, borderColor = "transparent") {
+  return {
+    gap: ".5em",
+    fontFamily: SANS,
+    fontWeight: 500,
+    fontSize: 16,
+    lineHeight: "24px",
+    letterSpacing: "-0.011em",
+    textTransform: "uppercase",
+    borderRadius: 12,
+    padding: "14px 24px",
+    textDecoration: "none",
+    cursor: "pointer",
+    border: "1px solid " + borderColor,
+    background,
+    color,
+  };
 }
