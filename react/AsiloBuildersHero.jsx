@@ -153,7 +153,10 @@ export default function AsiloBuildersHero() {
           <h1
             style={{
               fontFamily: TITLE_FONT,
-              fontWeight: 900, // H1 Title — Black
+              // H1 Title — Black. Doto's weight axis has default = max = 900, and
+              // Chrome's font-weight→axis mapping flattens that to a thin instance,
+              // so drive the weight through the variation axis directly instead.
+              fontVariationSettings: '"wght" 900',
               fontSize: "clamp(2.4rem,5.4vw,64px)",
               lineHeight: 1.0,
               letterSpacing: "-0.01em",
@@ -176,7 +179,7 @@ export default function AsiloBuildersHero() {
               letterSpacing: "-0.011em",
               color: C.blue700,
               maxWidth: 750,
-              margin: "36px 0 0",
+              margin: "24px 0 0", // title → paragraph: 24px
               textWrap: "balance",
             }}
           >
@@ -186,7 +189,7 @@ export default function AsiloBuildersHero() {
 
           <div
             className="flex flex-wrap items-center justify-center"
-            style={{ gap: 16, marginTop: 44 }}
+            style={{ gap: 16, marginTop: 32 }} // paragraph → buttons: 32px
           >
             <a href="#unete" className="inline-flex items-center" style={btn(C.blue500, "#000A11")}>
               Únete a la comunidad <Smiley />
