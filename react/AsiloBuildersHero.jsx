@@ -216,7 +216,7 @@ export default function AsiloBuildersHero() {
 /** Shared button style — Label/Medium type, radius 12. */
 function btn(background, color, borderColor = "transparent") {
   return {
-    gap: ".5em",
+    gap: 4, // icon ↔ text: 4px
     fontFamily: SANS,
     fontWeight: 500,
     fontSize: 16,
