@@ -30,7 +30,7 @@
   /* ---- Labels (Google Sans Flex) ---- */
   --label-xl-size: 24px; --label-xl-line: 32px; --label-xl-tracking: -0.015em; --label-xl-weight: 500;
   --label-lg-size: 18px; --label-lg-line: 24px; --label-lg-tracking: -0.015em; --label-lg-weight: 500;
-  --label-md-size: 16px; --label-md-line: 24px; --label-md-tracking: -0.011em; --label-md-weight: 400;
+  --label-md-size: 16px; --label-md-line: 24px; --label-md-tracking: -0.011em; --label-md-weight: 500;
   --label-sm-size: 14px; --label-sm-line: 20px; --label-sm-tracking: -0.006em; --label-sm-weight: 500;
   --label-xs-size: 12px; --label-xs-line: 16px; --label-xs-tracking: 0em;      --label-xs-weight: 500;
 
