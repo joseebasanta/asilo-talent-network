@@ -19,8 +19,9 @@ import CursorTrail from "./CursorTrail";
 // ---- Figma "Blue Builder" tokens ----
 const C = {
   blue50: "#FAFCFF", // title / on-dark text
-  blue500: "#CEE2FF", // brand accent / primary button
+  blue500: "#CEE2FF", // brand accent / primary button / outlined buttons
   blue700: "#92A0B5", // paragraph / nav
+  blue800: "#717C8C", // header bottom stroke
   bg: "#0a0a0b",
 };
 const TITLE_FONT = '"Doto", system-ui, monospace';
@@ -84,8 +85,9 @@ export default function AsiloBuildersHero() {
         className="relative flex w-full flex-col"
         style={{ zIndex: 10, minHeight: "100svh" }}
       >
-        {/* Header — container-large 1280 · page padding 64 */}
-        <header
+        {/* Header — full-width bar with a bottom stroke; content capped at 1280 */}
+        <header className="w-full" style={{ borderBottom: `0.5px solid ${C.blue800}` }}>
+        <div
           className="mx-auto flex w-full items-center justify-between"
           style={{ maxWidth: 1280, padding: "22px clamp(20px,4vw,64px)" }}
         >
@@ -122,24 +124,27 @@ export default function AsiloBuildersHero() {
             ))}
           </nav>
 
+          {/* Header button — Figma: 1px blue-500 border + text, radius 8, 4/16 */}
           <a
             href="#unete"
             className="inline-flex items-center transition-colors"
             style={{
-              gap: ".5em",
+              gap: 8,
               fontWeight: 500,
-              fontSize: 14,
-              letterSpacing: "0.02em",
+              fontSize: 16,
+              lineHeight: "24px",
+              letterSpacing: "-0.011em",
               textTransform: "uppercase",
-              color: C.blue50,
+              color: C.blue500,
               textDecoration: "none",
-              border: "1px solid rgba(255,255,255,.22)",
-              borderRadius: 12,
-              padding: "10px 16px",
+              border: `1px solid ${C.blue500}`,
+              borderRadius: 8,
+              padding: "4px 16px",
             }}
           >
             Únete <Smiley />
           </a>
+        </div>
         </header>
 
         {/* Hero content — upper-middle, matching Figma */}
@@ -197,7 +202,7 @@ export default function AsiloBuildersHero() {
             <a
               href="#proyectos"
               className="inline-flex items-center"
-              style={btn("transparent", C.blue50, "rgba(255,255,255,.22)")}
+              style={btn("transparent", C.blue500, C.blue500)}
             >
               Ver proyectos
             </a>
@@ -218,8 +223,8 @@ function btn(background, color, borderColor = "transparent") {
     lineHeight: "24px",
     letterSpacing: "-0.011em",
     textTransform: "uppercase",
-    borderRadius: 12,
-    padding: "14px 24px",
+    borderRadius: 8,
+    padding: "12px 24px",
     textDecoration: "none",
     cursor: "pointer",
     border: "1px solid " + borderColor,
