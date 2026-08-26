@@ -153,12 +153,12 @@ export default function AsiloBuildersHero() {
           <h1
             style={{
               fontFamily: TITLE_FONT,
-              fontWeight: 500,
+              fontWeight: 900, // H1 Title — Black
               fontSize: "clamp(2.4rem,5.4vw,64px)",
-              lineHeight: 1.06,
-              letterSpacing: "0.01em",
+              lineHeight: 1.0,
+              letterSpacing: "-0.01em",
               textTransform: "uppercase",
-              color: C.blue50,
+              color: C.blue500,
               maxWidth: "22ch",
               margin: 0,
             }}
