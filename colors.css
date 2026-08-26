@@ -1,0 +1,61 @@
+/* ==========================================================================
+   Asilo — Color tokens
+   Source of truth: Figma "2 Feed Asilo Digital" → "Blue Builder" scale.
+   blue-500 (#CEE2FF) is the brand / "Builder" accent.
+   ========================================================================== */
+
+:root {
+  /* ---- Blue · "Builder" scale (50 = lightest → 900 = darkest) ---- */
+  --blue-50:  #FAFCFF;
+  --blue-100: #F0F6FF;
+  --blue-200: #E8F2FF;
+  --blue-300: #DEECFF;
+  --blue-400: #D8E8FF;
+  --blue-500: #CEE2FF;   /* Builder — brand accent */
+  --blue-600: #BBCEE8;
+  --blue-700: #92A0B5;
+  --blue-800: #717C8C;
+  --blue-900: #575F6B;
+
+  /* Semantic alias */
+  --brand-builder: var(--blue-500);
+
+  /* ---- Static ---- */
+  --static-white: #FFFFFF;
+  --static-black: #171717;
+}
+
+/* ==========================================================================
+   Optional utility classes — background / text / border by token.
+   e.g. <span class="bg-blue-500">, <p class="text-blue-900">
+   ========================================================================== */
+
+.bg-blue-50  { background-color: var(--blue-50); }
+.bg-blue-100 { background-color: var(--blue-100); }
+.bg-blue-200 { background-color: var(--blue-200); }
+.bg-blue-300 { background-color: var(--blue-300); }
+.bg-blue-400 { background-color: var(--blue-400); }
+.bg-blue-500 { background-color: var(--blue-500); }
+.bg-blue-600 { background-color: var(--blue-600); }
+.bg-blue-700 { background-color: var(--blue-700); }
+.bg-blue-800 { background-color: var(--blue-800); }
+.bg-blue-900 { background-color: var(--blue-900); }
+.bg-white    { background-color: var(--static-white); }
+.bg-black    { background-color: var(--static-black); }
+
+.text-blue-50  { color: var(--blue-50); }
+.text-blue-100 { color: var(--blue-100); }
+.text-blue-200 { color: var(--blue-200); }
+.text-blue-300 { color: var(--blue-300); }
+.text-blue-400 { color: var(--blue-400); }
+.text-blue-500 { color: var(--blue-500); }
+.text-blue-600 { color: var(--blue-600); }
+.text-blue-700 { color: var(--blue-700); }
+.text-blue-800 { color: var(--blue-800); }
+.text-blue-900 { color: var(--blue-900); }
+.text-white    { color: var(--static-white); }
+.text-black    { color: var(--static-black); }
+
+.border-blue-500 { border-color: var(--blue-500); }
+.border-blue-700 { border-color: var(--blue-700); }
+.border-blue-900 { border-color: var(--blue-900); }
