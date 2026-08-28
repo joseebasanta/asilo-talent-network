@@ -600,16 +600,30 @@ function buildPresets(){
 /* ---- Outputs ---- */
 function toast(msg){ const t=el("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1600); }
 
+/* Save a generated file. Uses the claude.ai `downloads` capability when the
+   page runs as a published Artifact; falls back to a plain anchor download when
+   the file is opened standalone (local file / static host). */
+async function saveFile(filename, data){
+  try{
+    if(window.claude && typeof window.claude.use==="function"){
+      const dl=await window.claude.use("downloads");
+      if(dl){ await dl.save({filename, data}); return; }
+    }
+  }catch(e){ if(e && e.code==="declined") return; /* else fall through */ }
+  const href=(data instanceof Blob)
+    ? URL.createObjectURL(data)
+    : "data:application/octet-stream;charset=utf-8,"+encodeURIComponent(data);
+  const a=document.createElement("a"); a.download=filename; a.href=href; a.click();
+  if(data instanceof Blob) setTimeout(()=>URL.revokeObjectURL(href),1500);
+}
+
 function exportPNG(){
   const px=parseInt(el("exportSize").value,10);
   const n=gridSize();
   const grid=buildGrid(CONFIG,n); ensurePhase(grid);
   const cv=document.createElement("canvas"); cv.width=cv.height=px;
   renderIcon(cv.getContext("2d"), grid, CONFIG, 0, px/n);
-  const a=document.createElement("a");
-  a.download="asilo-icon-"+CONFIG.shape+"-"+px+".png";
-  a.href=cv.toDataURL("image/png"); a.click();
-  toast("Exported "+px+"px PNG");
+  cv.toBlob(blob=>{ saveFile("asilo-icon-"+CONFIG.shape+"-"+px+".png", blob); toast("Exported "+px+"px PNG"); }, "image/png");
 }
 
 const dlg=el("json-dlg");
@@ -627,9 +641,7 @@ function savePreset(){
   openDialog("Save preset JSON",
     "Your current style. Copy it, or download as a .json file to reuse or version.",
     json, "Download .json", ()=>{
-      const blob=new Blob([json],{type:"application/json"});
-      const a=document.createElement("a"); a.download="asilo-icon-style.json";
-      a.href=URL.createObjectURL(blob); a.click(); URL.revokeObjectURL(a.href);
+      saveFile("asilo-icon-style.json", new Blob([json],{type:"application/json"}));
       toast("Downloaded style JSON");
     });
   navigator.clipboard&&navigator.clipboard.writeText(json).then(()=>toast("Style JSON copied"),()=>{});
