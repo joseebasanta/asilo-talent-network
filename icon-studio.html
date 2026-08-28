@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Asilo — Icon ASCII Studio</title>
+<style>
+  /* ---- Tokens (from colors.css "Blue Builder" scale + site dark ground) ---- */
+  :root{
+    --blue-50:#FAFCFF; --blue-100:#F0F6FF; --blue-200:#E8F2FF; --blue-300:#DEECFF;
+    --blue-400:#D8E8FF; --blue-500:#CEE2FF; --blue-600:#BBCEE8; --blue-700:#92A0B5;
+    --blue-800:#717C8C; --blue-900:#575F6B;
+    --bg:#0a0a0b; --panel:#111114; --panel-2:#161619; --line:#26262b;
+    --ink:#c9cbd2; --ink-dim:#8a8d97; --accent:var(--blue-500);
+    --radius:12px; --mono:ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--sans);
+    font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent)}
+  header.top{
+    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    padding:18px 22px; border-bottom:1px solid var(--line);
+  }
+  header.top h1{font-size:16px; margin:0; letter-spacing:.2px; font-weight:600; color:var(--blue-50)}
+  header.top .sub{color:var(--ink-dim); font-size:12.5px}
+  header.top .grow{flex:1}
+  .tag{
+    font-family:var(--mono); font-size:11px; color:var(--blue-700);
+    border:1px solid var(--line); padding:3px 8px; border-radius:999px;
+  }
+
+  .layout{
+    display:grid; grid-template-columns:300px 1fr 260px; gap:0;
+    min-height:calc(100vh - 61px);
+  }
+  @media (max-width:1080px){ .layout{grid-template-columns:1fr} }
+
+  /* ---- Panels ---- */
+  .panel{padding:18px 20px}
+  .panel.controls{border-right:1px solid var(--line); overflow:auto}
+  .panel.presets{border-left:1px solid var(--line); overflow:auto}
+  .panel h2{
+    font-size:11px; text-transform:uppercase; letter-spacing:.12em;
+    color:var(--ink-dim); margin:0 0 12px; font-weight:600;
+  }
+  .group{margin-bottom:22px}
+
+  /* control rows */
+  .row{margin-bottom:13px}
+  .row label{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; font-size:12.5px; color:var(--ink)}
+  .row label .val{font-family:var(--mono); font-size:11.5px; color:var(--blue-500)}
+  input[type=range]{width:100%; accent-color:var(--accent); height:18px}
+  input[type=text]{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:8px; padding:7px 9px; font-family:var(--mono); font-size:12.5px;
+  }
+  input[type=text]:focus{outline:none; border-color:var(--blue-700)}
+  .colorrow{display:flex; gap:8px}
+  .colorrow .cell{flex:1}
+  .colorrow input[type=color]{
+    width:100%; height:30px; padding:0; border:1px solid var(--line); border-radius:8px;
+    background:var(--panel-2); cursor:pointer;
+  }
+  .colorrow .cap{font-size:10.5px; color:var(--ink-dim); text-align:center; margin-top:3px}
+
+  .chips{display:flex; flex-wrap:wrap; gap:6px}
+  .chip{
+    font-family:var(--mono); font-size:11px; color:var(--ink-dim);
+    border:1px solid var(--line); background:var(--panel-2); border-radius:7px;
+    padding:5px 8px; cursor:pointer; user-select:none;
+  }
+  .chip:hover{color:var(--ink); border-color:var(--blue-800)}
+  .chip.active{color:var(--blue-50); border-color:var(--blue-500); background:#12202f}
+
+  .switchrow{display:flex; align-items:center; justify-content:space-between; margin-bottom:11px}
+  .switch{position:relative; width:38px; height:22px; flex:0 0 auto}
+  .switch input{opacity:0; width:0; height:0}
+  .slider{
+    position:absolute; inset:0; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:999px; transition:.15s; cursor:pointer;
+  }
+  .slider:before{content:""; position:absolute; height:14px; width:14px; left:3px; top:3px;
+    background:var(--ink-dim); border-radius:50%; transition:.15s}
+  .switch input:checked + .slider{background:#12202f; border-color:var(--blue-500)}
+  .switch input:checked + .slider:before{transform:translateX(16px); background:var(--blue-500)}
+
+  /* ---- Stage ---- */
+  .panel.stage{display:flex; flex-direction:column; align-items:center; gap:22px; padding:30px 20px}
+  .stage-canvas-wrap{
+    position:relative; border-radius:16px; padding:14px;
+    background:
+      linear-gradient(45deg,#141417 25%,transparent 25%,transparent 75%,#141417 75%),
+      linear-gradient(45deg,#141417 25%,transparent 25%,transparent 75%,#141417 75%),
+      var(--panel);
+    background-size:20px 20px; background-position:0 0,10px 10px;
+    border:1px solid var(--line);
+  }
+  #stage{display:block; width:340px; height:340px; border-radius:6px}
+  .sizes{display:flex; align-items:flex-end; gap:20px}
+  .size-cell{display:flex; flex-direction:column; align-items:center; gap:8px}
+  .size-cell .chipbg{padding:10px; border-radius:12px; border:1px solid var(--line)}
+  .size-cell .chipbg.dark{background:#08080a}
+  .size-cell .chipbg.light{background:#eef2f7}
+  .size-cell canvas{display:block; image-rendering:auto}
+  .size-cell .lbl{font-family:var(--mono); font-size:10.5px; color:var(--ink-dim)}
+
+  .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+  button.btn{
+    font-family:var(--sans); font-size:12.5px; font-weight:500;
+    color:var(--blue-50); background:#14202e; border:1px solid var(--blue-800);
+    border-radius:9px; padding:9px 14px; cursor:pointer;
+  }
+  button.btn:hover{border-color:var(--blue-500)}
+  button.btn.ghost{background:var(--panel-2); color:var(--ink); border-color:var(--line)}
+  button.btn.ghost:hover{color:var(--blue-50); border-color:var(--blue-700)}
+  select{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:8px; padding:8px 9px; font-family:var(--mono); font-size:12px;
+  }
+
+  /* ---- Presets ---- */
+  .preset-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .preset{
+    border:1px solid var(--line); border-radius:10px; background:var(--panel-2);
+    padding:8px; cursor:pointer; text-align:center;
+  }
+  .preset:hover{border-color:var(--blue-700)}
+  .preset.active{border-color:var(--blue-500)}
+  .preset canvas{display:block; width:100%; height:auto; border-radius:6px; background:#08080a}
+  .preset .name{font-size:11px; color:var(--ink-dim); margin-top:6px}
+
+  /* ---- Dialog ---- */
+  dialog{
+    background:var(--panel); color:var(--ink); border:1px solid var(--line);
+    border-radius:14px; padding:0; max-width:560px; width:92vw;
+  }
+  dialog::backdrop{background:rgba(0,0,0,.6)}
+  .dlg-head{display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line)}
+  .dlg-head h3{margin:0; font-size:14px; color:var(--blue-50)}
+  .dlg-body{padding:16px 18px}
+  textarea{
+    width:100%; min-height:190px; background:var(--panel-2); border:1px solid var(--line);
+    color:var(--ink); border-radius:8px; padding:10px; font-family:var(--mono); font-size:12px;
+    resize:vertical;
+  }
+  .dlg-body p{color:var(--ink-dim); font-size:12.5px; margin:0 0 10px}
+  .dlg-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:12px}
+  .x{background:none; border:none; color:var(--ink-dim); font-size:20px; cursor:pointer; line-height:1}
+  .toast{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+    background:#14202e; border:1px solid var(--blue-700); color:var(--blue-50);
+    padding:10px 16px; border-radius:10px; font-size:12.5px; opacity:0; pointer-events:none;
+    transition:opacity .2s; z-index:50;
+  }
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Icon ASCII Studio</h1>
+  <span class="sub">Acid-art icons for the Asilo landing page — same engine as the hero.</span>
+  <span class="grow"></span>
+  <span class="tag" id="tag-dims">40 × 40 cells</span>
+</header>
+
+<div class="layout">
+  <!-- ===================== CONTROLS ===================== -->
+  <section class="panel controls">
+    <div class="group">
+      <h2>Shape</h2>
+      <div class="chips" id="shape-chips"></div>
+    </div>
+
+    <div class="group">
+      <h2>Glyphs</h2>
+      <div class="row">
+        <label>Ramp (dark → bright)</label>
+        <input type="text" id="ramp" spellcheck="false" />
+      </div>
+      <div class="chips" id="ramp-chips" style="margin-top:8px"></div>
+      <div class="row" style="margin-top:13px">
+        <label>Cell size <span class="val" id="cell-v"></span></label>
+        <input type="range" id="cell" min="4" max="16" step="1" />
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Tone</h2>
+      <div class="row">
+        <label>Gamma <span class="val" id="gamma-v"></span></label>
+        <input type="range" id="gamma" min="0.4" max="1.6" step="0.02" />
+      </div>
+      <div class="row">
+        <label>Contrast <span class="val" id="contrast-v"></span></label>
+        <input type="range" id="contrast" min="0.6" max="2.4" step="0.05" />
+      </div>
+      <div class="switchrow">
+        <span>Tone shading (depth)</span>
+        <label class="switch"><input type="checkbox" id="toneShade" /><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Color</h2>
+      <div class="colorrow">
+        <div class="cell"><input type="color" id="ink" /><div class="cap">ink</div></div>
+        <div class="cell"><input type="color" id="blue" /><div class="cap">accent</div></div>
+        <div class="cell"><input type="color" id="background" /><div class="cap">bg</div></div>
+      </div>
+      <div class="switchrow" style="margin-top:12px">
+        <span>Transparent background</span>
+        <label class="switch"><input type="checkbox" id="transparent" checked /><span class="slider"></span></label>
+      </div>
+      <div class="row">
+        <label>Accent glyph fraction <span class="val" id="blueFrac-v"></span></label>
+        <input type="range" id="blueFrac" min="0" max="0.4" step="0.01" />
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Scale</h2>
+      <div class="row">
+        <label>Min glyph scale <span class="val" id="minScale-v"></span></label>
+        <input type="range" id="minScale" min="0.5" max="1.4" step="0.05" />
+      </div>
+      <div class="row">
+        <label>Max glyph scale <span class="val" id="maxScale-v"></span></label>
+        <input type="range" id="maxScale" min="1.0" max="2.4" step="0.05" />
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Motion</h2>
+      <div class="switchrow">
+        <span>Animate (shimmer)</span>
+        <label class="switch"><input type="checkbox" id="animate" checked /><span class="slider"></span></label>
+      </div>
+      <div class="row">
+        <label>Wave <span class="val" id="wave-v"></span></label>
+        <input type="range" id="wave" min="0" max="0.14" step="0.005" />
+      </div>
+      <div class="row">
+        <label>Twinkle <span class="val" id="twinkle-v"></span></label>
+        <input type="range" id="twinkle" min="0" max="0.14" step="0.005" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STAGE ===================== -->
+  <section class="panel stage">
+    <div class="stage-canvas-wrap">
+      <canvas id="stage" width="680" height="680" aria-label="Icon preview"></canvas>
+    </div>
+
+    <div class="sizes" id="sizes"></div>
+
+    <div class="actions">
+      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-dim)">
+        Export size
+        <select id="exportSize">
+          <option>64</option><option selected>128</option><option>256</option><option>512</option>
+        </select>
+      </label>
+      <button class="btn" id="btn-png">Export PNG</button>
+      <button class="btn ghost" id="btn-save">Save JSON preset</button>
+      <button class="btn ghost" id="btn-load">Load JSON</button>
+      <button class="btn ghost" id="btn-snippet">Copy embed snippet</button>
+    </div>
+  </section>
+
+  <!-- ===================== PRESETS ===================== -->
+  <section class="panel presets">
+    <h2>Style presets</h2>
+    <div class="preset-grid" id="preset-grid"></div>
+  </section>
+</div>
+
+<!-- JSON dialog -->
+<dialog id="json-dlg">
+  <div class="dlg-head"><h3 id="dlg-title">Preset JSON</h3><button class="x" data-close>&times;</button></div>
+  <div class="dlg-body">
+    <p id="dlg-desc"></p>
+    <textarea id="json-text" spellcheck="false"></textarea>
+    <div class="dlg-actions">
+      <button class="btn ghost" data-close>Close</button>
+      <button class="btn" id="dlg-primary"></button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   Icon ASCII Studio
+   Ports the acid-art transform from react/AsciiBackground.jsx (the CONFIG-driven
+   engine) and adapts it for small, square, transparent icons. A built-in vector
+   shape is drawn to an offscreen canvas, sampled into a coarse luminance grid,
+   and each cell gets one glyph chosen by brightness — with a small time-wobble
+   that makes the icon shimmer without moving.
+   ========================================================================== */
+
+/* ----- 0) Base grid resolution. The shape is sampled once into GRID×GRID
+   luminance cells; cell size only changes how big each glyph is drawn. ----- */
+const BASE = 340;               // stage canvas CSS size
+const RAMP_PRESETS = {
+  "Line strokes": " .·:;-=+|",
+  "Dots":         " .·°:•●",
+  "Classic":      " .:-=+*#%@",
+  "Blocks":       " ░▒▓█",
+  "Minimal":      " .:+",
+};
+
+/* ----- 1) Built-in shapes. Each draws a WHITE silhouette on an already-black
+   square of side S (the engine reads luminance, so white == ink). ----- */
+const PAD = 0.14;               // inset so shapes never touch the edge
+const SHAPES = {
+  circle(g, S){ const c=S/2, r=S*(0.5-PAD); g.beginPath(); g.arc(c,c,r,0,7); g.fill(); },
+  ring(g, S){ const c=S/2; g.beginPath(); g.arc(c,c,S*(0.5-PAD),0,7);
+    g.arc(c,c,S*(0.5-PAD)-S*0.13,0,7,true); g.fill("evenodd"); },
+  triangle(g, S){ const p=S*PAD, h=S-2*p; g.beginPath();
+    g.moveTo(S/2,p); g.lineTo(S-p,p+h); g.lineTo(p,p+h); g.closePath(); g.fill(); },
+  square(g, S){ const p=S*(PAD+0.02), r=S*0.06, w=S-2*p; roundRect(g,p,p,w,w,r); g.fill(); },
+  star(g, S){ star(g,S/2,S/2,5,S*(0.5-PAD),S*(0.5-PAD)*0.46); g.fill(); },
+  spark(g, S){ star(g,S/2,S/2,4,S*(0.5-PAD),S*(0.5-PAD)*0.30); g.fill(); },
+  hexagon(g, S){ poly(g,S/2,S/2,6,S*(0.5-PAD),-Math.PI/2); g.fill(); },
+  heart(g, S){ const c=S/2, u=S*(0.5-PAD); g.beginPath();
+    g.moveTo(c, c+u*0.82);
+    g.bezierCurveTo(c-u*1.15, c-u*0.15, c-u*0.55, c-u*0.98, c, c-u*0.35);
+    g.bezierCurveTo(c+u*0.55, c-u*0.98, c+u*1.15, c-u*0.15, c, c+u*0.82);
+    g.closePath(); g.fill(); },
+  arrow(g, S){ const p=S*PAD, m=S/2, w=S-2*p; g.beginPath();
+    g.moveTo(S-p,m); g.lineTo(m,p); g.lineTo(m,p+w*0.28); g.lineTo(p,p+w*0.28);
+    g.lineTo(p,p+w*0.72); g.lineTo(m,p+w*0.72); g.lineTo(m,S-p); g.closePath(); g.fill(); },
+  plus(g, S){ const p=S*(PAD+0.04), t=S*0.24, m=S/2; g.beginPath();
+    g.rect(m-t/2,p,t,S-2*p); g.rect(p,m-t/2,S-2*p,t); g.fill(); },
+  bolt(g, S){ const p=S*PAD, u=S-2*p; g.beginPath();
+    g.moveTo(p+u*0.58,p); g.lineTo(p+u*0.18,p+u*0.56); g.lineTo(p+u*0.46,p+u*0.56);
+    g.lineTo(p+u*0.34,u+p); g.lineTo(p+u*0.86,p+u*0.40); g.lineTo(p+u*0.54,p+u*0.40);
+    g.closePath(); g.fill(); },
+  smiley(g, S){ const c=S/2, r=S*(0.5-PAD);
+    g.beginPath(); g.arc(c,c,r,0,7); g.fill();                       // face
+    g.globalCompositeOperation="destination-out";                    // cut features
+    g.beginPath(); g.arc(c-r*0.36,c-r*0.18,r*0.12,0,7); g.fill();     // left eye
+    g.beginPath(); g.arc(c+r*0.36,c-r*0.18,r*0.12,0,7); g.fill();     // right eye
+    g.lineWidth=r*0.16; g.lineCap="round"; g.beginPath();
+    g.arc(c,c+r*0.06,r*0.5,0.15*Math.PI,0.85*Math.PI); g.stroke();    // smile
+    g.globalCompositeOperation="source-over"; },
+};
+const SHAPE_ORDER = ["circle","ring","square","triangle","hexagon","star","spark","plus","arrow","bolt","heart","smiley"];
+
+function roundRect(g,x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y);
+  g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
+  g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+function poly(g,cx,cy,n,r,a0){ g.beginPath();
+  for(let i=0;i<n;i++){ const a=a0+i*2*Math.PI/n; const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+    i?g.lineTo(x,y):g.moveTo(x,y); } g.closePath(); }
+function star(g,cx,cy,pts,ro,ri){ g.beginPath();
+  for(let i=0;i<pts*2;i++){ const r=i%2?ri:ro; const a=-Math.PI/2+i*Math.PI/pts;
+    const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r; i?g.lineTo(x,y):g.moveTo(x,y); } g.closePath(); }
+
+/* ----- 2) Config (the "JSON" you tune & export) ----- */
+const DEFAULTS = {
+  shape:"star", cell:8, ramp:" .·:;-=+|", gamma:0.82, contrast:1.15,
+  ink:"#c9cbd2", blue:"#CEE2FF", background:"#0a0a0b", transparent:true,
+  blueFrac:0.10, minScale:1.0, maxScale:1.55, toneShade:true,
+  animate:true, wave:0.045, twinkle:0.045, fps:24,
+};
+let CONFIG = {...DEFAULTS};
+
+const PRESETS = {
+  "Builder Blue": { shape:"star", ink:"#7f8896", blue:"#CEE2FF", blueFrac:0.14, ramp:" .·:;-=+|", toneShade:true, contrast:1.2 },
+  "Mono Line":    { shape:"hexagon", ink:"#d5d8df", blue:"#d5d8df", blueFrac:0, ramp:" .:-=+*", toneShade:false, contrast:1.4, cell:9 },
+  "Dense Dots":   { shape:"circle", ink:"#aeb4c0", blue:"#CEE2FF", blueFrac:0.2, ramp:" .·°:•●", toneShade:true, cell:6, contrast:1.1 },
+  "Sparse Ink":   { shape:"ring", ink:"#8a90a0", blue:"#CEE2FF", blueFrac:0.08, ramp:" .:+", toneShade:true, cell:10, contrast:1.6 },
+  "Terminal":     { shape:"arrow", ink:"#9fe0b0", blue:"#e8ffe8", blueFrac:0.06, ramp:" .:-=+*#%@", toneShade:false, background:"#050805", contrast:1.3 },
+  "Blocky":       { shape:"smiley", ink:"#c9cbd2", blue:"#CEE2FF", blueFrac:0.12, ramp:" ░▒▓█", toneShade:true, cell:9, contrast:1.0 },
+};
+
+/* ----- 3) Build a luminance grid from a shape ----- */
+function drawShapeCanvas(shape, S){
+  const cv = document.createElement("canvas"); cv.width=cv.height=S;
+  const g = cv.getContext("2d");
+  g.fillStyle="#000"; g.fillRect(0,0,S,S);
+  g.fillStyle="#fff"; g.strokeStyle="#fff";
+  (SHAPES[shape]||SHAPES.circle)(g,S);
+  return cv;
+}
+// Returns { n, lum:Float32Array(n*n), blue:Uint8Array } for an n×n grid.
+function buildGrid(cfg, n){
+  const src = drawShapeCanvas(cfg.shape, 300);
+  const off = document.createElement("canvas"); off.width=off.height=n;
+  const g = off.getContext("2d", { willReadFrequently:true });
+  g.imageSmoothingEnabled=true; g.imageSmoothingQuality="high";
+  g.drawImage(src,0,0,n,n);
+  const data = g.getImageData(0,0,n,n).data;
+  const lum = new Float32Array(n*n);
+  let maxL=0;
+  for(let i=0;i<lum.length;i++){ const o=i*4;
+    const v=(data[o]*0.299+data[o+1]*0.587+data[o+2]*0.114)/255; lum[i]=v; if(v>maxL)maxL=v; }
+  const inv = maxL>0?1/maxL:1, k=cfg.contrast, gm=cfg.gamma;
+  for(let i=0;i<lum.length;i++){
+    let v=lum[i]*inv;
+    v=(v-0.04)/0.96; if(v<0)v=0; else if(v>1)v=1;   // keep black black (from engine)
+    v=(v-0.5)*k+0.5; if(v<0)v=0; else if(v>1)v=1;   // studio contrast
+    lum[i]=Math.pow(v,gm);
+  }
+  const blue=new Uint8Array(n*n);
+  const rnd=mulberry32(0x1cd1 ^ hashStr(cfg.shape));
+  for(let i=0;i<blue.length;i++) blue[i] = rnd()<cfg.blueFrac ? 1 : 0;
+  return { n, lum, blue };
+}
+function mulberry32(a){ return function(){ a|=0; a=(a+0x6d2b79f5)|0;
+  let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t;
+  return ((t^(t>>>14))>>>0)/4294967296; }; }
+function hashStr(s){ let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0; return h; }
+
+/* ----- 4) Paint one frame. Shared by stage, thumbnails and export. ----- */
+function shadeHex(hex, f){                 // mix ink toward black by factor f∈[0,1]
+  const c=hexToRgb(hex);
+  const r=Math.round(c.r*f), g=Math.round(c.g*f), b=Math.round(c.b*f);
+  return "rgb("+r+","+g+","+b+")";
+}
+function hexToRgb(h){ h=h.replace("#",""); if(h.length===3) h=h.split("").map(x=>x+x).join("");
+  const n=parseInt(h,16); return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 }; }
+
+function renderIcon(ctx, grid, cfg, t, cellPx){
+  const n=grid.n, lum=grid.lum, blue=grid.blue;
+  const W=n*cellPx, H=n*cellPx;
+  if(cfg.transparent) ctx.clearRect(0,0,W,H);
+  else { ctx.fillStyle=cfg.background; ctx.fillRect(0,0,W,H); }
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  const ramp=(cfg.ramp&&cfg.ramp.length>1)?cfg.ramp:" .:+";
+  const nRamp=ramp.length, last=nRamp-1, blueMin=Math.max(1,last-2);
+  const wave=cfg.animate?cfg.wave:0, tw=(cfg.animate&&grid.phase)?cfg.twinkle:0;
+  const half=cellPx/2, mn=cfg.minScale, mx=cfg.maxScale;
+  for(let r=0;r<n;r++){
+    const y=r*cellPx+half, wa=r*0.09-t*1.6, wb=-r*0.13+t*1.1, base=r*n;
+    for(let c=0;c<n;c++){
+      const i=base+c; let v=lum[i];
+      if(wave) v+=wave*(Math.sin(c*0.16+wa)*0.6+Math.sin(c*0.07+wb)*0.4);
+      if(tw)   v+=tw*Math.sin(t*2.6+grid.phase[i]);
+      if(v<=0) continue; if(v>0.999)v=0.999;
+      let idx=(v*nRamp)|0; if(idx>last)idx=last; if(idx===0) continue;
+      const ch=ramp[idx];
+      const size=cellPx*(mn+v*(mx-mn));
+      ctx.font=size.toFixed(1)+'px '+MONO;
+      if(blue[i] && idx>=blueMin) ctx.fillStyle=cfg.blue;
+      else ctx.fillStyle=cfg.toneShade ? shadeHex(cfg.ink, 0.42+0.58*v) : cfg.ink;
+      ctx.fillText(ch, c*cellPx+half, y);
+    }
+  }
+}
+const MONO='ui-monospace,"SFMono-Regular",Menlo,monospace';
+
+function ensurePhase(grid){
+  if(grid.phase) return;
+  const p=new Float32Array(grid.n*grid.n);
+  for(let i=0;i<p.length;i++) p[i]=Math.random()*6.2831853;
+  grid.phase=p;
+}
+
+/* ==========================================================================
+   Studio wiring
+   ========================================================================== */
+const stage=document.getElementById("stage");
+const sctx=stage.getContext("2d");
+let GRID=null, gridN=0, running=false, rafId=0, startAt=0, lastFrame=0;
+const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function gridSize(){ return Math.max(8, Math.round(BASE/CONFIG.cell)); }
+
+function rebuild(){
+  gridN=gridSize();
+  GRID=buildGrid(CONFIG, gridN);
+  ensurePhase(GRID);
+  document.getElementById("tag-dims").textContent = gridN+" × "+gridN+" cells";
+  // Size the stage canvas to an exact multiple so cells land on pixels.
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const cellPx=BASE/gridN;
+  stage.style.width=stage.style.height=BASE+"px";
+  stage.width=stage.height=Math.round(BASE*dpr);
+  sctx.setTransform(dpr,0,0,dpr,0,0);
+  syncAnim();
+  if(!running) drawStage(0);
+  drawSizes();
+}
+
+function drawStage(t){ renderIcon(sctx, GRID, CONFIG, t, BASE/gridN); }
+
+function frame(now){
+  if(!running){ rafId=0; return; }
+  rafId=requestAnimationFrame(frame);
+  if(now-lastFrame < 1000/CONFIG.fps-1) return;
+  lastFrame=now;
+  drawStage((now-startAt)/1000);
+}
+function startAnim(){ if(running)return; running=true; startAt=performance.now(); lastFrame=0; rafId=requestAnimationFrame(frame); }
+function stopAnim(){ running=false; if(rafId)cancelAnimationFrame(rafId); rafId=0; }
+function syncAnim(){
+  if(!CONFIG.animate || reduced.matches){ stopAnim(); return; }
+  if(document.visibilityState==="visible") startAnim(); else stopAnim();
+}
+document.addEventListener("visibilitychange", syncAnim);
+
+/* ---- Multi-size preview strip (static frame, on light + dark chips) ---- */
+function drawSizes(){
+  const host=document.getElementById("sizes");
+  if(!host.dataset.built){
+    host.innerHTML="";
+    [64,96,128].forEach(px=>{
+      const cell=document.createElement("div"); cell.className="size-cell";
+      const dark=document.createElement("div"); dark.className="chipbg dark";
+      const cvD=document.createElement("canvas"); cvD.width=cvD.height=px; cvD.dataset.px=px; cvD.dataset.mode="d";
+      dark.appendChild(cvD);
+      const lbl=document.createElement("div"); lbl.className="lbl"; lbl.textContent=px+"px";
+      cell.appendChild(dark); cell.appendChild(lbl);
+      host.appendChild(cell);
+    });
+    host.dataset.built="1";
+  }
+  host.querySelectorAll("canvas").forEach(cv=>{
+    const px=+cv.dataset.px;
+    const g=cv.getContext("2d");
+    const cellPx=px/gridN;
+    renderIcon(g, GRID, CONFIG, 0, cellPx);
+  });
+}
+
+/* ---- Build controls ---- */
+function el(id){ return document.getElementById(id); }
+function buildShapeChips(){
+  const host=el("shape-chips");
+  SHAPE_ORDER.forEach(s=>{
+    const b=document.createElement("div"); b.className="chip"+(s===CONFIG.shape?" active":"");
+    b.textContent=s; b.dataset.shape=s;
+    b.onclick=()=>{ CONFIG.shape=s; host.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active",c.dataset.shape===s)); rebuild(); };
+    host.appendChild(b);
+  });
+}
+function buildRampChips(){
+  const host=el("ramp-chips");
+  Object.entries(RAMP_PRESETS).forEach(([name,val])=>{
+    const b=document.createElement("div"); b.className="chip"; b.textContent=name;
+    b.onclick=()=>{ CONFIG.ramp=val; el("ramp").value=val; rebuild(); };
+    host.appendChild(b);
+  });
+}
+
+const NUM_FIELDS=["cell","gamma","contrast","blueFrac","minScale","maxScale","wave","twinkle"];
+const BOOL_FIELDS=["toneShade","transparent","animate"];
+const COLOR_FIELDS=["ink","blue","background"];
+
+function syncControlsFromConfig(){
+  el("ramp").value=CONFIG.ramp;
+  NUM_FIELDS.forEach(f=>{ el(f).value=CONFIG[f]; const v=el(f+"-v"); if(v)v.textContent=(+CONFIG[f]).toFixed(f==="cell"?0:2); });
+  BOOL_FIELDS.forEach(f=> el(f).checked=!!CONFIG[f]);
+  COLOR_FIELDS.forEach(f=> el(f).value=CONFIG[f]);
+  document.querySelectorAll("#shape-chips .chip").forEach(c=>c.classList.toggle("active",c.dataset.shape===CONFIG.shape));
+}
+function wireControls(){
+  el("ramp").addEventListener("input", e=>{ CONFIG.ramp=e.target.value; rebuild(); });
+  NUM_FIELDS.forEach(f=>{
+    el(f).addEventListener("input", e=>{ CONFIG[f]=parseFloat(e.target.value);
+      const v=el(f+"-v"); if(v)v.textContent=(+CONFIG[f]).toFixed(f==="cell"?0:2); rebuild(); });
+  });
+  BOOL_FIELDS.forEach(f=> el(f).addEventListener("change", e=>{ CONFIG[f]=e.target.checked; rebuild(); }));
+  COLOR_FIELDS.forEach(f=> el(f).addEventListener("input", e=>{ CONFIG[f]=e.target.value; if(!running)drawStage(0); drawSizes(); }));
+  reduced.addEventListener&&reduced.addEventListener("change", syncAnim);
+}
+
+/* ---- Presets gallery ---- */
+function applyPreset(name){
+  CONFIG={...DEFAULTS, ...PRESETS[name]};
+  syncControlsFromConfig();
+  document.querySelectorAll("#preset-grid .preset").forEach(p=>p.classList.toggle("active",p.dataset.name===name));
+  rebuild();
+}
+function buildPresets(){
+  const host=el("preset-grid");
+  Object.keys(PRESETS).forEach(name=>{
+    const cfg={...DEFAULTS, ...PRESETS[name]};
+    const card=document.createElement("div"); card.className="preset"; card.dataset.name=name;
+    const cv=document.createElement("canvas"); const px=110; cv.width=cv.height=px;
+    const n=Math.max(8,Math.round(BASE/cfg.cell));
+    const grid=buildGrid(cfg,n);
+    renderIcon(cv.getContext("2d"), grid, {...cfg, transparent:false, animate:false}, 0, px/n);
+    const nm=document.createElement("div"); nm.className="name"; nm.textContent=name;
+    card.appendChild(cv); card.appendChild(nm);
+    card.onclick=()=>applyPreset(name);
+    host.appendChild(card);
+  });
+}
+
+/* ---- Outputs ---- */
+function toast(msg){ const t=el("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1600); }
+
+function exportPNG(){
+  const px=parseInt(el("exportSize").value,10);
+  const n=gridSize();
+  const grid=buildGrid(CONFIG,n); ensurePhase(grid);
+  const cv=document.createElement("canvas"); cv.width=cv.height=px;
+  renderIcon(cv.getContext("2d"), grid, CONFIG, 0, px/n);
+  const a=document.createElement("a");
+  a.download="asilo-icon-"+CONFIG.shape+"-"+px+".png";
+  a.href=cv.toDataURL("image/png"); a.click();
+  toast("Exported "+px+"px PNG");
+}
+
+const dlg=el("json-dlg");
+function openDialog(title, desc, text, primaryLabel, onPrimary){
+  el("dlg-title").textContent=title; el("dlg-desc").textContent=desc;
+  el("json-text").value=text;
+  const pb=el("dlg-primary"); pb.textContent=primaryLabel;
+  pb.onclick=()=>onPrimary(el("json-text").value);
+  dlg.showModal();
+}
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>dlg.close());
+
+function savePreset(){
+  const json=JSON.stringify(CONFIG,null,2);
+  openDialog("Save preset JSON",
+    "Your current style. Copy it, or download as a .json file to reuse or version.",
+    json, "Download .json", ()=>{
+      const blob=new Blob([json],{type:"application/json"});
+      const a=document.createElement("a"); a.download="asilo-icon-style.json";
+      a.href=URL.createObjectURL(blob); a.click(); URL.revokeObjectURL(a.href);
+      toast("Downloaded style JSON");
+    });
+  navigator.clipboard&&navigator.clipboard.writeText(json).then(()=>toast("Style JSON copied"),()=>{});
+}
+function loadPreset(){
+  openDialog("Load preset JSON",
+    "Paste a style JSON (from Save) and apply it.",
+    JSON.stringify(CONFIG,null,2), "Apply", (txt)=>{
+      try{ const obj=JSON.parse(txt); CONFIG={...DEFAULTS, ...obj};
+        syncControlsFromConfig(); rebuild(); dlg.close(); toast("Style applied"); }
+      catch(e){ toast("Invalid JSON"); }
+    });
+}
+
+/* ---- Embed snippet: bakes the current grid + a tiny renderer ---- */
+function buildSnippet(){
+  const n=gridSize();
+  const grid=buildGrid(CONFIG,n);
+  // Quantize luminance to hex nibble (0-15); pack the accent mask to bits.
+  let lumStr=""; for(let i=0;i<grid.lum.length;i++){ let q=Math.round(grid.lum[i]*15); if(q<0)q=0; if(q>15)q=15; lumStr+=q.toString(16); }
+  let blueStr=""; for(let i=0;i<grid.blue.length;i+=4){ let b=0; for(let k=0;k<4;k++) b|=(grid.blue[i+k]||0)<<k; blueStr+=b.toString(16); }
+  const cfg={ ink:CONFIG.ink, blue:CONFIG.blue, background:CONFIG.background, transparent:CONFIG.transparent,
+    ramp:CONFIG.ramp, minScale:CONFIG.minScale, maxScale:CONFIG.maxScale, toneShade:CONFIG.toneShade,
+    animate:CONFIG.animate, wave:CONFIG.wave, twinkle:CONFIG.twinkle, fps:CONFIG.fps };
+  const size=parseInt(el("exportSize").value,10);
+  const code =
+`<!-- Asilo acid-art icon · ${CONFIG.shape} · generated by Icon ASCII Studio -->
+<canvas class="asilo-icon" width="${size}" height="${size}" style="width:${size}px;height:${size}px"></canvas>
+<script>
+(function(){
+  var N=${n}, CFG=${JSON.stringify(cfg)};
+  var LUM=${JSON.stringify(lumStr)}, BLUE=${JSON.stringify(blueStr)};
+  var MONO='ui-monospace,"SFMono-Regular",Menlo,monospace';
+  var cv=document.currentScript.previousElementSibling, ctx=cv.getContext("2d");
+  var cell=cv.width/N, lum=new Float32Array(N*N), blue=new Uint8Array(N*N), ph=new Float32Array(N*N);
+  for(var i=0;i<lum.length;i++){ lum[i]=parseInt(LUM[i],16)/15; ph[i]=Math.random()*6.2832; }
+  for(var j=0;j<blue.length;j++){ var b=parseInt(BLUE[j>>2]||"0",16); blue[j]=(b>>(j&3))&1; }
+  function hx(h){h=h.replace("#","");if(h.length===3)h=h.split("").map(function(x){return x+x}).join("");var v=parseInt(h,16);return[(v>>16)&255,(v>>8)&255,v&255];}
+  function shade(h,f){var c=hx(h);return "rgb("+Math.round(c[0]*f)+","+Math.round(c[1]*f)+","+Math.round(c[2]*f)+")";}
+  var ramp=CFG.ramp, nR=ramp.length, last=nR-1, bMin=Math.max(1,last-2);
+  function paint(t){
+    if(CFG.transparent)ctx.clearRect(0,0,cv.width,cv.height);else{ctx.fillStyle=CFG.background;ctx.fillRect(0,0,cv.width,cv.height);}
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    var wave=CFG.animate?CFG.wave:0, tw=CFG.animate?CFG.twinkle:0, half=cell/2, mn=CFG.minScale, mx=CFG.maxScale;
+    for(var r=0;r<N;r++){var y=r*cell+half,wa=r*0.09-t*1.6,wb=-r*0.13+t*1.1,base=r*N;
+      for(var c=0;c<N;c++){var i=base+c,v=lum[i];
+        if(wave)v+=wave*(Math.sin(c*0.16+wa)*0.6+Math.sin(c*0.07+wb)*0.4);
+        if(tw)v+=tw*Math.sin(t*2.6+ph[i]);
+        if(v<=0)continue;if(v>0.999)v=0.999;var idx=(v*nR)|0;if(idx>last)idx=last;if(idx===0)continue;
+        ctx.font=(cell*(mn+v*(mx-mn))).toFixed(1)+"px "+MONO;
+        ctx.fillStyle=(blue[i]&&idx>=bMin)?CFG.blue:(CFG.toneShade?shade(CFG.ink,0.42+0.58*v):CFG.ink);
+        ctx.fillText(ramp[idx],c*cell+half,y);}}
+  }
+  if(!CFG.animate||matchMedia("(prefers-reduced-motion: reduce)").matches){paint(0);return;}
+  var t0=performance.now(),lf=0;
+  (function loop(now){requestAnimationFrame(loop);if(now-lf<1000/CFG.fps-1)return;lf=now;paint((now-t0)/1000);})(t0);
+})();
+<\/script>`;
+  openDialog("Embed snippet",
+    "Self-contained HTML+JS that reproduces this exact icon. Paste it into the landing page.",
+    code, "Copy", (txt)=>{ navigator.clipboard&&navigator.clipboard.writeText(txt).then(()=>toast("Snippet copied"),()=>toast("Copy failed")); });
+  navigator.clipboard&&navigator.clipboard.writeText(code).then(()=>toast("Snippet copied"),()=>{});
+}
+
+el("btn-png").onclick=exportPNG;
+el("btn-save").onclick=savePreset;
+el("btn-load").onclick=loadPreset;
+el("btn-snippet").onclick=buildSnippet;
+
+/* ---- Boot ---- */
+buildShapeChips(); buildRampChips(); buildPresets(); wireControls();
+syncControlsFromConfig(); rebuild();
+</script>
+</body>
+</html>
