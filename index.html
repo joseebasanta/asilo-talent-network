@@ -157,6 +157,38 @@
   </div>
 </section>
 
+<style>
+  .qeb{ background:var(--bg); padding:clamp(96px,14vw,168px) clamp(20px,7vw,100px); width:100% }
+  .qeb-inner{ max-width:840px; margin:0 auto; width:100%; display:flex; flex-direction:column;
+    align-items:center; gap:32px; text-align:center }
+  .qeb-titles{ display:flex; flex-direction:column; align-items:center; gap:16px; width:100% }
+  .qeb-eyebrow{ font-family:"Doto",system-ui,monospace; font-variation-settings:"wght" 900;
+    font-size:clamp(1.4rem,3.2vw,40px); line-height:1.2; letter-spacing:-.01em; color:var(--blue-800); margin:0 }
+  .qeb-content{ display:flex; flex-direction:column; align-items:center; gap:24px }
+  .qeb-title{ font-family:"Doto",system-ui,monospace; font-variation-settings:"wght" 900;
+    font-size:clamp(2.1rem,6vw,64px); line-height:1.02; letter-spacing:-.01em; color:var(--blue-500); margin:0; white-space:nowrap }
+  .qeb-p{ font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:400; font-size:18px;
+    line-height:1.5; letter-spacing:0; color:var(--blue-800); margin:0; max-width:770px }
+  .qeb-cta{ display:inline-flex; align-items:center; gap:8px; font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-weight:500; font-size:16px; line-height:24px; letter-spacing:-.011em; color:var(--blue-500);
+    text-decoration:none; border:1px solid var(--blue-500); border-radius:4px; padding:8px 16px; transition:background .15s }
+  .qeb-cta:hover{ background:rgba(206,226,255,.10) }
+  @media (max-width:680px){ .qeb-title{ white-space:normal } }
+</style>
+
+<section class="qeb" id="que-es-asilo">
+  <div class="qeb-inner">
+    <div class="qeb-titles">
+      <p class="qeb-eyebrow">ok, pero</p>
+      <div class="qeb-content">
+        <h2 class="qeb-title">¿Qué es ASILO BUILDER?</h2>
+        <p class="qeb-p">Es el laboratorio colectivo donde construimos juntos. El lugar para tomar una idea y convertirla en un producto, una línea de código, un diseño o una empresa real. Construir en público, aprender haciendo y hablar a través de lo que lanzamos al mundo.</p>
+      </div>
+    </div>
+    <a class="qeb-cta" href="#unete">UNETE A LA COMUNIDAD</a>
+  </div>
+</section>
+
 <script>
 /* ==========================================================================
    ASCII background — El Ávila + Caracas skyline rendered as breathing glyphs.
