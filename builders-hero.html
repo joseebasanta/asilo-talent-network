@@ -112,6 +112,50 @@
   </div>
 </div>
 
+<style>
+  :root{ --blue-100:#F0F6FF; }
+  .wwd{ background:var(--bg); padding:clamp(88px,13vw,160px) clamp(20px,7vw,100px); width:100% }
+  .wwd-inner{ max-width:1280px; margin:0 auto; width:100% }
+  .wwd-title{ font-family:"Doto",system-ui,monospace; font-variation-settings:"wght" 900;
+    font-size:clamp(2rem,4.2vw,48px); line-height:1.1667; letter-spacing:-.01em;
+    text-transform:uppercase; color:var(--blue-500); margin:0 }
+  .wwd-grid{ display:flex; border:1px solid var(--blue-800); margin-top:40px }
+  .wwd-col{ flex:1 1 0; min-width:0; padding:32px 24px; display:flex; flex-direction:column; gap:16px }
+  .wwd-col + .wwd-col{ border-left:1px solid var(--blue-800) }
+  .wwd-ico{ width:40px; height:40px; color:var(--blue-500); flex:none; display:block }
+  .wwd-h{ font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:500; font-size:24px;
+    line-height:32px; letter-spacing:-.015em; color:var(--blue-100); margin:0 }
+  .wwd-p{ font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:400; font-size:18px;
+    line-height:24px; letter-spacing:-.015em; color:var(--blue-800); margin:0 }
+  @media (max-width:760px){
+    .wwd-grid{ flex-direction:column }
+    .wwd-col + .wwd-col{ border-left:0; border-top:1px solid var(--blue-800) }
+  }
+</style>
+
+<section class="wwd" id="que-hacemos">
+  <div class="wwd-inner">
+    <h2 class="wwd-title">¿QUE HACEMOS?</h2>
+    <div class="wwd-grid">
+      <div class="wwd-col">
+        <svg class="wwd-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h10v2H7zM5 7h2v2H5zm12 0h2v2h-2zM3 9h18v2H3zM4 11h16v1H4zm2 1h12v1H6zm1 1h10v1H7zm1 1h8v1H8zm1 1h6v1H9zm1 1h4v1h-4zm1 1h2v1h-2z"/></svg>
+        <h3 class="wwd-h">Reunir el talento</h3>
+        <p class="wwd-p">Hacer visible a quienes construyen en Venezuela, dentro y fuera del país.</p>
+      </div>
+      <div class="wwd-col">
+        <svg class="wwd-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4h5v1H7zM6 5h1v3H6zm6 0h1v3h-1zM7 8h5v1H7z"/><path d="M4 12h11v1H4zM3 13h1v5H3zm12 0h1v5h-1zM4 18h11v1H4z"/><path d="M18 12h2v2h2v2h-2v2h-2v-2h-2v-2h2z"/></svg>
+        <h3 class="wwd-h">Dinamizar las relaciones</h3>
+        <p class="wwd-p">Networking con propósito entre developers, diseñadores y founders.</p>
+      </div>
+      <div class="wwd-col">
+        <svg class="wwd-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5h9v14H3z"/><path d="M13 5h8v1h-8zM13 18h8v1h-8zM13 5h1v14h-1zM20 5h1v14h-1z"/><path d="M15 8h4v1h-4zm0 3h4v1h-4zm0 3h4v1h-4z"/></svg>
+        <h3 class="wwd-h">Acelerar el aprendizaje</h3>
+        <p class="wwd-p">Dejar de construir solo. Comparte el proceso, no solo el resultado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
 /* ==========================================================================
    ASCII background — El Ávila + Caracas skyline rendered as breathing glyphs.
