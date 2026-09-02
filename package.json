@@ -1,0 +1,25 @@
+{
+  "name": "asilo-talent-network",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.5",
+    "astro": "^7.2.10"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/ts-plugin": "^1.10.11",
+    "@types/node": "^26.4.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
+  }
+}

@@ -1,0 +1,53 @@
+---
+import type { Project } from "../data/projects";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+const columns = [projects.slice(0, 5), projects.slice(5)];
+---
+
+<section class="prj" id="proyectos">
+  <div class="prj-inner">
+    <div class="prj-head">
+      <h2 class="prj-title">Proyectos</h2>
+      <div class="prj-nav">
+        <button class="prj-arrow" type="button" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 4h2v2h-2V4Zm-2 2h2v2h-2V6Zm-2 2h2v2h-2V8Zm-2 2h2v4H8v-4Zm2 4h2v2h-2v-2Zm2 2h2v2h-2v-2Zm2 2h2v2h-2v-2Z" /></svg>
+        </button>
+        <button class="prj-arrow" type="button" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 4h2v2H8V4Zm2 2h2v2h-2V6Zm2 2h2v2h-2V8Zm2 2h2v4h-2v-4Zm-2 4h2v2h-2v-2Zm-2 2h2v2h-2v-2Zm-2 2h2v2H8v-2Z" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="prj-list">
+      {columns.map((column) => (
+        <div class="prj-col">
+          {column.map((project) => (
+            <a class="prj-item" href={project.href}>
+              <div class="prj-thumb" aria-hidden="true"></div>
+              <div class="prj-body">
+                <div class="prj-td">
+                  <p class="prj-name">{project.title}</p>
+                  <p class="prj-desc">{project.description}</p>
+                  <p class="prj-author">{project.author}</p>
+                </div>
+                <div class="prj-tags">
+                  {project.tags.map((tag) => (
+                    <span class="prj-tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      ))}
+    </div>
+    <div class="prj-cta-row">
+      <p class="prj-cta-text">¿Estás construyendo algo y quieres mostrarlo en público?</p>
+      <a class="prj-cta" href="#unete">PROPON TU PROYECTO</a>
+    </div>
+  </div>
+</section>

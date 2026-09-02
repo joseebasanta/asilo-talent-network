@@ -1,0 +1,101 @@
+---
+import "../styles/global.css";
+import ProjectDirectory from "../components/ProjectDirectory.astro";
+import { projects } from "../data/projects";
+
+export const prerender = true;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#000a11" />
+    <meta
+      name="description"
+      content="La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos."
+    />
+    <title>Asilo Builders</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#contenido" aria-label="Asilo Builders, inicio">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Asilo Builders</span>
+        </a>
+        <nav class="nav-links" aria-label="Navegación principal">
+          <a href="#comunidad">Comunidad</a>
+          <a href="#proyectos">Proyectos</a>
+          <a href="#beneficios">Beneficios</a>
+          <a href="#talent">Talent Network</a>
+        </nav>
+        <a class="join" href="#unete">Unete <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+    <main id="contenido">
+      <div class="hero">
+        <canvas id="ascii" aria-hidden="true"></canvas>
+        <div class="hero-veil" aria-hidden="true"></div>
+        <section class="hero-content" aria-labelledby="hero-title">
+        <h1 id="hero-title">La comunidad de<br />builders de Venezuela</h1>
+        <p class="hero-sub">
+          Un espacio para developers, diseñadores y emprendedores que se conocen, se apoyan y construyen con IA juntos. Impulsado por Asilo Digital.
+        </p>
+        <div class="actions">
+          <a class="button button-primary" href="#unete">Unete a la comunidad <span aria-hidden="true">↗</span></a>
+          <a class="button button-secondary" href="#proyectos">Ver proyectos</a>
+        </div>
+        </section>
+      </div>
+
+    <span id="comunidad" class="fragment-alias" aria-hidden="true"></span>
+    <span id="beneficios" class="fragment-alias" aria-hidden="true"></span>
+    <section class="wwd" id="que-hacemos" aria-labelledby="wwd-title">
+      <div class="section-inner">
+        <h2 id="wwd-title">¿QUE HACEMOS?</h2>
+        <div class="wwd-grid">
+          <article class="wwd-item">
+            <span class="item-number" aria-hidden="true">01</span>
+            <h3>Reunir el talento</h3>
+            <p>Hacer visible a quienes construyen en Venezuela, dentro y fuera del país.</p>
+          </article>
+          <article class="wwd-item">
+            <span class="item-number" aria-hidden="true">02</span>
+            <h3>Dinamizar las relaciones</h3>
+            <p>Networking con propósito entre developers, diseñadores y founders.</p>
+          </article>
+          <article class="wwd-item">
+            <span class="item-number" aria-hidden="true">03</span>
+            <h3>Acelerar el aprendizaje</h3>
+            <p>Dejar de construir solo. Comparte el proceso, no solo el resultado.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <span id="talent" class="fragment-alias" aria-hidden="true"></span>
+    <span id="unete" class="fragment-alias" aria-hidden="true"></span>
+    <section class="qeb" id="que-es-asilo" aria-labelledby="qeb-title">
+      <div class="qeb-inner">
+        <div class="qeb-titles">
+          <p class="qeb-eyebrow">ok, pero</p>
+          <h2 id="qeb-title">¿Qué es ASILO BUILDER?</h2>
+        </div>
+        <p class="qeb-copy">
+          Es el laboratorio colectivo donde construimos juntos. El lugar para tomar una idea y convertirla en un producto, una línea de código, un diseño o una empresa real. Construir en público, aprender haciendo y hablar a través de lo que lanzamos al mundo.
+        </p>
+        <a class="qeb-cta" href="#unete">UNETE A LA COMUNIDAD <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+    <ProjectDirectory projects={projects} />
+    </main>
+    <script>
+      import "../scripts/ascii-background.js";
+      import "../scripts/ascii-cursor.js";
+    </script>
+  </body>
+</html>
