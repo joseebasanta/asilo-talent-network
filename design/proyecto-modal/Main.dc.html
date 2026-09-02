@@ -16,8 +16,11 @@
     .lbl { font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; color: #92A0B5; }
     .inp { width: 100%; background: #0a0a0b; border: 1px solid rgba(206,226,255,0.16); border-radius: 8px; padding: 12px 14px; color: #FAFCFF; font-family: inherit; font-size: 15px; line-height: 22px; }
     .inp::placeholder { color: #5c6470; }
-    .chip { font-size: 11px; line-height: 16px; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 500; padding: 7px 13px; border-radius: 999px; border: 1px solid rgba(206,226,255,0.18); color: #92A0B5; background: transparent; }
-    .chip.on { border-color: #CEE2FF; color: #CEE2FF; background: rgba(206,226,255,0.08); }
+    .catbox { scrollbar-width: thin; scrollbar-color: rgba(206,226,255,0.22) transparent; }
+    .catbox::-webkit-scrollbar { width: 9px; }
+    .catbox::-webkit-scrollbar-thumb { background: rgba(206,226,255,0.20); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+    .catbox::-webkit-scrollbar-track { background: transparent; }
+    .catrow:hover { background: rgba(206,226,255,0.05); }
     .btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: 0.02em; text-transform: uppercase; border-radius: 8px; padding: 11px 20px; cursor: pointer; font-family: inherit; }
     .btn-primary { background: #CEE2FF; color: #00121f; border: 1px solid #CEE2FF; }
     .btn-ghost { background: transparent; color: #92A0B5; border: 1px solid rgba(206,226,255,0.18); }
@@ -25,7 +28,7 @@
 </helmet>
 
 <!-- SCRIM -->
-<div style="min-height: 900px; background:
+<div style="min-height: 1060px; background:
      radial-gradient(120% 90% at 50% 0%, rgba(206,226,255,0.05) 0%, rgba(10,10,11,0) 55%),
      #050506;
      display: flex; align-items: center; justify-content: center; padding: 48px 24px;">
@@ -78,20 +81,25 @@
         </div>
       </div>
 
+      <!-- Category checklist -->
       <div style="display: flex; flex-direction: column; gap: 10px;">
-        <label class="lbl">Categoría</label>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-          <span class="chip on">Fintech</span>
-          <span class="chip">Marketplace</span>
-          <span class="chip">Edtech</span>
-          <span class="chip">Healthtech</span>
-          <span class="chip">Agritech</span>
-          <span class="chip">Logística</span>
-          <span class="chip">AI</span>
-          <span class="chip">SaaS</span>
-          <span class="chip">DevTools</span>
-          <span class="chip">Otro</span>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+          <label class="lbl">Categorías <span style="color: #E5787A; letter-spacing: 0;">*</span></label>
+          <span style="font-size: 11px; color: {{counterColor}}; letter-spacing: 0.04em;">{{count}} / {{max}} seleccionadas</span>
         </div>
+        <div class="catbox" style="background: #0a0a0b; border: 1px solid rgba(206,226,255,0.16); border-radius: 8px; max-height: 208px; overflow-y: auto; padding: 6px;">
+          <sc-for list="{{items}}" as="item" hint-placeholder-count="7">
+            <div class="catrow" onClick="{{item.toggle}}" style="display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 6px; cursor: pointer;">
+              <span style="flex: none; width: 18px; height: 18px; border-radius: 5px; border: 1px solid {{item.boxBorder}}; background: {{item.boxBg}}; display: inline-flex; align-items: center; justify-content: center;">
+                <sc-if value="{{item.checked}}" hint-placeholder-val="{{true}}">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.4 6.3l2.2 2.2 5-5.1" stroke="#00121f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </sc-if>
+              </span>
+              <span style="font-size: 14px; line-height: 20px; color: {{item.labelColor}};">{{item.label}}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size: 12px; color: #5c6470;">Selecciona hasta 3 categorías relevantes.</div>
       </div>
     </div>
 
@@ -106,5 +114,47 @@
   </div>
 </div>
 </x-dc>
+<script data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: ["c1"] };
+  }
+  renderVals() {
+    const CATS = [
+      "Inteligencia Artificial", "Fintech", "Marketplace", "Edtech",
+      "Healthtech", "Agritech", "Logística", "SaaS",
+      "DevTools & APIs", "Blockchain & Crypto", "Web3", "E-commerce",
+      "Business Analytics", "Data Science", "Ciberseguridad", "AR / VR",
+      "Gaming", "Hardware & IoT", "No-Code & CMS", "Productividad",
+      "Social & Comunidad", "Movilidad", "Energía & Clima", "Diseño & Creatividad"
+    ];
+    const max = 3;
+    const sel = this.state.selected || [];
+    const items = CATS.map((label, i) => {
+      const id = "c" + i;
+      const checked = sel.indexOf(id) !== -1;
+      return {
+        id, label, checked,
+        boxBorder: checked ? "#CEE2FF" : "rgba(206,226,255,0.30)",
+        boxBg: checked ? "#CEE2FF" : "transparent",
+        labelColor: checked ? "#FAFCFF" : "#aeb8c4",
+        toggle: () => {
+          const cur = this.state.selected || [];
+          let next;
+          if (cur.indexOf(id) !== -1) next = cur.filter((x) => x !== id);
+          else { if (cur.length >= max) return; next = cur.concat([id]); }
+          this.setState({ selected: next });
+        }
+      };
+    });
+    return {
+      items, max,
+      count: sel.length,
+      counterColor: sel.length >= max ? "#CEE2FF" : "#5c6470"
+    };
+  }
+}
+</script>
 </body>
 </html>
