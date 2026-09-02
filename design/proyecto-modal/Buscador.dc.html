@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Google+Sans+Flex:wght@400..700&display=swap');
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Google Sans Flex", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #CEE2FF; text-decoration: none; } a:hover { color: #FAFCFF; }
+    .doto { font-family: "Doto", system-ui, monospace; font-variation-settings: "wght" 900; text-transform: uppercase; }
+    .lbl { font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; color: #92A0B5; }
+    .inp { width: 100%; background: #0a0a0b; border: 1px solid rgba(206,226,255,0.16); border-radius: 8px; padding: 11px 14px; color: #FAFCFF; font-family: inherit; font-size: 14px; line-height: 22px; }
+    .inp::placeholder { color: #5c6470; }
+    .bare { background: transparent; border: none; outline: none; color: #FAFCFF; font-family: inherit; font-size: 14px; width: 100%; }
+    .bare::placeholder { color: #5c6470; }
+    .catbox { scrollbar-width: thin; scrollbar-color: rgba(206,226,255,0.22) transparent; }
+    .catbox::-webkit-scrollbar { width: 9px; }
+    .catbox::-webkit-scrollbar-thumb { background: rgba(206,226,255,0.20); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+    .catbox::-webkit-scrollbar-track { background: transparent; }
+    .catrow:hover { background: rgba(206,226,255,0.05); }
+    .btn { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: 0.02em; text-transform: uppercase; border-radius: 8px; padding: 11px 20px; cursor: pointer; font-family: inherit; }
+    .btn-primary { background: #CEE2FF; color: #00121f; border: 1px solid #CEE2FF; }
+    .btn-ghost { background: transparent; color: #92A0B5; border: 1px solid rgba(206,226,255,0.18); }
+    .selchip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border-radius: 999px; border: 1px solid #CEE2FF; background: rgba(206,226,255,0.10); color: #CEE2FF; font-size: 12px; }
+    .xbtn { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 999px; cursor: pointer; }
+    .xbtn:hover { background: rgba(206,226,255,0.18); }
+  </style>
+</helmet>
+
+<div style="min-height: 900px; background:
+     radial-gradient(120% 90% at 50% 0%, rgba(206,226,255,0.05) 0%, rgba(10,10,11,0) 55%),
+     #050506;
+     display: flex; align-items: flex-start; justify-content: center; padding: 48px 24px;">
+
+  <div style="width: 560px; max-width: 100%; background: #101216; border: 1px solid rgba(206,226,255,0.14); border-radius: 16px; box-shadow: 0 32px 80px rgba(0,0,0,0.6);">
+
+    <!-- Header -->
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 26px 28px 20px; border-bottom: 1px solid rgba(206,226,255,0.08);">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="doto" style="font-size: 24px; line-height: 24px; letter-spacing: -0.01em; color: #CEE2FF;">Agrega tu proyecto</div>
+        <div style="font-size: 14px; line-height: 20px; color: #92A0B5;">Súmalo al directorio de builders de Venezuela.</div>
+      </div>
+      <button aria-label="Cerrar" style="flex: none; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 1px solid rgba(206,226,255,0.16); border-radius: 8px; color: #92A0B5; cursor: pointer;">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div style="display: flex; flex-direction: column; gap: 18px; padding: 24px 28px 26px;">
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <label class="lbl">Nombre del proyecto</label>
+        <input class="inp" type="text" placeholder="Ej. Pana Pay">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <label class="lbl">Website URL</label>
+        <input class="inp" type="text" placeholder="https://miproyecto.com">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between;">
+          <label class="lbl">Descripción corta</label>
+          <span style="font-size: 11px; color: #5c6470; letter-spacing: 0.04em;">0 / 140</span>
+        </div>
+        <textarea class="inp" rows="2" placeholder="¿Qué construyes? En una frase." style="resize: none; min-height: 62px;"></textarea>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <label class="lbl">Fundadores</label>
+        <input class="inp" type="text" placeholder="Ej. Luis Fernández, Ana Rodríguez">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <label class="lbl">Logo o imagen</label>
+        <div style="display: flex; align-items: center; gap: 14px; background: #0a0a0b; border: 1px dashed rgba(206,226,255,0.22); border-radius: 8px; padding: 12px 14px;">
+          <div style="flex: none; width: 42px; height: 42px; border-radius: 8px; background: rgba(206,226,255,0.06); border: 1px solid rgba(206,226,255,0.14); display: inline-flex; align-items: center; justify-content: center; color: #CEE2FF;">
+            <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M10 13V4M10 4L6.5 7.5M10 4l3.5 3.5M4 13v2.5h12V13" stroke="currentColor" stroke-width="1.3" stroke-linecap="square"/></svg>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <div style="font-size: 13px; color: #FAFCFF;">Arrastra tu logo o <span style="color: #CEE2FF; text-decoration: underline;">súbelo</span></div>
+            <div style="font-size: 12px; color: #5c6470;">PNG o JPG · máx 1&nbsp;MB · cuadrado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category combobox -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+          <label class="lbl">Categorías <span style="color: #E5787A; letter-spacing: 0;">*</span></label>
+          <span style="font-size: 11px; color: {{counterColor}}; letter-spacing: 0.04em;">{{count}} / {{max}} seleccionadas</span>
+        </div>
+
+        <div style="position: relative;">
+          <!-- control -->
+          <div onClick="{{toggleOpen}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 7px; min-height: 46px; background: #0a0a0b; border: 1px solid {{controlBorder}}; border-radius: 8px; padding: 7px 10px; cursor: pointer;">
+            <sc-for list="{{chips}}" as="chip" hint-placeholder-count="1">
+              <span class="selchip">
+                {{chip.label}}
+                <span class="xbtn" onClick="{{chip.remove}}"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+              </span>
+            </sc-for>
+            <span style="flex: 1; min-width: 80px; font-size: 14px; color: #5c6470;">{{placeholder}}</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex: none; color: #92A0B5; transform: {{chevron}};"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- popover -->
+          <sc-if value="{{open}}" hint-placeholder-val="{{true}}">
+            <div style="position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 20; background: #14171c; border: 1px solid rgba(206,226,255,0.18); border-radius: 10px; box-shadow: 0 24px 60px rgba(0,0,0,0.6); overflow: hidden;">
+              <div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(206,226,255,0.08);">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex: none; color: #5c6470;"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                <input class="bare" type="text" placeholder="Buscar categoría…" onInput="{{search}}">
+              </div>
+              <div class="catbox" style="max-height: 220px; overflow-y: auto; padding: 6px;">
+                <sc-for list="{{items}}" as="item" hint-placeholder-count="6">
+                  <div class="catrow" onClick="{{item.toggle}}" style="display: flex; align-items: center; gap: 11px; padding: 8px 10px; border-radius: 6px; cursor: pointer;">
+                    <span style="flex: none; width: 18px; height: 18px; border-radius: 5px; border: 1px solid {{item.boxBorder}}; background: {{item.boxBg}}; display: inline-flex; align-items: center; justify-content: center;">
+                      <sc-if value="{{item.checked}}" hint-placeholder-val="{{true}}">
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.4 6.3l2.2 2.2 5-5.1" stroke="#00121f" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </sc-if>
+                    </span>
+                    <span style="font-size: 14px; line-height: 20px; color: {{item.labelColor}};">{{item.label}}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{noResults}}" hint-placeholder-val="{{false}}">
+                  <div style="padding: 14px 10px; font-size: 13px; color: #5c6470;">Sin resultados.</div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="font-size: 12px; color: #5c6470;">Selecciona hasta 3 categorías relevantes.</div>
+      </div>
+
+      <!-- Footer -->
+      <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding-top: 6px;">
+        <button class="btn btn-ghost">Cancelar</button>
+        <button class="btn btn-primary">
+          Agregar proyecto
+          <svg viewBox="0 0 17 17" fill="none" style="width: 1.05em; height: 1.05em;"><path d="M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: true, selected: ["c1"], query: "" };
+  }
+  renderVals() {
+    const CATS = [
+      "Inteligencia Artificial", "Fintech", "Marketplace", "Edtech",
+      "Healthtech", "Agritech", "Logística", "SaaS",
+      "DevTools & APIs", "Blockchain & Crypto", "Web3", "E-commerce",
+      "Business Analytics", "Data Science", "Ciberseguridad", "AR / VR",
+      "Gaming", "Hardware & IoT", "No-Code & CMS", "Productividad",
+      "Social & Comunidad", "Movilidad", "Energía & Clima", "Diseño & Creatividad"
+    ];
+    const max = 3;
+    const q = (this.state.query || "").trim().toLowerCase();
+    const sel = this.state.selected || [];
+    const open = !!this.state.open;
+    const idIndex = (id) => parseInt(id.slice(1), 10);
+
+    const chips = sel.map((id) => ({
+      label: CATS[idIndex(id)], id,
+      remove: (e) => {
+        if (e && e.stopPropagation) e.stopPropagation();
+        this.setState({ selected: (this.state.selected || []).filter((y) => y !== id) });
+      }
+    }));
+
+    const all = CATS.map((label, i) => ({ label, id: "c" + i }));
+    const shown = q ? all.filter((x) => x.label.toLowerCase().indexOf(q) !== -1) : all;
+    const items = shown.map((x) => {
+      const checked = sel.indexOf(x.id) !== -1;
+      return {
+        id: x.id, label: x.label, checked,
+        boxBorder: checked ? "#CEE2FF" : "rgba(206,226,255,0.30)",
+        boxBg: checked ? "#CEE2FF" : "transparent",
+        labelColor: checked ? "#FAFCFF" : "#aeb8c4",
+        toggle: () => {
+          const cur = this.state.selected || [];
+          let next;
+          if (cur.indexOf(x.id) !== -1) next = cur.filter((y) => y !== x.id);
+          else { if (cur.length >= max) return; next = cur.concat([x.id]); }
+          this.setState({ selected: next });
+        }
+      };
+    });
+
+    return {
+      chips, items, max, open,
+      count: sel.length,
+      counterColor: sel.length >= max ? "#CEE2FF" : "#5c6470",
+      controlBorder: open ? "rgba(206,226,255,0.45)" : "rgba(206,226,255,0.16)",
+      chevron: open ? "rotate(180deg)" : "rotate(0deg)",
+      placeholder: sel.length ? "Añadir otra…" : "Selecciona categorías…",
+      noResults: items.length === 0,
+      toggleOpen: () => this.setState({ open: !this.state.open }),
+      search: (e) => this.setState({ query: e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>

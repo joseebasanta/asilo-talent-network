@@ -1,13 +1,20 @@
 {
+  "pages": [
+    { "id": "page-1", "name": "Sin scroll" },
+    { "id": "page-2", "name": "Versiones previas" }
+  ],
   "artboards": [
-    { "file": "Main.dc.html",     "title": "V1 · Modal clásico",   "x": 0,    "y": 0,    "w": 780,  "h": 1060, "is_interactive": true },
-    { "file": "Version2.dc.html", "title": "V2 · Dos paneles",     "x": 860,  "y": 0,    "w": 1000, "h": 760 },
-    { "file": "Version3.dc.html", "title": "V3 · Logo protagonista","x": 1940, "y": 0,    "w": 900,  "h": 700 },
-    { "file": "Version4.dc.html", "title": "V4 · Terminal builder", "x": 0,    "y": 1200, "w": 800,  "h": 900 },
-    { "file": "Version5.dc.html", "title": "V5 · Cuadrícula densa",  "x": 880,  "y": 1200, "w": 900,  "h": 820 }
+    { "file": "Compacto.dc.html", "title": "Sin scroll · Dos columnas", "page": "page-1", "x": 0,    "y": 0,    "w": 980,  "h": 820, "is_interactive": true },
+    { "file": "Buscador.dc.html", "title": "Sin scroll · Buscador",     "page": "page-1", "x": 1060, "y": 0,    "w": 640,  "h": 900, "is_interactive": true },
+
+    { "file": "Main.dc.html",     "title": "V1 · Modal clásico",    "page": "page-2", "x": 0,    "y": 0,    "w": 780,  "h": 1060, "is_interactive": true },
+    { "file": "Version2.dc.html", "title": "V2 · Dos paneles",      "page": "page-2", "x": 860,  "y": 0,    "w": 1000, "h": 760 },
+    { "file": "Version3.dc.html", "title": "V3 · Logo protagonista","page": "page-2", "x": 1940, "y": 0,    "w": 900,  "h": 700 },
+    { "file": "Version4.dc.html", "title": "V4 · Terminal builder", "page": "page-2", "x": 0,    "y": 1200, "w": 800,  "h": 900 },
+    { "file": "Version5.dc.html", "title": "V5 · Cuadrícula densa", "page": "page-2", "x": 880,  "y": 1200, "w": 900,  "h": 820 }
   ],
   "annotations": [
-    { "id": "brief", "x": 0, "y": -150, "w": 560, "text": "Agrega tu proyecto — V1 con selector de categorías\nLista desplegable con checkboxes · máx. 3 seleccionadas · +20 categorías\nEstilo Asilo Builders: Doto + Google Sans Flex, fondo #0a0a0b, acento #CEE2FF" }
+    { "id": "brief", "page": "page-1", "x": 0, "y": -150, "w": 620, "text": "Modal que cabe en el viewport sin scroll — 2 enfoques\nDos columnas: campos a la izquierda, lista de categorías (con búsqueda) a la derecha, solo la lista scrollea.\nBuscador: una sola columna; las categorías viven en un desplegable con búsqueda y chips, así el formulario queda corto." }
   ],
-  "launch": { "view": "focused", "file": "Main.dc.html" }
+  "launch": { "view": "focused", "file": "Compacto.dc.html" }
 }
