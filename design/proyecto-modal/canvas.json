@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",     "title": "V1 · Modal clásico",   "x": 0,    "y": 0,    "w": 780,  "h": 900 },
+    { "file": "Version2.dc.html", "title": "V2 · Dos paneles",     "x": 860,  "y": 0,    "w": 1000, "h": 760 },
+    { "file": "Version3.dc.html", "title": "V3 · Logo protagonista","x": 1940, "y": 0,    "w": 900,  "h": 700 },
+    { "file": "Version4.dc.html", "title": "V4 · Terminal builder", "x": 0,    "y": 1020, "w": 800,  "h": 900 },
+    { "file": "Version5.dc.html", "title": "V5 · Cuadrícula densa",  "x": 880,  "y": 1020, "w": 900,  "h": 820 }
+  ],
+  "annotations": [
+    { "id": "brief", "x": 0, "y": -150, "w": 520, "text": "Agrega tu proyecto — 5 versiones del modal\nCampos: nombre · descripción corta · fundadores · logo/imagen · categoría\nEstilo Asilo Builders: Doto + Google Sans Flex, fondo #0a0a0b, acento #CEE2FF" }
+  ],
+  "launch": { "view": "canvas" }
+}

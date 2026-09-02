@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Google+Sans+Flex:wght@400..700&display=swap');
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Google Sans Flex", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #CEE2FF; text-decoration: none; } a:hover { color: #FAFCFF; }
+    .doto { font-family: "Doto", system-ui, monospace; font-variation-settings: "wght" 900; text-transform: uppercase; }
+    .mono { font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace; }
+    .tinp { width: 100%; background: #060607; border: 1px solid rgba(206,226,255,0.18); border-radius: 4px; padding: 11px 13px; color: #E8F2FF; font-family: ui-monospace, "SF Mono", "Menlo", monospace; font-size: 14px; line-height: 20px; }
+    .tinp::placeholder { color: #4d545e; }
+    .tog { font-family: ui-monospace, "SF Mono", "Menlo", monospace; font-size: 13px; letter-spacing: 0.01em; color: #6f7783; padding: 5px 9px; border: 1px solid transparent; border-radius: 4px; }
+    .tog.on { color: #CEE2FF; border-color: rgba(206,226,255,0.35); background: rgba(206,226,255,0.06); }
+    .tbtn { font-family: ui-monospace, "SF Mono", "Menlo", monospace; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; letter-spacing: 0.02em; border-radius: 4px; padding: 10px 16px; cursor: pointer; }
+    .tbtn-primary { background: #CEE2FF; color: #00121f; border: 1px solid #CEE2FF; }
+    .tbtn-ghost { background: transparent; color: #92A0B5; border: 1px solid rgba(206,226,255,0.2); }
+  </style>
+</helmet>
+
+<div style="min-height: 900px; background: #050506; display: flex; align-items: center; justify-content: center; padding: 44px 24px;
+     background-image: repeating-linear-gradient(0deg, rgba(206,226,255,0.02) 0, rgba(206,226,255,0.02) 1px, transparent 1px, transparent 4px);">
+
+  <!-- Terminal window -->
+  <div style="width: 600px; max-width: 100%; background: #0a0a0b; border: 1px solid rgba(206,226,255,0.2); border-radius: 8px; box-shadow: 0 32px 80px rgba(0,0,0,0.65); overflow: hidden;">
+
+    <!-- Title bar -->
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #0d0e11; border-bottom: 1px solid rgba(206,226,255,0.12);">
+      <div style="display: flex; gap: 6px;">
+        <span style="width: 9px; height: 9px; background: rgba(206,226,255,0.28);"></span>
+        <span style="width: 9px; height: 9px; background: rgba(206,226,255,0.18);"></span>
+        <span style="width: 9px; height: 9px; background: rgba(206,226,255,0.18);"></span>
+      </div>
+      <span class="mono" style="font-size: 12px; color: #6f7783; letter-spacing: 0.02em;">asilo@builders: ~/proyectos/nuevo</span>
+    </div>
+
+    <div style="padding: 22px 20px 6px;">
+      <!-- Prompt heading -->
+      <div class="mono" style="font-size: 13px; color: #717C8C; margin-bottom: 6px;">
+        <span style="color: #CEE2FF;">$</span> asilo add --proyecto
+      </div>
+      <div class="doto" style="font-size: 24px; line-height: 26px; color: #CEE2FF; margin-bottom: 22px;">Agrega tu proyecto</div>
+
+      <div style="display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <span class="mono" style="font-size: 12px; color: #92A0B5;"><span style="color:#CEE2FF;">&gt;</span> nombre_del_proyecto</span>
+          <input class="tinp" type="text" placeholder="pana-pay">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <span class="mono" style="font-size: 12px; color: #92A0B5;"><span style="color:#CEE2FF;">&gt;</span> descripcion_corta</span>
+          <textarea class="tinp" rows="2" placeholder="¿qué construyes? en una o dos frases." style="resize: none; min-height: 62px;"></textarea>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <span class="mono" style="font-size: 12px; color: #92A0B5;"><span style="color:#CEE2FF;">&gt;</span> fundadores</span>
+          <input class="tinp" type="text" placeholder="luis-fernandez, ana-rodriguez">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <span class="mono" style="font-size: 12px; color: #92A0B5;"><span style="color:#CEE2FF;">&gt;</span> logo --upload</span>
+          <div style="display: flex; align-items: center; gap: 12px; background: #060607; border: 1px dashed rgba(206,226,255,0.24); border-radius: 4px; padding: 13px;">
+            <div class="mono" style="font-size: 20px; color: #CEE2FF; line-height: 1;">[+]</div>
+            <div class="mono" style="font-size: 12px; color: #6f7783; line-height: 17px;"><span style="color:#CEE2FF; text-decoration: underline;">arrastra un archivo</span> · png svg jpg · máx 2mb</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 9px;">
+          <span class="mono" style="font-size: 12px; color: #92A0B5;"><span style="color:#CEE2FF;">&gt;</span> categoria --select</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span class="tog on">[x] fintech</span>
+            <span class="tog">[ ] marketplace</span>
+            <span class="tog">[ ] edtech</span>
+            <span class="tog">[ ] healthtech</span>
+            <span class="tog">[ ] agritech</span>
+            <span class="tog">[ ] ai</span>
+            <span class="tog">[ ] saas</span>
+            <span class="tog">[ ] otro</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 20px 22px;">
+      <span class="mono" style="font-size: 12px; color: #4d545e;">esc para cancelar</span>
+      <div style="display: flex; gap: 10px;">
+        <button class="tbtn tbtn-ghost">[ cancelar ]</button>
+        <button class="tbtn tbtn-primary">
+          enviar
+          <svg viewBox="0 0 17 17" fill="none" style="width: 1.05em; height: 1.05em;"><path d="M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
