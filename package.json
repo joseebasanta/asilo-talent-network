@@ -2,6 +2,7 @@
   "name": "asilo-talent-network",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.15.1",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -18,7 +19,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/ts-plugin": "^1.10.11",
-    "@types/node": "^26.4.1",
+    "@types/node": "26.4.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"
   }

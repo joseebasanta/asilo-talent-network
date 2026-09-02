@@ -1,4 +1,5 @@
 ---
+import "../styles/fonts.css";
 import "../styles/global.css";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { projects } from "../data/projects";
@@ -17,6 +18,8 @@ export const prerender = true;
       content="La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos."
     />
     <title>Asilo Builders</title>
+    <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
@@ -24,8 +27,7 @@ export const prerender = true;
     <header class="site-header">
       <div class="header-inner">
         <a class="brand" href="#contenido" aria-label="Asilo Builders, inicio">
-          <span class="brand-mark" aria-hidden="true"></span>
-          <span>Asilo Builders</span>
+          <img class="brand-mark" src="/logo-asilo-builders.svg" alt="" aria-hidden="true" />
         </a>
         <nav class="nav-links" aria-label="Navegación principal">
           <a href="#comunidad">Comunidad</a>
@@ -33,7 +35,12 @@ export const prerender = true;
           <a href="#beneficios">Beneficios</a>
           <a href="#talent">Talent Network</a>
         </nav>
-        <a class="join" href="#unete">Unete <span aria-hidden="true">↗</span></a>
+        <a class="join" href="#unete">
+          Unete
+          <svg class="pixel-icon" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+            <path d="M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z" fill="currentColor" />
+          </svg>
+        </a>
       </div>
     </header>
     <main id="contenido">
@@ -46,7 +53,12 @@ export const prerender = true;
           Un espacio para developers, diseñadores y emprendedores que se conocen, se apoyan y construyen con IA juntos. Impulsado por Asilo Digital.
         </p>
         <div class="actions">
-          <a class="button button-primary" href="#unete">Unete a la comunidad <span aria-hidden="true">↗</span></a>
+          <a class="button button-primary" href="#unete">
+            Unete a la comunidad
+            <svg class="pixel-icon" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+              <path d="M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z" fill="currentColor" />
+            </svg>
+          </a>
           <a class="button button-secondary" href="#proyectos">Ver proyectos</a>
         </div>
         </section>
@@ -59,17 +71,24 @@ export const prerender = true;
         <h2 id="wwd-title">¿QUE HACEMOS?</h2>
         <div class="wwd-grid">
           <article class="wwd-item">
-            <span class="item-number" aria-hidden="true">01</span>
+            <svg class="wwd-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M21.6641 38.3385H18.3307V35.0052H21.6641V38.3385ZM18.3307 35.0052H14.9974V31.6719H18.3307V35.0052ZM24.9974 35.0052H21.6641V31.6719H24.9974V35.0052ZM14.9974 31.6719H11.6641V28.3385H14.9974V31.6719ZM21.6641 31.6719H18.3307V26.6719H21.6641V31.6719ZM28.3307 31.6719H24.9974V28.3385H28.3307V31.6719ZM11.6641 28.3385H8.33073V25.0052H11.6641V28.3385ZM31.6641 28.3385H28.3307V25.0052H31.6641V28.3385ZM18.3307 26.6719H14.9974V21.6719H18.3307V26.6719ZM24.9974 26.6719H21.6641V21.6719H24.9974V26.6719ZM8.33073 25.0052H4.9974V21.6719H8.33073V25.0052ZM34.9974 25.0052H31.6641V21.6719H34.9974V25.0052ZM14.9974 15.0052H24.9974V10.0052H28.3307V15.0052H34.9974V11.6719H38.3307V21.6719H34.9974V18.3385H28.3307V21.6719H24.9974V18.3385H14.9974V21.6719H11.6641V18.3385H4.9974V21.6719H1.66406V11.6719H4.9974V15.0052H11.6641V10.0052H14.9974V15.0052ZM8.33073 11.6719H4.9974V8.33854H8.33073V11.6719ZM34.9974 11.6719H31.6641V8.33854H34.9974V11.6719ZM24.9974 10.0052H21.6641V5.00521H18.3307V10.0052H14.9974V5.00521H11.6641V1.67188H28.3307V5.00521H24.9974V10.0052ZM11.6641 8.33854H8.33073V5.00521H11.6641V8.33854ZM31.6641 8.33854H28.3307V5.00521H31.6641V8.33854Z" fill="currentColor" />
+            </svg>
             <h3>Reunir el talento</h3>
             <p>Hacer visible a quienes construyen en Venezuela, dentro y fuera del país.</p>
           </article>
           <article class="wwd-item">
-            <span class="item-number" aria-hidden="true">02</span>
+            <svg class="wwd-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M13.332 33.3359H23.332V36.6693H9.9987V33.3359H6.66536V30.0026H13.332V33.3359ZM33.332 30.0026H36.6654V33.3359H33.332V36.6693H29.9987V33.3359H26.6654V30.0026H29.9987V26.6693H33.332V30.0026ZM6.66536 30.0026H3.33203V10.0026H6.66536V30.0026ZM23.332 30.0026H13.332V26.6693H23.332V30.0026ZM23.332 23.3359H16.6654V20.0026H23.332V23.3359ZM36.6654 23.3359H33.332V10.0026H36.6654V23.3359ZM16.6654 20.0026H13.332V13.3359H16.6654V20.0026ZM26.6654 20.0026H23.332V13.3359H26.6654V20.0026ZM23.332 13.3359H16.6654V10.0026H23.332V13.3359ZM9.9987 10.0026H6.66536V6.66927H9.9987V10.0026ZM33.332 10.0026H29.9987V6.66927H33.332V10.0026ZM29.9987 6.66927H9.9987V3.33594H29.9987V6.66927Z" fill="currentColor" />
+            </svg>
             <h3>Dinamizar las relaciones</h3>
             <p>Networking con propósito entre developers, diseñadores y founders.</p>
           </article>
           <article class="wwd-item">
-            <span class="item-number" aria-hidden="true">03</span>
+            <svg class="wwd-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M0 5H21.6667V8.33333H0V5ZM0 31.6667H18.3333V35H0V31.6667Z" fill="currentColor" />
+              <path d="M18.3333 5H40V8.33333H18.3333V5ZM21.6667 31.6667H40V35H21.6667V31.6667ZM18.3333 8.33333H21.6667V38.3333H18.3333V8.33333ZM0 8.33333H3.33333V31.6667H0V8.33333ZM36.6667 8.33333H40V31.6667H36.6667V8.33333ZM25 11.6667H33.3333V15H25V11.6667ZM25 18.3333H33.3333V21.6667H25V18.3333ZM25 25H28.3333V28.3333H25V25Z" fill="currentColor" />
+            </svg>
             <h3>Acelerar el aprendizaje</h3>
             <p>Dejar de construir solo. Comparte el proceso, no solo el resultado.</p>
           </article>
@@ -88,7 +107,7 @@ export const prerender = true;
         <p class="qeb-copy">
           Es el laboratorio colectivo donde construimos juntos. El lugar para tomar una idea y convertirla en un producto, una línea de código, un diseño o una empresa real. Construir en público, aprender haciendo y hablar a través de lo que lanzamos al mundo.
         </p>
-        <a class="qeb-cta" href="#unete">UNETE A LA COMUNIDAD <span aria-hidden="true">↗</span></a>
+        <a class="qeb-cta" href="#unete">UNETE A LA COMUNIDAD</a>
       </div>
     </section>
     <ProjectDirectory projects={projects} />

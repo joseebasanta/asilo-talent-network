@@ -61,10 +61,7 @@ a { color: inherit; }
   gap: 1.25rem; max-width: 80rem; margin: 0 auto; padding: 1.35rem var(--gutter);
 }
 .brand { display: inline-flex; align-items: center; gap: .65rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
-.brand-mark {
-  width: .65rem; height: .65rem; border: 1px solid var(--blue-500);
-  box-shadow: 0 0 0 .25rem rgba(206, 226, 255, .16);
-}
+.brand-mark { height: 24px; width: auto; display: block; flex: none; }
 .nav-links { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2.1rem); }
 .nav-links a {
   color: var(--blue-700); font-size: .75rem; letter-spacing: .04em;
@@ -75,6 +72,7 @@ a { color: inherit; }
   display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
   transition: background .15s ease, border-color .15s ease, transform .15s ease;
 }
+.pixel-icon { width: 1.15em; height: 1.15em; flex: none; display: inline-block; vertical-align: middle; }
 .join {
   padding: .25rem 1rem; border: 1px solid var(--blue-500); border-radius: .5rem;
   color: var(--blue-500); font-size: 1rem; text-transform: uppercase; white-space: nowrap;
@@ -85,8 +83,9 @@ a { color: inherit; }
   padding: clamp(4.5rem, 15vh, 9.4rem) var(--gutter) 6rem;
 }
 h1, h2, h3, p { margin: 0; }
-h1, .wwd h2, .qeb h2, .qeb-eyebrow {
+h1, .wwd h2, .qeb h2, .qeb-eyebrow, .prj-title {
   font-family: var(--font-display); font-weight: 900; letter-spacing: -.01em;
+  font-variation-settings: "wght" 900;
 }
 h1 {
   max-width: 22ch; color: var(--blue-500); font-size: clamp(2.4rem, 5.4vw, 4rem);
@@ -108,11 +107,11 @@ h1 {
 .section-inner { max-width: 80rem; margin: 0 auto; }
 .wwd h2 { color: var(--blue-500); font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.16; }
 .wwd-grid { display: flex; margin-top: 2.5rem; border: 1px solid var(--blue-800); }
-.wwd-item { flex: 1 1 0; min-width: 0; padding: 2rem 1.5rem; }
+.wwd-item { display: flex; flex-direction: column; gap: 1rem; flex: 1 1 0; min-width: 0; padding: 2rem 1.5rem; }
 .wwd-item + .wwd-item { border-left: 1px solid var(--blue-800); }
-.item-number { display: block; color: var(--blue-500); font-size: .75rem; letter-spacing: .12em; }
-.wwd-item h3 { margin-top: 1rem; color: var(--blue-100); font-size: 1.5rem; line-height: 1.33; font-weight: 500; letter-spacing: -.015em; }
-.wwd-item p { margin-top: 1rem; color: var(--blue-800); font-size: 1.125rem; line-height: 1.35; }
+.wwd-icon { width: 40px; height: 40px; color: var(--blue-500); flex: none; display: block; }
+.wwd-item h3 { color: var(--blue-100); font-size: 1.5rem; line-height: 1.33; font-weight: 500; letter-spacing: -.015em; }
+.wwd-item p { color: var(--blue-800); font-size: 1.125rem; line-height: 1.35; }
 .qeb-inner { display: flex; flex-direction: column; align-items: center; gap: 2rem; max-width: 52.5rem; margin: 0 auto; text-align: center; }
 .qeb-titles { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
 .qeb-eyebrow { color: var(--blue-800); font-size: clamp(1.4rem, 3.2vw, 2.5rem); line-height: 1.2; }
@@ -124,8 +123,8 @@ h1 {
 .prj-inner { max-width: 80rem; margin: 0 auto; width: 100%; }
 .prj-head { display: flex; align-items: center; gap: 1rem; padding: 0 1rem; min-height: 3.5rem; }
 .prj-title {
-  flex: 1 1 0; min-width: 0; font-family: var(--font-display); font-weight: 900;
-  font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.1667; letter-spacing: -.01em;
+  flex: 1 1 0; min-width: 0;
+  font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.1667;
   text-transform: uppercase; color: var(--blue-500); margin: 0;
 }
 .prj-nav { display: flex; gap: 1.1875rem; align-items: center; flex: none; }
