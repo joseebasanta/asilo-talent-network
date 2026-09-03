@@ -195,8 +195,8 @@ h1 {
 .footer-linklist a:hover, .footer-linklist a:focus-visible { color: var(--blue-50); }
 .footer-arrow { width: 16px; height: 16px; display: block; flex: none; }
 .footer-social { display: flex; gap: .75rem; }
-.footer-social a { color: var(--blue-50); display: inline-flex; transition: color .15s ease; }
-.footer-social a:hover, .footer-social a:focus-visible { color: var(--blue-500); }
+.footer-social a { color: var(--blue-500); display: inline-flex; transition: color .15s ease; }
+.footer-social a:hover, .footer-social a:focus-visible { color: var(--blue-50); }
 .footer-social svg { width: 24px; height: 24px; display: block; }
 @media (max-width: 820px) {
   .prj-list { flex-direction: column; gap: 0; }
