@@ -1,14 +1,17 @@
 /* ==========================================================================
    Asilo — Typography tokens
    Source of truth: Figma "2 Feed Asilo Digital" type scale.
-   Families: Doto (titles) · Google Sans Flex (labels, paragraphs,
+   Families: Doto (titles) · IBM Plex Sans (labels, paragraphs,
    subheadings, docs). Both are free on Google Fonts.
+
+   Titles use Doto Black (900) at every step. Body text uses IBM Plex Sans
+   Regular (400) for paragraphs and Medium (500) for labels/subheadings/docs.
 
    Add this to your <head> to load the fonts:
 
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Google+Sans+Flex:wght@400..700&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 
    Sizes / line-heights are in px (1:1 with Figma). Letter-spacing is
    converted from Figma's % to em (e.g. -1.5% → -0.015em, 8% → 0.08em).
@@ -17,15 +20,15 @@
 :root {
   /* ---- Families ---- */
   --font-title: "Doto", system-ui, sans-serif;                                  /* titles */
-  --font-sans:  "Google Sans Flex", system-ui, -apple-system, "Segoe UI", sans-serif; /* everything else */
+  --font-sans:  "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; /* everything else */
 
-  /* ---- Titles (Doto) ---- size / line-height / tracking / weight ---- */
+  /* ---- Titles (Doto — Black 900 at every step) ---- size / line-height / tracking / weight ---- */
   --title-h1-size: 64px; --title-h1-line: 64px; --title-h1-tracking: -0.01em;  --title-h1-weight: 900;
-  --title-h2-size: 48px; --title-h2-line: 56px; --title-h2-tracking: -0.01em;  --title-h2-weight: 700;
-  --title-h3-size: 40px; --title-h3-line: 48px; --title-h3-tracking: -0.01em;  --title-h3-weight: 700;
-  --title-h4-size: 32px; --title-h4-line: 40px; --title-h4-tracking: -0.005em; --title-h4-weight: 700;
-  --title-h5-size: 24px; --title-h5-line: 32px; --title-h5-tracking: 0em;      --title-h5-weight: 700;
-  --title-h6-size: 20px; --title-h6-line: 28px; --title-h6-tracking: 0em;      --title-h6-weight: 600;
+  --title-h2-size: 48px; --title-h2-line: 56px; --title-h2-tracking: -0.01em;  --title-h2-weight: 900;
+  --title-h3-size: 40px; --title-h3-line: 48px; --title-h3-tracking: -0.01em;  --title-h3-weight: 900;
+  --title-h4-size: 32px; --title-h4-line: 40px; --title-h4-tracking: -0.005em; --title-h4-weight: 900;
+  --title-h5-size: 24px; --title-h5-line: 32px; --title-h5-tracking: 0em;      --title-h5-weight: 900;
+  --title-h6-size: 20px; --title-h6-line: 28px; --title-h6-tracking: 0em;      --title-h6-weight: 900;
 
   /* ---- Labels (Google Sans Flex) ---- */
   --label-xl-size: 24px; --label-xl-line: 32px; --label-xl-tracking: -0.015em; --label-xl-weight: 500;
@@ -56,13 +59,15 @@
    Utility classes — drop-in typography. e.g. <h1 class="title-h1">, <p class="para-md">
    ========================================================================== */
 
-/* Titles */
-.title-h1 { font-family: var(--font-title); font-weight: var(--title-h1-weight); font-size: var(--title-h1-size); line-height: var(--title-h1-line); letter-spacing: var(--title-h1-tracking); }
-.title-h2 { font-family: var(--font-title); font-weight: var(--title-h2-weight); font-size: var(--title-h2-size); line-height: var(--title-h2-line); letter-spacing: var(--title-h2-tracking); }
-.title-h3 { font-family: var(--font-title); font-weight: var(--title-h3-weight); font-size: var(--title-h3-size); line-height: var(--title-h3-line); letter-spacing: var(--title-h3-tracking); }
-.title-h4 { font-family: var(--font-title); font-weight: var(--title-h4-weight); font-size: var(--title-h4-size); line-height: var(--title-h4-line); letter-spacing: var(--title-h4-tracking); }
-.title-h5 { font-family: var(--font-title); font-weight: var(--title-h5-weight); font-size: var(--title-h5-size); line-height: var(--title-h5-line); letter-spacing: var(--title-h5-tracking); }
-.title-h6 { font-family: var(--font-title); font-weight: var(--title-h6-weight); font-size: var(--title-h6-size); line-height: var(--title-h6-line); letter-spacing: var(--title-h6-tracking); }
+/* Titles — Doto Black. The wght axis is set explicitly via
+   font-variation-settings because Chrome's font-weight→axis mapping does not
+   reliably reach Doto's heaviest master (its axis default sits at 900). */
+.title-h1 { font-family: var(--font-title); font-weight: var(--title-h1-weight); font-variation-settings: "wght" 900; font-size: var(--title-h1-size); line-height: var(--title-h1-line); letter-spacing: var(--title-h1-tracking); }
+.title-h2 { font-family: var(--font-title); font-weight: var(--title-h2-weight); font-variation-settings: "wght" 900; font-size: var(--title-h2-size); line-height: var(--title-h2-line); letter-spacing: var(--title-h2-tracking); }
+.title-h3 { font-family: var(--font-title); font-weight: var(--title-h3-weight); font-variation-settings: "wght" 900; font-size: var(--title-h3-size); line-height: var(--title-h3-line); letter-spacing: var(--title-h3-tracking); }
+.title-h4 { font-family: var(--font-title); font-weight: var(--title-h4-weight); font-variation-settings: "wght" 900; font-size: var(--title-h4-size); line-height: var(--title-h4-line); letter-spacing: var(--title-h4-tracking); }
+.title-h5 { font-family: var(--font-title); font-weight: var(--title-h5-weight); font-variation-settings: "wght" 900; font-size: var(--title-h5-size); line-height: var(--title-h5-line); letter-spacing: var(--title-h5-tracking); }
+.title-h6 { font-family: var(--font-title); font-weight: var(--title-h6-weight); font-variation-settings: "wght" 900; font-size: var(--title-h6-size); line-height: var(--title-h6-line); letter-spacing: var(--title-h6-tracking); }
 
 /* Labels */
 .label-xl { font-family: var(--font-sans); font-weight: var(--label-xl-weight); font-size: var(--label-xl-size); line-height: var(--label-xl-line); letter-spacing: var(--label-xl-tracking); }
