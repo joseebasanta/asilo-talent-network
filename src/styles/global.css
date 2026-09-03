@@ -318,6 +318,7 @@ h1 {
   transition-delay: calc(var(--reveal-i, 0) * 120ms);
   will-change: opacity, transform;
 }
+.js [data-reveal="fade"] { transform: none; }  /* opacity-only fade in */
 .js [data-reveal].is-in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1 !important; transform: none !important; transition: none; }
