@@ -11,6 +11,11 @@
   --blue-800: #717c8c;
   --line: #717c8c;
   --slate-900: #181b25;
+  /* Alpha tokens — sky (#cee2ff / --blue-500) at opacity steps, from Figma */
+  --sky-alpha-5: rgba(206, 226, 255, 0.05);
+  --sky-alpha-10: rgba(206, 226, 255, 0.10);
+  --sky-alpha-16: rgba(206, 226, 255, 0.16);
+  --sky-alpha-24: rgba(206, 226, 255, 0.24);
   --font-display: "Doto", ui-monospace, monospace;
   --font-text: "IBM Plex Sans", system-ui, sans-serif;
   --gutter: clamp(1.25rem, 7vw, 6.25rem);
