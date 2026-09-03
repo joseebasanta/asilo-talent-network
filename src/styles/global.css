@@ -139,7 +139,7 @@ h1 {
 .qeb-eyebrow { color: var(--blue-800); font-size: clamp(1.4rem, 3.2vw, 2.5rem); line-height: 1.2; }
 .qeb h2 { color: var(--blue-500); font-size: clamp(2.1rem, 6vw, 4rem); line-height: 1.02; }
 .qeb-copy { max-width: 48rem; color: var(--blue-800); font-size: 1.125rem; line-height: 1.5; }
-.qeb-cta { padding: .5rem 1rem; border: 1px solid var(--blue-500); border-radius: .25rem; color: var(--blue-500); font-size: 1rem; }
+.qeb-cta { padding: .5rem 1rem; border: 1px solid var(--blue-500); border-radius: .25rem; color: var(--blue-500); font-size: 1rem; line-height: 1.5; font-weight: 500; letter-spacing: -.011em; }
 
 .prj { width: 100%; background: var(--bg); padding: clamp(4.5rem, 10vw, 7rem) var(--gutter); }
 .prj-inner { max-width: 80rem; margin: 0 auto; width: 100%; }
