@@ -100,7 +100,7 @@ a { color: inherit; }
 .join:hover, .qeb-cta:hover { background: rgba(206, 226, 255, .1); }
 .hero-content {
   display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: calc(var(--header-h) + 120px) var(--gutter) 6rem;
+  padding: calc(var(--header-h) + 100px) var(--gutter) 6rem;
 }
 h1, h2, h3, p { margin: 0; }
 h1, .wwd h2, .qeb h2, .qeb-eyebrow, .prj-title, .cta-title, .footer-title {
