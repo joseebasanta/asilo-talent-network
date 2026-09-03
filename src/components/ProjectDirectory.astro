@@ -30,7 +30,10 @@ const columns = [projects.slice(0, 5), projects.slice(5)];
               <div class="prj-thumb" aria-hidden="true"></div>
               <div class="prj-body">
                 <div class="prj-td">
-                  <p class="prj-name">{project.title}</p>
+                  <div class="prj-name-row">
+                    <p class="prj-name">{project.title}</p>
+                    <svg class="prj-ext-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6" /><path d="M20 4 11 13" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>
+                  </div>
                   <p class="prj-desc">{project.description}</p>
                   <p class="prj-author">{project.author}</p>
                 </div>

@@ -171,7 +171,11 @@ h1 {
 .prj-list { display: flex; gap: 1.5rem; padding: 1rem 0; margin-top: 2rem; align-items: flex-start; }
 .prj-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
 .prj-item { display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem 1rem; border-radius: .25rem; text-decoration: none; color: inherit; }
-.prj-item:hover { background: rgba(255, 255, 255, .02); }
+.prj-item:hover, .prj-item:focus-visible { background: var(--slate-800); }
+.prj-name-row { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+.prj-name-row .prj-name { min-width: 0; flex: 0 1 auto; }
+.prj-ext-icon { width: 16px; height: 16px; flex: none; color: var(--blue-500); opacity: 0; transition: opacity .15s ease; }
+.prj-item:hover .prj-ext-icon, .prj-item:focus-visible .prj-ext-icon { opacity: 1; }
 .prj-thumb { width: 3.5rem; height: 3.5rem; flex: none; background: var(--slate-900); border-radius: .25rem; }
 .prj-body { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: .5rem; }
 .prj-td { display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
