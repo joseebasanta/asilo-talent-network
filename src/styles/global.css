@@ -103,9 +103,7 @@ h1 {
   display: inline-flex; align-items: center; gap: .25rem;
   margin-bottom: 1rem; padding: 0 .5rem; border-radius: .25rem;
 }
-.hero-eyebrow-brace {
-  color: var(--blue-500); font-size: 1.75rem; line-height: 1; font-weight: 300;
-}
+.hero-eyebrow-brace { width: 8px; height: 24px; display: block; flex: none; }
 .hero-eyebrow-count {
   font-family: var(--font-display); font-weight: 900; font-variation-settings: "wght" 900;
   color: var(--blue-500); font-size: 1.5rem; line-height: 2rem;
