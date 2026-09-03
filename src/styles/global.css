@@ -190,10 +190,8 @@ h1 {
 .prj-cta { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-text); font-weight: 500; font-size: 1rem; line-height: 1.5rem; letter-spacing: -.011em; color: var(--blue-500); text-decoration: none; background: none; cursor: pointer; border: 1px solid var(--blue-500); border-radius: .25rem; padding: .5rem 1rem; white-space: nowrap; transition: background .15s; }
 .prj-cta:hover { background: rgba(206, 226, 255, .1); }
 
-.cta { position: relative; overflow: hidden; width: 100%; background: var(--bg); padding: 192px var(--gutter); }
-.cta-ascii { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
-.cta::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(120% 110% at 50% 50%, rgba(0, 10, 17, .82), rgba(0, 10, 17, .5) 55%, rgba(0, 10, 17, .92)); }
-.cta-inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 48rem; margin: 0 auto; text-align: center; }
+.cta { width: 100%; background: var(--bg); padding: 192px var(--gutter); }
+.cta-inner { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 48rem; margin: 0 auto; text-align: center; }
 .cta-titles { display: flex; flex-direction: column; align-items: center; gap: .5rem; }
 .cta-title { color: var(--blue-500); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1667; text-transform: uppercase; }
 .cta-sub { max-width: 42rem; color: var(--blue-700); font-size: 1.125rem; line-height: 1.5; text-wrap: balance; }
