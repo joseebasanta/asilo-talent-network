@@ -1,7 +1,7 @@
 
 /* ==========================================================================
    ASCII cursor trail — a wake of flickering glyphs that follows the pointer
-   while it moves over the hero. Spawn rate is distance-based (slow = sparse,
+   across the whole page. Spawn rate is distance-based (slow = sparse,
    fast flicks = dense spray); particles re-roll their glyph as they age and
    die within ~0.8s. Idle cost is zero (the loop sleeps when empty).
    Disabled on touch/coarse pointers and under prefers-reduced-motion.
@@ -15,7 +15,6 @@
   var BLOCKS = "█▓▒░";
   var MAX_PARTICLES = 140;
 
-  var hero = document.querySelector(".hero"); // scope the trail to the hero
   var canvas = document.createElement("canvas");
   canvas.setAttribute("aria-hidden", "true");
   canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;";
@@ -33,11 +32,6 @@
 
   var particles = [], last = null, carry = 0, running = false, prevT = 0;
 
-  function inHero(x, y) {
-    if (!hero) return true;
-    var r = hero.getBoundingClientRect();
-    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
-  }
   function randChar() {
     if (Math.random() < 0.22) return BLOCKS[(Math.random() * BLOCKS.length) | 0];
     return GLYPHS[(Math.random() * GLYPHS.length) | 0];
@@ -61,7 +55,6 @@
   window.addEventListener("pointermove", function (e) {
     if (e.pointerType && e.pointerType !== "mouse") return;
     var x = e.clientX, y = e.clientY;
-    if (!inHero(x, y)) { last = null; return; }   // only trail inside the hero
     if (!last) { last = { x: x, y: y }; return; }
     var dx = x - last.x, dy = y - last.y;
     var dist = Math.hypot(dx, dy);
