@@ -6,16 +6,11 @@
    time-wobble so the picture shimmers without moving. Source here is drawn
    procedurally (no photo needed); swap SRC for an <img> to use a real photo.
    ========================================================================== */
-(function () {
+/* Each <canvas data-ascii-src="/path.png"> on the page gets its own instance.
+   The hero (#ascii) and any other section (e.g. the footer) reuse this same
+   renderer — only the source image differs. */
+function initAscii(canvas, IMAGE_SRC) {
   "use strict";
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     SWAP THE BACKGROUND IMAGE HERE ↓
-     Paste an image as a data URI (or a URL) between the quotes to render it
-     as ASCII. Leave "" to use the built-in procedural El Ávila + Caracas
-     skyline. Real photos self-adjust (histogram equalisation).
-     ═══════════════════════════════════════════════════════════════════════ */
-  var IMAGE_SRC = "/ascii-skyline.png";
 
   var CONFIG = {
     cell: 7,
@@ -35,7 +30,6 @@
     catch(e){ return dflt; }
   }
 
-  var canvas = document.getElementById("ascii");
   if (!canvas || !canvas.getContext) return;
   var ctx = canvas.getContext("2d");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -295,7 +289,7 @@
     }
   }
 
-  var running=false, rafId=0, startedAt=0, lastFrame=0;
+  var running=false, rafId=0, startedAt=0, lastFrame=0, inView=true;
   function frame(now){
     if(!running){ rafId=0; return; }
     rafId=requestAnimationFrame(frame);
@@ -307,7 +301,7 @@
   }
   function start(){ if(running||!layout()) return; running=true; startedAt=performance.now(); lastFrame=0; rafId=requestAnimationFrame(frame); }
   function stop(){ running=false; if(rafId) cancelAnimationFrame(rafId); rafId=0; }
-  function sync(){ if(reduced.matches){ stop(); if(layout()) paint(0,0); return; } if(document.visibilityState==="visible"&&canvas.clientWidth>0) start(); else stop(); }
+  function sync(){ if(reduced.matches){ stop(); if(layout()) paint(0,0); return; } if(document.visibilityState==="visible"&&inView&&canvas.clientWidth>0) start(); else stop(); }
 
   function boot(){
     if(layout()) paint(0,0);
@@ -315,6 +309,12 @@
     if(reduced.addEventListener) reduced.addEventListener("change", sync);
     var lastW=0,lastH=0;
     new ResizeObserver(function(){ var w=canvas.clientWidth,h=canvas.clientHeight; if(w===lastW&&h===lastH) return; lastW=w; lastH=h; if(!layout()) return; if(running) return; sync(); if(!running) paint(0,0); }).observe(canvas);
+    // Only animate while the canvas is on (or near) screen — keeps a second
+    // instance cheap when it's below the fold.
+    if("IntersectionObserver" in window){
+      inView=false;
+      new IntersectionObserver(function(entries){ inView=entries[0].isIntersecting; sync(); }, {rootMargin:"200px"}).observe(canvas);
+    }
     sync();
   }
 
@@ -335,4 +335,9 @@
     SRC = buildScene(1500, 760);
     boot();
   }
-})();
+}
+
+// Boot an instance for every canvas that declares a source image.
+document.querySelectorAll("canvas[data-ascii-src]").forEach(function (cv) {
+  initAscii(cv, cv.getAttribute("data-ascii-src") || "");
+});

@@ -44,7 +44,7 @@ export const prerender = true;
     </header>
     <main id="contenido">
       <div class="hero">
-        <canvas id="ascii" aria-hidden="true"></canvas>
+        <canvas id="ascii" data-ascii-src="/ascii-skyline.png" aria-hidden="true"></canvas>
         <div class="hero-veil" aria-hidden="true"></div>
         <section class="hero-content" aria-labelledby="hero-title">
         <p class="hero-eyebrow">
@@ -132,6 +132,7 @@ export const prerender = true;
     </section>
     </main>
     <footer class="site-footer">
+      <canvas class="footer-ascii" data-ascii-src="/bg-footer-ascci.png" aria-hidden="true"></canvas>
       <div class="footer-inner">
         <div class="footer-brand">
           <img class="footer-logo" src="/logo-asilo-builders.svg" alt="Asilo Builders" width="156" height="28" />
