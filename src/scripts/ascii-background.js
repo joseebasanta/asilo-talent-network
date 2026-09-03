@@ -21,7 +21,7 @@
     cell: 7,
     ramp: " .·:;-=+|",          // dots + line/vertical strokes only (no block glyphs)
     color: getVar("--ink", "#6f7075"),
-    blue: getVar("--accent-blue", "#0066FF"),
+    blue: getVar("--blue-500", "#CEE2FF"),
     blueFrac: 0.06,   // fraction of the *brightest* glyphs that glow blue
     background: getVar("--bg", "#0a0a0b"),
     gamma: 0.82,
