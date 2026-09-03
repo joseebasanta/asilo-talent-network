@@ -44,7 +44,7 @@ export const prerender = true;
     </header>
     <main id="contenido">
       <div class="hero">
-        <canvas id="ascii" aria-hidden="true"></canvas>
+        <canvas id="ascii" data-ascii-src="/ascii-skyline.png" aria-hidden="true"></canvas>
         <div class="hero-veil" aria-hidden="true"></div>
         <section class="hero-content" aria-labelledby="hero-title">
         <p class="hero-eyebrow">
@@ -117,6 +117,7 @@ export const prerender = true;
     </section>
     <ProjectDirectory projects={projects} />
     <section class="cta" id="unete-cta" aria-labelledby="cta-title">
+      <canvas class="cta-ascii" data-ascii-src="/bg-ascci-deja.png" aria-hidden="true"></canvas>
       <div class="cta-inner">
         <div class="cta-titles">
           <h2 id="cta-title" class="cta-title">Deja de construir solo</h2>
