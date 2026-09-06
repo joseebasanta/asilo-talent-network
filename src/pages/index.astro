@@ -2,9 +2,10 @@
 import "../styles/fonts.css";
 import "../styles/global.css";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
-import { projects } from "../data/projects";
+import { loadApprovedProjects } from "../lib/projects-loader";
 
-export const prerender = true;
+// Server-rendered: the directory reflects the sheet's current approval state.
+const projects = await loadApprovedProjects();
 ---
 
 <!doctype html>

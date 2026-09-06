@@ -14,6 +14,10 @@ export type Project = {
   description: string;
   author: string;
   tags: string[];
+  /** Public logo view URL, when the project submitted a logo. */
+  logoUrl?: string;
+  /** Local Pixelarticons fallback selected from the first project category. */
+  iconUrl?: string;
 };
 
 const placeholderProject: Project = {

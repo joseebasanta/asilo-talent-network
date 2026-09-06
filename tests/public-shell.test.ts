@@ -30,14 +30,14 @@ describe("public shell", () => {
   it("preserves the live navigation and institutional sections", async () => {
     const html = await renderShell();
 
-    for (const label of ["Comunidad", "Proyectos", "Beneficios", "Talent Network", "Unete"]) {
+    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Unete"]) {
       expect(html).toContain(label);
     }
     expect(html).toContain("¿QUE HACEMOS?");
     expect(html).toContain("Reunir el talento");
     expect(html).toContain("Dinamizar las relaciones");
     expect(html).toContain("Acelerar el aprendizaje");
-    expect(html).toContain("¿Qué es ASILO BUILDER?");
+    expect(html).toContain("¿Qué es ASILO Builders?");
   });
 
   it("declares dark theme metadata and a static favicon", async () => {
@@ -51,7 +51,7 @@ describe("public shell", () => {
     const html = await renderShell();
 
     expect(html).toMatch(/<img\b[^>]*class=["']brand-mark["'][^>]*src=["']\/logo-asilo-builders\.svg["']/);
-    expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(2);
+    expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(3);
     expect(html).not.toContain("↗");
   });
 
@@ -102,19 +102,32 @@ describe("Proyectos directory (slice 1b-b)", () => {
   it("renders ten placeholder cards with the live copy and CTA", async () => {
     const html = await renderShell();
 
-    expect(html).toContain('class="prj-title">Proyectos<');
+    expect(html).toContain('class="prj-title" data-decode>Proyectos');
     expect((html.match(/class="prj-item"/g) ?? []).length).toBe(10);
     expect((html.match(/Directorio de Builders/g) ?? []).length).toBe(10);
-    expect((html.match(/href="#"/g) ?? []).length).toBe(10);
-    expect(html).toContain("PROPON TU PROYECTO");
-    expect(html).toContain("¿Estás construyendo algo y quieres mostrarlo en público?");
+    expect((html.match(/<a\b[^>]*class=["']prj-item["'][^>]*href="#"/g) ?? []).length).toBe(10);
+    expect(html).toContain("AGREGA TU PROYECTO");
+    expect(html).toContain("¿Eres parte de la comunidad y quieres sumarte al directorio?");
   });
 
-  it("keeps the directory static: no external URLs and no invented image assets", async () => {
+  it("keeps the directory static: no external URLs and local placeholder assets", async () => {
     const html = await renderShell();
 
     expect(html).not.toMatch(/href=["']https?:\/\//);
-    expect((html.match(/<img\b/g) ?? []).length).toBe(1);
+    // 4 static images + 10 project placeholders + modal preview and upload icon.
+    expect((html.match(/<img\b/g) ?? []).length).toBe(16);
+    expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(10);
     expect(html).toContain('src="/logo-asilo-builders.svg"');
+  });
+});
+
+describe("CTA heading", () => {
+  it("keeps decode text plain and lets mobile CSS control its two-line wrap", () => {
+    const page = readFileSync(new URL("../src/pages/index.astro", import.meta.url), "utf8");
+    const styles = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
+
+    expect(page).toContain('data-decode>Deja de construir solo</h2>');
+    expect(page).not.toContain("cta-title-mobile-break");
+    expect(styles).toContain(".cta-title { max-width: 16ch; margin-inline: auto; }");
   });
 });

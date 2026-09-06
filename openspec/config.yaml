@@ -1,0 +1,113 @@
+# SDD project context for the migrate-astro-appwrite change.
+# This file records discovered repository facts; it does not provision services.
+schema_version: 1
+
+project:
+  name: asilo-talent-network
+  repository_root: /home/quiarom/Documents/Chamba/asilo-talent-network-worktrees/astro-appwrite-migration
+  implementation_branch: feat/astro-appwrite-migration
+  live_source_revision: a9e0924 # origin/revision-one; includes typography commit 591f61c
+  purpose: Bilingual landing-page migration target for Venezuelan tech talent and companies hiring in Venezuela.
+
+artifact_store:
+  mode: openspec
+  canonical_path: openspec/
+
+sdd:
+  strict_tdd: true
+  execution_mode: auto
+  delivery_strategy: ask-on-risk
+  review_changed_lines_budget: 400
+  selected_change: migrate-astro-appwrite
+  phase_rules:
+    init:
+      - Detect existing stack, conventions, and verification capabilities only.
+      - Do not scaffold Astro, install dependencies, configure Appwrite, deploy, or implement product work.
+    planning:
+      - Preserve the live static page's visual direction, accessibility, and reduced-motion behavior unless an approved artifact states otherwise.
+      - Treat legacy bilingual/data-rendered features and placeholder CTA destinations as migration inputs, not live-page behavior, unless the migration explicitly reconnects them.
+    apply:
+      - Follow strict TDD when an automated runner is introduced by the approved migration plan.
+      - Keep Astro and Appwrite setup, data modeling, authentication, and deployment configuration within approved change artifacts.
+    verify:
+      - Run declared automated checks when they exist; otherwise record manual browser checks applicable to the live static page.
+
+current_stack:
+  site_type: static landing page
+  runtime:
+    - Browser-native HTML, CSS, and JavaScript
+  entrypoint: index.html
+  source_files:
+    live_markup_and_styles: index.html # self-contained current page with inline styles/scripts
+    typography_tokens: typography.css
+    legacy_styles: styles.css
+    legacy_interactions: script.js
+    legacy_content_data: data.js
+  dependencies: []
+  build_tool: none
+  package_manifest: none
+  deployment_configuration: none
+  optional_reusable_component:
+    path: react/
+    technology: React 18+ with Tailwind CSS expected by the component
+    status: standalone, not wired into the static landing page
+  legacy_code_status:
+    - data.js remains in the repository and defines MEMBERS and PROJECTS.
+    - script.js retains the data-driven members carousel, projects grid, and Venezuela-map renderers.
+    - The live index.html does not load or wire those legacy files or their targets.
+    - The live '#proyectos' section is hardcoded static markup; it has no '#projects-grid'.
+    - The legacy '#members-track', '#ve-map', '#map-tooltip', and '#map-cities' targets are absent from the live page.
+
+conventions:
+  language:
+    live_page: Spanish static content
+    legacy_supported: [es, en]
+    legacy_mechanism: data-es/data-en attributes, data rendering, and localStorage key asilo-lang in script.js
+  content:
+    live_projects: hardcoded project cards in index.html '#proyectos'
+    legacy_builders_and_projects: data.js
+    legacy_cta_destinations: script.js APPLY_URL and COMPANY_URL constants
+  design:
+    direction: dark editorial landing page
+    typography: IBM Plex Sans for body text and Doto Black (900) for titles
+    typography_evidence: typography.css and the live page's inline font/style declarations; introduced in commit 591f61c
+    tokens: CSS custom properties appear in the live inline styles and retained styles.css
+  behavior:
+    live_page: inline browser-native JavaScript for the hero visual effect
+    legacy_behavior: IntersectionObserver reveal, ES/EN toggle, data rendering, and generated SVG map remain in script.js but are not wired into index.html
+  safety:
+    - Preserve escaping and external-link noopener handling if legacy renderers are reused.
+    - Preserve accessibility attributes and reduced-motion behavior when migrating interactive effects.
+
+testing:
+  strict_tdd: true
+  automated_runner: null
+  automated_commands:
+    install: null
+    build: null
+    test: null
+    lint: null
+    typecheck: null
+  detected_capabilities:
+    - No package manifest, lockfile, build configuration, test configuration, lint configuration, or typecheck configuration is tracked.
+    - The current site can be served directly as static files; browser-based smoke and accessibility checks are the available baseline verification.
+  manual_baseline_checks:
+    - Open index.html through a local static HTTP server in a modern browser and check for console errors.
+    - Verify the live hero visual effect loads and respects reduced-motion expectations where applicable.
+    - Verify the live '#proyectos' section renders its hardcoded two-column project list, visible navigation buttons, and proposal CTA without expecting a dynamic '#projects-grid'.
+    - Verify the live page typography renders body text in IBM Plex Sans and titles in Doto Black.
+    - Verify the current static page remains responsive and keyboard-accessible; do not treat absent legacy carousel, map, or projects-grid containers as failed checks.
+
+migration_context:
+  target: Migrate the current static site to Astro with Appwrite integration.
+  boundaries_not_yet_decided:
+    - Astro project structure and rendering strategy.
+    - Appwrite project, endpoint, schema, permissions, and authentication model.
+    - Which live hardcoded and legacy static data becomes Appwrite-managed content.
+    - Whether and how legacy data-driven members, projects, map, and bilingual behavior are reintroduced.
+    - Deployment host and environment-variable strategy.
+  non_goals_for_init:
+    - Scaffold or install Astro.
+    - Link, initialize, or configure an Appwrite project.
+    - Create Appwrite resources or deployments.
+    - Modify application source or static assets.
