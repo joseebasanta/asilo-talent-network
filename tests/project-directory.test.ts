@@ -38,7 +38,8 @@ describe("ProjectDirectory", () => {
 
     expect(component).toContain('class="modal-success"');
     expect(component).toContain("Tu proyecto ya está en revisión</h2>");
-    expect(component).toContain("Gracias por sumarte.<br />Revisaremos el proyecto y aparecerá en el directorio lo antes posible.");
+    expect(component).toContain("Gracias por sumarte.");
+    expect(component).not.toContain("Revisaremos el proyecto");
     expect(component).toContain("Agregar otro proyecto");
     expect(component).toContain('data-success-view');
     expect(component).toContain('data-submit-another');
