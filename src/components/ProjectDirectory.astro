@@ -187,11 +187,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     </footer>
     </div>
     <section class="modal-success" data-success-view hidden aria-labelledby="modal-success-title">
-      <div class="modal-success-check" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.2 4.2L19.5 6" /></svg>
-      </div>
+      <img class="modal-success-check" src="/check-thanks.svg" width="74" height="40" alt="" />
       <div class="modal-success-copy">
-        <h2 id="modal-success-title" tabindex="-1">Tu proyecto ya está en revisión</h2>
+        <h2 id="modal-success-title" tabindex="-1">
+          <span>Tu proyecto ya está</span>
+          <span>en revisión</span>
+        </h2>
         <p>Gracias por sumarte.</p>
       </div>
       <div class="modal-success-actions">

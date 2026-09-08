@@ -37,8 +37,10 @@ describe("ProjectDirectory", () => {
     );
 
     expect(component).toContain('class="modal-success"');
-    expect(component).toContain("Tu proyecto ya está en revisión</h2>");
+    expect(component).toContain("<span>Tu proyecto ya está</span>");
+    expect(component).toContain("<span>en revisión</span>");
     expect(component).toContain("Gracias por sumarte.");
+    expect(component).toContain('src="/check-thanks.svg"');
     expect(component).not.toContain("Revisaremos el proyecto");
     expect(component).toContain("Agregar otro proyecto");
     expect(component).toContain('data-success-view');
@@ -68,6 +70,8 @@ describe("ProjectDirectory", () => {
     expect(styles).toContain(".prj-col { flex: 0 0 auto; width: 100%; }");
     expect(styles).toContain('.modal-card > [data-form-view][hidden] { display: none; }');
     expect(styles).toContain("@keyframes modal-confetti-fall");
+    expect(styles).toContain('.modal-success-check { width: 74px; height: 40px; }');
+    expect(styles).toContain('font-size: clamp(2rem, 5vw, 2.75rem)');
   });
 
   it("refreshes the directory in the background without reloading the page", () => {

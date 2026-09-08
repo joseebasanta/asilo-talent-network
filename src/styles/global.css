@@ -283,6 +283,7 @@ h1 {
 
 /* ── Project modal form ─────────────────────────────────────────────── */
 .modal { padding: 0; border: 0; background: transparent; width: min(560px, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); color: var(--fg); overflow: visible; }
+.modal:has(.modal-success:not([hidden])) { width: min(660px, calc(100vw - 2rem)); }
 .modal::backdrop { background: rgba(0, 10, 17, .72); backdrop-filter: blur(2px); }
 .modal-card { display: flex; flex-direction: column; max-height: calc(100dvh - 2rem); background: var(--bg); border: 1px solid var(--sky-alpha-16); border-radius: 16px; overflow: hidden; }
 .modal-card > [data-form-view] { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; }
@@ -363,19 +364,19 @@ h1 {
 .modal-submit { background: var(--blue-500); border: 0; color: var(--slate-900); transition: background .15s ease; }
 .modal-submit:hover, .modal-submit:focus-visible { background: #dcebff; }
 
-.modal-success { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: min(520px, calc(100dvh - 2rem)); padding: 40px 28px 32px; overflow: hidden; text-align: center; }
+.modal-success { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: min(620px, calc(100dvh - 2rem)); padding: 64px 36px 48px; overflow: hidden; text-align: center; }
 .modal-success[hidden] { display: none; }
-.modal-success-check { width: 88px; height: 88px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--blue-500); color: var(--slate-900); box-shadow: 0 16px 40px rgba(206, 226, 255, .2); }
-.modal-success-check svg { width: 42px; height: 42px; }
-.modal-success-copy { display: flex; flex-direction: column; gap: 10px; max-width: 28rem; margin-top: 28px; }
-.modal-success-copy h2 { margin: 0; color: var(--blue-50); font-family: var(--font-display); font-size: clamp(1.75rem, 6vw, 2.25rem); font-weight: 900; font-variation-settings: "wght" 900; line-height: 1.08; text-transform: uppercase; }
+.modal-success-check { width: 74px; height: 40px; }
+.modal-success-copy { display: flex; flex-direction: column; gap: 12px; max-width: 36rem; margin-top: 68px; }
+.modal-success-copy h2 { margin: 0; color: var(--blue-50); font-family: var(--font-display); font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 900; font-variation-settings: "wght" 900; line-height: 1; letter-spacing: -.01em; text-transform: uppercase; }
+.modal-success-copy h2 span { display: block; }
 .modal-success-copy p { margin: 0; color: var(--blue-700); font-size: 15px; line-height: 22px; }
-.modal-success-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 32px; }
-.modal-success-secondary, .modal-success-done { min-height: 44px; border-radius: 6px; font-family: var(--font-text); font-size: 15px; font-weight: 500; letter-spacing: -.011em; cursor: pointer; }
-.modal-success-secondary { border: 1px solid var(--sky-alpha-24); background: transparent; color: var(--blue-500); }
-.modal-success-done { border: 0; background: var(--blue-500); color: var(--slate-900); }
-.modal-success-secondary:hover, .modal-success-secondary:focus-visible { border-color: var(--blue-500); background: var(--sky-alpha-5); }
-.modal-success-done:hover, .modal-success-done:focus-visible { background: #dcebff; }
+.modal-success-actions { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 36px; }
+.modal-success-secondary, .modal-success-done { min-height: 56px; border-radius: 4px; font-family: var(--font-text); font-size: 18px; font-weight: 500; letter-spacing: -.011em; cursor: pointer; }
+.modal-success-secondary { border: 0; background: var(--blue-500); color: var(--slate-900); }
+.modal-success-done { border: 1px solid var(--blue-500); background: transparent; color: var(--blue-500); }
+.modal-success-secondary:hover, .modal-success-secondary:focus-visible { background: #dcebff; }
+.modal-success-done:hover, .modal-success-done:focus-visible { background: var(--sky-alpha-5); }
 
 @media (max-width: 480px) {
   .modal-footer { flex-direction: column-reverse; align-items: stretch; }

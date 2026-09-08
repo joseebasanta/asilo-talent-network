@@ -114,8 +114,8 @@ describe("Proyectos directory (slice 1b-b)", () => {
     const html = await renderShell();
 
     expect(html).not.toMatch(/href=["']https?:\/\//);
-    // 4 static images + 10 project placeholders + modal preview and upload icon.
-    expect((html.match(/<img\b/g) ?? []).length).toBe(16);
+    // 4 static images + 10 project placeholders + success, preview, and upload icons.
+    expect((html.match(/<img\b/g) ?? []).length).toBe(17);
     expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(10);
     expect(html).toContain('src="/logo-asilo-builders.svg"');
   });
