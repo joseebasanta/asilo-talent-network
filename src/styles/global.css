@@ -208,7 +208,7 @@ h1 {
 .prj-body { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: .5rem; }
 .prj-td { display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
 .prj-name { font-family: var(--font-text); font-weight: 500; font-size: 1rem; line-height: 1.5rem; letter-spacing: -.011em; color: var(--blue-50); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prj-desc { font-family: var(--font-text); font-weight: 400; font-size: .875rem; line-height: 1.25rem; letter-spacing: -.006em; color: var(--blue-700); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prj-desc { font-family: var(--font-text); font-weight: 400; font-size: .875rem; line-height: 1.25rem; letter-spacing: -.006em; color: var(--blue-700); margin: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .prj-author { font-family: var(--font-text); font-weight: 400; font-size: .75rem; line-height: 1rem; color: var(--blue-800); margin: 0; }
 .prj-tags { display: flex; gap: .25rem; flex-wrap: wrap; }
 .prj-tag { background: var(--slate-900); padding: .125rem .5rem; border-radius: 999px; font-family: var(--font-text); font-weight: 500; font-size: .6875rem; line-height: .75rem; letter-spacing: .02em; text-transform: uppercase; color: var(--blue-800); white-space: nowrap; }
@@ -301,7 +301,7 @@ h1 {
 .field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .field-label { color: var(--blue-700); font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: -.006em; }
 .field-count { color: #5c6470; font-size: 11px; line-height: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
-.field-input { width: 100%; height: 40px; padding: 0 14px; background: var(--bg); border: 1px solid var(--sky-alpha-16); border-radius: 4px; color: var(--blue-50); font-family: var(--font-text); font-size: 16px; letter-spacing: -.011em; }
+.field-input { width: 100%; height: 40px; padding: 0 14px; background: var(--bg); border: 1px solid var(--sky-alpha-16); border-radius: 4px; color: var(--blue-50); font-family: var(--font-text); font-size: 14px; line-height: 20px; letter-spacing: -.006em; }
 .field-input--sm { font-size: 14px; letter-spacing: -.006em; }
 .field-input::placeholder { color: #5c6470; }
 .field-input:focus-visible { outline: none; border-color: var(--sky-alpha-24); }
