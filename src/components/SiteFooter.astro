@@ -2,7 +2,7 @@
 interface Props { home?: boolean; }
 const { home = false } = Astro.props;
 ---
-    <footer class="site-footer">
+    <footer class="site-footer" data-footer-cursor={!home || undefined}>
       <canvas class="footer-ascii" data-ascii-src="/bg-2-footer.png" aria-hidden="true"></canvas>
       <div class="footer-inner">
         <div class="footer-brand">
@@ -39,4 +39,7 @@ const { home = false } = Astro.props;
     </footer>
 <script>
   import "../scripts/ascii-background.js";
+  import { initAsciiCursor } from "../scripts/ascii-cursor.js";
+  const footer = document.querySelector<HTMLElement>("[data-footer-cursor]");
+  if (footer) initAsciiCursor(footer);
 </script>

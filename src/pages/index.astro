@@ -119,7 +119,8 @@ const projects = await loadApprovedProjects();
     </main>
     <SiteFooter home />
     <script>
-      import "../scripts/ascii-cursor.js";
+      import { initAsciiCursor } from "../scripts/ascii-cursor.js";
+      initAsciiCursor();
       import "../scripts/scroll-reveal.js";
     </script>
   </body>
