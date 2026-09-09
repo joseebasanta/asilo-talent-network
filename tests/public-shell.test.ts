@@ -110,10 +110,11 @@ describe("Proyectos directory (slice 1b-b)", () => {
     expect(html).toContain("¿Eres parte de la comunidad y quieres sumarte al directorio?");
   });
 
-  it("keeps the directory static: no external URLs and local placeholder assets", async () => {
+  it("keeps project links local while using the Asilo Digital brand link", async () => {
     const html = await renderShell();
 
-    expect(html).not.toMatch(/href=["']https?:\/\//);
+    expect((html.match(/href=["']https:\/\/www\.asilodigital\.com\/["']/g) ?? []).length).toBe(2);
+    expect(html.replaceAll('href="https://www.asilodigital.com/"', "")).not.toMatch(/href=["']https?:\/\//);
     // 4 static images + 10 project placeholders + success, preview, and upload icons.
     expect((html.match(/<img\b/g) ?? []).length).toBe(17);
     expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(10);
