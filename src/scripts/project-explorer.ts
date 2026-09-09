@@ -1,4 +1,4 @@
-import { filterProjects } from "../lib/project-search";
+import { filterProjects, paginateProjects, projectPageUrl } from "../lib/project-search";
 
 const form = document.querySelector<HTMLFormElement>("#project-filters")!;
 const search = document.querySelector<HTMLInputElement>("#project-query")!;
@@ -20,13 +20,22 @@ const empty = document.querySelector<HTMLElement>("#empty-results")!;
 const clear = document.querySelector<HTMLElement>(".results-toolbar [data-clear-filters]")!;
 const all = document.querySelector<HTMLAnchorElement>("[data-all-categories]")!;
 
-function render(updateUrl = true) {
+const paginationNav = document.querySelector<HTMLElement>(".project-pagination")!;
+const pageStatus = document.querySelector<HTMLElement>("[data-page-status]")!;
+const pageRange = document.querySelector<HTMLElement>("[data-page-range]")!;
+const pageLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-page-direction]"));
+let currentPage = 1;
+
+function render(updateUrl = true, resetPage = true, pushHistory = false) {
+  if (resetPage) currentPage = 1;
   sortLabel.textContent = `Nombre: ${getOrder() === "za" ? "Z–A" : "A–Z"}`;
   const categories = boxes.filter(box => box.checked).map(box => box.value);
   const filtered = filterProjects(projects, search.value, categories, getOrder());
   const active = Boolean(search.value.trim() || categories.length);
   cards.forEach(card => { card.hidden = true; });
-  filtered.forEach(({ card }, index) => {
+  const pagination = paginateProjects(filtered, currentPage);
+  currentPage = pagination.page;
+  pagination.items.forEach(({ card }, index) => {
     card.hidden = false;
     card.style.order = String(index);
     // Keep keyboard and reading order aligned with the visual sort order.
@@ -44,7 +53,24 @@ function render(updateUrl = true) {
   categories.forEach(category => url.searchParams.append("categoria", category));
   if (getOrder() === "za") url.searchParams.set("orden", "za");
   all.href = search.value.trim() ? `/proyectos?q=${encodeURIComponent(search.value.trim())}` : "/proyectos";
-  if (updateUrl) history.replaceState(null, "", url);
+  url.searchParams.delete("pagina");
+  if (currentPage > 1) url.searchParams.set("pagina", String(currentPage));
+  paginationNav.hidden = pagination.totalPages <= 1;
+  pageStatus.textContent = `Página ${currentPage} de ${pagination.totalPages}`;
+  pageRange.textContent = `${pagination.start}–${pagination.end} de ${filtered.length} proyectos`;
+  pageLinks.forEach(link => {
+    const nextPage = currentPage + (link.dataset.pageDirection === "next" ? 1 : -1);
+    const disabled = nextPage < 1 || nextPage > pagination.totalPages;
+    if (disabled) {
+      link.removeAttribute("href"); link.setAttribute("aria-disabled", "true");
+    } else {
+      link.href = projectPageUrl(url, nextPage); link.removeAttribute("aria-disabled");
+    }
+  });
+  if (updateUrl) {
+    if (pushHistory) history.pushState(null, "", url);
+    else history.replaceState(null, "", url);
+  }
 }
 function restore() {
   const params = new URLSearchParams(location.search);
@@ -52,7 +78,8 @@ function restore() {
   setOrder(params.get("orden") === "za" ? "za" : "az");
   const selected = params.getAll("categoria");
   boxes.forEach(box => { box.checked = selected.some(value => value.localeCompare(box.value, "es", { sensitivity: "base" }) === 0); });
-  render(false);
+  currentPage = Number(params.get("pagina") ?? 1);
+  render(false, false);
 }
 let debounce: ReturnType<typeof setTimeout>;
 search.addEventListener("input", () => { clearTimeout(debounce); debounce = setTimeout(() => render(), 120); });
@@ -62,6 +89,16 @@ all.addEventListener("click", event => { event.preventDefault(); boxes.forEach(b
 document.querySelectorAll<HTMLAnchorElement>("[data-clear-filters]").forEach(link => link.addEventListener("click", event => {
   event.preventDefault(); form.reset(); search.value = ""; setOrder("az");
   boxes.forEach(box => { box.checked = false; }); render(); search.focus();
+}));
+pageLinks.forEach(link => link.addEventListener("click", event => {
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  if (link.getAttribute("aria-disabled") === "true") return;
+  clearTimeout(debounce);
+  currentPage += link.dataset.pageDirection === "next" ? 1 : -1;
+  render(true, false, true);
+  grid.focus({ preventScroll: true });
+  grid.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }));
 window.addEventListener("popstate", restore);
 restore();

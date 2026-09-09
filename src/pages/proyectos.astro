@@ -7,7 +7,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 import ProjectCard from "../components/ProjectCard.astro";
-import { filterProjects, normalizeSearch } from "../lib/project-search";
+import { filterProjects, normalizeSearch, paginateProjects, projectPageUrl } from "../lib/project-search";
 
 const projects = (await loadApprovedProjects()).map((project, index) => ({ ...project, index }));
 const categories = Array.from(new Map(projects.flatMap(project => project.tags)
@@ -16,7 +16,8 @@ const query = Astro.url.searchParams.get("q") ?? "";
 const selected = categories.filter(category => Astro.url.searchParams.getAll("categoria").some(value => normalizeSearch(value) === normalizeSearch(category)));
 const order = Astro.url.searchParams.get("orden") === "za" ? "za" : "az";
 const matches = filterProjects(projects, query, selected, order);
-const positions = new Map(matches.map((project, index) => [project.index, index]));
+const pagination = paginateProjects(matches, Number(Astro.url.searchParams.get("pagina") ?? 1));
+const positions = new Map(pagination.items.map((project, index) => [project.index, index]));
 const active = Boolean(query || selected.length);
 ---
 <!doctype html>
@@ -95,8 +96,8 @@ const active = Boolean(query || selected.length);
           <p id="project-count" role="status" aria-live="polite" aria-atomic="true">{matches.length} {matches.length === 1 ? "proyecto" : "proyectos"}{active ? ` de ${projects.length}` : " para descubrir"}</p>
           <a href="/proyectos" class="clear-filters" data-clear-filters hidden={!active}>Limpiar filtros <span aria-hidden="true">×</span></a>
         </div>
-        <div class="explore-grid" id="project-results">
-          {[...matches, ...projects.filter(project => !positions.has(project.index))].map(project => (
+        <div class="explore-grid" id="project-results" tabindex="-1" aria-label="Resultados de proyectos">
+          {[...pagination.items, ...projects.filter(project => !positions.has(project.index))].map(project => (
             <ProjectCard project={project}
               data-project-index={project.index} data-title={project.title}
               data-description={project.description} data-author={project.author}
@@ -105,6 +106,18 @@ const active = Boolean(query || selected.length);
             />
           ))}
         </div>
+        <nav class="project-pagination" aria-label="Paginación de proyectos" hidden={pagination.totalPages <= 1}>
+          <p class="pagination-range" data-page-range>{pagination.start}–{pagination.end} de {matches.length} proyectos</p>
+          <div class="pagination-controls">
+            <a class="prj-cta pagination-link" data-page-direction="previous" href={pagination.page > 1 ? projectPageUrl(Astro.url, pagination.page - 1) : undefined} aria-disabled={pagination.page === 1 ? "true" : undefined} aria-controls="project-results">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 4h3v3h-3zm-3 3h3v3h-3zm-3 3h3v4H8zm3 4h3v3h-3zm3 3h3v3h-3z" /></svg>Anterior
+            </a>
+            <span class="pagination-current" data-page-status role="status" aria-live="polite" aria-atomic="true">Página {pagination.page} de {pagination.totalPages}</span>
+            <a class="prj-cta pagination-link" data-page-direction="next" href={pagination.page < pagination.totalPages ? projectPageUrl(Astro.url, pagination.page + 1) : undefined} aria-disabled={pagination.page === pagination.totalPages ? "true" : undefined} aria-controls="project-results">
+              Siguiente<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4h3v3H7zm3 3h3v3h-3zm3 3h3v4h-3zm-3 4h3v3h-3zm-3 3h3v3H7z" /></svg>
+            </a>
+          </div>
+        </nav>
         <div class="empty-results" id="empty-results" hidden={matches.length > 0}>
           <span class="empty-symbol" aria-hidden="true">[ ? ]</span>
           <h2>{projects.length ? "No encontramos proyectos" : "Las próximas ideas empiezan aquí"}</h2>
