@@ -14,11 +14,13 @@
  *   GOOGLE_SHEETS_ID, GOOGLE_SERVICE_ACCOUNT_JSON_BASE64,
  *   GOOGLE_SHEETS_RANGE (optional, default "Projects!A1:J"),
  *   APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY (optional —
- *   logo upload; without them the logo is skipped and the project still submits),
+ *   logo upload; a supplied logo requires all three values),
  *   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY (optional — captcha; without them
  *   the captcha is skipped and the other anti-abuse layers still apply)
  */
 
+import { readSubmissionForm } from "../../../lib/submission-body";
+import { prepareLogo } from "../../../lib/projects-logo-server";
 import type { APIContext } from "astro";
 import googleSheets from "@googleapis/sheets";
 import { Client, ID, Permission, Role, Storage } from "node-appwrite";
@@ -82,10 +84,17 @@ export async function POST({ request, clientAddress }: APIContext) {
     );
   }
 
+  if (rateLimited(clientAddress ?? "unknown")) {
+    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Intentá en 10 minutos." }, 429);
+  }
+
   let form: FormData;
   try {
-    form = await request.formData();
-  } catch {
+    form = await readSubmissionForm(request);
+  } catch (error) {
+    if (error instanceof Error && error.message === "body-too-large") {
+      return json({ ok: false, error: "El envío es demasiado grande. El logo debe pesar como máximo 1 MB." }, 413);
+    }
     return json({ ok: false, error: "Solicitud inválida." }, 400);
   }
 
@@ -137,81 +146,44 @@ export async function POST({ request, clientAddress }: APIContext) {
     );
   }
 
-  if (rateLimited(clientAddress ?? "unknown")) {
-    return json(
-      {
-        ok: false,
-        error: "Demasiados envíos desde esta conexión. Intentá más tarde.",
-      },
-      429,
-    );
-  }
-
   const validation = validateSubmissionForm(form);
   if (!validation.ok) {
     return json(
-      { ok: false, field: validation.field, error: validation.message },
+      { ok: false, field: validation.field, error: validation.message, errors: validation.errors },
       400,
     );
   }
 
   // Optional logo: validate, then upload to Appwrite Storage when configured.
-  // Fail-open on missing config (submit without a logo), fail-closed on a
-  // configured upload error (never silently drop the user's file).
+  // A supplied logo must validate and upload successfully; never silently drop it.
   const logoRaw = form.get("logo");
+  if (form.getAll("logo").length > 1 || (logoRaw !== null && !(logoRaw instanceof File))) {
+    return json({ ok: false, field: "logo", error: "Seleccioná un solo archivo de imagen." }, 400);
+  }
   // FormData returns an empty File for an untouched file input.
-  const logo = logoRaw instanceof File && logoRaw.name !== "" ? logoRaw : null;
+  const logo = logoRaw instanceof File && (logoRaw.name !== "" || logoRaw.size > 0) ? logoRaw : null;
   const logoCheck = validateLogo(logo);
   if (!logoCheck.ok) {
     return json({ ok: false, field: "logo", error: logoCheck.error }, 400);
   }
-  let logoId: string | undefined;
-  if (
-    logo &&
-    import.meta.env.APPWRITE_ENDPOINT &&
-    import.meta.env.APPWRITE_PROJECT_ID &&
-    import.meta.env.APPWRITE_API_KEY
-  ) {
-    try {
-      const appwrite = new Client()
-        .setEndpoint(import.meta.env.APPWRITE_ENDPOINT)
-        .setProject(import.meta.env.APPWRITE_PROJECT_ID)
-        .setKey(import.meta.env.APPWRITE_API_KEY);
-      const storage = new Storage(appwrite);
-      const uploaded = await storage.createFile({
-        bucketId: LOGO_BUCKET_ID,
-        fileId: ID.unique(),
-        file: InputFile.fromBuffer(Buffer.from(await logo.arrayBuffer()), logo.name),
-        // Public directory: logos must be anonymously readable. `fileSecurity`
-        // is disabled on the bucket so this file-level ACL (not the bucket
-        // default) is what the view endpoint resolves.
-        permissions: [Permission.read(Role.any())],
-      });
-      logoId = uploaded.$id;
-    } catch {
-      return json(
-        {
-          ok: false,
-          error: "No se pudo subir el logo. Intentá de nuevo en unos minutos.",
-        },
-        503,
-      );
-    }
+  const preparedLogo = logo ? await prepareLogo(logo) : null;
+  if (preparedLogo && !preparedLogo.ok) {
+    return json({ ok: false, field: "logo", error: preparedLogo.error }, 400);
   }
 
-  const serviceAccount = JSON.parse(
-    Buffer.from(
-      import.meta.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64!,
-      "base64",
-    ).toString("utf8"),
-  ) as { client_email: string; private_key: string };
-
-  const auth = new googleSheets.auth.JWT({
-    email: serviceAccount.client_email,
-    key: serviceAccount.private_key,
-    scopes: [WRITE_SCOPE],
-  });
-  const sheets = googleSheets.sheets({ version: "v4", auth });
+  let sheets: ReturnType<typeof googleSheets.sheets>;
+  try {
+    const serviceAccount = JSON.parse(Buffer.from(
+      import.meta.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64!, "base64",
+    ).toString("utf8")) as { client_email: string; private_key: string };
+    if (!serviceAccount.client_email || !serviceAccount.private_key) throw new Error("Invalid credentials");
+    const auth = new googleSheets.auth.JWT({
+      email: serviceAccount.client_email, key: serviceAccount.private_key, scopes: [WRITE_SCOPE],
+    });
+    sheets = googleSheets.sheets({ version: "v4", auth });
+  } catch {
+    return json({ ok: false, error: "El directorio no está disponible en este momento." }, 503);
+  }
 
   // Idempotency: reject when the same normalized website already exists in the
   // sheet (pending OR approved) — same project, same row, never duplicated.
@@ -245,6 +217,42 @@ export async function POST({ request, clientAddress }: APIContext) {
         503,
       );
     }
+  }
+
+  let logoId: string | undefined;
+  if (
+    preparedLogo?.ok &&
+    import.meta.env.APPWRITE_ENDPOINT &&
+    import.meta.env.APPWRITE_PROJECT_ID &&
+    import.meta.env.APPWRITE_API_KEY
+  ) {
+    try {
+      const appwrite = new Client()
+        .setEndpoint(import.meta.env.APPWRITE_ENDPOINT)
+        .setProject(import.meta.env.APPWRITE_PROJECT_ID)
+        .setKey(import.meta.env.APPWRITE_API_KEY);
+      const storage = new Storage(appwrite);
+      const uploaded = await storage.createFile({
+        bucketId: LOGO_BUCKET_ID,
+        fileId: ID.unique(),
+        file: InputFile.fromBuffer(preparedLogo.buffer, preparedLogo.filename),
+        // Public directory: logos must be anonymously readable. `fileSecurity`
+        // is disabled on the bucket so this file-level ACL (not the bucket
+        // default) is what the view endpoint resolves.
+        permissions: [Permission.read(Role.any())],
+      });
+      logoId = uploaded.$id;
+    } catch {
+      return json(
+        {
+          ok: false,
+          error: "No se pudo subir el logo. Intentá de nuevo en unos minutos.",
+        },
+        503,
+      );
+    }
+  } else if (preparedLogo?.ok) {
+    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Intentá más tarde o quitá el logo." }, 503);
   }
 
   try {

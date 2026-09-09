@@ -28,9 +28,11 @@ export async function verifyTurnstile(
   try {
     const res = await fetch(TURNSTILE_VERIFY_URL, {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: { "content-type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ secret, response: token }),
     });
+    if (!res.ok) return false;
     const data = (await res.json()) as { success?: boolean };
     return data.success === true;
   } catch {
