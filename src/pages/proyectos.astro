@@ -53,39 +53,23 @@ const active = Boolean(query || selected.length);
       <section class="explore-directory" aria-label="Directorio de proyectos">
         <form class="explore-controls" action="/proyectos" method="get" role="search" id="project-filters">
           <div class="search-row">
+            <div class="search-control">
+              <label class="filter-label" for="project-query">Buscar proyectos</label>
             <div class="search-field">
-              <label class="sr-only" for="project-query">Buscar por proyecto, fundador o palabra clave</label>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h10v2H4zM2 6h2v8H2zM4 14h10v2H4zM14 6h2v8h-2zM16 16h3v3h-3zM19 19h3v3h-3z" stroke="none" fill="currentColor" /></svg>
               <input id="project-query" type="search" name="q" value={query} placeholder="Busca un proyecto, fundador o idea…" autocomplete="off" />
               <button type="submit" class="search-submit">Buscar</button>
             </div>
-            <div class="sort-field">
-              <span id="sort-label">Ordenar</span>
-              <details class="sort-dropdown" id="project-sort">
-                <summary aria-labelledby="sort-label sort-value">
-                  <span id="sort-value">Nombre: {order === "za" ? "Z–A" : "A–Z"}</span>
-                  <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
-                </summary>
-                <fieldset class="sort-options">
-                  <legend class="sr-only">Ordenar proyectos por nombre</legend>
-                  {[{ value: "az", label: "Nombre: A–Z" }, { value: "za", label: "Nombre: Z–A" }].map(option => (
-                    <label class="sort-option">
-                      <input type="radio" name="orden" value={option.value} checked={order === option.value} />
-                      <span>{option.label}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11h3v3H3zm3 3h3v3H6zm3 3h3v3H9zm3-3h3v3h-3zm3-3h3v3h-3zm3-3h3v3h-3z" /></svg></span>
-                    </label>
-                  ))}
-                </fieldset>
-              </details>
             </div>
-          </div>
           <div class="category-filters">
+            <span class="filter-label" id="category-label">Categorías</span>
             <details class="sort-dropdown category-dropdown" id="project-categories">
-              <summary>
-                <span>Categorías</span>
-                <span class="category-selection" data-category-selection>{selected.length ? `${selected.length} ${selected.length === 1 ? "seleccionada" : "seleccionadas"}` : "Todas"}</span>
+              <summary aria-labelledby="category-label category-value">
+                <span class="category-selection" id="category-value" data-category-selection>{selected.length ? `${selected.length} ${selected.length === 1 ? "seleccionada" : "seleccionadas"}` : "Todas"}</span>
                 <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
               </summary>
               <div class="category-panel">
+                <p class="category-hint">Selecciona una o varias</p>
                 <div class="category-search" data-category-search hidden>
                   <label class="sr-only" for="category-query">Buscar categorías</label>
                   <input class="field-input" id="category-query" type="search" placeholder="Buscar categorías…" autocomplete="off" />
@@ -108,7 +92,25 @@ const active = Boolean(query || selected.length);
                 </div>
               </div>
             </details>
-            <span class="category-hint">Selecciona una o varias</span>
+          </div>
+            <div class="sort-field">
+              <span class="filter-label" id="sort-label">Ordenar</span>
+              <details class="sort-dropdown" id="project-sort">
+                <summary aria-labelledby="sort-label sort-value">
+                  <span id="sort-value">Nombre: {order === "za" ? "Z–A" : "A–Z"}</span>
+                  <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
+                </summary>
+                <fieldset class="sort-options">
+                  <legend class="sr-only">Ordenar proyectos por nombre</legend>
+                  {[{ value: "az", label: "Nombre: A–Z" }, { value: "za", label: "Nombre: Z–A" }].map(option => (
+                    <label class="sort-option">
+                      <input type="radio" name="orden" value={option.value} checked={order === option.value} />
+                      <span>{option.label}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11h3v3H3zm3 3h3v3H6zm3 3h3v3H9zm3-3h3v3h-3zm3-3h3v3h-3zm3-3h3v3h-3z" /></svg></span>
+                    </label>
+                  ))}
+                </fieldset>
+              </details>
+            </div>
           </div>
           <noscript><p class="no-script-hint">Selecciona tus filtros y pulsa Buscar para ver los resultados.</p></noscript>
         </form>
