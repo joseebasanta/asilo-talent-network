@@ -39,9 +39,19 @@ const pageStatus = document.querySelector<HTMLElement>("[data-page-status]")!;
 const pageRange = document.querySelector<HTMLElement>("[data-page-range]")!;
 const pageLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-page-direction]"));
 let currentPage = 1;
+let gridWidth = grid.clientWidth;
+new ResizeObserver(() => {
+  if (grid.clientWidth !== gridWidth) {
+    gridWidth = grid.clientWidth;
+    grid.style.minHeight = "";
+  }
+}).observe(grid);
 
 function render(updateUrl = true, resetPage = true, pushHistory = false) {
-  if (resetPage) currentPage = 1;
+  if (resetPage) {
+    currentPage = 1;
+    grid.style.minHeight = "";
+  }
   sortLabel.textContent = `Nombre: ${getOrder() === "za" ? "Z–A" : "A–Z"}`;
   const categories = boxes.filter(box => box.checked).map(box => box.value);
   const filtered = filterProjects(projects, search.value, categories, getOrder());
@@ -75,6 +85,7 @@ function render(updateUrl = true, resetPage = true, pushHistory = false) {
   pageLinks.forEach(link => {
     const nextPage = currentPage + (link.dataset.pageDirection === "next" ? 1 : -1);
     const disabled = nextPage < 1 || nextPage > pagination.totalPages;
+    link.tabIndex = disabled ? -1 : 0;
     if (disabled) {
       link.removeAttribute("href"); link.setAttribute("aria-disabled", "true");
     } else {
@@ -109,10 +120,15 @@ pageLinks.forEach(link => link.addEventListener("click", event => {
   event.preventDefault();
   if (link.getAttribute("aria-disabled") === "true") return;
   clearTimeout(debounce);
+  // Keep the footer and pagination in place when the last page has fewer cards.
+  grid.style.minHeight = `${grid.getBoundingClientRect().height}px`;
   currentPage += link.dataset.pageDirection === "next" ? 1 : -1;
   render(true, false, true);
-  grid.focus({ preventScroll: true });
-  grid.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  link.focus({ preventScroll: true });
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    grid.getAnimations().forEach(animation => animation.cancel());
+    grid.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 140, easing: "ease-out" });
+  }
 }));
 window.addEventListener("popstate", restore);
 restore();

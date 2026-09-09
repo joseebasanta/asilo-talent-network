@@ -1,3 +1,4 @@
+import { projects as placeholderProjects } from "../src/data/projects";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   loadApprovedProjects,
@@ -318,7 +319,7 @@ describe("loadApprovedProjects", () => {
 
     const projects = await loadApprovedProjects();
 
-    expect(projects).toHaveLength(10);
+    expect(projects).toEqual(placeholderProjects);
     expect(projects[0].href).toBe("#");
     expect(projects[0].title).toBe("Directorio de Builders");
   });
@@ -395,7 +396,7 @@ describe("loadApprovedProjects", () => {
       throw new Error("sheets outage");
     });
 
-    expect(projects).toHaveLength(10);
+    expect(projects).toEqual(placeholderProjects);
     expect(projects[0].href).toBe("#");
   });
 

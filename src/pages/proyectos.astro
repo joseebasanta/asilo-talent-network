@@ -40,11 +40,11 @@ const active = Boolean(query || selected.length);
         <a class="back-link" href="/">← Volver al inicio</a>
         <div class="explore-heading">
           <div>
-            <p class="explore-eyebrow">[ HECHO POR NUESTRA COMUNIDAD ]</p>
-            <h1 id="page-title">Ideas que ya<br />son proyectos.</h1>
+            <h1 id="page-title">Proyectos de<br />la comunidad</h1>
             <p class="explore-description">Descubre lo que estamos construyendo.<br />Explora, encuentra inspiración y conecta con sus creadores.</p>
           </div>
           <div class="explore-invite">
+            <span class="pixel-plus" aria-hidden="true">+</span>
             <p>¿Estás construyendo algo?</p>
             <button class="prj-cta" type="button" data-open-modal>AGREGA TU PROYECTO</button>
           </div>
@@ -147,7 +147,6 @@ const active = Boolean(query || selected.length);
           {projects.length > 0 && <a href="/proyectos" class="prj-cta" data-clear-filters>Ver todos los proyectos</a>}
         </div>
       </section>
-      <div class="explore-bottom"><p>Construido en comunidad. Hecho para compartir.</p><a href="/#unete">Conoce Asilo Builders <span aria-hidden="true">→</span></a></div>
     </main>
     <SiteFooter />
     <ProjectDirectory projects={[]} modalOnly />
