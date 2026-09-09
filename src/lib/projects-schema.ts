@@ -55,6 +55,7 @@ export const submissionSchema = z.object({
       }
       return normalized;
     })
+    .pipe(z.string().max(2048, websiteMessage))
     .pipe(z.url({ protocol: /^https?$/, hostname: z.regexes.domain, error: websiteMessage }))
     .refine((value) => {
       const url = new URL(value);

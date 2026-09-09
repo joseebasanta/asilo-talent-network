@@ -111,6 +111,19 @@ describe("validateSubmission", () => {
     }
   });
 
+  it("rejects URLs whose normalized encoding exceeds the limit", () => {
+    expect(validateSubmission({ ...validInput, website: "https://example.com/" + "é".repeat(400) }))
+      .toMatchObject({ ok: false, field: "website" });
+  });
+
+  it("accepts normalized output again, as the browser sends it to the server", () => {
+    for (const website of ["mañana.com/niño", "https://example.com/" + "é".repeat(300), "EXAMPLE.COM."]) {
+      const parsed = validateSubmission({ ...validInput, website });
+      expect(parsed.ok).toBe(true);
+      if (parsed.ok) expect(validateSubmission(parsed.value)).toEqual(parsed);
+    }
+  });
+
   it("accepts international domains and preserves legitimate paths and queries", () => {
     const result = validateSubmission({ ...validInput, website: "https://mañana.com/app?q=hello%20world" });
     expect(result).toMatchObject({ ok: true, value: {

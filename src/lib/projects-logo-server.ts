@@ -8,7 +8,24 @@ export async function prepareLogo(file: File): Promise<
   const check = validateLogo(file);
   if (!check.ok) return check;
   try {
-    const image = sharp(Buffer.from(await file.arrayBuffer()), {
+    const input = Buffer.from(await file.arrayBuffer());
+    // Reject other parsers (such as SVG) before handing bytes to the decoder.
+    const signatureMatches = file.type === "image/png"
+      ? input.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+      : file.type === "image/jpeg"
+        ? input[0] === 255 && input[1] === 216 && input[2] === 255
+        : input.toString("ascii", 0, 4) === "RIFF" && input.toString("ascii", 8, 12) === "WEBP";
+    if (!signatureMatches) return { ok: false, error: "El contenido del logo no coincide con su formato." };
+    // APNG is sometimes decoded as its first frame; reject its animation control chunk explicitly.
+    if (file.type === "image/png") {
+      for (let offset = 8; offset + 12 <= input.length;) {
+        if (input.toString("ascii", offset + 4, offset + 8) === "acTL") {
+          return { ok: false, error: "Usá un logo sin animación." };
+        }
+        offset += input.readUInt32BE(offset) + 12;
+      }
+    }
+    const image = sharp(input, {
       failOn: "warning", limitInputPixels: LOGO_MAX_PIXELS,
     });
     const metadata = await image.metadata();

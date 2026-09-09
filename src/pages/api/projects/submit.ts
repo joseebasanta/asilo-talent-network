@@ -28,6 +28,7 @@ import { InputFile } from "node-appwrite/file";
 import {
   buildRow,
   findDuplicateWebsite,
+  websiteColumnIndex,
   MIN_FILL_MS,
   validateSubmissionForm,
 } from "../../../lib/projects-submit";
@@ -104,12 +105,16 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json({ ok: true }, 201);
   }
 
+  if (Boolean(import.meta.env.TURNSTILE_SITE_KEY) !== Boolean(import.meta.env.TURNSTILE_SECRET_KEY)) {
+    return json({ ok: false, error: "La verificación no está disponible en este momento. Intentá más tarde." }, 503);
+  }
+
   // Captcha (Turnstile): when keys are configured, a token must be present and
   // verify server-side before anything else is checked. Tokens are single-use;
   // the widget refills the hidden `cf-turnstile-response` input on each solve.
   if (turnstileConfigured()) {
     const token = form.get("cf-turnstile-response");
-    if (typeof token !== "string" || token.trim() === "") {
+    if (form.getAll("cf-turnstile-response").length !== 1 || typeof token !== "string" || token.trim() === "" || token.length > 2048) {
       return json(
         {
           ok: false,
@@ -134,12 +139,14 @@ export async function POST({ request, clientAddress }: APIContext) {
   // submits keep working; honeypot, min-time, rate limit and dedupe still
   // apply. Production MUST set both Turnstile env vars.
 
-  // Min-time-to-fill: the form ships the server render time; sub-3s fills are
-  // bots. A missing/unparsable timestamp is treated as too fast, never trusted.
+  // Minimum fill-time heuristic, reset by the browser when starting a form.
+  // This client-supplied timestamp is only an anti-abuse signal, not proof of a human.
   const submittedAtRaw = form.get("submitted_at");
   const submittedAt =
     typeof submittedAtRaw === "string" ? Number(submittedAtRaw) : Number.NaN;
-  if (!Number.isFinite(submittedAt) || Date.now() - submittedAt < MIN_FILL_MS) {
+  if (form.getAll("submitted_at").length !== 1 || typeof submittedAtRaw !== "string" ||
+    !/^\d+$/.test(submittedAtRaw) || !Number.isSafeInteger(submittedAt) || submittedAt <= 0 ||
+    Date.now() - submittedAt < MIN_FILL_MS) {
     return json(
       { ok: false, error: "El envío fue demasiado rápido. Intentá de nuevo." },
       429,
@@ -202,6 +209,7 @@ export async function POST({ request, clientAddress }: APIContext) {
         spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
         range: SHEET_RANGE,
       });
+      if (websiteColumnIndex(data.values?.[0] ?? []) < 0) throw new Error("Missing website column");
       if (findDuplicateWebsite(data.values ?? [], validation.value.website)) {
         return json(
           { ok: false, error: "Este proyecto ya fue enviado al directorio." },
