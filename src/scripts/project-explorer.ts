@@ -1,4 +1,4 @@
-import { filterProjects, paginateProjects, projectPageUrl } from "../lib/project-search";
+import { filterProjects, paginateProjects, projectPageUrl, normalizeSearch } from "../lib/project-search";
 
 const form = document.querySelector<HTMLFormElement>("#project-filters")!;
 const search = document.querySelector<HTMLInputElement>("#project-query")!;
@@ -19,6 +19,20 @@ const count = document.querySelector<HTMLElement>("#project-count")!;
 const empty = document.querySelector<HTMLElement>("#empty-results")!;
 const clear = document.querySelector<HTMLElement>(".results-toolbar [data-clear-filters]")!;
 const all = document.querySelector<HTMLAnchorElement>("[data-all-categories]")!;
+const categoryDropdown = document.querySelector<HTMLDetailsElement>("#project-categories")!;
+const categoryTrigger = categoryDropdown.querySelector<HTMLElement>("summary")!;
+const categorySelection = document.querySelector<HTMLElement>("[data-category-selection]")!;
+const categoryQuery = document.querySelector<HTMLInputElement>("#category-query")!;
+const categoryRows = Array.from(document.querySelectorAll<HTMLElement>("[data-category-name]"));
+const categoryEmpty = document.querySelector<HTMLElement>("[data-category-empty]")!;
+const categoryDone = document.querySelector<HTMLButtonElement>("[data-category-done]")!;
+function filterCategories() {
+  const query = normalizeSearch(categoryQuery.value);
+  categoryRows.forEach(row => { row.hidden = !normalizeSearch(row.dataset.categoryName ?? "").includes(query); });
+  categoryEmpty.hidden = categoryRows.some(row => !row.hidden);
+}
+function resetCategorySearch() { categoryQuery.value = ""; filterCategories(); }
+
 
 const paginationNav = document.querySelector<HTMLElement>(".project-pagination")!;
 const pageStatus = document.querySelector<HTMLElement>("[data-page-status]")!;
@@ -44,7 +58,7 @@ function render(updateUrl = true, resetPage = true, pushHistory = false) {
   count.textContent = `${filtered.length} ${filtered.length === 1 ? "proyecto" : "proyectos"}${active ? ` de ${projects.length}` : " para descubrir"}`;
   empty.hidden = filtered.length > 0;
   clear.hidden = !active;
-  all.classList.toggle("is-active", !categories.length);
+  categorySelection.textContent = categories.length ? `${categories.length} ${categories.length === 1 ? "seleccionada" : "seleccionadas"}` : "Todas";
   const url = new URL(location.href);
   url.searchParams.delete("q");
   url.searchParams.delete("categoria");
@@ -84,11 +98,11 @@ function restore() {
 let debounce: ReturnType<typeof setTimeout>;
 search.addEventListener("input", () => { clearTimeout(debounce); debounce = setTimeout(() => render(), 120); });
 form.addEventListener("submit", event => { event.preventDefault(); clearTimeout(debounce); render(); });
-form.addEventListener("change", () => render());
-all.addEventListener("click", event => { event.preventDefault(); boxes.forEach(box => { box.checked = false; }); render(); });
+form.addEventListener("change", event => { if (event.target !== categoryQuery) render(); });
+all.addEventListener("click", event => { event.preventDefault(); boxes.forEach(box => { box.checked = false; }); resetCategorySearch(); render(); });
 document.querySelectorAll<HTMLAnchorElement>("[data-clear-filters]").forEach(link => link.addEventListener("click", event => {
   event.preventDefault(); form.reset(); search.value = ""; setOrder("az");
-  boxes.forEach(box => { box.checked = false; }); render(); search.focus();
+  boxes.forEach(box => { box.checked = false; }); resetCategorySearch(); render(); search.focus();
 }));
 pageLinks.forEach(link => link.addEventListener("click", event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -123,4 +137,37 @@ sortDropdown.addEventListener("focusout", () => {
 });
 document.addEventListener("pointerdown", event => {
   if (event.target instanceof Node && !sortDropdown.contains(event.target)) sortDropdown.open = false;
+});
+
+// Keep the category list bounded and searchable without losing selections.
+document.querySelector<HTMLElement>("[data-category-search]")!.hidden = false;
+categoryDone.hidden = false;
+categoryQuery.addEventListener("input", filterCategories);
+categoryQuery.addEventListener("keydown", event => {
+  if (event.key === "Enter") event.preventDefault();
+});
+categoryDone.addEventListener("click", () => { categoryDropdown.open = false; categoryTrigger.focus(); });
+categoryDropdown.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    event.preventDefault(); categoryDropdown.open = false; categoryTrigger.focus();
+  } else if (event.key === "ArrowDown" && event.target === categoryTrigger) {
+    event.preventDefault(); categoryDropdown.open = true; categoryQuery.focus();
+  }
+});
+categoryDropdown.addEventListener("toggle", () => {
+  if (categoryDropdown.open) sortDropdown.open = false;
+  else resetCategorySearch();
+});
+sortDropdown.addEventListener("toggle", () => { if (sortDropdown.open) categoryDropdown.open = false; });
+categoryDropdown.addEventListener("focusout", event => {
+  // Clicking a checkbox label can briefly leave focus on the document body
+  // before the browser activates its input. That is not an outside action.
+  // Close only when focus moves to a known control outside the dropdown.
+  const nextTarget = event.relatedTarget;
+  if (nextTarget instanceof Node && nextTarget !== document.body && !categoryDropdown.contains(nextTarget)) {
+    categoryDropdown.open = false;
+  }
+});
+document.addEventListener("pointerdown", event => {
+  if (event.target instanceof Node && !categoryDropdown.contains(event.target)) categoryDropdown.open = false;
 });

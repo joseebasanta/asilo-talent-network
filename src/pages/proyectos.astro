@@ -78,18 +78,38 @@ const active = Boolean(query || selected.length);
               </details>
             </div>
           </div>
-          <fieldset class="category-filters">
-            <legend>Categorías <span>Selecciona una o varias</span></legend>
-            <div class="category-options">
-              <a href={query ? `/proyectos?q=${encodeURIComponent(query)}` : "/proyectos"} class:list={["category-all", { "is-active": !selected.length }]} data-all-categories>Todas <span>{projects.length}</span></a>
-              {categories.map(category => (
-                <label class="category-chip">
-                  <input type="checkbox" name="categoria" value={category} checked={selected.some(value => normalizeSearch(value) === normalizeSearch(category))} />
-                  <span>{category}<small>{projects.filter(project => project.tags.some(tag => normalizeSearch(tag) === normalizeSearch(category))).length}</small></span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <div class="category-filters">
+            <details class="sort-dropdown category-dropdown" id="project-categories">
+              <summary>
+                <span>Categorías</span>
+                <span class="category-selection" data-category-selection>{selected.length ? `${selected.length} ${selected.length === 1 ? "seleccionada" : "seleccionadas"}` : "Todas"}</span>
+                <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
+              </summary>
+              <div class="category-panel">
+                <div class="category-search" data-category-search hidden>
+                  <label class="sr-only" for="category-query">Buscar categorías</label>
+                  <input class="field-input" id="category-query" type="search" placeholder="Buscar categorías…" autocomplete="off" />
+                </div>
+                <fieldset class="category-list">
+                  <legend class="sr-only">Selecciona una o varias categorías</legend>
+                  {categories.map(category => (
+                    <label class="cat-row category-option" data-category-name={category}>
+                      <input class="cat-checkbox" type="checkbox" name="categoria" value={category} checked={selected.includes(category)} />
+                      <span class="cat-box" aria-hidden="true"><svg class="cat-check" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.5 11 1.5" /></svg></span>
+                      <span class="cat-name">{category}</span>
+                      <small class="category-project-count">{projects.filter(project => project.tags.some(tag => normalizeSearch(tag) === normalizeSearch(category))).length}</small>
+                    </label>
+                  ))}
+                  <p class="category-empty" data-category-empty role="status" hidden={categories.length > 0}>No encontramos categorías.</p>
+                </fieldset>
+                <div class="category-panel-footer">
+                  <a href={query ? `/proyectos?q=${encodeURIComponent(query)}` : "/proyectos"} data-all-categories>Limpiar selección</a>
+                  <button class="search-submit" type="button" data-category-done hidden>Listo</button>
+                </div>
+              </div>
+            </details>
+            <span class="category-hint">Selecciona una o varias</span>
+          </div>
           <noscript><p class="no-script-hint">Selecciona tus filtros y pulsa Buscar para ver los resultados.</p></noscript>
         </form>
         <div class="results-toolbar">
