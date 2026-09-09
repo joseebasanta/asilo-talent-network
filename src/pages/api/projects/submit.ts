@@ -27,7 +27,7 @@ import {
   buildRow,
   findDuplicateWebsite,
   MIN_FILL_MS,
-  validateSubmission,
+  validateSubmissionForm,
 } from "../../../lib/projects-submit";
 import { LOGO_BUCKET_ID, validateLogo } from "../../../lib/projects-logo";
 import {
@@ -147,13 +147,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     );
   }
 
-  const validation = validateSubmission({
-    nombre: String(form.get("nombre") ?? ""),
-    website: String(form.get("website") ?? ""),
-    descripcion: String(form.get("descripcion") ?? ""),
-    fundadores: String(form.get("fundadores") ?? ""),
-    categorias: form.getAll("categorias").map(String),
-  });
+  const validation = validateSubmissionForm(form);
   if (!validation.ok) {
     return json(
       { ok: false, field: validation.field, error: validation.message },
@@ -257,7 +251,8 @@ export async function POST({ request, clientAddress }: APIContext) {
     await sheets.spreadsheets.values.append({
       spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
       range: APPEND_RANGE,
-      valueInputOption: "USER_ENTERED",
+      // Keep user input literal: never interpret spreadsheet formulas.
+      valueInputOption: "RAW",
       requestBody: { values: [buildRow(validation.value, { logoId })] },
     });
   } catch {
