@@ -28,7 +28,7 @@ pnpm build
 - `src/lib/` — project loading, validation, search, and submission helpers
 - `src/data/` — project types and fallback data
 - `src/scripts/` and `src/styles/` — browser interactions and styles
-- `public/` — images, category icons, and fonts used by the site
+- `public/` — images, category icons, fonts, and SVG source artwork used by the site
 - `tests/` — automated tests
 - `docs/DESIGN-SYSTEM.md` — design reference
 
