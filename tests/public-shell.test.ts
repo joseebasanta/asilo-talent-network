@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
+import { projects as placeholderProjects } from "../src/data/projects";
 import IndexPage from "../src/pages/index.astro";
 
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
@@ -99,13 +100,14 @@ describe("public shell", () => {
 });
 
 describe("Proyectos directory (slice 1b-b)", () => {
-  it("renders ten placeholder cards with the live copy and CTA", async () => {
+  it("renders the original placeholder projects with the directory CTA", async () => {
     const html = await renderShell();
 
     expect(html).toContain('class="prj-title" data-decode>Proyectos');
-    expect((html.match(/class="prj-item"/g) ?? []).length).toBe(10);
-    expect((html.match(/Directorio de Builders/g) ?? []).length).toBe(10);
-    expect((html.match(/<a\b[^>]*class=["']prj-item["'][^>]*href="#"/g) ?? []).length).toBe(10);
+    expect((html.match(/class="prj-item"/g) ?? []).length).toBe(placeholderProjects.length);
+    expect(html).toContain("Directorio de Builders");
+    expect(html).toContain("Por Carlos Mendoza");
+    expect((html.match(/<a\b[^>]*class=["']prj-item["'][^>]*href="#"/g) ?? []).length).toBe(placeholderProjects.length);
     expect(html).toContain("AGREGA TU PROYECTO");
     expect(html).toContain("¿Eres parte de la comunidad y quieres sumarte al directorio?");
   });
@@ -115,9 +117,9 @@ describe("Proyectos directory (slice 1b-b)", () => {
 
     expect((html.match(/href=["']https:\/\/www\.asilodigital\.com\/["']/g) ?? []).length).toBe(2);
     expect(html.replaceAll('href="https://www.asilodigital.com/"', "")).not.toMatch(/href=["']https?:\/\//);
-    // 4 static images + 10 project placeholders + success, preview, and upload icons.
-    expect((html.match(/<img\b/g) ?? []).length).toBe(17);
-    expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(10);
+    // Shared shell and form images, plus one local icon per placeholder project.
+    expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 7);
+    expect((html.match(/class="prj-placeholder"/g) ?? []).length).toBe(placeholderProjects.length);
     expect(html).toContain('src="/logo-asilo-builders.svg"');
   });
 });

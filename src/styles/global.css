@@ -263,8 +263,10 @@ h1 {
 }
 .footer-social a:hover svg, .footer-social a:focus-visible svg { stroke-width: .3; }
 @media (max-width: 820px) {
+  .prj-nav { display: none; }
   .prj-list { flex-direction: column; gap: 0; }
   .prj-col { flex: 0 0 auto; width: 100%; }
+  .prj-col + .prj-col { display: none; }
   .prj-item { width: 100%; min-width: 0; }
   .prj-cta-row { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
 }
@@ -413,3 +415,6 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1 !important; transform: none !important; transition: none; }
 }
+
+.prj-browse { color: var(--blue-500); font-size: .875rem; text-underline-offset: 4px; white-space: nowrap; }
+@media (max-width: 480px) { .prj-nav { gap: .25rem; } .prj-arrow { width: 2rem; } .prj-head { padding-inline: 0; } }
