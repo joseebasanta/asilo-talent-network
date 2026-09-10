@@ -66,7 +66,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 </section>}
 
 <dialog class="modal" id="project-modal" aria-labelledby="project-modal-title">
-  <form class="modal-card">
+  <form class="modal-card" novalidate>
     <!-- Honeypot: humans never see it; bots fill it and get a fake success. -->
     <input class="honeypot" type="text" name="contact_email" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
     <!-- Server render time (ms): fills faster than the server minimum are bots. -->
@@ -85,12 +85,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     <div class="modal-body">
       <label class="field" data-field="nombre">
         <span class="field-label">Nombre del proyecto</span>
-        <input class="field-input" type="text" name="nombre" placeholder="Ej. Pana Pay" autocomplete="off" required maxlength="80" aria-describedby="project-form-status" />
+        <input class="field-input" type="text" name="nombre" minlength="2" placeholder="Ej. Pana Pay" autocomplete="off" required maxlength="80" aria-describedby="project-form-status" />
         <span class="field-error" data-field-error hidden></span>
       </label>
       <label class="field" data-field="website">
         <span class="field-label">Website URL</span>
-        <input class="field-input" type="text" name="website" placeholder="miproyecto.com" autocomplete="off" required inputmode="url" aria-describedby="project-form-status" />
+        <input class="field-input" type="text" name="website" maxlength="2048" placeholder="miproyecto.com" autocomplete="off" required inputmode="url" aria-describedby="project-form-status" />
         <span class="field-error" data-field-error hidden></span>
       </label>
       <label class="field" data-field="descripcion">
@@ -114,12 +114,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           </span>
           <span class="logo-upload-text">
             <span class="logo-upload-title" data-logo-title>Subir logo</span>
-            <span class="logo-upload-hint">Opcional · PNG, JPG o WebP · máximo permitido: 1 MB</span>
+            <span class="logo-upload-hint">Opcional · PNG, JPG o WebP · máximo permitido: 1 MB · sin animación · hasta 4096 × 4096 px y 16 MP</span>
           </span>
           <img class="logo-upload-thumb" data-logo-thumb src="/icon-upload.svg" alt="" hidden />
-          <input class="logo-upload-input" type="file" name="logo" accept="image/png,image/jpeg,image/webp" hidden />
+          <input class="logo-upload-input" type="file" name="logo" accept="image/png,image/jpeg,image/webp" />
         </label>
         <span class="field-error" data-field-error hidden></span>
+        <button type="button" data-remove-logo hidden>Quitar logo</button>
       </div>
       <div class="field" data-field="categorias">
         <div class="field-label-row">
@@ -179,6 +180,9 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
   import { gsap } from "gsap";
+  import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
+  import { validateLogo } from "../lib/projects-logo";
+  import { createSubmissionClock, resetCaptchaWidget } from "../lib/project-form-client";
 
   const projectCarousel = document.getElementById("project-directory-list");
   let projectPages = Array.from(document.querySelectorAll<HTMLElement>("[data-project-page]"));
@@ -365,7 +369,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   const dialog = document.getElementById("project-modal") as HTMLDialogElement | null;
   const openBtn = document.querySelector("[data-open-modal]");
   if (dialog && openBtn) {
-    const MAX = 3;
+    const MAX = MAX_CATEGORIES;
     const form = dialog.querySelector("form");
     const formView = form?.querySelector<HTMLElement>("[data-form-view]") ?? null;
     const successView = form?.querySelector<HTMLElement>("[data-success-view]") ?? null;
@@ -373,6 +377,31 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     const submitBtn = form?.querySelector<HTMLButtonElement>(".modal-submit") ?? null;
     const statusEl = form?.querySelector<HTMLElement>("[data-form-status]") ?? null;
     let submitted = false;
+    let submitting = false;
+    const resetCaptcha = () => {
+      const api = (window as Window & { turnstile?: { reset: (container: HTMLElement) => void } }).turnstile;
+      const widget = form?.querySelector<HTMLElement>(".cf-turnstile");
+      if (!resetCaptchaWidget(widget ?? null, api)) {
+        setStatus("No se pudo reiniciar la verificación. Recargá la página antes de intentar de nuevo.", true);
+      }
+    };
+    const submissionClock = createSubmissionClock(
+      Number(form?.querySelector<HTMLInputElement>('[name="submitted_at"]')?.value),
+      () => performance.now(),
+    );
+    const resetTimestamp = () => {
+      const timestamp = form?.querySelector<HTMLInputElement>('[name="submitted_at"]');
+      if (timestamp) timestamp.value = submissionClock();
+    };
+    // Associate each inline message with all controls in its field, including checkbox groups.
+    form?.querySelectorAll<HTMLElement>("[data-field]").forEach((field) => {
+      const error = field.querySelector<HTMLElement>("[data-field-error]");
+      if (!error) return;
+      error.id = `project-error-${field.dataset.field}`;
+      field.querySelectorAll("input, textarea").forEach((input) => {
+        input.setAttribute("aria-describedby", error.id);
+      });
+    });
     const playConfetti = () => {
       if (reduceMotion) return;
       const layer = document.createElement("div");
@@ -396,42 +425,35 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       statusEl.hidden = false;
     };
     // per-field error: shows an inline message under a field and focuses it
-    const setFieldError = (field: string, message: string) => {
+    const setFieldError = (field: string, message: string, focus = true) => {
       const el = form?.querySelector<HTMLElement>(`[data-field="${field}"] [data-field-error]`) ?? null;
       if (!el) return;
       el.textContent = message;
       el.hidden = false;
       const input = form?.querySelector<HTMLElement>(`[data-field="${field}"] input, [data-field="${field}"] textarea`) ?? null;
-      input?.focus();
-      input?.setAttribute("aria-invalid", "true");
+      if (focus) input?.focus();
+      form?.querySelectorAll(`[data-field="${field}"] input, [data-field="${field}"] textarea`)
+        .forEach((control) => control.setAttribute("aria-invalid", "true"));
     };
     // hide a field's error and clear its invalid flag once the user edits it
     const clearFieldError = (field: string) => {
       const el = form?.querySelector<HTMLElement>(`[data-field="${field}"] [data-field-error]`) ?? null;
-      if (el) el.hidden = true;
-      form?.querySelector<HTMLElement>(`[data-field="${field}"] input, [data-field="${field}"] textarea`)?.setAttribute("aria-invalid", "false");
+      if (el) { el.hidden = true; el.textContent = ""; }
+      form?.querySelectorAll(`[data-field="${field}"] input, [data-field="${field}"] textarea`)
+        .forEach((control) => control.removeAttribute("aria-invalid"));
     };
     // map a validation/error field name to the closest form field
     const FIELD_NAMES = new Set(["nombre", "website", "descripcion", "fundadores", "logo", "categorias", "captcha"]);
     openBtn.addEventListener("click", () => {
+      if (submitting) return;
+      dialog.showModal();
       if (submitted) {
-        form?.reset();
-        resetLogo();
-        syncCats();
-        if (ta && counter) counter.textContent = "0/140";
-        submitted = false;
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Agregar tu proyecto";
-        }
+        startNewProject();
+        return;
       }
+      if (!form?.querySelector<HTMLInputElement>('[name="nombre"]')?.value) resetTimestamp();
       if (formView) formView.hidden = false;
       if (successView) successView.hidden = true;
-      if (statusEl) {
-        statusEl.hidden = true;
-        statusEl.classList.remove("is-error");
-      }
-      dialog.showModal();
     });
     dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
       el.addEventListener("click", () => dialog.close())
@@ -464,12 +486,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     const logoInput = dialog.querySelector<HTMLInputElement>('input[name="logo"]');
     const logoTitle = dialog.querySelector("[data-logo-title]");
     const logoThumb = dialog.querySelector<HTMLImageElement>("[data-logo-thumb]");
+    const removeLogo = form?.querySelector<HTMLButtonElement>("[data-remove-logo]");
+    let logoObjectUrl: string | null = null;
     const logoErrorEl = form?.querySelector<HTMLElement>('[data-field="logo"] [data-field-error]') ?? null;
     const resetLogo = () => {
-      if (logoInput && logoInput.files?.length) {
-        const dt = new DataTransfer();
-        logoInput.files = dt.files;
-      }
+      if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
+      logoObjectUrl = null;
+      if (removeLogo) removeLogo.hidden = true;
+      if (logoInput) logoInput.value = "";
       if (logoTitle) logoTitle.textContent = "Subir logo";
       if (logoThumb) {
         logoThumb.hidden = true;
@@ -479,25 +503,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     const acceptLogo = (file: File | null): boolean => {
       if (logoErrorEl) logoErrorEl.hidden = true;
       if (!file) return true;
-      const MAX_BYTES = 1_048_576;
-      const okMime = ["image/png", "image/jpeg", "image/webp"].includes(file.type);
-      const okExt = /\.(png|jpe?g|webp)$/i.test(file.name);
-      if (file.size > MAX_BYTES) {
-        if (logoErrorEl) {
-          logoErrorEl.textContent = "El logo debe pesar menos de 1 MB.";
-          logoErrorEl.hidden = false;
-        }
+      const check = validateLogo(file);
+      if (!check.ok) {
         resetLogo();
+        setFieldError("logo", check.error);
         return false;
       }
-      if (!okMime || !okExt) {
-        if (logoErrorEl) {
-          logoErrorEl.textContent = "El logo debe ser PNG, JPG o WebP.";
-          logoErrorEl.hidden = false;
-        }
-        resetLogo();
-        return false;
-      }
+      if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
+      if (removeLogo) removeLogo.hidden = false;
       if (logoInput) {
         const dt = new DataTransfer();
         dt.items.add(file);
@@ -505,11 +518,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       }
       if (logoTitle) logoTitle.textContent = file.name;
       if (logoThumb) {
-        logoThumb.src = URL.createObjectURL(file);
+        logoObjectUrl = URL.createObjectURL(file);
+        logoThumb.src = logoObjectUrl;
         logoThumb.hidden = false;
       }
       return true;
     };
+    removeLogo?.addEventListener("click", () => { resetLogo(); clearFieldError("logo"); });
     logoInput?.addEventListener("change", () => {
       if (acceptLogo(logoInput.files?.[0] ?? null)) clearFieldError("logo");
     });
@@ -525,33 +540,82 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       if (field && FIELD_NAMES.has(field)) clearFieldError(field);
     });
     boxes.forEach((b) => b.addEventListener("change", () => clearFieldError("categorias")));
+    // Validate completed text fields on blur without interrupting typing.
+    form?.addEventListener("focusout", (e) => {
+      if (submitting) return;
+      const field = (e.target as HTMLInputElement).name;
+      if (!["nombre", "website", "descripcion", "fundadores"].includes(field)) return;
+      const result = validateSubmissionForm(new FormData(form));
+      if (!result.ok && result.errors[field]) setFieldError(field, result.errors[field], false);
+      else clearFieldError(field);
+    });
     // Turnstile calls this global with a fresh token after each solve; hide the
     // captcha error so the visitor knows a re-submit will be accepted.
     Object.assign(window, { onTurnstileSolve: () => clearFieldError("captcha") });
-    form?.querySelector("[data-submit-another]")?.addEventListener("click", () => {
-      form.reset();
+    // Clear submitted data immediately; both restart paths use this same reset.
+    const clearProjectForm = () => {
+      form?.reset();
+      resetTimestamp();
+      FIELD_NAMES.forEach(clearFieldError);
+      if (statusEl) {
+        statusEl.hidden = true;
+        statusEl.textContent = "";
+        statusEl.classList.remove("is-error");
+      }
+      // Widget-generated inputs can retain a default value across native reset().
+      form?.querySelectorAll<HTMLInputElement>('[name="cf-turnstile-response"]')
+        .forEach((input) => { input.value = ""; });
       resetLogo();
       syncCats();
-      if (ta && counter) counter.textContent = "0/140";
-      submitted = false;
+      if (counter) counter.textContent = "0/140";
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Agregar tu proyecto";
       }
+      const body = form?.querySelector<HTMLElement>(".modal-body");
+      if (body) body.scrollTop = 0;
+    };
+    const startNewProject = () => {
+      clearProjectForm();
+      submitted = false;
       if (formView) formView.hidden = false;
       if (successView) successView.hidden = true;
+      resetCaptcha();
       form?.querySelector<HTMLInputElement>('input[name="nombre"]')?.focus();
-    });
+    };
+    form?.querySelector("[data-submit-another]")?.addEventListener("click", startNewProject);
     // submit: POST the FormData to the same-origin endpoint; keep the user's
     // input untouched on error, reset + announce success before closing
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!form) return;
-      if (boxes.filter((b) => b.checked).length === 0) {
-        setFieldError("categorias", "Seleccioná al menos una categoría.");
-        setStatus("Seleccioná al menos una categoría.", true);
+      if (!form || submitting || submitted) return;
+      FIELD_NAMES.forEach(clearFieldError);
+      if (statusEl) statusEl.hidden = true;
+      const body = new FormData(form);
+      const validation = validateSubmissionForm(body);
+      if (!validation.ok) {
+        for (const [field, message] of Object.entries(validation.errors)) setFieldError(field, message, false);
+        setStatus("Revisá los campos marcados antes de enviar.", true);
+        setFieldError(validation.field, validation.message);
         return;
       }
+      const logoCheck = validateLogo(logoInput?.files?.[0]);
+      if (!logoCheck.ok) { setFieldError("logo", logoCheck.error); return; }
+      if (form.querySelector(".cf-turnstile") && !body.get("cf-turnstile-response")) {
+        setFieldError("captcha", "Completá la verificación antes de enviar.");
+        form.querySelector<HTMLElement>("[data-turnstile]")?.focus();
+        return;
+      }
+      // Send the same normalized values that passed the shared schema.
+      for (const field of SUBMISSION_FIELDS) {
+        body.delete(field);
+        const value = validation.value[field];
+        if (Array.isArray(value)) value.forEach((item) => body.append(field, item));
+        else body.set(field, value);
+      }
+      submitting = true;
+      form.setAttribute("aria-busy", "true");
+      if (formView) formView.inert = true;
       // honeypot: if a bot filled it, still POST so it gets the fake success
       if (submitBtn) {
         submitBtn.disabled = true;
@@ -560,12 +624,19 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       try {
         const res = await fetch("/api/projects/submit", {
           method: "POST",
-          body: new FormData(form),
+          body,
+          signal: AbortSignal.timeout(30_000),
         });
         const data = (await res.json().catch(() => null)) as
-          | { ok: boolean; error?: string; field?: string }
+          | { ok: boolean; error?: string; field?: string; errors?: Record<string, string> }
           | null;
+        if (formView) formView.inert = false;
         if (!res.ok || !data?.ok) {
+          if (data?.errors) {
+            for (const [field, message] of Object.entries(data.errors)) {
+              if (FIELD_NAMES.has(field) && typeof message === "string") setFieldError(field, message, false);
+            }
+          }
           const message =
             data && typeof data.error === "string"
               ? data.error
@@ -582,6 +653,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           return;
         }
         submitted = true;
+        clearProjectForm();
         if (formView) formView.hidden = true;
         if (successView) successView.hidden = false;
         playConfetti();
@@ -589,10 +661,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       } catch {
         setStatus("Hubo un problema de conexión. Intentá de nuevo.", true);
       } finally {
+        submitting = false;
+        form.removeAttribute("aria-busy");
+        if (formView) formView.inert = false;
         if (submitBtn && !submitted) {
           submitBtn.disabled = false;
           submitBtn.textContent = "Agregar tu proyecto";
         }
+        if (!submitted) resetCaptcha();
       }
     });
   }

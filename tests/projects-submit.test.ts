@@ -8,6 +8,7 @@ import {
   normalizeWebsiteKey,
   normalizeWebsiteUrl,
   validateSubmission,
+  validateSubmissionForm,
   websiteColumnIndex,
 } from "../src/lib/projects-submit";
 
@@ -85,10 +86,65 @@ describe("validateSubmission", () => {
     expect(
       validateSubmission({ ...validInput, categorias: ["Inventada"] }).ok,
     ).toBe(false);
-    // Mixed valid + invalid keeps only the valid ones — still fails when none left.
+    // Mixed valid + invalid must reject the entire submission.
     expect(
       validateSubmission({ ...validInput, categorias: ["Inventada", "Web3"] }).ok,
-    ).toBe(true);
+    ).toBe(false);
+  });
+
+  it("rejects duplicate categories and untrusted value types without throwing", () => {
+    for (const input of [null, [], {}, { ...validInput, nombre: 123 },
+      { ...validInput, descripcion: {} }, { ...validInput, categorias: "Fintech" },
+      { ...validInput, categorias: ["Fintech", "Fintech"] },
+      { ...validInput, nombre: "Pana\u0000Pay" }]) {
+      expect(validateSubmission(input).ok).toBe(false);
+    }
+  });
+
+  it("rejects credentials, local hosts, malformed URLs and excessive URL length", () => {
+    for (const website of ["https://user:pass@example.com", "http://localhost",
+      "http://127.0.0.1", "https://service.local", "https://example.com/a b",
+      "https://exa\nmple.com", "https://example.com/" + "a".repeat(2048)]) {
+      expect(validateSubmission({ ...validInput, website })).toMatchObject({
+        ok: false, field: "website",
+      });
+    }
+  });
+
+  it("rejects URLs whose normalized encoding exceeds the limit", () => {
+    expect(validateSubmission({ ...validInput, website: "https://example.com/" + "é".repeat(400) }))
+      .toMatchObject({ ok: false, field: "website" });
+  });
+
+  it("accepts normalized output again, as the browser sends it to the server", () => {
+    for (const website of ["mañana.com/niño", "https://example.com/" + "é".repeat(300), "EXAMPLE.COM."]) {
+      const parsed = validateSubmission({ ...validInput, website });
+      expect(parsed.ok).toBe(true);
+      if (parsed.ok) expect(validateSubmission(parsed.value)).toEqual(parsed);
+    }
+  });
+
+  it("accepts international domains and preserves legitimate paths and queries", () => {
+    const result = validateSubmission({ ...validInput, website: "https://mañana.com/app?q=hello%20world" });
+    expect(result).toMatchObject({ ok: true, value: {
+      website: "https://xn--maana-pta.com/app?q=hello%20world",
+    } });
+  });
+
+  it("validates multipart fields without stringifying files or accepting duplicate scalars", () => {
+    const form = new FormData();
+    for (const [key, value] of Object.entries(validInput)) {
+      if (Array.isArray(value)) value.forEach((item) => form.append(key, item));
+      else form.append(key, value);
+    }
+    expect(validateSubmissionForm(form).ok).toBe(true);
+    form.append("nombre", "Another name");
+    expect(validateSubmissionForm(form)).toMatchObject({ ok: false, field: "nombre" });
+    form.delete("nombre");
+    form.append("nombre", new Blob(["Pana Pay"]), "name.txt");
+    expect(validateSubmissionForm(form)).toMatchObject({ ok: false, field: "nombre" });
+    form.delete("nombre");
+    expect(validateSubmissionForm(form)).toMatchObject({ ok: false, field: "nombre" });
   });
 
   it("accepts exactly the category boundary cases (1 and 3)", () => {
@@ -239,10 +295,10 @@ describe("buildRow", () => {
     };
     const submittedAt = new Date(2026, 8, 4, 23, 15);
 
-    const withoutLogo = buildRow(base, { revisionId: "rev-1", submittedAt });
+    const withoutLogo = buildRow({ ...base, categorias: ["Fintech"] }, { revisionId: "rev-1", submittedAt });
     expect(withoutLogo[7]).toBe("");
 
-    const withLogo = buildRow(base, {
+    const withLogo = buildRow({ ...base, categorias: ["Fintech"] }, {
       revisionId: "rev-1",
       submittedAt,
       logoId: "logo-abc123",
