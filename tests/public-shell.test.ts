@@ -115,7 +115,7 @@ describe("Proyectos directory (slice 1b-b)", () => {
   it("keeps project links local while using the Asilo Digital brand link", async () => {
     const html = await renderShell();
 
-    expect((html.match(/href=["']https:\/\/www\.asilodigital\.com\/["']/g) ?? []).length).toBe(2);
+    expect((html.match(/href=["']https:\/\/www\.asilodigital\.com\/["']/g) ?? []).length).toBe(3);
     expect(html.replaceAll('href="https://www.asilodigital.com/"', "")).not.toMatch(/href=["']https?:\/\//);
     // Shared shell and form images, plus one local icon per placeholder project.
     expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 7);

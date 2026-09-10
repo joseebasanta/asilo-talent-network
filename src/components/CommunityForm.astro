@@ -1,0 +1,105 @@
+---
+const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url"; autocomplete?: "email" | "name" | "tel"; placeholder?: string; hint?: string; max: number }> = [
+  { name: "email", label: "Email", type: "email", autocomplete: "email", max: 254 },
+  { name: "name", label: "Nombre y apellido", autocomplete: "name", max: 150 },
+  { name: "location", label: "Ciudad, país", placeholder: "Ej: Caracas, Venezuela", max: 150 },
+  { name: "whatsapp", label: "WhatsApp", type: "tel", autocomplete: "tel", placeholder: "+58 412 1234567", hint: "Incluye el código de país (+).", max: 40 },
+  { name: "linkedin", label: "URL de LinkedIn", type: "url", placeholder: "https://www.linkedin.com/in/tu-perfil", max: 500 },
+  { name: "role", label: "Rol", placeholder: "Cargo que desempeñas o profesión", max: 150 },
+  { name: "project", label: "Nombre del proyecto", max: 200 },
+];
+---
+<dialog id="community-dialog" aria-labelledby="community-title">
+  <button class="close" type="button" aria-label="Cerrar formulario">✕</button>
+  <p class="eyebrow">CONSTRUYAMOS JUNTOS</p>
+  <h2 id="community-title">Asilo Builders</h2>
+  <div class="intro">
+    <p>Un builder es una persona que diseña, configura y desarrolla soluciones digitales y flujos de trabajo utilizando herramientas de Inteligencia Artificial.</p>
+    <p>Asilo Builders es nuestro grupo cerrado dentro de la comunidad de Asilo Digital en WhatsApp, donde vas a compartir con perfiles que están construyendo productos y experimentos desde Venezuela. Un espacio para aprender de forma colaborativa, dar y recibir feedback, y crecer.</p>
+    <p>Si tienes un proyecto en curso, un producto con usuarios reales o una idea que ya estás ejecutando, llena este formulario.</p>
+    <p class="notice"><strong>Recuerda: antes debes ser miembro de la comunidad en WhatsApp.</strong> Conoce <a href="https://www.asilodigital.com/" target="_blank" rel="noopener noreferrer">Asilo Digital</a>.</p>
+  </div>
+  <form id="community-form">
+    <p class="required-note">Los campos con * son obligatorios.</p>
+    <div class="fields">
+      {fields.map(field => <label for={`community-${field.name}`}>{field.label} *
+        <input id={`community-${field.name}`} name={field.name} type={field.type ?? "text"} autocomplete={field.autocomplete} placeholder={field.placeholder} maxlength={field.max} required />
+        {field.hint && <small>{field.hint}</small>}
+      </label>)}
+      <label class="wide" for="community-description">Si quieres, cuéntanos un poco del proyecto
+        <textarea id="community-description" name="description" rows="4" maxlength="3000" placeholder="¿Qué estás construyendo y en qué etapa estás?" />
+      </label>
+    </div>
+    <div class="trap" aria-hidden="true"><label>No completar<input name="contact_email" tabindex="-1" autocomplete="off" /></label></div>
+    <input type="hidden" name="started" />
+    <p class="required-note">Usaremos estos datos para revisar tu solicitud y contactarte sobre Asilo Builders.</p>
+    <button class="button button-primary send" type="submit">Enviar solicitud</button>
+  </form>
+  <p id="community-status" role="status" aria-live="polite" tabindex="-1"></p>
+</dialog>
+<style>
+  dialog { position: fixed; inset: 0; margin: auto; width: min(740px, calc(100% - 24px)); max-height: 90dvh; padding: clamp(24px, 5vw, 48px); border: 1px solid var(--sky-alpha-24); border-radius: 20px; background: #07121c; color: var(--fg); overflow-y: auto; }
+  dialog::backdrop { background: #000a11cf; backdrop-filter: blur(6px); }
+  .close { position: absolute; top: 14px; right: 16px; background: transparent; border: 0; color: var(--blue-500); font-size: 24px; width: 44px; height: 44px; cursor: pointer; }
+  .eyebrow { color: var(--blue-500); font-size: 12px; letter-spacing: .14em; margin: 0 35px 12px 0; }
+  h2 { font-family: var(--font-display); font-size: clamp(32px, 6vw, 48px); margin: 0 0 20px; }
+  .intro { font-size: 15px; color: #ced5df; }
+  .intro p { margin: 0 0 16px; }
+  .notice { padding: 16px; background: var(--sky-alpha-10); border-radius: 10px; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+  input, textarea { width: 100%; min-width: 0; background: var(--bg); border: 1px solid #525f70; color: var(--fg); border-radius: 8px; padding: 13px; font: inherit; }
+  input:focus, textarea:focus { outline: 2px solid var(--blue-500); outline-offset: 2px; }
+  textarea { resize: vertical; }
+  .wide { grid-column: 1 / -1; }
+  small, .required-note { color: #b1bbc9; font-size: 13px; }
+  .required-note { margin: 20px 0; }
+  .send { width: 100%; cursor: pointer; }
+  .send:disabled { opacity: .6; cursor: wait; }
+  .trap { position: absolute; left: -10000px; }
+  #community-status { margin-bottom: 0; color: var(--blue-500); }
+  @media (max-width: 540px) { .fields { grid-template-columns: 1fr; } }
+</style>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("#community-dialog")!;
+  const form = document.querySelector<HTMLFormElement>("#community-form")!;
+  const status = document.querySelector<HTMLElement>("#community-status")!;
+  const send = form.querySelector<HTMLButtonElement>(".send")!;
+  let previousOverflow = "";
+  function open() {
+    if (dialog.open) return;
+    (form.elements.namedItem("started") as HTMLInputElement).value = String(Date.now());
+    previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialog.showModal();
+  }
+  document.querySelectorAll<HTMLAnchorElement>('a[href="#unete"], a[href="/#unete"]').forEach(link => {
+    link.setAttribute("aria-haspopup", "dialog");
+    link.addEventListener("click", event => { event.preventDefault(); open(); });
+  });
+  if (location.hash === "#unete") open();
+  window.addEventListener("hashchange", () => { if (location.hash === "#unete") open(); });
+  dialog.querySelector(".close")!.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("close", () => { document.body.style.overflow = previousOverflow; });
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (send.disabled) return;
+    send.disabled = true;
+    send.textContent = "Enviando…";
+    status.textContent = "";
+    try {
+      const response = await fetch("/api/community/submit", { method: "POST", body: new FormData(form) });
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        status.textContent = result.error || "No pudimos guardar tu solicitud. Intenta de nuevo.";
+        const field = form.elements.namedItem(result.field);
+        if (field instanceof HTMLElement) field.focus();
+      } else {
+        form.hidden = true;
+        status.textContent = "¡Recibimos tu solicitud! Revisaremos tu información y te contactaremos. ¡Nos vemos!";
+        status.focus();
+      }
+    } catch { status.textContent = "No pudimos confirmar el envío. Revisa tu conexión e intenta de nuevo."; }
+    finally { send.disabled = false; send.textContent = "Enviar solicitud"; }
+  });
+</script>
