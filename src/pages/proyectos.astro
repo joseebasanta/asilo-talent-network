@@ -1,0 +1,155 @@
+---
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/projects.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import ProjectDirectory from "../components/ProjectDirectory.astro";
+import { loadApprovedProjects } from "../lib/projects-loader";
+import ProjectCard from "../components/ProjectCard.astro";
+import { filterProjects, normalizeSearch, paginateProjects, projectPageUrl } from "../lib/project-search";
+
+const projects = (await loadApprovedProjects()).map((project, index) => ({ ...project, index }));
+const categories = Array.from(new Map(projects.flatMap(project => project.tags)
+  .map(tag => [normalizeSearch(tag), tag])).values()).sort((a, b) => a.localeCompare(b, "es"));
+const query = Astro.url.searchParams.get("q") ?? "";
+const selected = categories.filter(category => Astro.url.searchParams.getAll("categoria").some(value => normalizeSearch(value) === normalizeSearch(category)));
+const order = Astro.url.searchParams.get("orden") === "za" ? "za" : "az";
+const matches = filterProjects(projects, query, selected, order);
+const pagination = paginateProjects(matches, Number(Astro.url.searchParams.get("pagina") ?? 1));
+const positions = new Map(pagination.items.map((project, index) => [project.index, index]));
+const active = Boolean(query || selected.length);
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#000a11" />
+    <meta name="description" content="Explora los proyectos de Asilo Builders. Descubre productos creados por builders de Venezuela y busca por nombre, fundador o categoría." />
+    <title>Proyectos | Asilo Builders</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body class="projects-page">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <SiteHeader />
+    <main id="contenido" class="explore">
+      <section class="explore-intro" aria-labelledby="page-title">
+        <a class="back-link" href="/">← Volver al inicio</a>
+        <div class="explore-heading">
+          <div>
+            <h1 id="page-title">Proyectos de<br />la comunidad</h1>
+            <p class="explore-description">Descubre lo que estamos construyendo.<br />Explora, encuentra inspiración y conecta con sus creadores.</p>
+          </div>
+          <div class="explore-invite">
+            <span class="pixel-plus" aria-hidden="true">+</span>
+            <p>¿Estás construyendo algo?</p>
+            <button class="prj-cta" type="button" data-open-modal>AGREGA TU PROYECTO</button>
+          </div>
+        </div>
+      </section>
+      <section class="explore-directory" aria-label="Directorio de proyectos">
+        <form class="explore-controls" action="/proyectos" method="get" role="search" id="project-filters">
+          <div class="search-row">
+            <div class="search-control">
+              <label class="filter-label" for="project-query">Buscar proyectos</label>
+            <div class="search-field">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h10v2H4zM2 6h2v8H2zM4 14h10v2H4zM14 6h2v8h-2zM16 16h3v3h-3zM19 19h3v3h-3z" stroke="none" fill="currentColor" /></svg>
+              <input id="project-query" type="search" name="q" value={query} placeholder="Busca un proyecto, fundador o idea…" autocomplete="off" />
+              <button type="submit" class="search-submit">Buscar</button>
+            </div>
+            </div>
+          <div class="category-filters">
+            <span class="filter-label" id="category-label">Categorías</span>
+            <details class="sort-dropdown category-dropdown" id="project-categories">
+              <summary aria-labelledby="category-label category-value">
+                <span class="category-selection" id="category-value" data-category-selection>{selected.length ? `${selected.length} ${selected.length === 1 ? "seleccionada" : "seleccionadas"}` : "Todas"}</span>
+                <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
+              </summary>
+              <div class="category-panel">
+                <p class="category-hint">Selecciona una o varias</p>
+                <div class="category-search" data-category-search hidden>
+                  <label class="sr-only" for="category-query">Buscar categorías</label>
+                  <input class="field-input" id="category-query" type="search" placeholder="Buscar categorías…" autocomplete="off" />
+                </div>
+                <fieldset class="category-list">
+                  <legend class="sr-only">Selecciona una o varias categorías</legend>
+                  {categories.map(category => (
+                    <label class="cat-row category-option" data-category-name={category}>
+                      <input class="cat-checkbox" type="checkbox" name="categoria" value={category} checked={selected.includes(category)} />
+                      <span class="cat-box" aria-hidden="true"><svg class="cat-check" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.5 11 1.5" /></svg></span>
+                      <span class="cat-name">{category}</span>
+                      <small class="category-project-count">{projects.filter(project => project.tags.some(tag => normalizeSearch(tag) === normalizeSearch(category))).length}</small>
+                    </label>
+                  ))}
+                  <p class="category-empty" data-category-empty role="status" hidden={categories.length > 0}>No encontramos categorías.</p>
+                </fieldset>
+                <div class="category-panel-footer">
+                  <a href={query ? `/proyectos?q=${encodeURIComponent(query)}` : "/proyectos"} data-all-categories>Limpiar selección</a>
+                  <button class="search-submit" type="button" data-category-done hidden>Listo</button>
+                </div>
+              </div>
+            </details>
+          </div>
+            <div class="sort-field">
+              <span class="filter-label" id="sort-label">Ordenar</span>
+              <details class="sort-dropdown" id="project-sort">
+                <summary aria-labelledby="sort-label sort-value">
+                  <span id="sort-value">Nombre: {order === "za" ? "Z–A" : "A–Z"}</span>
+                  <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
+                </summary>
+                <fieldset class="sort-options">
+                  <legend class="sr-only">Ordenar proyectos por nombre</legend>
+                  {[{ value: "az", label: "Nombre: A–Z" }, { value: "za", label: "Nombre: Z–A" }].map(option => (
+                    <label class="sort-option">
+                      <input type="radio" name="orden" value={option.value} checked={order === option.value} />
+                      <span>{option.label}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11h3v3H3zm3 3h3v3H6zm3 3h3v3H9zm3-3h3v3h-3zm3-3h3v3h-3zm3-3h3v3h-3z" /></svg></span>
+                    </label>
+                  ))}
+                </fieldset>
+              </details>
+            </div>
+          </div>
+          <noscript><p class="no-script-hint">Selecciona tus filtros y pulsa Buscar para ver los resultados.</p></noscript>
+        </form>
+        <div class="results-toolbar">
+          <p id="project-count" role="status" aria-live="polite" aria-atomic="true">{matches.length} {matches.length === 1 ? "proyecto" : "proyectos"}{active ? ` de ${projects.length}` : " para descubrir"}</p>
+          <a href="/proyectos" class="clear-filters" data-clear-filters hidden={!active}>Limpiar filtros <span aria-hidden="true">×</span></a>
+        </div>
+        <div class="explore-grid" id="project-results" tabindex="-1" aria-label="Resultados de proyectos">
+          {[...pagination.items, ...projects.filter(project => !positions.has(project.index))].map(project => (
+            <ProjectCard project={project}
+              data-project-index={project.index} data-title={project.title}
+              data-description={project.description} data-author={project.author}
+              data-tags={JSON.stringify(project.tags)} hidden={!positions.has(project.index)}
+              style={`order: ${positions.get(project.index) ?? 0}`}
+            />
+          ))}
+        </div>
+        <nav class="project-pagination" aria-label="Paginación de proyectos" hidden={pagination.totalPages <= 1}>
+          <p class="pagination-range" data-page-range>{pagination.start}–{pagination.end} de {matches.length} proyectos</p>
+          <div class="pagination-controls">
+            <a class="prj-cta pagination-link" data-page-direction="previous" href={pagination.page > 1 ? projectPageUrl(Astro.url, pagination.page - 1) : undefined} aria-disabled={pagination.page === 1 ? "true" : undefined} aria-controls="project-results">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 4h3v3h-3zm-3 3h3v3h-3zm-3 3h3v4H8zm3 4h3v3h-3zm3 3h3v3h-3z" /></svg>Anterior
+            </a>
+            <span class="pagination-current" data-page-status role="status" aria-live="polite" aria-atomic="true">Página {pagination.page} de {pagination.totalPages}</span>
+            <a class="prj-cta pagination-link" data-page-direction="next" href={pagination.page < pagination.totalPages ? projectPageUrl(Astro.url, pagination.page + 1) : undefined} aria-disabled={pagination.page === pagination.totalPages ? "true" : undefined} aria-controls="project-results">
+              Siguiente<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4h3v3H7zm3 3h3v3h-3zm3 3h3v4h-3zm-3 4h3v3h-3zm-3 3h3v3H7z" /></svg>
+            </a>
+          </div>
+        </nav>
+        <div class="empty-results" id="empty-results" hidden={matches.length > 0}>
+          <span class="empty-symbol" aria-hidden="true">[ ? ]</span>
+          <h2>{projects.length ? "No encontramos proyectos" : "Las próximas ideas empiezan aquí"}</h2>
+          <p>{projects.length ? "Prueba con otra palabra o cambia las categorías seleccionadas." : "Sé parte del directorio. Comparte lo que estás construyendo con la comunidad."}</p>
+          {projects.length > 0 && <a href="/proyectos" class="prj-cta" data-clear-filters>Ver todos los proyectos</a>}
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+    <ProjectDirectory projects={[]} modalOnly />
+    <script src="../scripts/project-explorer.ts"></script>
+  </body>
+</html>
