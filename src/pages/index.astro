@@ -6,8 +6,12 @@ import SiteFooter from "../components/SiteFooter.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 
-// Server-rendered: the directory reflects the sheet's current approval state.
-const projects = await loadApprovedProjects();
+import { loadBuildersCount } from "../lib/builders-loader";
+
+const [projects, buildersCount] = await Promise.all([
+  loadApprovedProjects(),
+  loadBuildersCount(),
+]);
 ---
 
 <!doctype html>
@@ -35,7 +39,9 @@ const projects = await loadApprovedProjects();
         <section class="hero-content" aria-labelledby="hero-title">
         <p class="hero-eyebrow">
           <img class="hero-eyebrow-brace" src="/icon-bracket-left.svg" alt="" aria-hidden="true" width="8" height="24" />
-          <span class="hero-eyebrow-count">+170</span>
+          {buildersCount !== null && (
+            <span class="hero-eyebrow-count">{buildersCount.toLocaleString("es-VE")}</span>
+          )}
           <span class="hero-eyebrow-label">Builders forman parte</span>
           <img class="hero-eyebrow-brace" src="/icon-bracket-right.svg" alt="" aria-hidden="true" width="8" height="24" />
         </p>
