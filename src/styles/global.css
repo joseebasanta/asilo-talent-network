@@ -212,7 +212,15 @@ h1 {
 .prj-desc { font-family: var(--font-text); font-weight: 400; font-size: .875rem; line-height: 1.25rem; letter-spacing: -.006em; color: var(--blue-700); margin: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .prj-author { font-family: var(--font-text); font-weight: 400; font-size: .75rem; line-height: 1rem; color: var(--blue-800); margin: 0; }
 .prj-tags { display: flex; gap: .25rem; flex-wrap: wrap; }
-.prj-tag { background: var(--slate-900); padding: .125rem .5rem; border-radius: 999px; font-family: var(--font-text); font-weight: 500; font-size: .6875rem; line-height: .75rem; letter-spacing: .02em; text-transform: uppercase; color: var(--blue-800); white-space: nowrap; }
+.prj-tag {
+  display: inline-flex; align-items: center; max-width: 100%;
+  padding: .125rem .375rem;
+  border: 1px solid var(--sky-alpha-16); border-radius: .25rem;
+  background: var(--sky-alpha-5); color: var(--blue-500);
+  font-family: var(--font-text); font-weight: 500; font-size: .6875rem;
+  line-height: .75rem; letter-spacing: .02em; text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
 .prj-cta-row { display: flex; gap: 2rem; align-items: center; padding: 0 1rem; margin-top: 2.5rem; }
 .prj-cta-text { flex: 1 1 0; min-width: 0; font-family: var(--font-text); font-weight: 500; font-size: 1.125rem; line-height: 1.5rem; letter-spacing: -.015em; color: var(--blue-700); margin: 0; }
 .prj-cta { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--font-text); font-weight: 500; font-size: 1rem; line-height: 1.5rem; letter-spacing: -.011em; color: var(--blue-500); text-decoration: none; background: none; cursor: pointer; border: 1px solid var(--blue-500); border-radius: .25rem; padding: .5rem 1rem; white-space: nowrap; transition: background .15s; }
