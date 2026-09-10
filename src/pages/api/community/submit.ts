@@ -18,9 +18,10 @@ export async function POST({ request, clientAddress }: APIContext) {
   let form: FormData;
   try { form = await readSubmissionForm(request); } catch { return reply({ error: "Solicitud inválida o demasiado grande." }, 400); }
   if (form.get("contact_email")) return reply({ ok: true }, 201);
-  const started = Number(form.get("started"));
-  if (!Number.isSafeInteger(started) || started <= 0 || now - started < 3000) return reply({ error: "Espera unos segundos y vuelve a enviar." }, 429);
-  for (const key of Object.keys(communitySchema.shape)) if (form.getAll(key).length !== 1) return reply({ error: "Revisa los campos del formulario." }, 400);
+  const startedRaw = form.get("started");
+  const started = typeof startedRaw === "string" ? Number(startedRaw) : NaN;
+  if (form.getAll("started").length !== 1 || typeof startedRaw !== "string" || !/^\d+$/.test(startedRaw) || !Number.isSafeInteger(started) || started <= 0 || now - started < 3000) return reply({ error: "Espera unos segundos y vuelve a enviar." }, 429);
+  for (const key of Object.keys(communitySchema.shape)) if (form.getAll(key).length > 1 || (key !== "description" && form.getAll(key).length !== 1)) return reply({ error: "Revisa los campos del formulario." }, 400);
   const result = communitySchema.safeParse(Object.fromEntries(form));
   if (!result.success) return reply({ error: result.error.issues[0].message, field: result.error.issues[0].path[0] }, 400);
   try {
@@ -28,6 +29,6 @@ export async function POST({ request, clientAddress }: APIContext) {
     const auth = new googleSheets.auth.JWT({ email: account.client_email, key: account.private_key, scopes: ["https://www.googleapis.com/auth/spreadsheets"] });
     const sheets = googleSheets.sheets({ version: "v4", auth });
     await sheets.spreadsheets.values.append({ spreadsheetId: sheetId, range: "Builders!A:J", valueInputOption: "RAW", insertDataOption: "INSERT_ROWS", requestBody: { values: [communityRow(result.data)] } });
-  } catch { return reply({ error: "No pudimos guardar tu solicitud. Intenta de nuevo en unos minutos." }, 503); }
+  } catch { return reply({ error: "No pudimos confirmar que tu solicitud se guardó. Si vuelves a enviar, podría registrarse más de una vez." }, 503); }
   return reply({ ok: true }, 201);
 }

@@ -19,7 +19,7 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
     <p>Si tienes un proyecto en curso, un producto con usuarios reales o una idea que ya estás ejecutando, llena este formulario.</p>
     <p class="notice"><strong>Recuerda: antes debes ser miembro de la comunidad en WhatsApp.</strong> Conoce <a href="https://www.asilodigital.com/" target="_blank" rel="noopener noreferrer">Asilo Digital</a>.</p>
   </div>
-  <form id="community-form">
+  <form id="community-form" method="post" action="/api/community/submit" enctype="multipart/form-data">
     <p class="required-note">Los campos con * son obligatorios.</p>
     <div class="fields">
       {fields.map(field => <label for={`community-${field.name}`}>{field.label} *
@@ -31,7 +31,7 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
       </label>
     </div>
     <div class="trap" aria-hidden="true"><label>No completar<input name="contact_email" tabindex="-1" autocomplete="off" /></label></div>
-    <input type="hidden" name="started" />
+    <input type="hidden" name="started" value={Date.now()} />
     <p class="required-note">Usaremos estos datos para revisar tu solicitud y contactarte sobre Asilo Builders.</p>
     <button class="button button-primary send" type="submit">Enviar solicitud</button>
   </form>
@@ -61,14 +61,19 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
   @media (max-width: 540px) { .fields { grid-template-columns: 1fr; } }
 </style>
 <script>
+  import { createSubmissionClock } from "../lib/project-form-client";
   const dialog = document.querySelector<HTMLDialogElement>("#community-dialog")!;
   const form = document.querySelector<HTMLFormElement>("#community-form")!;
   const status = document.querySelector<HTMLElement>("#community-status")!;
   const send = form.querySelector<HTMLButtonElement>(".send")!;
+  const started = form.elements.namedItem("started") as HTMLInputElement;
+  const submissionClock = createSubmissionClock(Number(started.value), () => performance.now());
+  let hasOpened = false;
   let previousOverflow = "";
   function open() {
     if (dialog.open) return;
-    (form.elements.namedItem("started") as HTMLInputElement).value = String(Date.now());
+    // Preserve the first opening time when a visitor closes and resumes the form.
+    if (!hasOpened) { started.value = submissionClock(); hasOpened = true; }
     previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     dialog.showModal();
@@ -92,14 +97,17 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
       const result = await response.json();
       if (!response.ok || !result.ok) {
         status.textContent = result.error || "No pudimos guardar tu solicitud. Intenta de nuevo.";
-        const field = form.elements.namedItem(result.field);
-        if (field instanceof HTMLElement) field.focus();
+        // Focus the message so it is visible even when the invalid field is far above it.
+        if (dialog.open) status.focus();
       } else {
         form.hidden = true;
         status.textContent = "¡Recibimos tu solicitud! Revisaremos tu información y te contactaremos. ¡Nos vemos!";
-        status.focus();
+        if (dialog.open) status.focus();
       }
-    } catch { status.textContent = "No pudimos confirmar el envío. Revisa tu conexión e intenta de nuevo."; }
+    } catch {
+      status.textContent = "No pudimos confirmar el envío. Revisa tu conexión. Si vuelves a enviar, tu solicitud podría registrarse más de una vez.";
+      if (dialog.open) status.focus();
+    }
     finally { send.disabled = false; send.textContent = "Enviar solicitud"; }
   });
 </script>

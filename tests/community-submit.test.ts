@@ -5,10 +5,11 @@ vi.mock("@googleapis/sheets", () => ({ default: { auth: { JWT: class {} }, sheet
 import { POST } from "../src/pages/api/community/submit";
 const valid = { email: "builder@example.com", name: "Ana Pérez", location: "Caracas, Venezuela", whatsapp: "+58 412 1234567", linkedin: "https://www.linkedin.com/in/ana", role: "Developer", project: "Mi proyecto", description: "" };
 afterEach(() => { vi.unstubAllEnvs(); vi.clearAllMocks(); });
-function context(overrides = {}) {
+let nextIp = 0;
+function context(overrides = {}, ip = `test-${++nextIp}`) {
   const form = new FormData();
   for (const [key, value] of Object.entries({ ...valid, started: String(Date.now() - 10000), ...overrides })) form.set(key, value);
-  return { request: new Request("https://asilo.test/api/community/submit", { method: "POST", body: form }), clientAddress: "127.0.0.1" } as Parameters<typeof POST>[0];
+  return { request: new Request("https://asilo.test/api/community/submit", { method: "POST", body: form }), clientAddress: ip } as Parameters<typeof POST>[0];
 }
 function configure() {
   vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "members-private");
@@ -44,4 +45,51 @@ describe("membership submissions", () => {
     configure(); append.mockRejectedValue(new Error("offline"));
     expect((await POST(context())).status).toBe(503);
   });
+  it("rejects punctuation-only phone numbers and enforces normalized digit lengths", () => {
+    for (const whatsapp of ["+1------", "+1 ( ) -", "+123456", "+1234567890123456", "04121234567"]) {
+      expect(communitySchema.safeParse({ ...valid, whatsapp }).success, whatsapp).toBe(false);
+    }
+    expect(communitySchema.safeParse({ ...valid, whatsapp: "+1 (212) 555-0123" }).success).toBe(true);
+  });
+  it("accepts an omitted optional description", async () => {
+    configure(); append.mockResolvedValue({});
+    const ctx = context();
+    const form = await ctx.request.formData();
+    form.delete("description");
+    ctx.request = new Request(ctx.request.url, { method: "POST", body: form });
+    expect((await POST(ctx)).status).toBe(201);
+    expect(append.mock.calls[0][0].requestBody.values[0][8]).toBe("");
+  });
+  it("rejects repeated fields, file values, and malformed/future timestamps", async () => {
+    configure();
+    for (const field of ["email", "description", "started"]) {
+      const ctx = context();
+      const form = await ctx.request.formData();
+      form.append(field, "duplicate");
+      ctx.request = new Request(ctx.request.url, { method: "POST", body: form });
+      expect((await POST(ctx)).status).toBe(field === "started" ? 429 : 400);
+    }
+    const ctx = context();
+    const form = await ctx.request.formData();
+    form.set("name", new Blob(["Ana"]), "name.txt");
+    ctx.request = new Request(ctx.request.url, { method: "POST", body: form });
+    expect((await POST(ctx)).status).toBe(400);
+    for (const started of ["1e3", "Infinity", "", String(Date.now() + 60_000)]) {
+      expect((await POST(context({ started }))).status).toBe(429);
+    }
+    expect(append).not.toHaveBeenCalled();
+  });
+  it("does not write honeypot submissions", async () => {
+    configure();
+    expect((await POST(context({ contact_email: "bot@example.com" }))).status).toBe(201);
+    expect(append).not.toHaveBeenCalled();
+  });
+  it("limits concurrent attempts on the same process before awaiting storage", async () => {
+    configure(); append.mockResolvedValue({});
+    const ip = `rate-${++nextIp}`;
+    const responses = await Promise.all(Array.from({ length: 6 }, () => POST(context({}, ip))));
+    expect(responses.filter(r => r.status === 429)).toHaveLength(1);
+    expect(append).toHaveBeenCalledTimes(5);
+  });
+
 });
