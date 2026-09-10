@@ -463,7 +463,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     // hide a field's error and clear its invalid flag once the user edits it
     const clearFieldError = (field: string) => {
       const el = form?.querySelector<HTMLElement>(`[data-field="${field}"] [data-field-error]`) ?? null;
-      if (el) el.hidden = true;
+      if (el) { el.hidden = true; el.textContent = ""; }
       form?.querySelectorAll(`[data-field="${field}"] input, [data-field="${field}"] textarea`)
         .forEach((control) => control.removeAttribute("aria-invalid"));
     };
@@ -471,28 +471,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     const FIELD_NAMES = new Set(["nombre", "website", "descripcion", "fundadores", "logo", "categorias", "captcha"]);
     openBtn.addEventListener("click", () => {
       if (submitting) return;
-      if (!form?.querySelector<HTMLInputElement>('[name="nombre"]')?.value) resetTimestamp();
-      const resetVerification = submitted;
+      dialog.showModal();
       if (submitted) {
-        form?.reset();
-        resetTimestamp();
-        resetLogo();
-        syncCats();
-        if (ta && counter) counter.textContent = "0/140";
-        submitted = false;
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Agregar tu proyecto";
-        }
+        startNewProject();
+        return;
       }
+      if (!form?.querySelector<HTMLInputElement>('[name="nombre"]')?.value) resetTimestamp();
       if (formView) formView.hidden = false;
       if (successView) successView.hidden = true;
-      if (statusEl) {
-        statusEl.hidden = true;
-        statusEl.classList.remove("is-error");
-      }
-      if (resetVerification) resetCaptcha();
-      dialog.showModal();
     });
     dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
       el.addEventListener("click", () => dialog.close())
@@ -532,10 +518,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
       logoObjectUrl = null;
       if (removeLogo) removeLogo.hidden = true;
-      if (logoInput && logoInput.files?.length) {
-        const dt = new DataTransfer();
-        logoInput.files = dt.files;
-      }
+      if (logoInput) logoInput.value = "";
       if (logoTitle) logoTitle.textContent = "Subir logo";
       if (logoThumb) {
         logoThumb.hidden = true;
@@ -594,24 +577,38 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     // Turnstile calls this global with a fresh token after each solve; hide the
     // captcha error so the visitor knows a re-submit will be accepted.
     Object.assign(window, { onTurnstileSolve: () => clearFieldError("captcha") });
-    form?.querySelector("[data-submit-another]")?.addEventListener("click", () => {
-      form.reset();
+    // Clear submitted data immediately; both restart paths use this same reset.
+    const clearProjectForm = () => {
+      form?.reset();
       resetTimestamp();
       FIELD_NAMES.forEach(clearFieldError);
-      if (statusEl) statusEl.hidden = true;
-      resetCaptcha();
+      if (statusEl) {
+        statusEl.hidden = true;
+        statusEl.textContent = "";
+        statusEl.classList.remove("is-error");
+      }
+      // Widget-generated inputs can retain a default value across native reset().
+      form?.querySelectorAll<HTMLInputElement>('[name="cf-turnstile-response"]')
+        .forEach((input) => { input.value = ""; });
       resetLogo();
       syncCats();
-      if (ta && counter) counter.textContent = "0/140";
-      submitted = false;
+      if (counter) counter.textContent = "0/140";
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Agregar tu proyecto";
       }
+      const body = form?.querySelector<HTMLElement>(".modal-body");
+      if (body) body.scrollTop = 0;
+    };
+    const startNewProject = () => {
+      clearProjectForm();
+      submitted = false;
       if (formView) formView.hidden = false;
       if (successView) successView.hidden = true;
+      resetCaptcha();
       form?.querySelector<HTMLInputElement>('input[name="nombre"]')?.focus();
-    });
+    };
+    form?.querySelector("[data-submit-another]")?.addEventListener("click", startNewProject);
     // submit: POST the FormData to the same-origin endpoint; keep the user's
     // input untouched on error, reset + announce success before closing
     form?.addEventListener("submit", async (e) => {
@@ -681,6 +678,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           return;
         }
         submitted = true;
+        clearProjectForm();
         if (formView) formView.hidden = true;
         if (successView) successView.hidden = false;
         playConfetti();
