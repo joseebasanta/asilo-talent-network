@@ -402,3 +402,6 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1 !important; transform: none !important; transition: none; }
 }
+
+.prj-browse { color: var(--blue-500); font-size: .875rem; text-underline-offset: 4px; white-space: nowrap; }
+@media (max-width: 480px) { .prj-nav { gap: .25rem; } .prj-arrow { width: 2rem; } .prj-head { padding-inline: 0; } }

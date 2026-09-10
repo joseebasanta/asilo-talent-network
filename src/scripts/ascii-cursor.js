@@ -1,12 +1,12 @@
 
 /* ==========================================================================
    ASCII cursor trail — a wake of flickering glyphs that follows the pointer
-   across the whole page. Spawn rate is distance-based (slow = sparse,
+   across the page or a supplied container. Spawn rate is distance-based (slow = sparse,
    fast flicks = dense spray); particles re-roll their glyph as they age and
    die within ~0.8s. Idle cost is zero (the loop sleeps when empty).
    Disabled on touch/coarse pointers and under prefers-reduced-motion.
    ========================================================================== */
-(function () {
+export function initAsciiCursor(scope = document.body) {
   if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -15,20 +15,26 @@
   var BLOCKS = "█▓▒░";
   var MAX_PARTICLES = 140;
 
+  var scoped = scope !== document.body;
   var canvas = document.createElement("canvas");
+  canvas.dataset.asciiCursor = scoped ? "scoped" : "page";
   canvas.setAttribute("aria-hidden", "true");
-  canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;";
-  document.body.appendChild(canvas);
+  canvas.style.cssText = "position:" + (scoped ? "absolute" : "fixed") + ";inset:0;width:100%;height:100%;pointer-events:none;z-index:" + (scoped ? "3" : "9999") + ";";
+  scope.appendChild(canvas);
   var ctx = canvas.getContext("2d");
 
+  var width, height;
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(window.innerWidth * dpr);
-    canvas.height = Math.round(window.innerHeight * dpr);
+    width = scoped ? scope.clientWidth : window.innerWidth;
+    height = scoped ? scope.clientHeight : window.innerHeight;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
   }
   resize();
   window.addEventListener("resize", resize);
+  if (scoped) new ResizeObserver(resize).observe(scope);
 
   var particles = [], last = null, carry = 0, running = false, prevT = 0;
 
@@ -45,16 +51,17 @@
       vx: (Math.random() - 0.5) * 14,
       vy: (Math.random() - 0.5) * 14 - 6,
       ch: randChar(),
-      born: prevT,
+      born: performance.now(),
       life: 500 + Math.random() * 350,
       size: big ? 22 : 12 + Math.random() * 6,
       square: Math.random() < 0.12,
     });
   }
 
-  window.addEventListener("pointermove", function (e) {
+  (scoped ? scope : window).addEventListener("pointermove", function (e) {
     if (e.pointerType && e.pointerType !== "mouse") return;
-    var x = e.clientX, y = e.clientY;
+    var bounds = scoped ? scope.getBoundingClientRect() : { left: 0, top: 0 };
+    var x = e.clientX - bounds.left, y = e.clientY - bounds.top;
     if (!last) { last = { x: x, y: y }; return; }
     var dx = x - last.x, dy = y - last.y;
     var dist = Math.hypot(dx, dy);
@@ -69,11 +76,13 @@
     if (!running && particles.length) { running = true; prevT = performance.now(); requestAnimationFrame(tick); }
   }, { passive: true });
 
+  scope.addEventListener("pointerleave", function () { last = null; carry = 0; });
+
   function tick(now) {
     var dt = Math.min(50, now - prevT);
     prevT = now;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.clearRect(0, 0, width, height);
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     var alive = 0;
@@ -99,6 +108,6 @@
     ctx.globalAlpha = 1;
     if (alive * 2 < particles.length) particles = particles.filter(function (p) { return now - p.born < p.life; });
     if (alive) { requestAnimationFrame(tick); }
-    else { particles.length = 0; running = false; ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); }
+    else { particles.length = 0; running = false; ctx.clearRect(0, 0, width, height); }
   }
-})();
+}
