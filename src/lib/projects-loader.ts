@@ -23,7 +23,7 @@
  * Environment:
  *   GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 — base64 JSON of the service account key
  *   GOOGLE_SHEETS_ID                    — spreadsheet id from the sheet URL
- *   GOOGLE_SHEETS_RANGE                 — optional; defaults to "Projects!A1:J"
+ *   GOOGLE_SHEETS_RANGE                 — optional; defaults to "Projects!A1:M"
  */
 
 import googleSheets from "@googleapis/sheets";
@@ -46,7 +46,7 @@ const APPROVED = "si";
 export const TTL_MS = 60_000;
 const CACHE_TTL_MS = import.meta.env.MODE === "development" ? 0 : TTL_MS;
 
-const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:J";
+const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:M";
 
 // Normalized sheet header -> Project field. Header normalization strips case,
 // internal whitespace and accents ("Descripción corta" -> "descripcion corta"),

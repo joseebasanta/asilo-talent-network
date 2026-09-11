@@ -1,15 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   buildRow,
+  buildRowForHeaders,
   CATEGORIES,
   findDuplicateWebsite,
   formatFecha,
   MAX_CATEGORIES,
   normalizeWebsiteKey,
   normalizeWebsiteUrl,
+  resolveSubmissionColumns,
   validateSubmission,
   validateSubmissionForm,
   websiteColumnIndex,
+  type NormalizedSubmission,
 } from "../src/lib/projects-submit";
 
 const validInput = {
@@ -305,5 +308,92 @@ describe("buildRow", () => {
     });
     expect(withLogo[7]).toBe("logo-abc123");
     expect(withLogo).toHaveLength(10);
+  });
+});
+
+describe("buildRowForHeaders (current A–M sheet)", () => {
+  // Live Projects headers: H Moderador, I Fecha de moderación, J ID del logo,
+  // K ID de revisión, L/M Nota interna.
+  const NEW_HEADERS = [
+    "Fecha",
+    "Nombre del proyecto",
+    "Sitio web",
+    "Descripción corta",
+    "Fundadores",
+    "Categorías",
+    "Aprobado",
+    "Moderador",
+    "Fecha de moderación",
+    "ID del logo",
+    "ID de revisión",
+    "Nota interna",
+    "Nota interna",
+  ];
+  const base: NormalizedSubmission = {
+    nombre: "Pana Pay",
+    website: "https://panapay.com/",
+    descripcion: "Pagos móviles para comercios venezolanos.",
+    fundadores: "Luis Fernández",
+    categorias: ["Fintech"],
+  };
+  const submittedAt = new Date(2026, 8, 4, 23, 15);
+
+  it("writes logo to J and revision to K without touching moderator H/I", () => {
+    const row = buildRowForHeaders(NEW_HEADERS, base, {
+      revisionId: "rev-1",
+      submittedAt,
+      logoId: "logo-abc123",
+    });
+
+    expect(row).toHaveLength(13);
+    expect(row[0]).toBe("23:15 04-09-2026"); // A Fecha
+    expect(row[1]).toBe("Pana Pay");
+    expect(row[2]).toBe("https://panapay.com/");
+    expect(row[6]).toBe("PENDIENTE"); // G Aprobado
+    expect(row[7]).toBe(""); // H Moderador untouched
+    expect(row[8]).toBe(""); // I Fecha de moderación untouched
+    expect(row[9]).toBe("logo-abc123"); // J ID del logo
+    expect(row[10]).toBe("rev-1"); // K ID de revisión
+    expect(row[11]).toBe(""); // L Nota interna
+    expect(row[12]).toBe(""); // M Nota interna
+  });
+
+  it("keeps working on the legacy 10-column layout (logo H, revision I)", () => {
+    const legacy = [
+      "Fecha",
+      "Nombre del proyecto",
+      "Sitio web",
+      "Descripción corta",
+      "Fundadores",
+      "Categorías",
+      "Aprobado",
+      "ID del logo",
+      "ID de revisión",
+      "Notas adicionales",
+    ];
+    const row = buildRowForHeaders(legacy, base, {
+      revisionId: "rev-1",
+      submittedAt,
+      logoId: "logo-abc123",
+    });
+
+    expect(row).toHaveLength(10);
+    expect(row[7]).toBe("logo-abc123");
+    expect(row[8]).toBe("rev-1");
+    expect(row[9]).toBe("");
+  });
+
+  it("fails closed on missing or ambiguous required headers", () => {
+    const missing = NEW_HEADERS.filter((h) => h !== "ID de revisión");
+    expect(resolveSubmissionColumns(missing).ok).toBe(false);
+    expect(() =>
+      buildRowForHeaders(missing, base, { revisionId: "rev-1", submittedAt }),
+    ).toThrow();
+
+    const ambiguous = [...NEW_HEADERS, "Sitio web"];
+    expect(resolveSubmissionColumns(ambiguous).ok).toBe(false);
+    expect(() =>
+      buildRowForHeaders(ambiguous, base, { revisionId: "rev-1", submittedAt }),
+    ).toThrow();
   });
 });
