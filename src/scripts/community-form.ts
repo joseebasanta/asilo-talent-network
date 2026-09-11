@@ -1,3 +1,4 @@
+import { createDialogMotion } from "../lib/dialog-motion";
 import { createSubmissionClock } from "../lib/project-form-client";
 import { communitySchema } from "../lib/community-submit";
 
@@ -12,14 +13,12 @@ export function initCommunityForm() {
   const started = form.elements.namedItem("started") as HTMLInputElement;
   const submissionClock = createSubmissionClock(Number(started.value), () => performance.now());
   let hasOpened = false;
-  let previousOverflow = "";
+  const motion = createDialogMotion(dialog);
   let pending = false;
   function open() {
     if (dialog.open) return;
     if (!hasOpened) { started.value = submissionClock(); hasOpened = true; }
-    previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    dialog.showModal();
+    motion.open();
     if (!successView.hidden) successTitle.focus();
   }
   document.querySelectorAll<HTMLAnchorElement>('a[href="#unete"], a[href="/#unete"]').forEach(link => {
@@ -29,12 +28,7 @@ export function initCommunityForm() {
   });
   if (location.hash === "#unete") open();
   window.addEventListener("hashchange", () => { if (location.hash === "#unete") open(); });
-  dialog.querySelectorAll("[data-community-close]").forEach(button => button.addEventListener("click", () => dialog.close()));
-  dialog.addEventListener("close", () => { document.body.style.overflow = previousOverflow; });
-  // A selection drag that ends outside the card must not dismiss a filled form.
-  let backdropDown = false;
-  dialog.addEventListener("pointerdown", event => { backdropDown = event.target === dialog; });
-  dialog.addEventListener("click", event => { if (backdropDown && event.target === dialog) dialog.close(); backdropDown = false; });
+  dialog.querySelectorAll("[data-community-close]").forEach(button => button.addEventListener("click", () => { void motion.close(); }));
   const controls = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(".field-input, .field-textarea"));
   function clearErrors() {
     controls.forEach(input => {
