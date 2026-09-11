@@ -77,5 +77,5 @@ sola petición; cada instancia nueva del servidor comienza con la caché vacía.
 ## Analítica
 
 Configurar `PUBLIC_MIXPANEL_TOKEN` en `.env.local` y en el hosting. La analítica,
-autocapture y Session Replay se inicializan sólo después de que la persona acepta
-el banner de consentimiento.
+autocapture y Session Replay se inicializan automáticamente; los campos de los
+formularios permanecen ocultos en las grabaciones.

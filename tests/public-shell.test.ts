@@ -43,7 +43,13 @@ describe("public shell", () => {
     const html = await renderShell();
 
     expect(html).toMatch(/<meta\b[^>]*name=["']theme-color["'][^>]*content=["']#000a11["']/);
-    expect(html).toMatch(/<link\b[^>]*rel=["']icon["'][^>]*href=["']\/favicon\.svg["']/);
+    expect(html).toMatch(/<link\b[^>]*rel=["']icon["'][^>]*href=["']\/favicon\.svg\?v=20260911["']/);
+  });
+
+  it("does not render an analytics consent banner", async () => {
+    const html = await renderShell();
+
+    expect(html).not.toContain('id="analytics-consent"');
   });
 
   it("restores the legacy wordmark and pixel-art action arrows", async () => {

@@ -1,6 +1,5 @@
 ---
 import CommunityForm from "./CommunityForm.astro";
-import AnalyticsConsent from "./AnalyticsConsent.astro";
 interface Props { home?: boolean; }
 const { home = false } = Astro.props;
 ---
@@ -40,8 +39,8 @@ const { home = false } = Astro.props;
       </div>
     </footer>
 <CommunityForm />
-<AnalyticsConsent />
 <script>
+  import "../scripts/analytics";
   import "../scripts/ascii-background.js";
   import { initAsciiCursor } from "../scripts/ascii-cursor.js";
   const footer = document.querySelector<HTMLElement>("[data-footer-cursor]");
