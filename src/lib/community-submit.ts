@@ -14,6 +14,13 @@ export const communitySchema = z.object({
   description: z.string().trim().max(3000, "Usa como máximo 3000 caracteres.").default(""),
 });
 export const COMMUNITY_HEADERS = ["Fecha", "Email", "Nombre y apellido", "Ciudad, país", "WhatsApp", "LinkedIn", "Rol", "Nombre del proyecto", "Descripción", "Estado"];
+export function normalizeCommunityHeader(value: unknown): string {
+  return String(value ?? "").trim().replace(/\s+/g, " ").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+export function isCommunityHeaderRow(row: unknown): boolean {
+  if (!Array.isArray(row) || row.length !== COMMUNITY_HEADERS.length) return false;
+  return COMMUNITY_HEADERS.every((name, index) => normalizeCommunityHeader(row[index]) === normalizeCommunityHeader(name));
+}
 export function communityRow(value: z.infer<typeof communitySchema>) {
   return [new Date().toISOString(), value.email, value.name, value.location, value.whatsapp, value.linkedin, value.role, value.project, value.description, "PENDIENTE"];
 }
