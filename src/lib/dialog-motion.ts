@@ -29,7 +29,8 @@ export function createDialogMotion(dialog: HTMLDialogElement) {
     if (current === revision && dialog.open) dialog.close();
   }
 
-  dialog.addEventListener("cancel", event => { event.preventDefault(); void close(); });
+  // Dismiss only through explicit form controls, never Escape/platform close requests.
+  dialog.addEventListener("cancel", event => { event.preventDefault(); });
   dialog.addEventListener("close", () => {
     revision++;
     closing = false;

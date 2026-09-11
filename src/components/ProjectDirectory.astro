@@ -452,14 +452,6 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
       el.addEventListener("click", () => { void motion.close(); })
     );
-    let backdropPointerDown = false;
-    dialog.addEventListener("pointerdown", (e) => {
-      backdropPointerDown = e.target === dialog;
-    });
-    dialog.addEventListener("click", (e) => {
-      if (backdropPointerDown && e.target === dialog) void motion.close();
-      backdropPointerDown = false;
-    });
     // short-description character counter
     const ta = dialog.querySelector<HTMLTextAreaElement>('textarea[name="descripcion"]');
     const counter = dialog.querySelector("[data-counter]");

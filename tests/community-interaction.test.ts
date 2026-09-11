@@ -35,6 +35,21 @@ beforeEach(async () => {
 afterEach(() => { vi.unstubAllGlobals(); });
 
 describe("community form interactions", () => {
+  it("ignores backdrop clicks and Escape but allows Cancel", async () => {
+    input("name").value = "Ana Pérez";
+    dialog.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    dialog.click();
+    const cancel = new Event("cancel", { cancelable: true });
+    dialog.dispatchEvent(cancel);
+    expect(cancel.defaultPrevented).toBe(true);
+    expect(dialog.open).toBe(true);
+    expect(input("name").value).toBe("Ana Pérez");
+    expect(document.body.style.overflow).toBe("hidden");
+    dialog.querySelector<HTMLButtonElement>(".modal-cancel")!.click();
+    await flush();
+    expect(dialog.open).toBe(false);
+    expect(document.body.style.overflow).toBe("");
+  });
   it("shows inline Zod errors and focuses the first invalid field without posting", () => {
     submit();
     expect(fetchMock).not.toHaveBeenCalled();

@@ -37,13 +37,24 @@ it("keeps the top layer and scroll lock until exit completes, then restores focu
   expect(document.activeElement).toBe(opener);
 });
 
-it("handles cancelled animations and Escape through the same dismissal", async () => {
-  dialog.getAnimations = () => [{ finished: Promise.reject(new Error("cancelled")) }] as unknown as Animation[];
+it("ignores Escape and keeps answers and scroll lock intact", () => {
   motion.open();
-  const event = new window.Event("cancel", { cancelable: true });
+  const input = dialog.querySelector("input")!;
+  input.value = "Work in progress";
+  const event = new Event("cancel", { cancelable: true });
   dialog.dispatchEvent(event);
   expect(event.defaultPrevented).toBe(true);
-  await new Promise(resolve => setTimeout(resolve, 0));
+  expect(dialog.open).toBe(true);
+  expect(dialog.close).not.toHaveBeenCalled();
+  expect(dialog.hasAttribute("data-closing")).toBe(false);
+  expect(input.value).toBe("Work in progress");
+  expect(document.body.style.overflow).toBe("hidden");
+});
+
+it("still closes explicitly when an exit animation is cancelled", async () => {
+  dialog.getAnimations = () => [{ finished: Promise.reject(new Error("cancelled")) }] as unknown as Animation[];
+  motion.open();
+  await motion.close();
   expect(dialog.open).toBe(false);
 });
 

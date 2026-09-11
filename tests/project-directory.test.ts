@@ -50,14 +50,15 @@ describe("ProjectDirectory", () => {
     expect(component).toContain("Logo (opcional)");
   });
 
-  it("only closes from a genuine backdrop click, not a text-selection gesture", () => {
+  it("uses explicit close controls without backdrop dismissal", () => {
     const component = readFileSync(
       new URL("../src/components/ProjectDirectory.astro", import.meta.url),
       "utf8",
     );
 
-    expect(component).toContain('dialog.addEventListener("pointerdown"');
-    expect(component).toContain("backdropPointerDown && e.target === dialog");
+    expect(component).not.toContain('dialog.addEventListener("pointerdown"');
+    expect(component).not.toContain('dialog.addEventListener("click"');
+    expect(component).toContain('dialog.querySelectorAll("[data-close-modal]")');
   });
 
   it("keeps hidden carousel pages out of the flex layout", () => {

@@ -29,10 +29,6 @@ export function initCommunityForm() {
   if (location.hash === "#unete") open();
   window.addEventListener("hashchange", () => { if (location.hash === "#unete") open(); });
   dialog.querySelectorAll("[data-community-close]").forEach(button => button.addEventListener("click", () => { void motion.close(); }));
-  // A selection drag that ends outside the card must not dismiss a filled form.
-  let backdropDown = false;
-  dialog.addEventListener("pointerdown", event => { backdropDown = event.target === dialog; });
-  dialog.addEventListener("click", event => { if (backdropDown && event.target === dialog) void motion.close(); backdropDown = false; });
   const controls = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(".field-input, .field-textarea"));
   function clearErrors() {
     controls.forEach(input => {
