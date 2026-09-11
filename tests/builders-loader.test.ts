@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { BUILDERS_TTL_MS, countBuilders, loadBuildersCount, resetBuildersCache } from "../src/lib/builders-loader";
+import { BUILDERS_TTL_MS, countBuilders, FALLBACK_BUILDERS_COUNT, loadBuildersCount, resetBuildersCache } from "../src/lib/builders-loader";
 
 beforeEach(() => {
   resetBuildersCache();
@@ -32,21 +32,21 @@ describe("Builders count", () => {
     expect(await loadBuildersCount(fetcher)).toBe(0);
   });
 
-  it("does not invent a count when unconfigured or the first read fails", async () => {
+  it("uses the fallback count when unconfigured or the first read fails", async () => {
     const fetcher = vi.fn().mockRejectedValue(new Error("unavailable"));
-    expect(await loadBuildersCount(fetcher)).toBeNull();
+    expect(await loadBuildersCount(fetcher)).toBe(FALLBACK_BUILDERS_COUNT);
     vi.stubEnv("GOOGLE_SERVICE_ACCOUNT_JSON_BASE64", "");
     fetcher.mockClear();
-    expect(await loadBuildersCount(fetcher)).toBeNull();
+    expect(await loadBuildersCount(fetcher)).toBe(FALLBACK_BUILDERS_COUNT);
     expect(fetcher).not.toHaveBeenCalled();
   });
 
   it("waits ten minutes before retrying a failed read", async () => {
     const now = vi.spyOn(Date, "now").mockReturnValue(0);
     const fetcher = vi.fn().mockRejectedValueOnce(new Error("unavailable"));
-    expect(await loadBuildersCount(fetcher)).toBeNull();
+    expect(await loadBuildersCount(fetcher)).toBe(FALLBACK_BUILDERS_COUNT);
     now.mockReturnValue(BUILDERS_TTL_MS - 1);
-    expect(await loadBuildersCount(fetcher)).toBeNull();
+    expect(await loadBuildersCount(fetcher)).toBe(FALLBACK_BUILDERS_COUNT);
     expect(fetcher).toHaveBeenCalledTimes(1);
     now.mockReturnValue(BUILDERS_TTL_MS);
     fetcher.mockResolvedValueOnce([["Ana"]]);
