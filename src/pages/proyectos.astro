@@ -12,7 +12,7 @@ import { filterProjects, normalizeSearch, paginateProjects, projectPageUrl } fro
 
 const projects = (await loadApprovedProjects()).map((project, index) => ({ ...project, index }));
 const categories = Array.from(new Map(projects.flatMap(project => project.tags)
-  .map(tag => [normalizeSearch(tag), tag])).values()).sort((a, b) => a.localeCompare(b, "es"));
+  .map(tag => [normalizeSearch(tag), tag])).values()).sort((a, b) => b.localeCompare(a, "es", { sensitivity: "base" }));
 const query = Astro.url.searchParams.get("q") ?? "";
 const selected = categories.filter(category => Astro.url.searchParams.getAll("categoria").some(value => normalizeSearch(value) === normalizeSearch(category)));
 const order = Astro.url.searchParams.get("orden") === "za" ? "za" : "az";
