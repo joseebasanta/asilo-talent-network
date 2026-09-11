@@ -13,16 +13,17 @@ export function resetBuildersCache(): void {
   pending = null;
 }
 
-// The range must contain one identifying column, without its header.
+// The range must contain the single numeric community total cell.
 export function countBuilders(values: unknown[][]): number {
-  return values.filter((row) => String(row[0] ?? "").trim() !== "").length;
+  const value = Number(values[0]?.[0]);
+  return Number.isSafeInteger(value) && value >= 0 ? value : 0;
 }
 
 export async function loadBuildersCount(
   fetchValues: () => Promise<unknown[][]> = fetchBuilderValues,
 ): Promise<number> {
   if (
-    !(import.meta.env.GOOGLE_BUILDERS_SHEETS_ID || import.meta.env.GOOGLE_SHEETS_ID) ||
+    !import.meta.env.GOOGLE_SHEETS_ID ||
     !import.meta.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64
   ) return FALLBACK_BUILDERS_COUNT;
 
@@ -62,8 +63,8 @@ async function fetchBuilderValues(): Promise<unknown[][]> {
   });
   const sheets = googleSheets.sheets({ version: "v4", auth });
   const { data } = await sheets.spreadsheets.values.get({
-    spreadsheetId: import.meta.env.GOOGLE_BUILDERS_SHEETS_ID || import.meta.env.GOOGLE_SHEETS_ID!,
-    range: import.meta.env.GOOGLE_BUILDERS_SHEETS_RANGE || "Builders!A2:A",
+    spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
+    range: import.meta.env.GOOGLE_COMMUNITY_COUNT_RANGE || "Projects!O1",
   });
   return data.values ?? [];
 }

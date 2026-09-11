@@ -57,20 +57,25 @@ record historical baseline/planning context, not the current application setup.
 
 ## Conteo de Builders
 
-Copiar `.env.example` a `.env.local` y completar el ID del documento de miembros
-y su rango. En producción, configurar esas mismas variables en el hosting.
+Copiar `.env.example` a `.env.local` y completar el ID del documento de proyectos
+y el rango de la celda del total de la comunidad. En producción, configurar esas
+mismas variables en el hosting.
 
 La portada consulta Google Sheets desde el servidor y muestra el total exacto,
 con una caché de 10 minutos por instancia. Usa la cuenta de servicio existente
 (`GOOGLE_SERVICE_ACCOUNT_JSON_BASE64`) y estas variables privadas:
 
-- `GOOGLE_BUILDERS_SHEETS_ID`: documento de miembros; si se omite, usa `GOOGLE_SHEETS_ID`.
-- `GOOGLE_BUILDERS_SHEETS_RANGE`: columna identificadora de miembros sin encabezado;
-  por defecto `Builders!A2:A`. Ajustarla a la columna que esté llena para cada miembro.
+- `GOOGLE_SHEETS_ID`: documento de proyectos y fuente del contador de comunidad.
+- `GOOGLE_COMMUNITY_COUNT_RANGE`: celda con el total numérico; por defecto `Projects!O1`.
 
-Se cuenta una fila por miembro, ignorando celdas vacías y espacios. La hoja debe
-contener un solo registro por miembro. Compartir el documento con la cuenta de
+El valor debe ser un entero no negativo. Compartir el documento con la cuenta de
 servicio como lector. Si Google falla, se conserva el último total en memoria;
 si aún no hay un total disponible, la portada omite la cifra. Los errores también
 esperan 10 minutos antes de reintentar. Las consultas simultáneas comparten una
 sola petición; cada instancia nueva del servidor comienza con la caché vacía.
+
+## Analítica
+
+Configurar `PUBLIC_MIXPANEL_TOKEN` en `.env.local` y en el hosting. La analítica,
+autocapture y Session Replay se inicializan automáticamente; los campos de los
+formularios permanecen ocultos en las grabaciones.

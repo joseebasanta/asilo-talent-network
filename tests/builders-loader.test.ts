@@ -13,16 +13,18 @@ afterEach(() => {
 });
 
 describe("Builders count", () => {
-  it("counts populated member cells and ignores blank rows", () => {
-    expect(countBuilders([["Ana"], [], [" "], ["Luis"], ["", "note"]])).toBe(2);
+  it("reads the single numeric community total and rejects invalid values", () => {
+    expect(countBuilders([[170]])).toBe(170);
+    expect(countBuilders([["170"]])).toBe(170);
+    expect(countBuilders([["not a number"]])).toBe(0);
     expect(countBuilders([])).toBe(0);
   });
 
   it("caches reads, refreshes after ten minutes and keeps the last count on failure", async () => {
     const now = vi.spyOn(Date, "now").mockReturnValue(0);
-    const fetcher = vi.fn().mockResolvedValue([["Ana"], ["Luis"]]);
-    expect(await loadBuildersCount(fetcher)).toBe(2);
-    expect(await loadBuildersCount(fetcher)).toBe(2);
+    const fetcher = vi.fn().mockResolvedValue([[170]]);
+    expect(await loadBuildersCount(fetcher)).toBe(170);
+    expect(await loadBuildersCount(fetcher)).toBe(170);
     expect(fetcher).toHaveBeenCalledTimes(1);
     now.mockReturnValue(BUILDERS_TTL_MS);
     fetcher.mockResolvedValueOnce([]);
@@ -49,14 +51,14 @@ describe("Builders count", () => {
     expect(await loadBuildersCount(fetcher)).toBe(FALLBACK_BUILDERS_COUNT);
     expect(fetcher).toHaveBeenCalledTimes(1);
     now.mockReturnValue(BUILDERS_TTL_MS);
-    fetcher.mockResolvedValueOnce([["Ana"]]);
-    expect(await loadBuildersCount(fetcher)).toBe(1);
+    fetcher.mockResolvedValueOnce([[171]]);
+    expect(await loadBuildersCount(fetcher)).toBe(171);
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
   it("shares simultaneous reads", async () => {
-    const fetcher = vi.fn().mockResolvedValue([["Ana"]]);
-    expect(await Promise.all([loadBuildersCount(fetcher), loadBuildersCount(fetcher)])).toEqual([1, 1]);
+    const fetcher = vi.fn().mockResolvedValue([[170]]);
+    expect(await Promise.all([loadBuildersCount(fetcher), loadBuildersCount(fetcher)])).toEqual([170, 170]);
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 });

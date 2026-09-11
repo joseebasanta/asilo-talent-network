@@ -40,6 +40,7 @@ const { home = false } = Astro.props;
     </footer>
 <CommunityForm />
 <script>
+  import "../scripts/analytics";
   import "../scripts/ascii-background.js";
   import { initAsciiCursor } from "../scripts/ascii-cursor.js";
   const footer = document.querySelector<HTMLElement>("[data-footer-cursor]");

@@ -28,7 +28,7 @@ const [projects, buildersCount] = await Promise.all([
     <title>Asilo Builders</title>
     <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.svg?v=20260911" type="image/svg+xml" />
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -41,7 +41,7 @@ const [projects, buildersCount] = await Promise.all([
         <p class="hero-eyebrow">
           <img class="hero-eyebrow-brace" src="/icon-bracket-left.svg" alt="" aria-hidden="true" width="8" height="24" />
           {buildersCount !== null && (
-            <span class="hero-eyebrow-count">{buildersCount.toLocaleString("es-VE")}</span>
+            <span class="hero-eyebrow-count">+{buildersCount.toLocaleString("es-VE")}</span>
           )}
           <span class="hero-eyebrow-label">Builders forman parte</span>
           <img class="hero-eyebrow-brace" src="/icon-bracket-right.svg" alt="" aria-hidden="true" width="8" height="24" />
