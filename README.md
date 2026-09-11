@@ -33,6 +33,9 @@ on the element (or the `data-es-html` / `data-en-html` pair where markup is used
 
 ### Conteo de Builders
 
+Copiar `.env.example` a `.env.local` y completar el ID del documento de miembros
+y su rango. En producción, configurar esas mismas variables en el hosting.
+
 La portada consulta Google Sheets desde el servidor y muestra el total exacto,
 con una caché de 60 segundos por instancia. Usa la cuenta de servicio existente
 (`GOOGLE_SERVICE_ACCOUNT_JSON_BASE64`) y estas variables privadas:
@@ -44,4 +47,6 @@ con una caché de 60 segundos por instancia. Usa la cuenta de servicio existente
 Se cuenta una fila por miembro, ignorando celdas vacías y espacios. La hoja debe
 contener un solo registro por miembro. Compartir el documento con la cuenta de
 servicio como lector. Si Google falla, se conserva el último total en memoria;
-si aún no hay un total disponible, la portada omite la cifra.
+si aún no hay un total disponible, la portada omite la cifra. Los errores también
+esperan 60 segundos antes de reintentar. Las consultas simultáneas comparten una
+sola petición; cada instancia nueva del servidor comienza con la caché vacía.

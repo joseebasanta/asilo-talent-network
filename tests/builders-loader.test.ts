@@ -41,6 +41,19 @@ describe("Builders count", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("waits a minute before retrying a failed read", async () => {
+    const now = vi.spyOn(Date, "now").mockReturnValue(0);
+    const fetcher = vi.fn().mockRejectedValueOnce(new Error("unavailable"));
+    expect(await loadBuildersCount(fetcher)).toBeNull();
+    now.mockReturnValue(BUILDERS_TTL_MS - 1);
+    expect(await loadBuildersCount(fetcher)).toBeNull();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    now.mockReturnValue(BUILDERS_TTL_MS);
+    fetcher.mockResolvedValueOnce([["Ana"]]);
+    expect(await loadBuildersCount(fetcher)).toBe(1);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
   it("shares simultaneous reads", async () => {
     const fetcher = vi.fn().mockResolvedValue([["Ana"]]);
     expect(await Promise.all([loadBuildersCount(fetcher), loadBuildersCount(fetcher)])).toEqual([1, 1]);
