@@ -176,6 +176,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
   import { validateLogo } from "../lib/projects-logo";
   import { createSubmissionClock, resetCaptchaWidget } from "../lib/project-form-client";
+  import { track } from "../scripts/analytics";
 
   const projectCarousel = document.getElementById("project-directory-list");
   let projectPages = Array.from(document.querySelectorAll<HTMLElement>("[data-project-page]"));
@@ -360,8 +361,8 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   });
 
   const dialog = document.getElementById("project-modal") as HTMLDialogElement | null;
-  const openBtn = document.querySelector("[data-open-modal]");
-  if (dialog && openBtn) {
+  const openBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-open-modal]"));
+  if (dialog && openBtns.length) {
     const motion = createDialogMotion(dialog);
     const MAX = MAX_CATEGORIES;
     const form = dialog.querySelector("form");
@@ -438,8 +439,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     };
     // map a validation/error field name to the closest form field
     const FIELD_NAMES = new Set(["nombre", "website", "descripcion", "fundadores", "logo", "categorias", "captcha"]);
-    openBtn.addEventListener("click", () => {
+    openBtns.forEach((openBtn) => openBtn.addEventListener("click", () => {
       if (submitting) return;
+      track("submit_project_modal_opened", {
+        entry_source: openBtn.closest(".explore-invite") ? "directory_cta" : "landing_directory_cta",
+        modal_variant: "default",
+        is_logged_in: false,
+      });
       motion.open();
       if (submitted) {
         startNewProject();
@@ -448,7 +454,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       if (!form?.querySelector<HTMLInputElement>('[name="nombre"]')?.value) resetTimestamp();
       if (formView) formView.hidden = false;
       if (successView) successView.hidden = true;
-    });
+    }));
     dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
       el.addEventListener("click", () => { void motion.close(); })
     );
@@ -524,6 +530,17 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       const t = e.target as HTMLElement;
       const field = t.getAttribute("name");
       if (field && FIELD_NAMES.has(field)) clearFieldError(field);
+    });
+    form?.addEventListener("change", (e) => {
+      const control = e.target;
+      if (!(control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement)) return;
+      if (!FIELD_NAMES.has(control.name)) return;
+      track("submit_project_form_updated", {
+        field_name: ({ nombre: "project_name", website: "url", descripcion: "description", fundadores: "founders", categorias: "category", logo: "logo" } as Record<string, string>)[control.name] ?? control.name,
+        field_filled: control instanceof HTMLInputElement && control.type === "checkbox" ? control.checked : Boolean(control.value),
+        form_step: "details",
+        is_autosaved: false,
+      });
     });
     boxes.forEach((b) => b.addEventListener("change", () => clearFieldError("categorias")));
     // Validate completed text fields on blur without interrupting typing.
@@ -618,6 +635,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           | null;
         if (formView) formView.inert = false;
         if (!res.ok || !data?.ok) {
+          track("submit_project_submitted", {
+            submission_success: false,
+            error_code: "submission_rejected",
+            submission_source: "modal_submit_button",
+            project_category_selected: body.getAll("categorias").join(","),
+          });
           if (data?.errors) {
             for (const [field, message] of Object.entries(data.errors)) {
               if (FIELD_NAMES.has(field) && typeof message === "string") setFieldError(field, message, false);
@@ -639,6 +662,19 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           return;
         }
         submitted = true;
+        const category = body.getAll("categorias").join(",");
+        track("submit_project_submitted", {
+          submission_success: true,
+          error_code: "none",
+          submission_source: "modal_submit_button",
+          project_category_selected: category,
+        });
+        track("project_submission_completed_marker", {
+          submission_date: new Date().toISOString(),
+          submission_success: true,
+          project_category_selected: category,
+          is_logged_in: false,
+        });
         clearProjectForm();
         if (formView) formView.hidden = true;
         if (successView) successView.hidden = false;

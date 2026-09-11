@@ -1,4 +1,5 @@
 import { filterProjects, paginateProjects, projectPageUrl, normalizeSearch } from "../lib/project-search";
+import { track } from "./analytics";
 
 const form = document.querySelector<HTMLFormElement>("#project-filters")!;
 const search = document.querySelector<HTMLInputElement>("#project-query")!;
@@ -96,6 +97,7 @@ function render(updateUrl = true, resetPage = true, pushHistory = false) {
     if (pushHistory) history.pushState(null, "", url);
     else history.replaceState(null, "", url);
   }
+  return filtered.length;
 }
 function restore() {
   const params = new URLSearchParams(location.search);
@@ -107,9 +109,32 @@ function restore() {
   render(false, false);
 }
 let debounce: ReturnType<typeof setTimeout>;
-search.addEventListener("input", () => { clearTimeout(debounce); debounce = setTimeout(() => render(), 120); });
-form.addEventListener("submit", event => { event.preventDefault(); clearTimeout(debounce); render(); });
-form.addEventListener("change", event => { if (event.target !== categoryQuery) render(); });
+const searchMode = () => search.value.trim() ? "keyword_search" : "filter_only";
+const trackSearch = (resultCount: number) => {
+  const searchQuery = search.value.trim();
+  if (!searchQuery) return;
+  track("project_directory_searched", {
+    search_query: searchQuery,
+    search_scope: "all_projects",
+    result_count: resultCount,
+    sort_option: getOrder() === "za" ? "name_za" : "name_az",
+  });
+};
+search.addEventListener("input", () => { clearTimeout(debounce); debounce = setTimeout(() => trackSearch(render()), 120); });
+form.addEventListener("submit", event => { event.preventDefault(); clearTimeout(debounce); trackSearch(render()); });
+form.addEventListener("change", event => {
+  if (event.target === categoryQuery) return;
+  const resultCount = render();
+  const categories = boxes.filter(box => box.checked).map(box => box.value);
+  if (event.target instanceof HTMLInputElement && event.target.name === "categoria") {
+    track("project_directory_filtered", {
+      filter_type: "category",
+      filter_value: categories.join(","),
+      result_count: resultCount,
+      search_mode: searchMode(),
+    });
+  }
+});
 all.addEventListener("click", event => { event.preventDefault(); boxes.forEach(box => { box.checked = false; }); resetCategorySearch(); render(); });
 document.querySelectorAll<HTMLAnchorElement>("[data-clear-filters]").forEach(link => link.addEventListener("click", event => {
   event.preventDefault(); form.reset(); search.value = ""; setOrder("az");
