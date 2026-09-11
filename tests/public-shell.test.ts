@@ -22,6 +22,7 @@ describe("public shell", () => {
 
     expect(html).toContain('<html lang="es">');
     expect(html).toContain("La comunidad de<br>builders de Venezuela");
+    expect(html).toContain('class="hero-eyebrow-count">+180</span>');
     expect(html).toMatch(/<main\b/);
     expect(html).toContain("Navegación principal");
   });
