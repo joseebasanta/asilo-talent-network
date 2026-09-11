@@ -23,7 +23,7 @@ member roster. Keep credentials server-only and out of commits.
 
 Optional project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
 and `APPWRITE_API_KEY`. Optional spam protection uses `TURNSTILE_SITE_KEY`
-and `TURNSTILE_SECRET_KEY`. These are additional variables beyond `.env.example`.
+and `TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
 
 ## Checks
 
