@@ -24,13 +24,13 @@
 @keyframes detail-in { from { opacity: 0; transform: translateY(8px); } }
 @keyframes check-in { from { opacity: 0; transform: translateY(8px) scale(.85); } }
 
-.modal[open] { animation: dialog-in 300ms var(--ease-out) both; }
+.modal[open] { animation: dialog-in 300ms var(--ease-out) backwards; }
 .modal[open]::backdrop { animation: motion-fade-in 240ms ease both; }
 .modal[open][data-closing] { animation: dialog-out 160ms var(--ease-in) both; }
 .modal[open][data-closing]::backdrop { animation: motion-fade-out 160ms ease both; }
 .modal[open]:not([data-closing]) .modal-header,
 .modal[open]:not([data-closing]) .modal-body,
-.modal[open]:not([data-closing]) .modal-footer { animation: detail-in 320ms var(--ease-out) both; }
+.modal[open]:not([data-closing]) .modal-footer { animation: detail-in 320ms var(--ease-out) backwards; }
 .modal[open] .modal-body { animation-delay: 35ms; }
 .modal[open] .modal-footer { animation-delay: 65ms; }
 .modal-success:not([hidden]) .modal-success-check { animation: check-in 420ms var(--ease-out) both; }
@@ -67,7 +67,7 @@
 }
 .nav-links a:is(:hover, :focus-visible, [aria-current="page"])::after { transform: scaleX(1); }
 @media (hover: hover) and (pointer: fine) {
-  :is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-success-done, .modal-success-secondary):hover:not(:disabled):not([aria-disabled="true"]) { transform: translateY(-2px); }
+  :is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-success-done, .modal-success-secondary):hover:not(:active):not(:disabled):not([aria-disabled="true"]) { transform: translateY(-2px); }
   .modal-close:hover { transform: rotate(90deg); }
 }
 @media (prefers-reduced-motion: reduce) {
