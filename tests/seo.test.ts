@@ -39,7 +39,7 @@ describe("home SEO head", () => {
 
     expect(html).toContain(`<title>Asilo Builders — La comunidad de builders de Venezuela</title>`);
     expect(html).toMatch(
-      /<meta\b[^>]*name=["']description["'][^>]*content=["']La comunidad de builders de Venezuela/,
+      /<meta\b[^>]*name=["']description["'][^>]*content=["']Asilo Builders \| La comunidad de builders de Venezuela\. Aprendemos y construimos\./,
     );
     expect(html).toContain(`<link rel="canonical" href="${SITE}/"`);
     expect(html).toContain(`<meta property="og:url" content="${SITE}/"`);
