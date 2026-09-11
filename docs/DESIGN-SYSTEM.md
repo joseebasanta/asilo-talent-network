@@ -161,7 +161,7 @@ All class names live in `global.css`. Specs below are the current truth.
 - **Feature grid** (`.wwd-grid` / `.wwd-item`): single `1px solid --slate-800`
   outer border with `--slate-800` internal dividers (no per‑card boxes).
   At ≤760px, use borderless rows with horizontal dividers, 28px icons beside
-  the text, 18px titles, and 16px `--blue-700` body copy. Row padding is 24px,
+  the text, 18px titles, and 16px `--blue-700` body copy. Row padding is 32px,
   with no padding above the first or below the last row.
 - **Project card** (`.prj-item`): transparent at rest; **hover/focus** → bg
   `--slate-800` panel + reveal a `--blue-500` external‑link icon by the title.
