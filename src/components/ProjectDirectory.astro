@@ -171,6 +171,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
+  import { createDialogMotion } from "../lib/dialog-motion";
   import { gsap } from "gsap";
   import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
   import { validateLogo } from "../lib/projects-logo";
@@ -361,6 +362,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   const dialog = document.getElementById("project-modal") as HTMLDialogElement | null;
   const openBtn = document.querySelector("[data-open-modal]");
   if (dialog && openBtn) {
+    const motion = createDialogMotion(dialog);
     const MAX = MAX_CATEGORIES;
     const form = dialog.querySelector("form");
     const formView = form?.querySelector<HTMLElement>("[data-form-view]") ?? null;
@@ -438,7 +440,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     const FIELD_NAMES = new Set(["nombre", "website", "descripcion", "fundadores", "logo", "categorias", "captcha"]);
     openBtn.addEventListener("click", () => {
       if (submitting) return;
-      dialog.showModal();
+      motion.open();
       if (submitted) {
         startNewProject();
         return;
@@ -448,14 +450,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       if (successView) successView.hidden = true;
     });
     dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
-      el.addEventListener("click", () => dialog.close())
+      el.addEventListener("click", () => { void motion.close(); })
     );
     let backdropPointerDown = false;
     dialog.addEventListener("pointerdown", (e) => {
       backdropPointerDown = e.target === dialog;
     });
     dialog.addEventListener("click", (e) => {
-      if (backdropPointerDown && e.target === dialog) dialog.close();
+      if (backdropPointerDown && e.target === dialog) void motion.close();
       backdropPointerDown = false;
     });
     // short-description character counter
@@ -649,7 +651,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
         if (formView) formView.hidden = true;
         if (successView) successView.hidden = false;
         playConfetti();
-        successTitle?.focus();
+        if (dialog.open) successTitle?.focus();
       } catch {
         setStatus("Hubo un problema de conexión. Intentá de nuevo.", true);
       } finally {
