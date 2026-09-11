@@ -53,7 +53,7 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
         <h2 id="community-success-title" tabindex="-1"><span>Tu solicitud ya está</span><span>en revisión</span></h2>
         <p>Gracias por sumarte. Revisaremos tu información y te contactaremos.</p>
       </div>
-      <div class="modal-success-actions"><button class="modal-success-done" type="button" data-community-close>Listo</button></div>
+      <div class="modal-success-actions"><button class="modal-success-secondary" type="button" data-community-close>Listo</button></div>
     </section>
   </form>
 </dialog>
@@ -61,7 +61,7 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
   .privacy, small { color: var(--blue-700); font-size: 13px; line-height: 1.6; }
   .privacy { margin: 0; }
   .modal-submit:disabled { opacity: .6; cursor: wait; }
-  .field-input:focus-visible, .field-textarea-box:focus-within { outline: 2px solid var(--blue-500); outline-offset: 2px; }
+  /* Focus treatment reuses the project-modal pattern (border + shadow from global/motion CSS). */
 </style>
 <script>
   import { initCommunityForm } from "../scripts/community-form";
