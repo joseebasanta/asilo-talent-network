@@ -1,6 +1,6 @@
 # Asilo Builders membership applications
 
-Every “Únete” / “Llenar formulario” CTA opens the membership dialog. The project submission form remains separate. Applications are saved privately through `POST /api/community/submit`.
+Every “Únete” / “Llenar formulario” CTA opens the membership dialog. The community introduction and applicant context live on the homepage; the dialog starts directly with the fields and does not display a prior WhatsApp membership notice. The project submission form remains separate. Applications are saved privately through `POST /api/community/submit`.
 
 ## Connect a new spreadsheet
 

@@ -25,13 +25,6 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
       </header>
       <div class="modal-divider" aria-hidden="true"></div>
       <div class="modal-body">
-        <div class="intro">
-          <p>Un builder diseña, configura y desarrolla soluciones digitales y flujos de trabajo con herramientas de Inteligencia Artificial.</p>
-          <p>Asilo Builders es nuestro grupo cerrado dentro de la comunidad de Asilo Digital en WhatsApp. Un espacio para compartir productos y experimentos desde Venezuela, aprender juntos, dar y recibir feedback, y crecer.</p>
-          <p>Si tienes un proyecto en curso, un producto con usuarios reales o una idea que ya estás ejecutando, llena este formulario.</p>
-          <p class="notice"><strong>Antes debes ser miembro de la comunidad en WhatsApp.</strong> Conoce <a href="https://www.asilodigital.com/" target="_blank" rel="noopener noreferrer">Asilo Digital</a>.</p>
-          <p>Los campos con * son obligatorios.</p>
-        </div>
         {fields.map(field => <label class="field" for={`community-${field.name}`}>
           <span class="field-label">{field.label} *</span>
           <input class="field-input" id={`community-${field.name}`} name={field.name} type={field.type ?? "text"} autocomplete={field.autocomplete} placeholder={field.placeholder} maxlength={field.max} required aria-describedby={`community-${field.name}-error${field.hint ? ` community-${field.name}-hint` : ""}`} />
@@ -65,10 +58,8 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
   </form>
 </dialog>
 <style>
-  .intro, .privacy, small { color: var(--blue-700); font-size: 13px; line-height: 1.6; }
-  .intro p { margin: 0 0 12px; }
-  .intro p:last-child, .privacy { margin: 0; }
-  .notice { padding: 12px; background: var(--sky-alpha-5); border-radius: 4px; }
+  .privacy, small { color: var(--blue-700); font-size: 13px; line-height: 1.6; }
+  .privacy { margin: 0; }
   .modal-submit:disabled { opacity: .6; cursor: wait; }
   .field-input:focus-visible, .field-textarea-box:focus-within { outline: 2px solid var(--blue-500); outline-offset: 2px; }
 </style>
