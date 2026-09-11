@@ -21,8 +21,8 @@ describe("ProjectDirectory", () => {
     expect((html.match(/class="prj-col"/g) ?? []).length).toBe(4);
     expect(html).toContain('data-project-page="0"');
     expect(html).toMatch(/data-project-page="1"[^>]*\bhidden\b/);
-    expect(html).toContain('data-project-nav="previous"');
-    expect(html).toContain('data-project-nav="next"');
+    expect(html).not.toContain("data-project-nav=");
+    expect(html).toContain('<a class="prj-browse" href="/proyectos">Ver todos</a>');
     expect(html).toContain('id="project-directory-list"');
     expect((html.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length).toBe(20);
     expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(20);

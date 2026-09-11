@@ -116,7 +116,20 @@ describe("Proyectos directory (slice 1b-b)", () => {
     const html = await renderShell();
 
     expect((html.match(/href=["']https:\/\/www\.asilodigital\.com\/["']/g) ?? []).length).toBe(2);
-    expect(html.replaceAll('href="https://www.asilodigital.com/"', "")).not.toMatch(/href=["']https?:\/\//);
+    const socialUrls = [
+      "https://www.instagram.com/asilodigitalcom/",
+      "https://x.com/asilodigital",
+      "https://www.linkedin.com/company/asilodigital/",
+    ];
+    for (const url of socialUrls) {
+      expect(html).toContain(`href="${url}" target="_blank" rel="noopener noreferrer"`);
+    }
+    const externalLinks = Array.from(html.matchAll(/href=["'](https?:\/\/[^"']+)["']/g), (match) => match[1]);
+    expect(externalLinks.sort()).toEqual([
+      "https://www.asilodigital.com/",
+      "https://www.asilodigital.com/",
+      ...socialUrls,
+    ].sort());
     // Shared shell and form images, plus one local icon per placeholder project.
     expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 7);
     expect((html.match(/class="prj-placeholder"/g) ?? []).length).toBe(placeholderProjects.length);
