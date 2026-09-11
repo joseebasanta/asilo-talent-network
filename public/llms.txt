@@ -1,0 +1,15 @@
+# Asilo Builders
+
+> La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos. Impulsado por Asilo Digital.
+
+Sitio: https://builders.asilodigital.com
+
+## Páginas
+
+- [Inicio](https://builders.asilodigital.com/): qué hacemos, qué es Asilo Builders, directorio de proyectos y cómo unirse.
+- [Proyectos](https://builders.asilodigital.com/proyectos): directorio de productos creados por builders de Venezuela, con búsqueda por nombre, fundador o categoría.
+
+## Unirse
+
+La comunidad se coordina en WhatsApp y recibe proyectos nuevos desde el formulario del sitio.
+Contacto: hello@asilodigital.com

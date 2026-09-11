@@ -131,6 +131,7 @@ describe("Proyectos directory (slice 1b-b)", () => {
     }
     const externalLinks = Array.from(html.matchAll(/href=["'](https?:\/\/[^"']+)["']/g), (match) => match[1]);
     expect(externalLinks.sort()).toEqual([
+      "https://builders.asilodigital.com/",
       "https://www.asilodigital.com/",
       "https://www.asilodigital.com/",
       ...socialUrls,

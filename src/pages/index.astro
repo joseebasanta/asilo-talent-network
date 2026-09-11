@@ -4,6 +4,7 @@ import "../styles/global.css";
 import "../styles/motion.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import SeoHead from "../components/SeoHead.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 
@@ -13,6 +14,14 @@ const [projects, buildersCount] = await Promise.all([
   loadApprovedProjects(),
   loadBuildersCount(),
 ]);
+
+export const prerender = true;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
+const canonical = `${siteUrl}/`;
+const pageTitle = "Asilo Builders — La comunidad de builders de Venezuela";
+const pageDescription =
+  "La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos.";
 ---
 
 <!doctype html>
@@ -21,11 +30,7 @@ const [projects, buildersCount] = await Promise.all([
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#000a11" />
-    <meta
-      name="description"
-      content="La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos."
-    />
-    <title>Asilo Builders</title>
+    <SeoHead title={pageTitle} description={pageDescription} canonical={canonical} />
     <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg?v=20260911" type="image/svg+xml" />
