@@ -362,7 +362,8 @@ h1 {
 .cat-list { display: flex; flex-direction: column; height: 160px; padding: 6px; background: var(--bg); border: 1px solid var(--sky-alpha-16); border-radius: 8px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--sky-alpha-24) transparent; }
 .cat-list::-webkit-scrollbar { width: 6px; }
 .cat-list::-webkit-scrollbar-thumb { background: var(--sky-alpha-24); border-radius: 999px; }
-.cat-row { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 6px; cursor: pointer; }
+/* Contain hidden checkbox positions inside the nested category scroller. */
+.cat-row { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 6px; cursor: pointer; }
 .cat-row:has(.cat-checkbox:checked) { background: var(--sky-alpha-5); }
 .cat-checkbox { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
 .cat-box { flex: none; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(206, 226, 255, .3); border-radius: 5px; color: var(--slate-900); transition: background .12s ease, border-color .12s ease; }
