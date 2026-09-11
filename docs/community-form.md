@@ -34,3 +34,12 @@ The independent review found and the implementation now fixes:
 **Open correctness issue:** the Sheets append operation is not idempotent. Concurrent requests or retries after a response is lost can create duplicate rows. Disabling the browser submit button only prevents double-clicks in that page. A read-before-append check would still race across server instances. Strong prevention requires a durable submission identifier with atomic uniqueness and a reliable export/reconciliation process to Sheets. The application does not claim exactly-once storage; failure messages explain that saving could have succeeded.
 
 Review verification includes adversarial endpoint tests for duplicate fields, file values in text fields, phone punctuation, future/malformed timestamps, optional descriptions, honeypots and concurrent per-process rate limiting. Browser checks confirm opening, Escape/focus restoration, and preservation of the draft and fill timestamp on reopening. Real Google Sheets writes remain unverified until a separate spreadsheet is configured.
+
+
+## Storage and UX verification
+
+The endpoint verifies the exact A1:J1 headers above before appending, and only confirms a normal application after Google acknowledges exactly one updated row. Keep the header order unchanged. Append requests have a 10-second timeout and automatic retries disabled; explicit user retries remain subject to the duplicate-row limitation above.
+
+The membership dialog uses the same shared modal, input, footer and success styles as the project form. The same Zod schema runs in the browser and on the server, with inline errors and focus on the first invalid field. Inputs are read-only while submitting, drafts survive errors and closing, and a 30-second browser timeout restores controls on stalled requests. The success view has an explicit Listo action.
+
+Automated DOM interaction tests cover validation, pending state, double clicks, success, storage failures, inline server errors, resume and late responses after closing. These tests use a simulated DOM, not a real browser. Live storage must still be verified with the team's configured spreadsheet using the sample-submission procedure above.
