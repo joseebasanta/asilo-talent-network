@@ -105,5 +105,9 @@
   .search-control { grid-column: 1 / -1; }
 }
 @media (max-width: 520px) {
-  .search-row { grid-template-columns: minmax(0, 1fr); }
+  .search-row { column-gap: .75rem; }
+  .sort-dropdown { min-width: 0; }
+  .sort-dropdown summary { gap: .375rem; padding-inline: .5rem; }
+  .sort-dropdown summary > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sort-options { min-width: 160px; }
 }
