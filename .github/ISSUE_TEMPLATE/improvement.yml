@@ -1,0 +1,27 @@
+name: Improvement
+description: Suggest a feature, design, content, or developer workflow change.
+body:
+  - type: markdown
+    attributes:
+      value: Search existing issues first and keep the proposal focused on one improvement.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Who needs this, and what is difficult or missing today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the desired behavior or content.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: What observable result would make this complete?
+    validations:
+      required: true

@@ -4,14 +4,26 @@ Spanish-language community site and project directory for Venezuelan builders.
 Built with Astro SSR and the Vercel adapter. Project submissions and approved
 listings use Google Sheets; uploaded logos use Appwrite Storage.
 
+Browse projects at `/proyectos` or apply to join the community from the homepage.
+
 ## Development
 
 Requires Node.js >=22.12.0 and pnpm (the version is pinned in `package.json`).
 
 ```sh
 pnpm install --frozen-lockfile
+cp .env.example .env.local
 pnpm dev
 ```
+
+Open the local URL printed by Astro. Fill in `.env.local` to use the Google
+Sheets integrations; see [membership form setup](docs/community-form.md).
+Membership applications must use a separate spreadsheet from projects and the
+member roster. Keep credentials server-only and out of commits.
+
+Optional project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
+and `APPWRITE_API_KEY`. Optional spam protection uses `TURNSTILE_SITE_KEY`
+and `TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
 
 ## Checks
 
@@ -20,6 +32,12 @@ pnpm test
 pnpm check
 pnpm build
 ```
+
+## Issues and pull requests
+
+Read the short [issue and PR guide](docs/issues-and-prs.md). GitHub templates
+cover bug reports, improvements, and PRs. Coding agents should start with
+[AGENTS.md](AGENTS.md).
 
 ## Structure
 
@@ -30,7 +48,8 @@ pnpm build
 - `src/scripts/` and `src/styles/` — browser interactions and styles
 - `public/` — images, category icons, fonts, and SVG source artwork used by the site
 - `tests/` — automated tests
-- `docs/DESIGN-SYSTEM.md` — design reference
+- [Design system](docs/DESIGN-SYSTEM.md) — visual and interaction guidance
+- [Membership form](docs/community-form.md) — spreadsheet setup and limitations
 
 The standalone HTML/React prototypes and their unused assets have been removed.
 `BASELINE.md`, `docs/astro-appwrite-migration.md`, and `openspec/config.yaml`
