@@ -2,9 +2,10 @@ import googleSheets from "@googleapis/sheets";
 
 // Cache is local to each server instance and resets on cold starts.
 export const BUILDERS_TTL_MS = 10 * 60_000;
+export const FALLBACK_BUILDERS_COUNT = 180;
 let cached: { at: number; count: number } | null = null;
 let retryAfter = 0;
-let pending: Promise<number | null> | null = null;
+let pending: Promise<number> | null = null;
 
 export function resetBuildersCache(): void {
   cached = null;
@@ -19,15 +20,15 @@ export function countBuilders(values: unknown[][]): number {
 
 export async function loadBuildersCount(
   fetchValues: () => Promise<unknown[][]> = fetchBuilderValues,
-): Promise<number | null> {
+): Promise<number> {
   if (
     !(import.meta.env.GOOGLE_BUILDERS_SHEETS_ID || import.meta.env.GOOGLE_SHEETS_ID) ||
     !import.meta.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64
-  ) return null;
+  ) return FALLBACK_BUILDERS_COUNT;
 
   if (cached && Date.now() - cached.at < BUILDERS_TTL_MS) return cached.count;
   // Back off after errors too, so an outage does not trigger a read per visit.
-  if (Date.now() < retryAfter) return cached?.count ?? null;
+  if (Date.now() < retryAfter) return cached?.count ?? FALLBACK_BUILDERS_COUNT;
   // Concurrent page requests share the same in-flight read.
   if (pending) return pending;
 
@@ -39,8 +40,8 @@ export async function loadBuildersCount(
       return count;
     } catch {
       retryAfter = Date.now() + BUILDERS_TTL_MS;
-      console.error("[builders-loader] Google Sheets read failed; using last known count if available.");
-      return cached?.count ?? null;
+      console.error("[builders-loader] Google Sheets read failed; using cached or fallback count.");
+      return cached?.count ?? FALLBACK_BUILDERS_COUNT;
     }
   })();
   try {
