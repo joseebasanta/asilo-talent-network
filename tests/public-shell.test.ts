@@ -131,7 +131,7 @@ describe("Proyectos directory (slice 1b-b)", () => {
       ...socialUrls,
     ].sort());
     // Shared shell and form images, plus one local icon per placeholder project.
-    expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 7);
+    expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 8);
     expect((html.match(/class="prj-placeholder"/g) ?? []).length).toBe(placeholderProjects.length);
     expect(html).toContain('src="/logo-asilo-builders.svg"');
   });
