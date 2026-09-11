@@ -18,7 +18,7 @@ describe("Builders count", () => {
     expect(countBuilders([])).toBe(0);
   });
 
-  it("caches reads, refreshes after one minute and keeps the last count on failure", async () => {
+  it("caches reads, refreshes after ten minutes and keeps the last count on failure", async () => {
     const now = vi.spyOn(Date, "now").mockReturnValue(0);
     const fetcher = vi.fn().mockResolvedValue([["Ana"], ["Luis"]]);
     expect(await loadBuildersCount(fetcher)).toBe(2);
@@ -41,7 +41,7 @@ describe("Builders count", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it("waits a minute before retrying a failed read", async () => {
+  it("waits ten minutes before retrying a failed read", async () => {
     const now = vi.spyOn(Date, "now").mockReturnValue(0);
     const fetcher = vi.fn().mockRejectedValueOnce(new Error("unavailable"));
     expect(await loadBuildersCount(fetcher)).toBeNull();

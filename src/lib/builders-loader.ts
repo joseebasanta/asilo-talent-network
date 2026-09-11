@@ -1,7 +1,7 @@
 import googleSheets from "@googleapis/sheets";
 
 // Cache is local to each server instance and resets on cold starts.
-export const BUILDERS_TTL_MS = 60_000;
+export const BUILDERS_TTL_MS = 10 * 60_000;
 let cached: { at: number; count: number } | null = null;
 let retryAfter = 0;
 let pending: Promise<number | null> | null = null;
