@@ -1,13 +1,28 @@
 ---
 import "../styles/fonts.css";
 import "../styles/global.css";
+import "../styles/motion.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import SeoHead from "../components/SeoHead.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 
-// Server-rendered: the directory reflects the sheet's current approval state.
-const projects = await loadApprovedProjects();
+import { loadBuildersCount } from "../lib/builders-loader";
+
+const [projects, buildersCount] = await Promise.all([
+  loadApprovedProjects(),
+  loadBuildersCount(),
+]);
+
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "no-store");
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
+const canonical = `${siteUrl}/`;
+const pageTitle = "Asilo Builders — La comunidad de builders de Venezuela";
+const pageDescription =
+  "Asilo Builders | La comunidad de builders de Venezuela. Aprendemos y construimos.";
 ---
 
 <!doctype html>
@@ -16,14 +31,10 @@ const projects = await loadApprovedProjects();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#000a11" />
-    <meta
-      name="description"
-      content="La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos."
-    />
-    <title>Asilo Builders</title>
+    <SeoHead title={pageTitle} description={pageDescription} canonical={canonical} />
     <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.svg?v=20260911" type="image/svg+xml" />
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -35,7 +46,9 @@ const projects = await loadApprovedProjects();
         <section class="hero-content" aria-labelledby="hero-title">
         <p class="hero-eyebrow">
           <img class="hero-eyebrow-brace" src="/icon-bracket-left.svg" alt="" aria-hidden="true" width="8" height="24" />
-          <span class="hero-eyebrow-count">+170</span>
+          {buildersCount !== null && (
+            <span class="hero-eyebrow-count">+{buildersCount.toLocaleString("es-VE")}</span>
+          )}
           <span class="hero-eyebrow-label">Builders forman parte</span>
           <img class="hero-eyebrow-brace" src="/icon-bracket-right.svg" alt="" aria-hidden="true" width="8" height="24" />
         </p>
@@ -76,9 +89,8 @@ const projects = await loadApprovedProjects();
             <p>Networking con propósito entre developers, diseñadores y founders.</p>
           </article>
           <article class="wwd-item" data-reveal style="--reveal-i: 2">
-            <svg class="wwd-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <path d="M0 5H21.6667V8.33333H0V5ZM0 31.6667H18.3333V35H0V31.6667Z" fill="currentColor" />
-              <path d="M18.3333 5H40V8.33333H18.3333V5ZM21.6667 31.6667H40V35H21.6667V31.6667ZM18.3333 8.33333H21.6667V38.3333H18.3333V8.33333ZM0 8.33333H3.33333V31.6667H0V8.33333ZM36.6667 8.33333H40V31.6667H36.6667V8.33333ZM25 11.6667H33.3333V15H25V11.6667ZM25 18.3333H33.3333V21.6667H25V18.3333ZM25 25H28.3333V28.3333H25V25Z" fill="currentColor" />
+            <svg class="wwd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3 3H9V5H3V3ZM9 5H11V7H9V5ZM13 5H15V7H13V5ZM15 3H21V5H15V3ZM1 5H3V19H1V5ZM21 5H23V19H21V5ZM3 19H9V21H3V19ZM15 19H21V21H15V19ZM9 21H15V23H9V21ZM11 7H13V21H11V7ZM5 7H7V9H5V7ZM5 11H9V13H5V11ZM5 15H9V17H5V15ZM17 7H19V9H17V7ZM15 11H19V13H15V11ZM15 15H19V17H15V15Z" fill="currentColor" />
             </svg>
             <h3>Acelerar el aprendizaje</h3>
             <p>Dejar de construir solo. Comparte el proceso, no solo el resultado.</p>
@@ -96,7 +108,7 @@ const projects = await loadApprovedProjects();
           <h2 id="qeb-title" data-reveal="fade" style="--reveal-i: 1">¿Qué es ASILO Builders?</h2>
         </div>
         <p class="qeb-copy" data-reveal="fade" style="--reveal-i: 2">
-          Es el laboratorio colectivo donde construimos juntos. El lugar para tomar una idea y convertirla en un producto, una línea de código, un diseño o una empresa. Construimos en público, aprendemos haciendo y lanzamos soluciones que atienden necesidades reales.
+          Somos el grupo de builders de Asilo Digital en WhatsApp. Diseñamos y desarrollamos productos y flujos de trabajo con IA desde Venezuela. Compartimos experimentos, aprendemos juntos y nos damos feedback para llevar las ideas a la práctica.
         </p>
         <a class="qeb-cta" href="#unete" data-reveal="fade" style="--reveal-i: 3">UNETE A LA COMUNIDAD</a>
       </div>
@@ -106,7 +118,7 @@ const projects = await loadApprovedProjects();
       <div class="cta-inner">
         <div class="cta-titles">
           <h2 id="cta-title" class="cta-title" data-decode>Deja de construir solo</h2>
-          <p class="cta-sub" data-reveal="fade" style="--reveal-i: 1">Sé parte de los +170 builders venezolanos que están haciendo la diferencia.</p>
+          <p class="cta-sub" data-reveal="fade" style="--reveal-i: 1">¿Tienes un proyecto en marcha, usuarios reales o una idea que ya estás ejecutando? Cuéntanos qué estás construyendo.</p>
         </div>
         <a class="button button-primary" href="#unete" data-reveal="fade" style="--reveal-i: 2">
           Llenar formulario

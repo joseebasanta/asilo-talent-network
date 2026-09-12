@@ -12,7 +12,8 @@
  *
  * Environment (names only — values live in the deployed runtime):
  *   GOOGLE_SHEETS_ID, GOOGLE_SERVICE_ACCOUNT_JSON_BASE64,
- *   GOOGLE_SHEETS_RANGE (optional, default "Projects!A1:J"),
+ *   GOOGLE_SHEETS_RANGE (optional, default "Projects!A1:M" — must cover the
+ *   full A–M table so the header mapping sees J/K),
  *   APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY (optional —
  *   logo upload; a supplied logo requires all three values),
  *   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY (optional — captcha; without them
@@ -26,7 +27,7 @@ import googleSheets from "@googleapis/sheets";
 import { Client, ID, Permission, Role, Storage } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 import {
-  buildRow,
+  buildRowForHeaders,
   findDuplicateWebsite,
   websiteColumnIndex,
   MIN_FILL_MS,
@@ -43,7 +44,7 @@ export const prerender = false;
 // Write scope: appending rows needs spreadsheet write access (the read path
 // uses the readonly scope; this one can read and write).
 const WRITE_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
-const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:J";
+const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:M";
 // Anchor the table, not a row: Sheets detects its end and appends automatically.
 const APPEND_RANGE = "Projects!A1";
 
@@ -192,8 +193,11 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json({ ok: false, error: "El directorio no está disponible en este momento." }, 503);
   }
 
-  // Idempotency: reject when the same normalized website already exists in the
-  // sheet (pending OR approved) — same project, same row, never duplicated.
+  // Header-aligned write: the live sheet is A–M with moderator-owned H/I
+  // (`Moderador`, `Fecha de moderación`). The row is mapped by header name so
+  // logo/revision land on J/K and H/I stay empty. Headers are always fetched
+  // (even under the dev duplicate override) because mapping without them
+  // would shift columns; any mapping failure is fail-closed with no write.
   // DEV-ONLY OVERRIDE: when `DEV_ALLOW_DUPLICATE_WEBSITE` is set to a truthy
   // value ("1"/"true"/"yes") in `.env.local`, the dedupe is skipped so a
   // developer can re-test submissions against the same project. Never set
@@ -203,28 +207,31 @@ export async function POST({ request, clientAddress }: APIContext) {
     ["1", "true", "yes"].includes(
       String(import.meta.env.DEV_ALLOW_DUPLICATE_WEBSITE ?? "").toLowerCase(),
     );
-  if (!devOverride) {
-    try {
-      const { data } = await sheets.spreadsheets.values.get({
-        spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
-        range: SHEET_RANGE,
-      });
-      if (websiteColumnIndex(data.values?.[0] ?? []) < 0) throw new Error("Missing website column");
-      if (findDuplicateWebsite(data.values ?? [], validation.value.website)) {
+  let headerRow: string[];
+  try {
+    const { data } = await sheets.spreadsheets.values.get({
+      spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
+      range: SHEET_RANGE,
+    });
+    const values = data.values ?? [];
+    headerRow = values[0] ?? [];
+    if (!devOverride) {
+      if (websiteColumnIndex(headerRow) < 0) throw new Error("Missing website column");
+      if (findDuplicateWebsite(values, validation.value.website)) {
         return json(
           { ok: false, error: "Este proyecto ya fue enviado al directorio." },
           409,
         );
       }
-    } catch {
-      return json(
-        {
-          ok: false,
-          error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
-        },
-        503,
-      );
     }
+  } catch {
+    return json(
+      {
+        ok: false,
+        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+      },
+      503,
+    );
   }
 
   let logoId: string | undefined;
@@ -263,13 +270,26 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Intentá más tarde o quitá el logo." }, 503);
   }
 
+  let row: string[];
+  try {
+    row = buildRowForHeaders(headerRow, validation.value, { logoId });
+  } catch {
+    return json(
+      {
+        ok: false,
+        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+      },
+      503,
+    );
+  }
+
   try {
     await sheets.spreadsheets.values.append({
       spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
       range: APPEND_RANGE,
       // Keep user input literal: never interpret spreadsheet formulas.
       valueInputOption: "RAW",
-      requestBody: { values: [buildRow(validation.value, { logoId })] },
+      requestBody: { values: [row] },
     });
   } catch {
     return json(

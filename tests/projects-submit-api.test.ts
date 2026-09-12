@@ -18,6 +18,24 @@ vi.mock("@googleapis/sheets", () => ({
 import sharp from "sharp";
 import { POST } from "../src/pages/api/projects/submit";
 
+// Live Projects headers A–M: H Moderador, I Fecha de moderación, J ID del
+// logo, K ID de revisión, L/M Nota interna.
+const CURRENT_HEADERS = [
+  "Fecha",
+  "Nombre del proyecto",
+  "Sitio web",
+  "Descripción corta",
+  "Fundadores",
+  "Categorías",
+  "Aprobado",
+  "Moderador",
+  "Fecha de moderación",
+  "ID del logo",
+  "ID de revisión",
+  "Nota interna",
+  "Nota interna",
+];
+
 let client = 0;
 function submit(overrides: Record<string, string> = {}, edit?: (form: FormData) => void, clientAddress = `test-${client++}`) {
   const form = new FormData();
@@ -46,7 +64,7 @@ beforeEach(() => {
   vi.stubEnv("APPWRITE_ENDPOINT", "");
   vi.stubEnv("APPWRITE_PROJECT_ID", "");
   vi.stubEnv("APPWRITE_API_KEY", "");
-  sheets.get.mockResolvedValue({ data: { values: [["Sitio web"]] } });
+  sheets.get.mockResolvedValue({ data: { values: [CURRENT_HEADERS] } });
   sheets.append.mockResolvedValue({});
 });
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks(); vi.clearAllMocks(); });
@@ -93,7 +111,10 @@ describe("POST /api/projects/submit validation", () => {
   });
 
   it("rejects existing domains before appending", async () => {
-    sheets.get.mockResolvedValue({ data: { values: [["Sitio web"], ["https://www.panapay.com"]] } });
+    const duplicate = [...CURRENT_HEADERS];
+    const row = new Array(CURRENT_HEADERS.length).fill("");
+    row[CURRENT_HEADERS.indexOf("Sitio web")] = "https://www.panapay.com";
+    sheets.get.mockResolvedValue({ data: { values: [duplicate, row] } });
     expect((await submit()).status).toBe(409);
     expect(sheets.append).not.toHaveBeenCalled();
   });
@@ -172,7 +193,11 @@ describe("POST /api/projects/submit validation", () => {
     expect(upload.file.filename).toBe("logo.webp");
     const bytes = await upload.file.slice(0, await upload.file.size());
     expect((await sharp(bytes).metadata()).format).toBe("webp");
-    expect(sheets.append.mock.calls[0][0].requestBody.values[0][7]).toBe("sanitized-logo-id");
+    const logoRow = sheets.append.mock.calls[0][0].requestBody.values[0];
+    expect(logoRow[9]).toBe("sanitized-logo-id"); // J ID del logo
+    expect(logoRow[7]).toBe(""); // H Moderador untouched
+    expect(logoRow[8]).toBe(""); // I Fecha de moderación untouched
+    expect(logoRow[10]).toMatch(/^[0-9a-f-]{36}$/); // K ID de revisión
     sheets.append.mockClear();
     storage.createFile.mockRejectedValueOnce(new Error("Storage unavailable"));
     expect((await submit({}, edit)).status).toBe(503);
@@ -187,5 +212,25 @@ describe("POST /api/projects/submit validation", () => {
     expect(write.requestBody.values[0][1]).toBe('=HYPERLINK("https://example.com")');
     expect(write.requestBody.values[0][2]).toBe("https://panapay.com/");
     expect(write.requestBody.values[0][6]).toBe("PENDIENTE");
+  });
+
+  it("appends a header-aligned row on the current A–M sheet (logo J, revision K, H/I empty)", async () => {
+    const response = await submit();
+    expect(response.status).toBe(201);
+    const row = sheets.append.mock.calls[0][0].requestBody.values[0];
+    expect(row).toHaveLength(CURRENT_HEADERS.length);
+    expect(row[7]).toBe(""); // H Moderador untouched
+    expect(row[8]).toBe(""); // I Fecha de moderación untouched
+    expect(row[9]).toBe(""); // J ID del logo (no logo supplied)
+    expect(row[10]).toMatch(/^[0-9a-f-]{36}$/); // K ID de revisión
+    expect(row[11]).toBe("");
+    expect(row[12]).toBe("");
+  });
+
+  it("fails closed without appending when the revision column is missing (truncated A–J range)", async () => {
+    sheets.get.mockResolvedValue({ data: { values: [CURRENT_HEADERS.slice(0, 10)] } });
+    const response = await submit();
+    expect(response.status).toBe(503);
+    expect(sheets.append).not.toHaveBeenCalled();
   });
 });

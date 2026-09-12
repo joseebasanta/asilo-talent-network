@@ -1,9 +1,11 @@
 ---
 import "../styles/fonts.css";
 import "../styles/global.css";
+import "../styles/motion.css";
 import "../styles/projects.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import SeoHead from "../components/SeoHead.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 import ProjectCard from "../components/ProjectCard.astro";
@@ -11,7 +13,7 @@ import { filterProjects, normalizeSearch, paginateProjects, projectPageUrl } fro
 
 const projects = (await loadApprovedProjects()).map((project, index) => ({ ...project, index }));
 const categories = Array.from(new Map(projects.flatMap(project => project.tags)
-  .map(tag => [normalizeSearch(tag), tag])).values()).sort((a, b) => a.localeCompare(b, "es"));
+  .map(tag => [normalizeSearch(tag), tag])).values()).sort((a, b) => b.localeCompare(a, "es", { sensitivity: "base" }));
 const query = Astro.url.searchParams.get("q") ?? "";
 const selected = categories.filter(category => Astro.url.searchParams.getAll("categoria").some(value => normalizeSearch(value) === normalizeSearch(category)));
 const order = Astro.url.searchParams.get("orden") === "za" ? "za" : "az";
@@ -19,6 +21,15 @@ const matches = filterProjects(projects, query, selected, order);
 const pagination = paginateProjects(matches, Number(Astro.url.searchParams.get("pagina") ?? 1));
 const positions = new Map(pagination.items.map((project, index) => [project.index, index]));
 const active = Boolean(query || selected.length);
+
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "no-store");
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
+const canonical = `${siteUrl}/proyectos`;
+const pageTitle = "Proyectos | Asilo Builders";
+const pageDescription =
+  "Explora los proyectos de Asilo Builders. Descubre productos creados por builders de Venezuela y busca por nombre, fundador o categoría.";
 ---
 <!doctype html>
 <html lang="es">
@@ -26,8 +37,7 @@ const active = Boolean(query || selected.length);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#000a11" />
-    <meta name="description" content="Explora los proyectos de Asilo Builders. Descubre productos creados por builders de Venezuela y busca por nombre, fundador o categoría." />
-    <title>Proyectos | Asilo Builders</title>
+    <SeoHead title={pageTitle} description={pageDescription} canonical={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />

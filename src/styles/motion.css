@@ -1,0 +1,77 @@
+/* Native same-origin navigation: no routing interception or script reinitialization. */
+@view-transition { navigation: auto; }
+
+:root {
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in: cubic-bezier(.4, 0, 1, 1);
+}
+
+/* Keep the shared navigation visually anchored as the page underneath changes. */
+.site-header { view-transition-name: site-header; }
+::view-transition-group(*) { animation-duration: 320ms; animation-timing-function: var(--ease-out); }
+::view-transition-old(root) { animation: page-out 160ms var(--ease-in) both; }
+::view-transition-new(root) { animation: page-in 320ms var(--ease-out) both; }
+::view-transition-old(site-header) { animation: motion-fade-out 120ms ease both; }
+::view-transition-new(site-header) { animation: motion-fade-in 180ms ease both; }
+::view-transition { pointer-events: none; }
+
+@keyframes page-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px); } }
+@keyframes motion-fade-in { from { opacity: 0; } }
+@keyframes motion-fade-out { to { opacity: 0; } }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(20px) scale(.975); } }
+@keyframes dialog-out { to { opacity: 0; transform: translateY(10px) scale(.985); } }
+@keyframes detail-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes check-in { from { opacity: 0; transform: translateY(8px) scale(.85); } }
+
+.modal[open] { animation: dialog-in 300ms var(--ease-out) backwards; }
+.modal[open]::backdrop { animation: motion-fade-in 240ms ease both; }
+.modal[open][data-closing] { animation: dialog-out 160ms var(--ease-in) both; }
+.modal[open][data-closing]::backdrop { animation: motion-fade-out 160ms ease both; }
+.modal[open]:not([data-closing]) .modal-header,
+.modal[open]:not([data-closing]) .modal-body,
+.modal[open]:not([data-closing]) .modal-footer { animation: detail-in 320ms var(--ease-out) backwards; }
+.modal[open] .modal-body { animation-delay: 35ms; }
+.modal[open] .modal-footer { animation-delay: 65ms; }
+.modal-success:not([hidden]) .modal-success-check { animation: check-in 420ms var(--ease-out) both; }
+.modal-success:not([hidden]) .modal-success-copy { animation: detail-in 360ms var(--ease-out) 60ms both; }
+.modal-success:not([hidden]) .modal-success-actions { animation: detail-in 360ms var(--ease-out) 100ms both; }
+.field-error:not([hidden]), .form-status:not([hidden]) { animation: detail-in 180ms var(--ease-out) both; }
+
+:is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-cancel,
+.modal-success-done, .modal-success-secondary, .modal-close, .search-submit) {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
+    transform 180ms var(--ease-out), box-shadow 180ms ease;
+}
+:is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-cancel,
+.modal-success-done, .modal-success-secondary, .modal-close, .search-submit):active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(1px) scale(.98);
+}
+.field-input, .field-textarea-box, .search-field, .sort-dropdown summary, .logo-upload {
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.field-input:focus, .field-textarea-box:focus-within, .search-field:focus-within {
+  box-shadow: 0 0 0 3px var(--sky-alpha-10);
+}
+.sort-chevron { transition: transform 200ms var(--ease-out); }
+.sort-dropdown[open] :is(.sort-options, .category-panel) { animation: detail-in 200ms var(--ease-out) both; }
+.cat-check { transition: transform 160ms var(--ease-out), opacity 160ms ease; }
+.cat-checkbox:not(:checked) + .cat-box .cat-check { transform: scale(.6); opacity: 0; }
+.prj-ext-icon { transition: opacity 180ms ease, transform 220ms var(--ease-out); transform: translate(-3px, 3px); }
+.prj-item:is(:hover, :focus-visible) .prj-ext-icon { opacity: 1; transform: translate(0, 0); }
+.nav-links a { position: relative; }
+.nav-links a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform 220ms var(--ease-out);
+}
+.nav-links a:is(:hover, :focus-visible, [aria-current="page"])::after { transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) {
+  :is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-success-done, .modal-success-secondary):hover:not(:active):not(:disabled):not([aria-disabled="true"]) { transform: translateY(-2px); }
+  .modal-close:hover { transform: rotate(90deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

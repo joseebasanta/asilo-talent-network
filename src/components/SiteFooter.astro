@@ -1,4 +1,5 @@
 ---
+import CommunityForm from "./CommunityForm.astro";
 interface Props { home?: boolean; }
 const { home = false } = Astro.props;
 ---
@@ -37,7 +38,9 @@ const { home = false } = Astro.props;
         </div>
       </div>
     </footer>
+<CommunityForm />
 <script>
+  import "../scripts/analytics";
   import "../scripts/ascii-background.js";
   import { initAsciiCursor } from "../scripts/ascii-cursor.js";
   const footer = document.querySelector<HTMLElement>("[data-footer-cursor]");

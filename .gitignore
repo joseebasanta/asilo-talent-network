@@ -6,6 +6,7 @@ coverage/
 .playwright-cli/
 .codegraph/
 .serena/
+.atl/
 
 # Environment files — ignore all env files and variants (.env.local, etc.)
 # except the tracked example template.

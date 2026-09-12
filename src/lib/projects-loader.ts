@@ -23,7 +23,7 @@
  * Environment:
  *   GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 — base64 JSON of the service account key
  *   GOOGLE_SHEETS_ID                    — spreadsheet id from the sheet URL
- *   GOOGLE_SHEETS_RANGE                 — optional; defaults to "Projects!A1:J"
+ *   GOOGLE_SHEETS_RANGE                 — optional; defaults to "Projects!A1:M"
  */
 
 import googleSheets from "@googleapis/sheets";
@@ -40,13 +40,13 @@ const READONLY_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 // (`NO`, `PENDIENTE`, empty, typos) is filtered out.
 const APPROVED = "si";
 
-// ponytail: service accounts read at most ~60 times/minute; a 1 minute TTL
-// keeps the homepage well under that. Raise it if request volume grows.
+// Share reads for one minute per instance so approvals appear promptly.
+// Concurrent refreshes share one request to avoid bursts against Sheets.
 // Exported so tests can advance time deterministically past the window.
 export const TTL_MS = 60_000;
-const CACHE_TTL_MS = import.meta.env.MODE === "development" ? 0 : TTL_MS;
+const CACHE_TTL_MS = TTL_MS;
 
-const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:J";
+const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:M";
 
 // Normalized sheet header -> Project field. Header normalization strips case,
 // internal whitespace and accents ("Descripción corta" -> "descripcion corta"),
@@ -103,10 +103,16 @@ const HEADER_ALIASES: Record<string, string> = {
 type ValuesFetcher = () => Promise<string[][]>;
 
 let cached: { at: number; projects: Project[] } | null = null;
+let inFlight: Promise<Project[]> | null = null;
+let retryAfter = 0;
+let failures = 0;
 
 /** Test hook: drops the module-level cache. */
 export function resetProjectsCache(): void {
   cached = null;
+  inFlight = null;
+  retryAfter = 0;
+  failures = 0;
 }
 
 /**
@@ -142,26 +148,37 @@ export function parseProjects(values: string[][]): Project[] {
  */
 export async function loadApprovedProjects(
   fetchValues: ValuesFetcher = fetchSheetValues,
-  options: { fresh?: boolean } = {},
 ): Promise<Project[]> {
   if (!isConfigured()) return placeholderProjects;
 
-  if (!options.fresh && cached && Date.now() - cached.at < CACHE_TTL_MS) {
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
     return cached.projects;
   }
 
+  if (inFlight) return inFlight;
+  if (Date.now() < retryAfter) return cached ? cached.projects : placeholderProjects;
+
+  inFlight = (async () => {
+    try {
+      const parsed = parseProjects(await fetchValues());
+      cached = { at: Date.now(), projects: parsed };
+      failures = 0;
+      retryAfter = 0;
+      return parsed;
+    } catch {
+      failures = Math.min(failures + 1, 4);
+      retryAfter = Date.now() + Math.min(TTL_MS * 2 ** (failures - 1), 300_000);
+      // Never log upstream errors: they can contain credentials.
+      console.error(
+        "[projects-loader] Google Sheets read failed; serving cached or placeholder data.",
+      );
+      return cached ? cached.projects : placeholderProjects;
+    }
+  })();
   try {
-    const parsed = parseProjects(await fetchValues());
-    cached = { at: Date.now(), projects: parsed };
-    return parsed;
-  } catch {
-    // Stale-on-error: keep serving the last good read; only then fall back.
-    // Bounded generic diagnostic only: the upstream error object may carry
-    // request configuration or token material, so it is never logged.
-    console.error(
-      "[projects-loader] Google Sheets read failed; serving cached or placeholder data.",
-    );
-    return cached ? cached.projects : placeholderProjects;
+    return await inFlight;
+  } finally {
+    inFlight = null;
   }
 }
 
@@ -183,7 +200,7 @@ async function fetchSheetValues(): Promise<string[][]> {
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
     range: SHEET_RANGE,
-  });
+  }, { timeout: 15_000, retry: false });
 
   return response.data.values ?? [];
 }

@@ -21,8 +21,8 @@ describe("ProjectDirectory", () => {
     expect((html.match(/class="prj-col"/g) ?? []).length).toBe(4);
     expect(html).toContain('data-project-page="0"');
     expect(html).toMatch(/data-project-page="1"[^>]*\bhidden\b/);
-    expect(html).toContain('data-project-nav="previous"');
-    expect(html).toContain('data-project-nav="next"');
+    expect(html).not.toContain("data-project-nav=");
+    expect(html).toContain('<a class="prj-browse" href="/proyectos">Ver todos</a>');
     expect(html).toContain('id="project-directory-list"');
     expect((html.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length).toBe(20);
     expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(20);
@@ -50,14 +50,15 @@ describe("ProjectDirectory", () => {
     expect(component).toContain("Logo (opcional)");
   });
 
-  it("only closes from a genuine backdrop click, not a text-selection gesture", () => {
+  it("uses explicit close controls without backdrop dismissal", () => {
     const component = readFileSync(
       new URL("../src/components/ProjectDirectory.astro", import.meta.url),
       "utf8",
     );
 
-    expect(component).toContain('dialog.addEventListener("pointerdown"');
-    expect(component).toContain("backdropPointerDown && e.target === dialog");
+    expect(component).not.toContain('dialog.addEventListener("pointerdown"');
+    expect(component).not.toContain('dialog.addEventListener("click"');
+    expect(component).toContain('dialog.querySelectorAll("[data-close-modal]")');
   });
 
   it("keeps hidden carousel pages out of the flex layout", () => {
@@ -80,8 +81,8 @@ describe("ProjectDirectory", () => {
       "utf8",
     );
 
-    expect(component).toContain('fetch("/api/projects", { cache: "no-store" })');
-    expect(component).toContain("window.setInterval(refreshProjects, 30_000)");
-    expect(component).toContain("document.visibilityState !== \"visible\"");
+    expect(component).toContain('fetch("/api/projects", { cache: "no-store", signal: AbortSignal.timeout(15_000) })');
+    expect(component).toContain("startProjectRefresh(refreshProjects)");
+    expect(component).toContain("projectCarousel?.contains(document.activeElement)");
   });
 });

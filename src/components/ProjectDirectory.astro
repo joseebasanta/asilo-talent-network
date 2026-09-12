@@ -171,10 +171,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
+  import { startProjectRefresh } from "../lib/project-refresh";
+  import { createDialogMotion } from "../lib/dialog-motion";
   import { gsap } from "gsap";
   import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
   import { validateLogo } from "../lib/projects-logo";
   import { createSubmissionClock, resetCaptchaWidget } from "../lib/project-form-client";
+  import { track } from "../scripts/analytics";
 
   const projectCarousel = document.getElementById("project-directory-list");
   let projectPages = Array.from(document.querySelectorAll<HTMLElement>("[data-project-page]"));
@@ -254,14 +257,15 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 
   const renderProjectPages = (projects: LiveProject[]) => {
     if (!projectCarousel) return;
+    const nextPageIndex = Math.min(projectPageIndex, Math.max(0, Math.ceil(projects.length / 10) - 1));
     const fragment = document.createDocumentFragment();
     for (let start = 0; start < projects.length; start += 10) {
       const pageIndex = start / 10;
       const page = document.createElement("div");
       page.className = "prj-list";
       page.dataset.projectPage = String(pageIndex);
-      page.setAttribute("aria-hidden", String(pageIndex !== 0));
-      page.hidden = pageIndex !== 0;
+      page.setAttribute("aria-hidden", String(pageIndex !== nextPageIndex));
+      page.hidden = pageIndex !== nextPageIndex;
       for (const columnProjects of [projects.slice(start, start + 5), projects.slice(start + 5, start + 10)]) {
         const column = document.createElement("div");
         column.className = "prj-col";
@@ -272,28 +276,24 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     }
     projectCarousel.replaceChildren(fragment);
     projectPages = Array.from(projectCarousel.querySelectorAll<HTMLElement>("[data-project-page]"));
-    projectPageIndex = 0;
+    projectPageIndex = nextPageIndex;
   };
 
   const refreshProjects = async () => {
-    if (document.visibilityState !== "visible") return;
-    try {
-      const response = await fetch("/api/projects", { cache: "no-store" });
-      const data = await response.json() as { projects?: LiveProject[] };
-      if (!response.ok || !Array.isArray(data.projects)) return;
-      const nextSignature = signatureFor(data.projects);
-      if (nextSignature === projectSignature) return;
-      projectSignature = nextSignature;
-      renderProjectPages(data.projects);
-    } catch {
-      // Keep the last rendered directory when a background refresh fails.
-    }
+    const interacting = () => projectPageAnimating || projectCarousel?.contains(document.activeElement) || Boolean(document.querySelector("dialog[open]"));
+    if (interacting()) return;
+    const response = await fetch("/api/projects", { cache: "no-store", signal: AbortSignal.timeout(15_000) });
+    if (!response.ok) throw new Error("Project refresh failed");
+    const data = await response.json() as { projects?: LiveProject[] };
+    if (!Array.isArray(data.projects)) throw new Error("Invalid project response");
+    if (interacting()) return;
+    const nextSignature = signatureFor(data.projects);
+    if (nextSignature === projectSignature) return;
+    renderProjectPages(data.projects);
+    projectSignature = nextSignature;
   };
 
-  if (projectCarousel) {
-    window.setInterval(refreshProjects, 30_000);
-    document.addEventListener("visibilitychange", refreshProjects);
-  }
+  if (projectCarousel) startProjectRefresh(refreshProjects);
 
   const showProjectPage = (nextPageIndex: number) => {
     if (projectPages.length === 0 || projectPageAnimating || nextPageIndex === projectPageIndex) return;
@@ -359,8 +359,9 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   });
 
   const dialog = document.getElementById("project-modal") as HTMLDialogElement | null;
-  const openBtn = document.querySelector("[data-open-modal]");
-  if (dialog && openBtn) {
+  const openBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-open-modal]"));
+  if (dialog && openBtns.length) {
+    const motion = createDialogMotion(dialog);
     const MAX = MAX_CATEGORIES;
     const form = dialog.querySelector("form");
     const formView = form?.querySelector<HTMLElement>("[data-form-view]") ?? null;
@@ -436,9 +437,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     };
     // map a validation/error field name to the closest form field
     const FIELD_NAMES = new Set(["nombre", "website", "descripcion", "fundadores", "logo", "categorias", "captcha"]);
-    openBtn.addEventListener("click", () => {
+    openBtns.forEach((openBtn) => openBtn.addEventListener("click", () => {
       if (submitting) return;
-      dialog.showModal();
+      track("submit_project_modal_opened", {
+        entry_source: openBtn.closest(".explore-invite") ? "directory_cta" : "landing_directory_cta",
+        modal_variant: "default",
+        is_logged_in: false,
+      });
+      motion.open();
       if (submitted) {
         startNewProject();
         return;
@@ -446,18 +452,10 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       if (!form?.querySelector<HTMLInputElement>('[name="nombre"]')?.value) resetTimestamp();
       if (formView) formView.hidden = false;
       if (successView) successView.hidden = true;
-    });
+    }));
     dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
-      el.addEventListener("click", () => dialog.close())
+      el.addEventListener("click", () => { void motion.close(); })
     );
-    let backdropPointerDown = false;
-    dialog.addEventListener("pointerdown", (e) => {
-      backdropPointerDown = e.target === dialog;
-    });
-    dialog.addEventListener("click", (e) => {
-      if (backdropPointerDown && e.target === dialog) dialog.close();
-      backdropPointerDown = false;
-    });
     // short-description character counter
     const ta = dialog.querySelector<HTMLTextAreaElement>('textarea[name="descripcion"]');
     const counter = dialog.querySelector("[data-counter]");
@@ -530,6 +528,17 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       const t = e.target as HTMLElement;
       const field = t.getAttribute("name");
       if (field && FIELD_NAMES.has(field)) clearFieldError(field);
+    });
+    form?.addEventListener("change", (e) => {
+      const control = e.target;
+      if (!(control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement)) return;
+      if (!FIELD_NAMES.has(control.name)) return;
+      track("submit_project_form_updated", {
+        field_name: ({ nombre: "project_name", website: "url", descripcion: "description", fundadores: "founders", categorias: "category", logo: "logo" } as Record<string, string>)[control.name] ?? control.name,
+        field_filled: control instanceof HTMLInputElement && control.type === "checkbox" ? control.checked : Boolean(control.value),
+        form_step: "details",
+        is_autosaved: false,
+      });
     });
     boxes.forEach((b) => b.addEventListener("change", () => clearFieldError("categorias")));
     // Validate completed text fields on blur without interrupting typing.
@@ -624,6 +633,12 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           | null;
         if (formView) formView.inert = false;
         if (!res.ok || !data?.ok) {
+          track("submit_project_submitted", {
+            submission_success: false,
+            error_code: "submission_rejected",
+            submission_source: "modal_submit_button",
+            project_category_selected: body.getAll("categorias").join(","),
+          });
           if (data?.errors) {
             for (const [field, message] of Object.entries(data.errors)) {
               if (FIELD_NAMES.has(field) && typeof message === "string") setFieldError(field, message, false);
@@ -645,11 +660,24 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           return;
         }
         submitted = true;
+        const category = body.getAll("categorias").join(",");
+        track("submit_project_submitted", {
+          submission_success: true,
+          error_code: "none",
+          submission_source: "modal_submit_button",
+          project_category_selected: category,
+        });
+        track("project_submission_completed_marker", {
+          submission_date: new Date().toISOString(),
+          submission_success: true,
+          project_category_selected: category,
+          is_logged_in: false,
+        });
         clearProjectForm();
         if (formView) formView.hidden = true;
         if (successView) successView.hidden = false;
         playConfetti();
-        successTitle?.focus();
+        if (dialog.open) successTitle?.focus();
       } catch {
         setStatus("Hubo un problema de conexión. Intentá de nuevo.", true);
       } finally {
