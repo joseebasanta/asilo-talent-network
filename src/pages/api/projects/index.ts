@@ -35,11 +35,11 @@ export const GET: APIRoute = async ({ clientAddress }) => {
     });
   }
 
-  const projects = await loadApprovedProjects(undefined, { fresh: true });
+  const projects = await loadApprovedProjects();
   return new Response(JSON.stringify({ projects }), {
     headers: {
       "content-type": "application/json; charset=utf-8",
-      "cache-control": "public, max-age=15, s-maxage=15, stale-while-revalidate=30",
+      "cache-control": "no-store",
     },
   });
 };

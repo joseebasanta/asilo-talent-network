@@ -74,6 +74,21 @@ si aún no hay un total disponible, la portada omite la cifra. Los errores tambi
 esperan 10 minutos antes de reintentar. Las consultas simultáneas comparten una
 sola petición; cada instancia nueva del servidor comienza con la caché vacía.
 
+## Actualización de proyectos
+
+La portada y `/proyectos` se renderizan en el servidor. Las aprobaciones `SI`
+(o `Sí`) se consultan con una caché de 60 segundos por instancia; las lecturas
+simultáneas comparten una petición. No se cachean las páginas ni el feed en el
+navegador/CDN. Ambas vistas comprueban cambios cada 30 segundos mientras están
+visibles; el directorio espera si hay controles o proyectos enfocados para no
+interrumpir el uso del teclado. En condiciones normales, los cambios aparecen
+en unos 60–90 segundos, más el tiempo de respuesta de Google Sheets.
+Si Sheets falla, se conserva la última lectura y se reintenta tras 60 segundos;
+los fallos consecutivos aumentan la espera hasta 5 minutos. Las peticiones
+tienen un límite de 15 segundos. Cambiar de pestaña no evita el intervalo ni
+inicia consultas simultáneas. Esta caché es por instancia, no un límite global:
+las instancias nuevas y las lecturas de los formularios también consumen cuota.
+
 ## Analítica
 
 Configurar `PUBLIC_MIXPANEL_TOKEN` en `.env.local` y en el hosting. La analítica,

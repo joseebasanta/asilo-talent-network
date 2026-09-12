@@ -15,7 +15,8 @@ const [projects, buildersCount] = await Promise.all([
   loadBuildersCount(),
 ]);
 
-export const prerender = true;
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "no-store");
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
 const canonical = `${siteUrl}/`;

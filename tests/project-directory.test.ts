@@ -81,8 +81,8 @@ describe("ProjectDirectory", () => {
       "utf8",
     );
 
-    expect(component).toContain('fetch("/api/projects", { cache: "no-store" })');
-    expect(component).toContain("window.setInterval(refreshProjects, 30_000)");
-    expect(component).toContain("document.visibilityState !== \"visible\"");
+    expect(component).toContain('fetch("/api/projects", { cache: "no-store", signal: AbortSignal.timeout(15_000) })');
+    expect(component).toContain("startProjectRefresh(refreshProjects)");
+    expect(component).toContain("projectCarousel?.contains(document.activeElement)");
   });
 });
