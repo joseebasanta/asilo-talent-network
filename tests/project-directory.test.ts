@@ -82,7 +82,7 @@ describe("ProjectDirectory", () => {
     );
 
     expect(component).toContain('fetch("/api/projects", { cache: "no-store" })');
-    expect(component).toContain("window.setInterval(refreshProjects, 30_000)");
+    expect(component).toContain("window.setInterval(refreshProjects, 10_000)");
     expect(component).toContain("document.visibilityState !== \"visible\"");
   });
 });

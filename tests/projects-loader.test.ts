@@ -400,6 +400,25 @@ describe("loadApprovedProjects", () => {
     expect(projects[0].href).toBe("#");
   });
 
+  it("reflects approvals and revocations after ten seconds and shares concurrent reads", async () => {
+    process.env.GOOGLE_SHEETS_ID = "test-sheet";
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 = "dGVzdA==";
+    vi.useFakeTimers();
+    let approval = "PENDIENTE";
+    const fetcher = vi.fn(async () => [HEADERS, ["Nuevo", "https://nuevo.example", "", "", "", approval]]);
+    expect(await loadApprovedProjects(fetcher)).toEqual([]);
+    approval = "SI";
+    vi.advanceTimersByTime(9_999);
+    expect(await loadApprovedProjects(fetcher)).toEqual([]);
+    vi.advanceTimersByTime(1);
+    const results = await Promise.all(Array.from({ length: 10 }, () => loadApprovedProjects(fetcher)));
+    expect(results.every(result => result[0]?.title === "Nuevo")).toBe(true);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    approval = "NO";
+    vi.advanceTimersByTime(10_000);
+    expect(await loadApprovedProjects(fetcher)).toEqual([]);
+  });
+
   it("does not refetch within the TTL window", async () => {
     process.env.GOOGLE_SHEETS_ID = "test-sheet";
     process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 = "dGVzdA==";

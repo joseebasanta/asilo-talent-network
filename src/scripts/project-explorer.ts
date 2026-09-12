@@ -9,10 +9,10 @@ const sortLabel = document.querySelector<HTMLElement>("#sort-value")!;
 const sortOptions = Array.from(form.querySelectorAll<HTMLInputElement>('[name="orden"]'));
 const getOrder = () => sortOptions.find(option => option.checked)?.value ?? "az";
 const setOrder = (value: string) => sortOptions.forEach(option => { option.checked = option.value === value; });
-const boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
+let boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
 const grid = document.querySelector<HTMLElement>("#project-results")!;
-const cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>("[data-project-index]"));
-const projects = cards.map(card => ({
+let cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>("[data-project-index]"));
+let projects = cards.map(card => ({
   href: card.href, title: card.dataset.title ?? "", description: card.dataset.description ?? "",
   author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[], card,
 }));
@@ -24,7 +24,7 @@ const categoryDropdown = document.querySelector<HTMLDetailsElement>("#project-ca
 const categoryTrigger = categoryDropdown.querySelector<HTMLElement>("summary")!;
 const categorySelection = document.querySelector<HTMLElement>("[data-category-selection]")!;
 const categoryQuery = document.querySelector<HTMLInputElement>("#category-query")!;
-const categoryRows = Array.from(document.querySelectorAll<HTMLElement>("[data-category-name]"));
+let categoryRows = Array.from(document.querySelectorAll<HTMLElement>("[data-category-name]"));
 const categoryEmpty = document.querySelector<HTMLElement>("[data-category-empty]")!;
 const categoryDone = document.querySelector<HTMLButtonElement>("[data-category-done]")!;
 function filterCategories() {
@@ -212,3 +212,48 @@ categoryDropdown.addEventListener("focusout", event => {
 document.addEventListener("pointerdown", event => {
   if (event.target instanceof Node && !categoryDropdown.contains(event.target)) categoryDropdown.open = false;
 });
+
+// Refresh server-rendered results while preserving filters and pagination.
+let refreshing = false;
+let directorySnapshot = "";
+async function refreshDirectory() {
+  const interacting = () => form.contains(document.activeElement) || grid.contains(document.activeElement) || Boolean(document.querySelector("dialog[open]"));
+  if (refreshing || document.visibilityState !== "visible" || interacting()) return;
+  refreshing = true;
+  try {
+    const response = await fetch(location.href, { cache: "no-store" });
+    if (!response.ok) return;
+    const page = new DOMParser().parseFromString(await response.text(), "text/html");
+    const nextGrid = page.querySelector("#project-results");
+    const nextCategories = page.querySelector(".category-list");
+    if (!nextGrid || !nextCategories || interacting()) return;
+    const snapshot = nextGrid.innerHTML + nextCategories.innerHTML;
+    if (snapshot === directorySnapshot) return;
+    directorySnapshot = snapshot;
+    const selected = boxes.filter(box => box.checked).map(box => box.value);
+    grid.replaceChildren(...Array.from(nextGrid.children));
+    nextCategories.querySelector("[data-category-empty]")?.remove();
+    form.querySelector(".category-list")!.replaceChildren(...Array.from(nextCategories.children), categoryEmpty);
+    boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
+    boxes.forEach(box => { box.checked = selected.includes(box.value); });
+    categoryRows = Array.from(form.querySelectorAll<HTMLElement>("[data-category-name]"));
+    cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>("[data-project-index]"));
+    projects = cards.map(card => ({
+      href: card.href, title: card.dataset.title ?? "", description: card.dataset.description ?? "",
+      author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[], card,
+    }));
+    const nextEmpty = page.querySelector("#empty-results");
+    if (nextEmpty) {
+      empty.querySelector("h2")!.textContent = nextEmpty.querySelector("h2")!.textContent;
+      empty.querySelector("p")!.textContent = nextEmpty.querySelector("p")!.textContent;
+    }
+    filterCategories();
+    render(false, false);
+  } catch {
+    // Keep current results when a background request fails.
+  } finally {
+    refreshing = false;
+  }
+}
+window.setInterval(refreshDirectory, 10_000);
+document.addEventListener("visibilitychange", refreshDirectory);

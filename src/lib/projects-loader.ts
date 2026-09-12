@@ -40,10 +40,10 @@ const READONLY_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 // (`NO`, `PENDIENTE`, empty, typos) is filtered out.
 const APPROVED = "si";
 
-// ponytail: service accounts read at most ~60 times/minute; a 1 minute TTL
-// keeps the homepage well under that. Raise it if request volume grows.
+// Share reads for ten seconds per instance so approvals appear promptly.
+// Concurrent refreshes share one request to avoid bursts against Sheets.
 // Exported so tests can advance time deterministically past the window.
-export const TTL_MS = 60_000;
+export const TTL_MS = 10_000;
 const CACHE_TTL_MS = import.meta.env.MODE === "development" ? 0 : TTL_MS;
 
 const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:M";
@@ -103,10 +103,14 @@ const HEADER_ALIASES: Record<string, string> = {
 type ValuesFetcher = () => Promise<string[][]>;
 
 let cached: { at: number; projects: Project[] } | null = null;
+let inFlight: Promise<Project[]> | null = null;
+let retryAfter = 0;
 
 /** Test hook: drops the module-level cache. */
 export function resetProjectsCache(): void {
   cached = null;
+  inFlight = null;
+  retryAfter = 0;
 }
 
 /**
@@ -150,18 +154,27 @@ export async function loadApprovedProjects(
     return cached.projects;
   }
 
+  if (inFlight) return inFlight;
+  if (Date.now() < retryAfter) return cached ? cached.projects : placeholderProjects;
+
+  inFlight = (async () => {
+    try {
+      const parsed = parseProjects(await fetchValues());
+      cached = { at: Date.now(), projects: parsed };
+      return parsed;
+    } catch {
+      retryAfter = Date.now() + TTL_MS;
+      // Never log upstream errors: they can contain credentials.
+      console.error(
+        "[projects-loader] Google Sheets read failed; serving cached or placeholder data.",
+      );
+      return cached ? cached.projects : placeholderProjects;
+    }
+  })();
   try {
-    const parsed = parseProjects(await fetchValues());
-    cached = { at: Date.now(), projects: parsed };
-    return parsed;
-  } catch {
-    // Stale-on-error: keep serving the last good read; only then fall back.
-    // Bounded generic diagnostic only: the upstream error object may carry
-    // request configuration or token material, so it is never logged.
-    console.error(
-      "[projects-loader] Google Sheets read failed; serving cached or placeholder data.",
-    );
-    return cached ? cached.projects : placeholderProjects;
+    return await inFlight;
+  } finally {
+    inFlight = null;
   }
 }
 

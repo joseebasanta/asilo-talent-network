@@ -293,7 +293,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   };
 
   if (projectCarousel) {
-    window.setInterval(refreshProjects, 30_000);
+    window.setInterval(refreshProjects, 10_000);
     document.addEventListener("visibilitychange", refreshProjects);
   }
 
