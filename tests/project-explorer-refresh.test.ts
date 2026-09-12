@@ -28,15 +28,15 @@ it("refreshes cards and categories, preserves search, and retains results on fai
   await import("../src/scripts/project-explorer");
   const search = document.querySelector<HTMLInputElement>("#project-query")!;
   search.value = "Nuevo";
-  await vi.advanceTimersByTimeAsync(10_000);
+  await vi.advanceTimersByTimeAsync(30_000);
   expect(document.querySelector("#project-results")!.textContent).toBe("Nuevo");
   expect(document.querySelector("#project-count")!.textContent).toContain("1 proyecto");
   expect(search.value).toBe("Nuevo");
   expect(document.querySelector<HTMLInputElement>('[name="categoria"]')!.value).toBe("AI");
   fetcher.mockRejectedValue(new Error("offline"));
-  await vi.advanceTimersByTimeAsync(10_000);
+  await vi.advanceTimersByTimeAsync(30_000);
   expect(document.querySelector("#project-results")!.textContent).toBe("Nuevo");
   search.focus();
-  await vi.advanceTimersByTimeAsync(10_000);
+  await vi.advanceTimersByTimeAsync(30_000);
   expect(fetcher).toHaveBeenCalledTimes(2);
 });

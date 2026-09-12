@@ -171,6 +171,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 
 <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
+  import { startProjectRefresh } from "../lib/project-refresh";
   import { createDialogMotion } from "../lib/dialog-motion";
   import { gsap } from "gsap";
   import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
@@ -256,14 +257,15 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 
   const renderProjectPages = (projects: LiveProject[]) => {
     if (!projectCarousel) return;
+    const nextPageIndex = Math.min(projectPageIndex, Math.max(0, Math.ceil(projects.length / 10) - 1));
     const fragment = document.createDocumentFragment();
     for (let start = 0; start < projects.length; start += 10) {
       const pageIndex = start / 10;
       const page = document.createElement("div");
       page.className = "prj-list";
       page.dataset.projectPage = String(pageIndex);
-      page.setAttribute("aria-hidden", String(pageIndex !== 0));
-      page.hidden = pageIndex !== 0;
+      page.setAttribute("aria-hidden", String(pageIndex !== nextPageIndex));
+      page.hidden = pageIndex !== nextPageIndex;
       for (const columnProjects of [projects.slice(start, start + 5), projects.slice(start + 5, start + 10)]) {
         const column = document.createElement("div");
         column.className = "prj-col";
@@ -274,28 +276,24 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     }
     projectCarousel.replaceChildren(fragment);
     projectPages = Array.from(projectCarousel.querySelectorAll<HTMLElement>("[data-project-page]"));
-    projectPageIndex = 0;
+    projectPageIndex = nextPageIndex;
   };
 
   const refreshProjects = async () => {
-    if (document.visibilityState !== "visible") return;
-    try {
-      const response = await fetch("/api/projects", { cache: "no-store" });
-      const data = await response.json() as { projects?: LiveProject[] };
-      if (!response.ok || !Array.isArray(data.projects)) return;
-      const nextSignature = signatureFor(data.projects);
-      if (nextSignature === projectSignature) return;
-      projectSignature = nextSignature;
-      renderProjectPages(data.projects);
-    } catch {
-      // Keep the last rendered directory when a background refresh fails.
-    }
+    const interacting = () => projectPageAnimating || projectCarousel?.contains(document.activeElement) || Boolean(document.querySelector("dialog[open]"));
+    if (interacting()) return;
+    const response = await fetch("/api/projects", { cache: "no-store", signal: AbortSignal.timeout(15_000) });
+    if (!response.ok) throw new Error("Project refresh failed");
+    const data = await response.json() as { projects?: LiveProject[] };
+    if (!Array.isArray(data.projects)) throw new Error("Invalid project response");
+    if (interacting()) return;
+    const nextSignature = signatureFor(data.projects);
+    if (nextSignature === projectSignature) return;
+    renderProjectPages(data.projects);
+    projectSignature = nextSignature;
   };
 
-  if (projectCarousel) {
-    window.setInterval(refreshProjects, 10_000);
-    document.addEventListener("visibilitychange", refreshProjects);
-  }
+  if (projectCarousel) startProjectRefresh(refreshProjects);
 
   const showProjectPage = (nextPageIndex: number) => {
     if (projectPages.length === 0 || projectPageAnimating || nextPageIndex === projectPageIndex) return;

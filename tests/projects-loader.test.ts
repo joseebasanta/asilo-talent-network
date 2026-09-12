@@ -400,7 +400,7 @@ describe("loadApprovedProjects", () => {
     expect(projects[0].href).toBe("#");
   });
 
-  it("reflects approvals and revocations after ten seconds and shares concurrent reads", async () => {
+  it("reflects approvals and revocations after one minute and shares concurrent reads", async () => {
     process.env.GOOGLE_SHEETS_ID = "test-sheet";
     process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 = "dGVzdA==";
     vi.useFakeTimers();
@@ -408,15 +408,41 @@ describe("loadApprovedProjects", () => {
     const fetcher = vi.fn(async () => [HEADERS, ["Nuevo", "https://nuevo.example", "", "", "", approval]]);
     expect(await loadApprovedProjects(fetcher)).toEqual([]);
     approval = "SI";
-    vi.advanceTimersByTime(9_999);
+    vi.advanceTimersByTime(59_999);
     expect(await loadApprovedProjects(fetcher)).toEqual([]);
     vi.advanceTimersByTime(1);
     const results = await Promise.all(Array.from({ length: 10 }, () => loadApprovedProjects(fetcher)));
     expect(results.every(result => result[0]?.title === "Nuevo")).toBe(true);
     expect(fetcher).toHaveBeenCalledTimes(2);
     approval = "NO";
-    vi.advanceTimersByTime(10_000);
+    vi.advanceTimersByTime(60_000);
     expect(await loadApprovedProjects(fetcher)).toEqual([]);
+  });
+
+  it("backs off concurrent failing reads and recovers after the cooldown", async () => {
+    process.env.GOOGLE_SHEETS_ID = "test-sheet";
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 = "dGVzdA==";
+    vi.useFakeTimers();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetcher = vi.fn().mockResolvedValue([HEADERS, ["Antes", "https://before.example", "", "", "", "SI"]]);
+    await loadApprovedProjects(fetcher);
+    fetcher.mockRejectedValue(new Error("429"));
+    vi.advanceTimersByTime(TTL_MS);
+    const results = await Promise.all(Array.from({ length: 100 }, () => loadApprovedProjects(fetcher)));
+    expect(results.every(result => result[0].title === "Antes")).toBe(true);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    await loadApprovedProjects(fetcher);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(TTL_MS);
+    await loadApprovedProjects(fetcher);
+    expect(fetcher).toHaveBeenCalledTimes(3);
+    vi.advanceTimersByTime(TTL_MS);
+    await loadApprovedProjects(fetcher);
+    expect(fetcher).toHaveBeenCalledTimes(3);
+    fetcher.mockResolvedValue([HEADERS]);
+    vi.advanceTimersByTime(TTL_MS);
+    expect(await loadApprovedProjects(fetcher)).toEqual([]);
+    expect(fetcher).toHaveBeenCalledTimes(4);
   });
 
   it("does not refetch within the TTL window", async () => {

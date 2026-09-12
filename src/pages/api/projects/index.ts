@@ -21,7 +21,7 @@ function rateLimited(ip: string): boolean {
   return false;
 }
 
-// Public read-only feed for the directory's 10-second refresh. It only returns
+// Public read-only feed for the directory's 30-second refresh. It only returns
 // projects explicitly approved by the server-side Sheet loader.
 export const GET: APIRoute = async ({ clientAddress }) => {
   if (rateLimited(clientAddress ?? "unknown")) {

@@ -1,3 +1,4 @@
+import { startProjectRefresh } from "../lib/project-refresh";
 import { filterProjects, paginateProjects, projectPageUrl, normalizeSearch } from "../lib/project-search";
 import { track } from "./analytics";
 
@@ -221,8 +222,8 @@ async function refreshDirectory() {
   if (refreshing || document.visibilityState !== "visible" || interacting()) return;
   refreshing = true;
   try {
-    const response = await fetch(location.href, { cache: "no-store" });
-    if (!response.ok) return;
+    const response = await fetch(location.href, { cache: "no-store", signal: AbortSignal.timeout(15_000) });
+    if (!response.ok) throw new Error("Project refresh failed");
     const page = new DOMParser().parseFromString(await response.text(), "text/html");
     const nextGrid = page.querySelector("#project-results");
     const nextCategories = page.querySelector(".category-list");
@@ -249,11 +250,8 @@ async function refreshDirectory() {
     }
     filterCategories();
     render(false, false);
-  } catch {
-    // Keep current results when a background request fails.
   } finally {
     refreshing = false;
   }
 }
-window.setInterval(refreshDirectory, 10_000);
-document.addEventListener("visibilitychange", refreshDirectory);
+startProjectRefresh(refreshDirectory);
