@@ -162,9 +162,15 @@ restore();
 // Radios provide native arrow-key navigation within the custom-styled popup.
 // Pointer selection closes immediately; keyboard users can compare options
 // with arrows, then confirm with Enter or dismiss with Escape/Tab.
-sortOptions.forEach(option => option.addEventListener("click", event => {
-  if (event.detail > 0) { sortDropdown.open = false; sortTrigger.focus(); }
-}));
+sortDropdown.querySelectorAll<HTMLLabelElement>(".sort-option").forEach(label => {
+  label.addEventListener("click", event => {
+    // Label activation forwards a second click to the radio. Let that native
+    // activation finish before hiding the popup, even on touch devices.
+    if (!(event.target instanceof HTMLInputElement) || event.detail > 0) {
+      window.setTimeout(() => { sortDropdown.open = false; sortTrigger.focus(); }, 0);
+    }
+  });
+});
 sortDropdown.addEventListener("keydown", event => {
   if (event.key === "Escape" || (event.key === "Enter" && event.target !== sortTrigger)) {
     event.preventDefault(); sortDropdown.open = false; sortTrigger.focus();
@@ -173,9 +179,13 @@ sortDropdown.addEventListener("keydown", event => {
     sortOptions.find(option => option.checked)?.focus();
   }
 });
-sortDropdown.addEventListener("focusout", () => {
-  // Wait for the browser to finish moving focus between radio options.
-  window.setTimeout(() => { if (!sortDropdown.contains(document.activeElement)) sortDropdown.open = false; }, 0);
+sortDropdown.addEventListener("focusout", event => {
+  // A label press can temporarily move focus to the body before activating
+  // its radio. Only a known outside focus target should dismiss the menu.
+  const nextTarget = event.relatedTarget;
+  if (nextTarget instanceof Node && nextTarget !== document.body && !sortDropdown.contains(nextTarget)) {
+    sortDropdown.open = false;
+  }
 });
 document.addEventListener("pointerdown", event => {
   if (event.target instanceof Node && !sortDropdown.contains(event.target)) sortDropdown.open = false;
