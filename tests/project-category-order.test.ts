@@ -5,7 +5,7 @@ import ProjectDirectory from "../src/components/ProjectDirectory.astro";
 
 vi.mock("../src/lib/projects-loader", () => ({
   loadApprovedProjects: async () => [
-    { title: "Alpha", href: "https://example.com/a", author: "Ana", description: "Project alpha", tags: ["Agritech", "Fintech"] },
+    { title: "Alpha", href: "https://example.com/a", author: "Ana", description: "Project alpha", tags: ["Agritech", "Fintech", "PropTech"] },
     { title: "Beta", href: "https://example.com/b", author: "Luis", description: "Project beta", tags: ["Logística", "Movilidad"] },
     { title: "Gamma", href: "https://example.com/c", author: "María", description: "Project gamma", tags: ["Energía & Clima", "Diseño & Creatividad"] },
   ],
@@ -13,17 +13,17 @@ vi.mock("../src/lib/projects-loader", () => ({
 
 import ProjectsPage from "../src/pages/proyectos.astro";
 
-const descEs = (a: string, b: string) => b.localeCompare(a, "es", { sensitivity: "base" });
+const ascEs = (a: string, b: string) => a.localeCompare(b, "es", { sensitivity: "base" });
 const decodeAttr = (value: string) =>
   value.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 
-describe("project category order (Z→A)", () => {
-  it("keeps the category source in fixed descending Spanish order", () => {
-    expect([...CATEGORIES]).toEqual([...CATEGORIES].sort(descEs));
+describe("project category order (A→Z)", () => {
+  it("keeps the category source in fixed ascending Spanish order", () => {
+    expect([...CATEGORIES]).toEqual([...CATEGORIES].sort(ascEs));
     // Accents sort sensibly (base sensitivity): accented forms stay with their base letter.
-    expect(CATEGORIES.indexOf("Logística")).toBeLessThan(CATEGORIES.indexOf("Inteligencia Artificial"));
-    expect(CATEGORIES.indexOf("Energía & Clima")).toBeLessThan(CATEGORIES.indexOf("Edtech"));
-    expect(CATEGORIES.indexOf("Diseño & Creatividad")).toBeLessThan(CATEGORIES.indexOf("DevTools & APIs"));
+    expect(CATEGORIES.indexOf("Logística")).toBeGreaterThan(CATEGORIES.indexOf("Inteligencia Artificial"));
+    expect(CATEGORIES.indexOf("Energía & Clima")).toBeGreaterThan(CATEGORIES.indexOf("Edtech"));
+    expect(CATEGORIES.indexOf("Diseño & Creatividad")).toBeGreaterThan(CATEGORIES.indexOf("DevTools & APIs"));
   });
 
   it("renders the submission modal checkboxes in source order", async () => {
@@ -32,9 +32,10 @@ describe("project category order (Z→A)", () => {
     const values = [...html.matchAll(/<input[^>]*name="categorias"[^>]*value="([^"]*)"/g)]
       .map((match) => decodeAttr(match[1]));
     expect(values).toEqual([...CATEGORIES]);
+    expect(values).toContain("PropTech");
   });
 
-  it("renders the directory filter in descending Spanish order", async () => {
+  it("renders the directory filter in ascending Spanish order", async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(ProjectsPage, {
       request: new Request("https://example.com/proyectos"),
@@ -42,13 +43,14 @@ describe("project category order (Z→A)", () => {
     const names = [...html.matchAll(/data-category-name="([^"]*)"/g)]
       .map((match) => decodeAttr(match[1]));
     expect(names).toEqual([
-      "Movilidad",
-      "Logística",
-      "Fintech",
-      "Energía & Clima",
-      "Diseño & Creatividad",
       "Agritech",
+      "Diseño & Creatividad",
+      "Energía & Clima",
+      "Fintech",
+      "Logística",
+      "Movilidad",
+      "PropTech",
     ]);
-    expect(names).toEqual([...names].sort(descEs));
+    expect(names).toEqual([...names].sort(ascEs));
   });
 });

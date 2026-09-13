@@ -1,34 +1,33 @@
 /** Shared browser/server validation. Keep this module free of server imports. */
 import { z } from "zod";
 
-// Exact allowlist rendered by the modal's 23 checkboxes. Server-side validation
-// accepts nothing outside these literal values. Kept in fixed descending
-// Spanish (es, base sensitivity) order so both the submission modal and the
-// directory filter render Z→A without runtime sorting.
+// Shared allowlist for the submission modal and server-side validation.
+// Keep categories in ascending Spanish alphabetical order (A→Z).
 export const CATEGORIES = [
-  "Web3",
-  "Social & Comunidad",
-  "SaaS",
-  "No-Code & CMS",
-  "Movilidad",
-  "Marketplace",
-  "Logística",
-  "Inteligencia Artificial",
-  "Healthtech",
-  "Hardware & IoT",
-  "Gaming",
-  "Fintech",
-  "Energía & Clima",
-  "Edtech",
-  "E-commerce",
-  "Diseño & Creatividad",
-  "DevTools & APIs",
-  "Data Science",
-  "Ciberseguridad",
-  "Business Analytics",
-  "Blockchain & Crypto",
-  "AR / VR",
   "Agritech",
+  "AR / VR",
+  "Blockchain & Crypto",
+  "Business Analytics",
+  "Ciberseguridad",
+  "Data Science",
+  "DevTools & APIs",
+  "Diseño & Creatividad",
+  "E-commerce",
+  "Edtech",
+  "Energía & Clima",
+  "Fintech",
+  "Gaming",
+  "Hardware & IoT",
+  "Healthtech",
+  "Inteligencia Artificial",
+  "Logística",
+  "Marketplace",
+  "Movilidad",
+  "No-Code & CMS",
+  "PropTech",
+  "SaaS",
+  "Social & Comunidad",
+  "Web3",
 ] as const;
 
 export const MAX_CATEGORIES = 3;
