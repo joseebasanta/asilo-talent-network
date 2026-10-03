@@ -24,6 +24,12 @@ const validInput = {
 };
 
 describe("validateSubmission", () => {
+  it("accepts PropTech submissions", () => {
+    const result = validateSubmission({ ...validInput, categorias: ["PropTech"] });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.value.categorias).toEqual(["PropTech"]);
+  });
+
   it("accepts a valid submission and trims/normalizes it", () => {
     const result = validateSubmission({
       ...validInput,
