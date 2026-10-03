@@ -1,6 +1,8 @@
 ---
 interface Props { home?: boolean; }
 const { home = false } = Astro.props;
+const path = Astro.url?.pathname ?? "/";
+const isPath = (base: string) => path === base || path.startsWith(`${base}/`);
 ---
     <header class="site-header">
       <div class="header-inner">
@@ -9,8 +11,9 @@ const { home = false } = Astro.props;
         </a>
         <nav class="nav-links" aria-label="Navegación principal">
           <a href={home ? "#comunidad" : "/#comunidad"}>Comunidad</a>
-          <a href="/proyectos" aria-current={!home ? "page" : undefined}>Proyectos</a>
+          <a href="/proyectos" aria-current={isPath("/proyectos") ? "page" : undefined}>Proyectos</a>
           <a href={home ? "#que-es-asilo" : "/#que-es-asilo"}>Sobre nosotros</a>
+          <a href="/recursos" aria-current={isPath("/recursos") ? "page" : undefined}>Recursos</a>
         </nav>
         <a class="join" href={home ? "#unete" : "/#unete"}>
           Unete
