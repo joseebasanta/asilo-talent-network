@@ -40,10 +40,10 @@ describe("/recursos page", () => {
     expect(html).toContain('<html lang="es">');
     expect(html).toContain("data-decode>Recursos</h1>");
     expect(html).toContain(`${totalResources} recursos en ${resourceCategories.length} categorías`);
-    // Search + tag filter controls exist.
+    // Search control exists; tag filter has been removed.
     expect(html).toContain('id="resource-query"');
-    expect(html).toContain('class="tag-filter"');
-    expect(html).toContain('data-tag="all"');
+    expect(html).not.toContain('class="tag-filter"');
+    expect(html).not.toContain("resource-tag");
   });
 
   it("renders every category section and resource row", async () => {
@@ -55,6 +55,9 @@ describe("/recursos page", () => {
     expect((html.match(/class="resource"/g) ?? []).length).toBe(totalResources);
     // External resource links open safely in a new tab.
     expect((html.match(/rel="noopener noreferrer"/g) ?? []).length).toBeGreaterThanOrEqual(totalResources);
+    // Each resource shows a favicon loaded by domain.
+    expect((html.match(/class="resource-favicon"/g) ?? []).length).toBe(totalResources);
+    expect(html).toContain("google.com/s/favicons");
   });
 
   it("exposes the Recursos item in the shared nav", async () => {

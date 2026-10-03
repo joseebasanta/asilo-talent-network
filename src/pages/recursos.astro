@@ -12,17 +12,14 @@ export const prerender = true;
 
 const totalResources = resourceCategories.reduce((sum, category) => sum + category.resources.length, 0);
 
-// Tag filters present in the data, in a stable order.
-const TAG_ORDER = ["free", "freemium", "paid", "open-source"] as const;
-const TAG_LABELS: Record<string, string> = {
-  free: "Free",
-  freemium: "Freemium",
-  paid: "Paid",
-  "open-source": "Open source",
+// Favicon for a resource, resolved by its domain (loads the site's own icon).
+const faviconFor = (url: string): string => {
+  try {
+    return `https://www.google.com/s/favicons?sz=64&domain=${new URL(url).hostname}`;
+  } catch {
+    return "";
+  }
 };
-const usedTags = TAG_ORDER.filter((tag) =>
-  resourceCategories.some((category) => category.resources.some((resource) => resource.tag === tag)),
-);
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
 const canonical = `${siteUrl}/recursos`;
@@ -51,7 +48,7 @@ const pageDescription =
         <h1 id="page-title" data-decode>Recursos</h1>
         <p class="library-description">
           Una biblioteca curada de herramientas y referencias de diseño de producto,
-          UI/UX y web. Explora por categoría, busca por nombre o filtra por tipo.
+          UI/UX y web. Explora por categoría o busca por nombre.
         </p>
       </section>
 
@@ -63,12 +60,6 @@ const pageDescription =
               <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h10v2H4zM2 6h2v8H2zM4 14h10v2H4zM14 6h2v8h-2zM16 16h3v3h-3zM19 19h3v3h-3z" fill="currentColor" /></svg>
               <input id="resource-query" type="search" name="q" placeholder="Busca una herramienta, recurso o idea…" autocomplete="off" />
             </div>
-          </div>
-          <div class="tag-filter" role="group" aria-label="Filtrar por tipo">
-            <button type="button" class="tag-chip is-active" data-tag="all" aria-pressed="true">Todos</button>
-            {usedTags.map((tag) => (
-              <button type="button" class="tag-chip" data-tag={tag} aria-pressed="false">{TAG_LABELS[tag]}</button>
-            ))}
           </div>
         </form>
 
@@ -101,13 +92,11 @@ const pageDescription =
                 </header>
                 <ul class="resource-list">
                   {category.resources.map((resource) => (
-                    <li
-                      class="resource"
-                      data-name={resource.name}
-                      data-desc={resource.desc}
-                      data-tag={resource.tag}
-                    >
+                    <li class="resource" data-name={resource.name} data-desc={resource.desc}>
                       <a class="resource-link" href={resource.url} target="_blank" rel="noopener noreferrer">
+                        {faviconFor(resource.url) && (
+                          <img class="resource-favicon" src={faviconFor(resource.url)} alt="" aria-hidden="true" width="20" height="20" loading="lazy" decoding="async" />
+                        )}
                         <span class="resource-main">
                           <span class="resource-name">
                             {resource.name}
@@ -115,7 +104,6 @@ const pageDescription =
                           </span>
                           {resource.desc && <span class="resource-desc">{resource.desc}</span>}
                         </span>
-                        {resource.tag && <span class={`resource-tag tag-${resource.tag}`}>{TAG_LABELS[resource.tag] ?? resource.tag}</span>}
                       </a>
                     </li>
                   ))}
