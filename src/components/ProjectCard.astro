@@ -2,16 +2,15 @@
 import type { HTMLAttributes } from "astro/types";
 import type { Project } from "../data/projects";
 import { projectIconUrl } from "../lib/project-icons";
-import LikeButton from "./LikeButton.astro";
 
 interface Props extends HTMLAttributes<"article"> {
   project: Project;
 }
 
 const { project, ...attributes } = Astro.props;
-// Published projects open their detail page (likes, comments, edit request);
-// placeholders without an id keep their raw link. The title link is stretched
-// over the whole card in CSS, so the like button stays a separate control.
+// Published projects open their detail page (edit request); placeholders
+// without an id keep their raw link. The title link is stretched over the
+// whole card in CSS.
 const internal = Boolean(project.slug);
 const linkAttrs = internal
   ? { href: `/proyectos/${project.slug}` }
@@ -39,9 +38,6 @@ const linkAttrs = internal
       <div class="prj-tags">
         {project.tags.map((tag) => <span class="prj-tag">{tag}</span>)}
       </div>
-      {project.id && project.likes !== undefined && (
-        <LikeButton projectId={project.id} title={project.title} likes={project.likes} />
-      )}
     </div>
   </div>
 </article>

@@ -3,7 +3,7 @@
  *
  * ponytail: memory is per serverless instance and resets on cold start, so
  * this only slows down naive abuse. The durable guarantees live elsewhere
- * (deterministic like ids, per-network like cap, moderation, dedupe). For a
+ * (moderation, dedupe). For a
  * shared limit use Vercel Firewall rate-limit rules or Upstash Redis.
  */
 export function createRateLimiter(max: number, windowMs: number) {

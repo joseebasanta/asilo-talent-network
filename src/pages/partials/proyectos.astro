@@ -11,8 +11,8 @@ export const partial = true;
 
 const projects = await loadDirectory(resolveSort(Astro.url.searchParams.get("orden")));
 
-// Same response for every visitor (liked state is painted client-side), so a
-// short shared CDN cache absorbs the polling of every open tab.
+// Same response for every visitor so a short
+// shared CDN cache absorbs the polling of every open tab.
 Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=15, stale-while-revalidate=30");
 Astro.response.headers.set("x-robots-tag", "noindex");
 ---

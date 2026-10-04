@@ -7,14 +7,11 @@ import ProjectPages from "./ProjectPages.astro";
 interface Props {
   projects: Project[];
   sort?: SortMode;
-  /** Likes configured: enables the "Más votados" order. */
-  likesEnabled?: boolean;
   /** Render only the add-project modal (used by /proyectos, which has its own list). */
   modalOnly?: boolean;
 }
 
-const { projects, sort = "az", likesEnabled = false, modalOnly = false } = Astro.props;
-const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value !== "populares");
+const { projects, sort = "az", modalOnly = false } = Astro.props;
 ---
 
 {!modalOnly && <section class="prj" id="proyectos">
@@ -25,7 +22,7 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
       <form class="prj-sort" method="get" action="/#proyectos" data-project-sort>
         <label class="prj-sort-label" for="project-sort">Ordenar</label>
         <select class="prj-sort-select" id="project-sort" name="orden">
-          {sortOptions.map((option) => (
+          {SORT_OPTIONS.map((option) => (
             <option value={option.value} selected={option.value === sort}>{option.label}</option>
           ))}
         </select>
@@ -48,7 +45,6 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
 <script>
   import { gsap } from "gsap";
   import { startProjectRefresh } from "../lib/project-refresh";
-  import { paintLikes } from "../scripts/likes";
 
   const projectCarousel = document.getElementById("project-directory-list");
   const sortForm = document.querySelector<HTMLFormElement>("[data-project-sort]");
@@ -75,7 +71,6 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
     projectCarousel.innerHTML = html;
     projectPages = Array.from(projectCarousel.querySelectorAll<HTMLElement>("[data-project-page]"));
     projectPageIndex = 0;
-    paintLikes(projectCarousel);
   };
 
   const currentSort = () => sortSelect?.value ?? "az";

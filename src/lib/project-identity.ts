@@ -3,8 +3,7 @@
  *
  * The sheet has no primary key: each row is an immutable revision. The
  * normalized website (see `normalizeWebsiteKey`) is already the dedupe key on
- * submit, so it is also the identity that likes, comments and edit requests
- * hang off. The public id is a short hash of it: URL-safe, a valid Appwrite
+ * submit, so it is also the identity that edit requests hang off. The public id is a short hash of it: URL-safe, a valid Appwrite
  * row id, and it does not change when the builder renames the project.
  *
  * Public URLs look like `/proyectos/pana-pay-3f9a1c2b7d4e`: the readable part

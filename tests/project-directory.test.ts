@@ -40,7 +40,7 @@ describe("ProjectDirectory", () => {
     expect(html).toContain('<option value="az">Nombre: A–Z</option>');
   });
 
-  it("links published projects to their detail page and exposes likes only when enabled", async () => {
+  it("links published projects to their detail page and has no like controls", async () => {
     const projects: Project[] = [
       {
         href: "https://panapay.com",
@@ -50,20 +50,19 @@ describe("ProjectDirectory", () => {
         tags: ["Fintech"],
         id: "0123456789ab",
         slug: "pana-pay-0123456789ab",
-        likes: 7,
       },
-      { href: "https://sin-likes.example", title: "Sin likes", description: "", author: "", tags: [], id: "ba9876543210", slug: "sin-likes-ba9876543210" },
+      { href: "https://sin-id.example", title: "Sin id", description: "", author: "", tags: [], id: "ba9876543210", slug: "sin-id-ba9876543210" },
     ];
     const container = await AstroContainer.create();
     const html = await container.renderToString(ProjectDirectory, {
-      props: { projects, sort: "populares", likesEnabled: true },
+      props: { projects, sort: "recientes" },
     });
 
     expect(html).toContain('href="/proyectos/pana-pay-0123456789ab"');
     expect(html).not.toContain('href="https://panapay.com"');
-    expect((html.match(/data-like="/g) ?? []).length).toBe(1);
-    expect(html).toMatch(/data-like-count>7</);
-    expect(html).toMatch(/<option value="populares" selected>Más votados<\/option>/);
+    expect(html).not.toContain("data-like");
+    expect(html).not.toContain("Más votados");
+    expect(html).toMatch(/<option value="recientes" selected>Más recientes<\/option>/);
     expect(html).toContain('<option value="za">Nombre: Z–A</option>');
   });
 
@@ -83,10 +82,10 @@ describe("ProjectDirectory", () => {
     expect(html).toContain('src="/icons/pixelarticons/home.svg"');
   });
 
-  it("hides the likes order when likes are not configured", async () => {
+  it("does not offer a likes order", async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(ProjectDirectory, {
-      props: { projects: [], sort: "az", likesEnabled: false },
+      props: { projects: [], sort: "az" },
     });
 
     expect(html).not.toContain('value="populares"');

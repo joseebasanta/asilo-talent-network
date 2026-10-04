@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = 4399;
 
 // Browser tests run against the dev server in demo mode (DEMO_DATA=1):
-// fictional projects and an in-memory likes/comments store. Credentials are
+// fictional projects. Credentials are
 // blanked so a run can never reach the production Sheet or Appwrite.
 export default defineConfig({
   testDir: "e2e",

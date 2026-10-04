@@ -6,7 +6,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SeoHead from "../components/SeoHead.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
-import { engagementEnabled, loadDirectory, resolveSort } from "../lib/directory";
+import { loadDirectory, resolveSort } from "../lib/directory";
 import { loadBuildersCount } from "../lib/builders-loader";
 
 // Server-rendered: the directory reflects the sheet's current approval state,
@@ -115,7 +115,7 @@ const pageDescription =
         <a class="qeb-cta" href="#unete" data-reveal="fade" style="--reveal-i: 3">UNETE A LA COMUNIDAD</a>
       </div>
     </section>
-    <ProjectDirectory projects={projects} sort={sort} likesEnabled={engagementEnabled()} />
+    <ProjectDirectory projects={projects} sort={sort} />
     <section class="cta" id="unete-cta" aria-labelledby="cta-title">
       <div class="cta-inner">
         <div class="cta-titles">

@@ -7,7 +7,7 @@ export const prerender = false;
 
 const limited = createRateLimiter(60, 60_000);
 
-// Public read-only feed (`?orden=populares|recientes|az|za`). Served from the
+// Public read-only feed (`?orden=recientes|az|za`). Served from the
 // loader's 60 s cache: bypassing it would spend one Sheets read per request
 // and exhaust the service-account quota (~60 reads/min) with a few visitors.
 export const GET: APIRoute = async ({ clientAddress, url }) => {

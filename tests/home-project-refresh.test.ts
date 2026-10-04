@@ -13,8 +13,7 @@ it("updates homepage cards after approval, retains them on failure, and respects
   const source = readFileSync("src/components/ProjectDirectory.astro", "utf8");
   const refreshCode = source.slice(source.indexOf('  const projectCarousel ='), source.indexOf('  const showProjectPage ='));
   const javascript = ts.transpileModule(refreshCode + '\nreturn refreshProjects;', { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
-  const paintLikes = vi.fn();
-  const refresh = new Function("startProjectRefresh", "paintLikes", javascript)(() => {}, paintLikes) as () => Promise<void>;
+  const refresh = new Function("startProjectRefresh", javascript)(() => {}) as () => Promise<void>;
   const fetcher = vi.fn().mockResolvedValueOnce(htmlResponse(partial("Nuevo")));
   vi.stubGlobal("fetch", fetcher);
   await refresh();
@@ -23,7 +22,6 @@ it("updates homepage cards after approval, retains them on failure, and respects
   const card = document.querySelector<HTMLElement>(".prj-item")!;
   expect(card.textContent).toContain("Nuevo");
   expect(card.closest<HTMLElement>("[data-project-page]")!.hidden).toBe(false);
-  expect(paintLikes).toHaveBeenCalledTimes(1);
   // Keyboard focus inside the list: the refresh is skipped, nothing is yanked away.
   link.focus();
   await refresh();

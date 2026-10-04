@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { MIN_FILL_MS } from "./helpers";
 
 async function openPanaPay(page: import("@playwright/test").Page) {
   await page.goto("/?orden=az");
@@ -9,14 +8,13 @@ async function openPanaPay(page: import("@playwright/test").Page) {
 }
 
 test.describe("Project page", () => {
-  test("shows the project, its site link and approved comments", async ({ page }) => {
+  test("shows the project, and its site link", async ({ page }) => {
     await openPanaPay(page);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Pana Pay");
     const visit = page.getByRole("link", { name: /Visitar panapay\.example/ });
     await expect(visit).toHaveAttribute("href", "https://panapay.example");
     await expect(visit).toHaveAttribute("target", "_blank");
-    await expect(page.locator(".pd-comment")).toHaveCount(2);
-    await expect(page.getByText("¿Tienen planes de soportar pago móvil?")).toBeVisible();
+    await expect(page.locator(".pd-comments, [data-like]")).toHaveCount(0);
   });
 
   test("redirects old slugs and 404s unknown projects", async ({ page }) => {
@@ -28,23 +26,6 @@ test.describe("Project page", () => {
     const response = await page.goto("/proyectos/no-existe");
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Proyecto no encontrado");
-  });
-
-  test("validates comments on the server and queues valid ones for review", async ({ page }) => {
-    await openPanaPay(page);
-    await page.waitForTimeout(MIN_FILL_MS);
-    const form = page.locator("[data-comment-form]");
-    await form.getByLabel("Tu nombre").fill("Ana");
-    await form.getByLabel("Comentario").fill("Miren https://a.example y https://b.example");
-    await form.getByRole("button", { name: "Comentar" }).click();
-    await expect(form.locator('[data-field="comentario"] [data-field-error]')).toHaveText("Incluí como máximo un enlace.");
-
-    await form.getByLabel("Comentario").fill("¡Excelente proyecto! ¿Tienen app móvil?");
-    await form.getByRole("button", { name: "Comentar" }).click();
-    await expect(form.getByRole("status")).toContainText("aparecerá cuando el equipo lo revise");
-    // Pre-moderated: the new comment is not public yet.
-    await page.reload();
-    await expect(page.locator(".pd-comment")).toHaveCount(2);
   });
 
   test("the edit request form is prefilled and locks the website", async ({ page }) => {

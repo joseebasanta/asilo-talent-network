@@ -2,7 +2,7 @@
 
 Spanish-language community site and project directory for Venezuelan builders.
 Built with Astro SSR and the Vercel adapter. Project submissions and approved
-listings use Google Sheets; uploaded logos, likes and comments use Appwrite.
+listings use Google Sheets; uploaded logos use Appwrite.
 
 Browse projects at `/proyectos` or apply to join the community from the homepage.
 
@@ -16,8 +16,7 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-To try the site without credentials, run on fictional projects with an in-memory
-likes/comments store:
+To try the site without credentials, run on fictional projects:
 
 ```sh
 DEMO_DATA=1 pnpm dev
@@ -29,9 +28,7 @@ Membership applications must use a separate spreadsheet from projects and the
 member roster. Keep credentials server-only and out of commits.
 
 Optional project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
-and `APPWRITE_API_KEY`. Likes and comments also use Appwrite (`APPWRITE_DATABASE_ID`,
-`ENGAGEMENT_SECRET`); create their tables once with
-`node scripts/setup-appwrite.mjs`. Optional spam protection uses `TURNSTILE_SITE_KEY`
+and `APPWRITE_API_KEY`. Optional spam protection uses `TURNSTILE_SITE_KEY`
 and `TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
 
 ## Checks
@@ -69,14 +66,12 @@ record historical baseline/planning context, not the current application setup.
 
 - Each sheet row is an immutable **revision**. A project is identified by its
   normalized website; the **latest approved** revision is what the site shows.
-- Each project has its own page at `/proyectos/<slug>`, with likes and comments.
-  The directory can rank by "Más votados" or sort by name or recency.
+- Each project has its own page at `/proyectos/<slug>`. The homepage directory
+  can sort by name or recency. Likes and comments are deferred until user
+  accounts exist (see the `feat/engagement-parked` branch).
 - **New projects** and **edit requests** ("Solicita cambios" on a project page)
   both append a `PENDIENTE` row. Approving = setting it to `SI`. Edit requests
   carry the requester's contact in *Notas adicionales*.
-- **Comments** are stored as `pending` in Appwrite and only `approved` ones are
-  shown. Until there is a back office, moderate them in the Appwrite console
-  (`builders` → `project_comments` → `status`).
 
 ## Conteo de Builders
 

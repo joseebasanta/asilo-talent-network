@@ -6,7 +6,6 @@
 import type { Project } from "../data/projects";
 
 export const SORT_OPTIONS = [
-  { value: "populares", label: "Más votados" },
   { value: "recientes", label: "Más recientes" },
   { value: "az", label: "Nombre: A–Z" },
   { value: "za", label: "Nombre: Z–A" },
@@ -14,7 +13,7 @@ export const SORT_OPTIONS = [
 
 export type SortMode = (typeof SORT_OPTIONS)[number]["value"];
 
-export const DEFAULT_SORT: SortMode = "populares";
+export const DEFAULT_SORT: SortMode = "az";
 
 const SORT_VALUES = new Set<string>(SORT_OPTIONS.map((option) => option.value));
 
@@ -40,7 +39,5 @@ export function sortProjects(projects: readonly Project[], mode: SortMode): Proj
       return list.sort(
         (a, b) => (b.addedIndex ?? -1) - (a.addedIndex ?? -1) || az(a, b),
       );
-    case "populares":
-      return list.sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0) || az(a, b));
   }
 }

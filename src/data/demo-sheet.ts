@@ -35,9 +35,3 @@ export const DEMO_SHEET: string[][] = [
     categories, approved, "", `demo-rev-${i + 1}`, "",
   ]),
 ];
-
-/** Approved demo comments, keyed by project website. */
-export const DEMO_COMMENTS = [
-  { site: "https://panapay.example", author: "María González", body: "La usé para dividir la cuenta de una cena. Muy fácil.", createdAt: "2026-09-20T15:00:00Z" },
-  { site: "https://panapay.example", author: "Luis", body: "¿Tienen planes de soportar pago móvil?", createdAt: "2026-09-22T10:00:00Z" },
-];
