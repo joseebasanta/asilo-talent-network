@@ -21,15 +21,6 @@ const faviconFor = (url: string): string => {
   }
 };
 
-// Short domain shown under each resource (e.g. "mobbin.com").
-const domainFor = (url: string): string => {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-};
-
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
 const canonical = `${siteUrl}/recursos`;
 const pageTitle = "Recursos | Asilo Builders";
@@ -110,12 +101,6 @@ const pageDescription =
                           {resource.name}
                         </span>
                         {resource.desc && <span class="resource-desc">{resource.desc}</span>}
-                        {domainFor(resource.url) && (
-                          <span class="resource-domain">
-                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h12v12h-2.5V9.3l-9.1 9.1-1.8-1.8 9.1-9.1H7V5z" /></svg>
-                            {domainFor(resource.url)}
-                          </span>
-                        )}
                       </a>
                     </li>
                   ))}

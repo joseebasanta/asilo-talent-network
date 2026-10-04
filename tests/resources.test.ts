@@ -58,10 +58,8 @@ describe("/recursos page", () => {
     // Each resource shows a favicon loaded by domain.
     expect((html.match(/class="resource-favicon"/g) ?? []).length).toBe(totalResources);
     expect(html).toContain("google.com/s/favicons");
-    // Each resource shows its short domain (without "www.") below the description.
-    expect((html.match(/class="resource-domain"/g) ?? []).length).toBe(totalResources);
-    expect(html).toMatch(/<\/svg>\s*mobbin\.com\s*<\/span>/);
-    expect(html).not.toMatch(/<\/svg>\s*www\./);
+    // The domain line under each card has been removed.
+    expect(html).not.toContain("resource-domain");
   });
 
   it("exposes the Recursos item in the shared nav", async () => {
