@@ -120,7 +120,7 @@
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: start;
   /* Single gap between the intro and the sidebar/results. */
-  margin-top: clamp(2rem, 4vw, 3rem);
+  margin-top: clamp(3rem, 6vw, 4.5rem);
 }
 /* The header scrolls away with the page, so the sidebar sticks near the top
    edge and fills the viewport; only its category list scrolls. */
