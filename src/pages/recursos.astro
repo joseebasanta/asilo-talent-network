@@ -21,6 +21,15 @@ const faviconFor = (url: string): string => {
   }
 };
 
+// Short domain shown under each resource (e.g. "mobbin.com").
+const domainFor = (url: string): string => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+};
+
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
 const canonical = `${siteUrl}/recursos`;
 const pageTitle = "Recursos | Asilo Builders";
@@ -94,16 +103,19 @@ const pageDescription =
                   {category.resources.map((resource) => (
                     <li class="resource" data-name={resource.name} data-desc={resource.desc}>
                       <a class="resource-link" href={resource.url} target="_blank" rel="noopener noreferrer">
-                        {faviconFor(resource.url) && (
-                          <img class="resource-favicon" src={faviconFor(resource.url)} alt="" aria-hidden="true" width="20" height="20" loading="lazy" decoding="async" />
-                        )}
-                        <span class="resource-main">
-                          <span class="resource-name">
-                            {resource.name}
-                            <svg class="resource-ext" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 5h10v10h-3V9.4l-8.3 8.3-2.1-2.1L13.6 7H9V5z" /></svg>
-                          </span>
-                          {resource.desc && <span class="resource-desc">{resource.desc}</span>}
+                        <span class="resource-name">
+                          {faviconFor(resource.url) && (
+                            <img class="resource-favicon" src={faviconFor(resource.url)} alt="" aria-hidden="true" width="20" height="20" loading="lazy" decoding="async" />
+                          )}
+                          {resource.name}
                         </span>
+                        {resource.desc && <span class="resource-desc">{resource.desc}</span>}
+                        {domainFor(resource.url) && (
+                          <span class="resource-domain">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h12v12h-2.5V9.3l-9.1 9.1-1.8-1.8 9.1-9.1H7V5z" /></svg>
+                            {domainFor(resource.url)}
+                          </span>
+                        )}
                       </a>
                     </li>
                   ))}
