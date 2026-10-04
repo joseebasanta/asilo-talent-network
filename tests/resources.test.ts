@@ -74,7 +74,14 @@ describe("/recursos page", () => {
     expect((html.match(/rel="noopener noreferrer"/g) ?? []).length).toBeGreaterThanOrEqual(totalResources);
     // Each resource shows a favicon loaded by domain.
     expect((html.match(/class="resource-favicon"/g) ?? []).length).toBe(totalResources);
-    expect(html).toContain("google.com/s/favicons");
+    const favicons = html.match(/<img class="resource-favicon"[^>]*>/g) ?? [];
+    expect(favicons).toHaveLength(totalResources);
+    for (const img of favicons) {
+      // Google's favicon service lives at /s2/ (/s/ returns no image).
+      expect(img).toMatch(/src="https:\/\/www\.google\.com\/s2\/favicons\?sz=64&(amp;)?domain=[^"&]+"/);
+      // Don't share the visitor's page with the third-party favicon service.
+      expect(img).toContain('referrerpolicy="no-referrer"');
+    }
     // The domain line under each card has been removed.
     expect(html).not.toContain("resource-domain");
   });

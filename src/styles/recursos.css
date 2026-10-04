@@ -285,6 +285,14 @@
   background: var(--slate-900);
   object-fit: contain;
 }
+.resource-favicon--fallback {
+  display: grid;
+  place-items: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--slate-400);
+}
 .resource-desc {
   font-family: var(--font-text);
   font-size: 0.9375rem;
