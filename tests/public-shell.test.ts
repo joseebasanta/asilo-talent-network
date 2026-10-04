@@ -153,4 +153,13 @@ describe("CTA heading", () => {
     expect(page).not.toContain("cta-title-mobile-break");
     expect(styles).toContain(".cta-title { max-width: 16ch; margin-inline: auto; }");
   });
+
+  it("invites visitors to join the community", async () => {
+    const html = await renderShell();
+    const cta = html.slice(html.indexOf('id="unete-cta"'));
+    const button = cta.slice(cta.indexOf("button-primary"), cta.indexOf("</a>"));
+
+    expect(button).toContain("Únete a la comunidad");
+    expect(html).not.toContain("Llenar formulario");
+  });
 });
