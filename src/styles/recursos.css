@@ -1,5 +1,8 @@
 /* Recursos (library) page — reuses global tokens; one accent (--blue-500). */
 
+/* `hidden` must win over the display rules below (empty state, filtered cards). */
+.resources-page [hidden] { display: none !important; }
+
 .library {
   max-width: 92.5rem; /* same container as /proyectos (.explore) */
   margin: 0 auto;
