@@ -95,10 +95,13 @@
 }
 
 .library-count {
-  margin: 0 0 1.25rem;
+  margin: 0.25rem 0 0;
   font-family: var(--font-text);
+  font-weight: 500;
   font-size: 0.875rem;
-  color: var(--blue-700);
+  line-height: 1.25rem;
+  letter-spacing: -0.006em;
+  color: var(--blue-500);
 }
 
 /* ---- Layout: sticky category nav + sections ---- */
@@ -107,12 +110,21 @@
   grid-template-columns: 15rem 1fr;
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: start;
+  margin-top: 0.75rem;
 }
 .library-nav {
   position: sticky;
   top: calc(var(--header-h) + 5rem);
   max-height: calc(100dvh - var(--header-h) - 6rem);
   overflow-y: auto;
+}
+.library-nav-title {
+  margin: 0 0 0.5rem;
+  padding: 0 0.5rem;
+  font-family: var(--font-text);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--blue-700);
 }
 .library-nav ul {
   list-style: none;

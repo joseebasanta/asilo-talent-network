@@ -39,7 +39,11 @@ describe("/recursos page", () => {
 
     expect(html).toContain('<html lang="es">');
     expect(html).toContain("data-decode>Recursos</h1>");
-    expect(html).toContain(`${totalResources} recursos en ${resourceCategories.length} categorías`);
+    // Totals sit under the intro description; the sidebar is titled "Categorías".
+    expect(html).toMatch(
+      new RegExp(`library-description[\\s\\S]*?id="resource-count"[^>]*>\\s*${totalResources} recursos y ${resourceCategories.length} categorías\\s*<`),
+    );
+    expect(html).toMatch(/id="library-nav-title">Categorías<\/p>/);
     // Search control exists; tag filter has been removed.
     expect(html).toContain('id="resource-query"');
     expect(html).not.toContain('class="tag-filter"');

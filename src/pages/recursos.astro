@@ -50,6 +50,9 @@ const pageDescription =
           Una biblioteca curada de herramientas y referencias de diseño de producto,
           UI/UX y web. Explora por categoría o busca por nombre.
         </p>
+        <p class="library-count" id="resource-count" role="status" aria-live="polite" aria-atomic="true">
+          {totalResources} recursos y {resourceCategories.length} categorías
+        </p>
       </section>
 
       <section class="library-body" aria-label="Biblioteca de recursos">
@@ -63,13 +66,10 @@ const pageDescription =
           </div>
         </form>
 
-        <p class="library-count" id="resource-count" role="status" aria-live="polite" aria-atomic="true">
-          {totalResources} recursos en {resourceCategories.length} categorías
-        </p>
-
         <div class="library-layout">
-          <aside class="library-nav" aria-label="Categorías">
-            <nav>
+          <aside class="library-nav" aria-labelledby="library-nav-title">
+            <p class="library-nav-title" id="library-nav-title">Categorías</p>
+            <nav aria-labelledby="library-nav-title">
               <ul>
                 {resourceCategories.map((category) => (
                   <li>

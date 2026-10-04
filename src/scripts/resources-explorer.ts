@@ -25,14 +25,18 @@ if (form && queryInput && countEl && emptyEl && resources.length) {
       if (show) visible += 1;
     }
 
+    let visibleCategories = 0;
     for (const category of categories) {
       const anyVisible = category.querySelector(".resource:not([hidden])") !== null;
       category.hidden = !anyVisible;
+      if (anyVisible) visibleCategories += 1;
       const navLink = navLinks.find((link) => link.dataset.navFor === category.dataset.category);
       if (navLink?.parentElement) navLink.parentElement.hidden = !anyVisible;
     }
 
-    countEl.textContent = `${visible} ${visible === 1 ? "recurso" : "recursos"}`;
+    countEl.textContent =
+      `${visible} ${visible === 1 ? "recurso" : "recursos"} y ` +
+      `${visibleCategories} ${visibleCategories === 1 ? "categoría" : "categorías"}`;
     emptyEl.hidden = visible > 0;
   };
 
