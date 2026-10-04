@@ -1,5 +1,5 @@
 import { createDialogMotion } from "../lib/dialog-motion";
-import { createSubmissionClock } from "../lib/project-form-client";
+import { createSubmissionClock, resetCaptchaWidget } from "../lib/project-form-client";
 import { communitySchema } from "../lib/community-submit";
 
 export function initCommunityForm() {
@@ -12,12 +12,35 @@ export function initCommunityForm() {
   const successTitle = form.querySelector<HTMLElement>("#community-success-title")!;
   const started = form.elements.namedItem("started") as HTMLInputElement;
   const submissionClock = createSubmissionClock(Number(started.value), () => performance.now());
+  const captchaWidget = form.querySelector<HTMLElement>(".cf-turnstile");
+  const captchaBox = form.querySelector<HTMLElement>("[data-community-turnstile]");
+  const captchaError = form.querySelector<HTMLElement>("#community-captcha-error");
   let hasOpened = false;
   const motion = createDialogMotion(dialog);
   let pending = false;
+  let submitted = false;
+  // The join form is on every page, so load Cloudflare's script on first open
+  // (and not at all when the project modal's copy of it is already on the page).
+  function loadCaptcha() {
+    if (!captchaWidget || document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) return;
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    document.head.append(script);
+  }
+  function setCaptchaError(message: string | null) {
+    if (!captchaError) return;
+    captchaError.textContent = message ?? "";
+    captchaError.hidden = message === null;
+  }
+  function resetCaptcha() {
+    const api = (window as Window & { turnstile?: { reset: (container: HTMLElement) => void } }).turnstile;
+    if (!resetCaptchaWidget(captchaWidget, api)) showStatus("No se pudo reiniciar la verificación. Recarga la página antes de intentar de nuevo.");
+  }
+  Object.assign(window, { onCommunityTurnstileSolve: () => setCaptchaError(null) });
   function open() {
     if (dialog.open) return;
-    if (!hasOpened) { started.value = submissionClock(); hasOpened = true; }
+    if (!hasOpened) { started.value = submissionClock(); hasOpened = true; loadCaptcha(); }
     motion.open();
     if (!successView.hidden) successTitle.focus();
   }
@@ -37,6 +60,7 @@ export function initCommunityForm() {
     });
     status.hidden = true;
     status.textContent = "";
+    setCaptchaError(null);
   }
   function showErrors(errors: Record<string, string>) {
     let first: HTMLElement | undefined;
@@ -74,6 +98,11 @@ export function initCommunityForm() {
       showErrors(errors);
       return;
     }
+    if (captchaWidget && !body.get("cf-turnstile-response")) {
+      setCaptchaError("Completa la verificación antes de enviar.");
+      captchaBox?.focus();
+      return;
+    }
     pending = true;
     send.disabled = true;
     controls.forEach(input => { input.readOnly = true; });
@@ -83,8 +112,12 @@ export function initCommunityForm() {
       const response = await fetch("/api/community/submit", { method: "POST", body, signal: AbortSignal.timeout(30_000) });
       const result = await response.json();
       if (!response.ok || result.ok !== true) {
-        if (!showErrors(result.errors ?? {})) showStatus(result.error || "No pudimos guardar tu solicitud. Intenta de nuevo.");
+        if (result.field === "captcha") {
+          setCaptchaError(result.error || "La verificación falló. Recarga e intenta de nuevo.");
+          if (dialog.open) captchaBox?.focus();
+        } else if (!showErrors(result.errors ?? {})) showStatus(result.error || "No pudimos guardar tu solicitud. Intenta de nuevo.");
       } else {
+        submitted = true;
         formView.hidden = true;
         successView.hidden = false;
         if (dialog.open) successTitle.focus();
@@ -97,6 +130,7 @@ export function initCommunityForm() {
       form.removeAttribute("aria-busy");
       send.disabled = false;
       send.textContent = "Enviar solicitud";
+      if (!submitted) resetCaptcha();
     }
   });
 }

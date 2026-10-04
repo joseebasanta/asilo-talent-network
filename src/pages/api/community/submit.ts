@@ -1,6 +1,7 @@
 import type { APIContext } from "astro";
 import googleSheets from "@googleapis/sheets";
 import { readSubmissionForm } from "../../../lib/submission-body";
+import { checkTurnstile } from "../../../lib/turnstile";
 import { communityRow, communitySchema, isCommunityHeaderRow } from "../../../lib/community-submit";
 export const prerender = false;
 const hits = new Map<string, number[]>();
@@ -26,6 +27,10 @@ export async function POST({ request, clientAddress }: APIContext) {
   let form: FormData;
   try { form = await readSubmissionForm(request); } catch { return reply({ error: "Solicitud inválida o demasiado grande." }, 400); }
   if (form.get("contact_email")) return reply({ ok: true }, 201);
+  const captcha = await checkTurnstile(form, clientAddress);
+  if (captcha === "misconfigured") return reply({ error: "La verificación no está disponible en este momento. Intenta más tarde." }, 503);
+  if (captcha === "missing") return reply({ field: "captcha", error: "Completa la verificación para enviar." }, 400);
+  if (captcha === "failed") return reply({ field: "captcha", error: "La verificación falló. Recarga e intenta de nuevo." }, 403);
   const startedRaw = form.get("started");
   const started = typeof startedRaw === "string" ? Number(startedRaw) : NaN;
   if (form.getAll("started").length !== 1 || typeof startedRaw !== "string" || !/^\d+$/.test(startedRaw) || !Number.isSafeInteger(started) || started <= 0 || now - started < 3000) return reply({ error: "Espera unos segundos y vuelve a enviar." }, 429);

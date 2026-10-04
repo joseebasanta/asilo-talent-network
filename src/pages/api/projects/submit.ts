@@ -34,10 +34,7 @@ import {
   validateSubmissionForm,
 } from "../../../lib/projects-submit";
 import { LOGO_BUCKET_ID, validateLogo } from "../../../lib/projects-logo";
-import {
-  turnstileConfigured,
-  verifyTurnstile,
-} from "../../../lib/turnstile";
+import { checkTurnstile } from "../../../lib/turnstile";
 
 export const prerender = false;
 
@@ -106,35 +103,17 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json({ ok: true }, 201);
   }
 
-  if (Boolean(import.meta.env.TURNSTILE_SITE_KEY) !== Boolean(import.meta.env.TURNSTILE_SECRET_KEY)) {
+  // Captcha (Turnstile): when keys are configured, a token must be present and
+  // verify server-side before anything else is checked.
+  const captcha = await checkTurnstile(form);
+  if (captcha === "misconfigured") {
     return json({ ok: false, error: "La verificación no está disponible en este momento. Intentá más tarde." }, 503);
   }
-
-  // Captcha (Turnstile): when keys are configured, a token must be present and
-  // verify server-side before anything else is checked. Tokens are single-use;
-  // the widget refills the hidden `cf-turnstile-response` input on each solve.
-  if (turnstileConfigured()) {
-    const token = form.get("cf-turnstile-response");
-    if (form.getAll("cf-turnstile-response").length !== 1 || typeof token !== "string" || token.trim() === "" || token.length > 2048) {
-      return json(
-        {
-          ok: false,
-          field: "captcha",
-          error: "Completá la verificación para enviar.",
-        },
-        400,
-      );
-    }
-    if (!(await verifyTurnstile(token, import.meta.env.TURNSTILE_SECRET_KEY))) {
-      return json(
-        {
-          ok: false,
-          field: "captcha",
-          error: "La verificación falló. Recargá e intentá de nuevo.",
-        },
-        403,
-      );
-    }
+  if (captcha === "missing") {
+    return json({ ok: false, field: "captcha", error: "Completá la verificación para enviar." }, 400);
+  }
+  if (captcha === "failed") {
+    return json({ ok: false, field: "captcha", error: "La verificación falló. Recargá e intentá de nuevo." }, 403);
   }
   // ponytail: captcha is fail-open when TURNSTILE_* are unset so local/dev
   // submits keep working; honeypot, min-time, rate limit and dedupe still
