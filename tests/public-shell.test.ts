@@ -30,7 +30,7 @@ describe("public shell", () => {
   it("preserves the live navigation and institutional sections", async () => {
     const html = await renderShell();
 
-    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Unete"]) {
+    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Únete"]) {
       expect(html).toContain(label);
     }
     expect(html).toContain("¿QUE HACEMOS?");
@@ -161,5 +161,13 @@ describe("CTA heading", () => {
 
     expect(button).toContain("Únete a la comunidad");
     expect(html).not.toContain("Llenar formulario");
+  });
+
+  it("spells every visible join label with an accent", async () => {
+    const text = (await renderShell()).replace(/<[^>]+>/g, " ");
+
+    expect(text).not.toMatch(/\bUnete\b/i);
+    expect(text).toMatch(/Únete a la comunidad/);
+    expect(text).toMatch(/ÚNETE A LA COMUNIDAD/);
   });
 });
