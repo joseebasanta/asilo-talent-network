@@ -46,11 +46,16 @@ export function setEngagementStoreForTests(store: EngagementStore | null): void 
  * Keyed hash so stored identifiers (voter cookie, client IP) cannot be
  * reversed or correlated outside this app. Prefers a dedicated
  * `ENGAGEMENT_SECRET`; falls back to the Appwrite API key, already a
- * server-only secret, so a missing variable never stores raw values.
+ * server-only secret, so a missing variable never stores raw values. In
+ * production a missing secret throws (callers answer 503) instead of keying
+ * with a public constant anyone could reproduce.
  */
 export function privateHash(kind: "voter" | "ip", value: string): string {
-  const secret =
-    import.meta.env.ENGAGEMENT_SECRET || import.meta.env.APPWRITE_API_KEY || "dev-only";
+  let secret = import.meta.env.ENGAGEMENT_SECRET || import.meta.env.APPWRITE_API_KEY;
+  if (!secret) {
+    if (import.meta.env.PROD) throw new Error("ENGAGEMENT_SECRET is not configured");
+    secret = "dev-only";
+  }
   return createHmac("sha256", secret).update(`${kind}:${value}`).digest("hex");
 }
 
