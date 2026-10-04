@@ -56,20 +56,19 @@ const pageDescription =
       </section>
 
       <section class="library-body" aria-label="Biblioteca de recursos">
-        <form class="library-controls" role="search" id="resource-filters" action="/recursos" method="get" onsubmit="return false">
-          <div class="library-search">
-            <label class="sr-only" for="resource-query">Buscar recursos</label>
-            <div class="search-field">
-              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h10v2H4zM2 6h2v8H2zM4 14h10v2H4zM14 6h2v8h-2zM16 16h3v3h-3zM19 19h3v3h-3z" fill="currentColor" /></svg>
-              <input id="resource-query" type="search" name="q" placeholder="Busca una herramienta, recurso o idea…" autocomplete="off" />
-            </div>
-          </div>
-        </form>
-
         <div class="library-layout">
-          <aside class="library-nav" aria-labelledby="library-nav-title">
+          <aside class="library-side" aria-label="Buscar y explorar recursos">
+            <form class="library-search" role="search" id="resource-filters" action="/recursos" method="get" onsubmit="return false">
+              <label class="sr-only" for="resource-query">Buscar recursos</label>
+              <div class="search-field">
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h10v2H4zM2 6h2v8H2zM4 14h10v2H4zM14 6h2v8h-2zM16 16h3v3h-3zM19 19h3v3h-3z" fill="currentColor" /></svg>
+                <input id="resource-query" type="search" name="q" placeholder="Buscar recursos…" autocomplete="off" aria-keyshortcuts="/" />
+                <kbd class="search-kbd" aria-hidden="true">/</kbd>
+              </div>
+            </form>
+
             <p class="library-nav-title" id="library-nav-title">Categorías</p>
-            <nav aria-labelledby="library-nav-title">
+            <nav class="library-nav" id="library-nav" aria-labelledby="library-nav-title">
               <ul>
                 {resourceCategories.map((category) => (
                   <li>
@@ -107,13 +106,13 @@ const pageDescription =
                 </ul>
               </section>
             ))}
-          </div>
-        </div>
 
-        <div class="library-empty" id="resource-empty" hidden>
-          <span class="empty-symbol" aria-hidden="true">[ ? ]</span>
-          <h2>No encontramos recursos</h2>
-          <p>Prueba con otra palabra o cambia el filtro de tipo.</p>
+            <div class="library-empty" id="resource-empty" hidden>
+              <span class="empty-symbol" aria-hidden="true">[ ? ]</span>
+              <h2>No encontramos recursos</h2>
+              <p>Prueba con otra palabra o explora por categoría.</p>
+            </div>
+          </div>
         </div>
       </section>
     </main>

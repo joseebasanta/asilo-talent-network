@@ -43,28 +43,16 @@
   color: var(--blue-800);
 }
 
-/* ---- Controls ---- */
-.library-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem 1rem;
-  position: sticky;
-  top: var(--header-h);
-  z-index: 5;
-  padding: 1rem 0;
-  background: var(--bg);
-}
+/* ---- Sidebar search (top of the sticky sidebar) ---- */
 .library-search {
-  flex: 1 1 18rem;
-  min-width: 0;
+  flex: none;
 }
 .search-field {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  height: 44px;
-  padding: 0 0.875rem;
+  height: 40px;
+  padding: 0 0.75rem;
   background: var(--bg);
   border: 1px solid var(--sky-alpha-16);
   border-radius: 4px;
@@ -93,6 +81,24 @@
 .search-field input::placeholder {
   color: #5c6470;
 }
+/* "/" shortcut hint; hidden while typing and on touch/narrow layouts. */
+.search-kbd {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  border: 1px solid var(--sky-alpha-16);
+  border-radius: 4px;
+  font-family: var(--font-text);
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--blue-800);
+}
+.search-field:focus-within .search-kbd {
+  display: none;
+}
 
 /* Eyebrow treatment: muted, uppercase, wide tracking ("240 RECURSOS · 30 CATEGORÍAS"). */
 .library-count {
@@ -106,32 +112,53 @@
   color: var(--blue-800);
 }
 
-/* ---- Layout: sticky category nav + sections ---- */
+/* ---- Layout: sticky sidebar (search + categories) + sections ---- */
 .library-layout {
   display: grid;
   grid-template-columns: 15rem 1fr;
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: start;
-  margin-top: 0.75rem;
+  margin-top: clamp(1.5rem, 3vw, 2rem);
 }
-.library-nav {
+/* The header scrolls away with the page, so the sidebar sticks near the top
+   edge and fills the viewport; only its category list scrolls. */
+.library-side {
   position: sticky;
-  top: calc(var(--header-h) + 5rem);
-  max-height: calc(100dvh - var(--header-h) - 6rem);
-  overflow-y: auto;
+  top: var(--side-top);
+  height: calc(100dvh - 2 * var(--side-top));
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  --side-top: 1.5rem;
 }
 .library-nav-title {
-  margin: 0 0 0.5rem;
+  flex: none;
+  margin: 1.75rem 0 0.5rem;
   padding: 0 0.5rem;
   font-family: var(--font-text);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: var(--blue-700);
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--blue-800);
+}
+.library-nav {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-alpha-24) transparent;
+  /* Soft fade at the bottom hints that the list keeps going. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
 }
 .library-nav ul {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 2.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -171,7 +198,7 @@
   min-width: 0;
 }
 .library-category {
-  scroll-margin-top: calc(var(--header-h) + 5rem);
+  scroll-margin-top: 1.5rem;
 }
 .library-category-head {
   display: grid;
@@ -307,11 +334,27 @@
 }
 
 /* ---- Responsive: drop the sidebar on narrow screens ---- */
+/* ---- Narrow screens: no sidebar; the search sits above the results ---- */
 @media (max-width: 900px) {
   .library-layout {
     grid-template-columns: 1fr;
   }
-  .library-nav {
+  .library-side {
+    position: static;
+    height: auto;
+  }
+  .library-nav-title,
+  .library-nav,
+  .search-kbd {
+    display: none;
+  }
+  .search-field {
+    height: 44px;
+  }
+}
+
+@media (hover: none) {
+  .search-kbd {
     display: none;
   }
 }

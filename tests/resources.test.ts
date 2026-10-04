@@ -50,6 +50,19 @@ describe("/recursos page", () => {
     expect(html).not.toContain("resource-tag");
   });
 
+  it("puts the search at the top of the sidebar, above the categories", async () => {
+    const html = await renderResources();
+    const side = html.match(/<aside class="library-side"[\s\S]*?<\/aside>/)?.[0] ?? "";
+
+    // Search, then the "Categorías" title, then the category list — all in the sidebar.
+    expect(side).toMatch(/id="resource-filters"[\s\S]*id="resource-query"[\s\S]*id="library-nav-title"[\s\S]*id="library-nav"/);
+    expect(side).toContain('aria-keyshortcuts="/"');
+    // No full-width sticky search bar any more.
+    expect(html).not.toContain("library-controls");
+    // The empty state lives in the results column, next to the sidebar.
+    expect(html).toMatch(/id="resource-sections"[\s\S]*id="resource-empty"/);
+  });
+
   it("renders every category section and resource row", async () => {
     const html = await renderResources();
 
