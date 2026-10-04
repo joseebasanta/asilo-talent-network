@@ -29,6 +29,23 @@ const revealInNav = (link: HTMLElement): void => {
   }
 };
 
+// Favicons come from a third-party service; if one fails to load, swap the broken
+// image for the resource's initial so the card never shows a broken-image icon.
+const useFaviconFallback = (img: HTMLImageElement): void => {
+  const name = img.closest<HTMLElement>(".resource")?.dataset.name ?? "";
+  const fallback = document.createElement("span");
+  fallback.className = "resource-favicon resource-favicon--fallback";
+  fallback.setAttribute("aria-hidden", "true");
+  fallback.textContent = name.trim().charAt(0).toUpperCase();
+  img.replaceWith(fallback);
+};
+
+for (const img of document.querySelectorAll<HTMLImageElement>("img.resource-favicon")) {
+  // Already failed before this script ran (complete with no pixels).
+  if (img.complete && img.naturalWidth === 0) useFaviconFallback(img);
+  else img.addEventListener("error", () => useFaviconFallback(img), { once: true });
+}
+
 if (form && queryInput && countEl && emptyEl && resources.length) {
   const apply = (): void => {
     const q = norm(queryInput.value.trim());
