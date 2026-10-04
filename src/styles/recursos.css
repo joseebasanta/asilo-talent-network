@@ -7,11 +7,11 @@
 }
 
 /* ---- Intro ---- */
+/* One even 16px rhythm: back link → title → description → totals. */
 .library-intro {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+  gap: 1rem;
 }
 .back-link {
   align-self: flex-start;
@@ -102,7 +102,7 @@
 
 /* Eyebrow treatment: muted, uppercase, wide tracking ("240 RECURSOS · 30 CATEGORÍAS"). */
 .library-count {
-  margin: 0.5rem 0 0;
+  margin: 0;
   font-family: var(--font-text);
   font-weight: 500;
   font-size: 0.875rem;
@@ -118,7 +118,8 @@
   grid-template-columns: 15rem 1fr;
   gap: clamp(1.5rem, 4vw, 3rem);
   align-items: start;
-  margin-top: clamp(1.5rem, 3vw, 2rem);
+  /* Single gap between the intro and the sidebar/results. */
+  margin-top: clamp(2rem, 4vw, 3rem);
 }
 /* The header scrolls away with the page, so the sidebar sticks near the top
    edge and fills the viewport; only its category list scrolls. */
