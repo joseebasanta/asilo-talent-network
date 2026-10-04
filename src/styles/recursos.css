@@ -58,8 +58,9 @@
   border-radius: 4px;
   color: var(--blue-700);
 }
+/* Same focus state as the /proyectos search (+ the shared halo in motion.css). */
 .search-field:focus-within {
-  border-color: var(--sky-alpha-24);
+  border-color: var(--blue-500);
 }
 .search-field svg {
   flex: none;
