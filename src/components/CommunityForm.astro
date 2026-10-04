@@ -1,0 +1,69 @@
+---
+const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url"; autocomplete?: "email" | "name" | "tel"; placeholder?: string; hint?: string; max: number }> = [
+  { name: "email", label: "Email", type: "email", autocomplete: "email", max: 254 },
+  { name: "name", label: "Nombre y apellido", autocomplete: "name", max: 150 },
+  { name: "location", label: "Ciudad, país", placeholder: "Ej: Caracas, Venezuela", max: 150 },
+  { name: "whatsapp", label: "WhatsApp", type: "tel", autocomplete: "tel", placeholder: "+58 412 1234567", hint: "Incluye el código de país (+).", max: 40 },
+  { name: "linkedin", label: "URL de LinkedIn", type: "url", placeholder: "https://www.linkedin.com/in/tu-perfil", max: 500 },
+  { name: "role", label: "Rol", placeholder: "Cargo que desempeñas o profesión", max: 150 },
+  { name: "project", label: "Nombre del proyecto", max: 200 },
+];
+---
+<dialog class="modal" id="community-dialog" aria-labelledby="community-title">
+  <form class="modal-card" id="community-form" method="post" action="/api/community/submit" enctype="multipart/form-data" novalidate>
+    <input class="honeypot" name="contact_email" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
+    <input type="hidden" name="started" value={Date.now()} />
+    <div data-form-view>
+      <header class="modal-header">
+        <div class="modal-titles">
+          <h2 class="modal-title" id="community-title">Asilo Builders</h2>
+          <p class="modal-sub">Comparte lo que estás construyendo.</p>
+        </div>
+        <button class="modal-close" type="button" data-community-close aria-label="Cerrar formulario">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 19H5V17H7V19ZM19 19H17V17H19V19ZM9 15V17H7V15H9ZM17 17H15V15H17V17ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM13 13H11V11H13V13ZM11 11H9V9H11V11ZM15 11H13V9H15V11ZM9 9H7V7H9V9ZM17 9H15V7H17V9ZM7 7H5V5H7V7ZM19 7H17V5H19V7Z" /></svg>
+        </button>
+      </header>
+      <div class="modal-divider" aria-hidden="true"></div>
+      <div class="modal-body">
+        {fields.map(field => <label class="field" for={`community-${field.name}`}>
+          <span class="field-label">{field.label} *</span>
+          <input class="field-input" id={`community-${field.name}`} name={field.name} type={field.type ?? "text"} autocomplete={field.autocomplete} placeholder={field.placeholder} maxlength={field.max} required aria-describedby={`community-${field.name}-error${field.hint ? ` community-${field.name}-hint` : ""}`} />
+          {field.hint && <small id={`community-${field.name}-hint`}>{field.hint}</small>}
+          <span class="field-error" id={`community-${field.name}-error`} hidden></span>
+        </label>)}
+        <label class="field" for="community-description">
+          <span class="field-label">Cuéntanos un poco del proyecto (opcional)</span>
+          <div class="field-textarea-box">
+            <textarea class="field-textarea" id="community-description" name="description" rows="4" maxlength="3000" placeholder="¿Qué estás construyendo y en qué etapa estás?" aria-describedby="community-description-error" />
+            <span class="field-counter" data-community-counter>0/3000</span>
+          </div>
+          <span class="field-error" id="community-description-error" hidden></span>
+        </label>
+        <p class="privacy">Usaremos estos datos para revisar tu solicitud y contactarte sobre Asilo Builders.</p>
+        <p class="form-status is-error" id="community-status" role="status" aria-live="polite" tabindex="-1" hidden></p>
+      </div>
+      <footer class="modal-footer">
+        <button class="modal-cancel" type="button" data-community-close>Cancelar</button>
+        <button class="modal-submit" type="submit">Enviar solicitud</button>
+      </footer>
+    </div>
+    <section class="modal-success" data-community-success hidden aria-labelledby="community-success-title">
+      <img class="modal-success-check" src="/check-thanks.svg" width="74" height="40" alt="" />
+      <div class="modal-success-copy">
+        <h2 id="community-success-title" tabindex="-1"><span>Tu solicitud ya está</span><span>en revisión</span></h2>
+        <p>Gracias por sumarte. Revisaremos tu información y te contactaremos.</p>
+      </div>
+      <div class="modal-success-actions"><button class="modal-success-secondary" type="button" data-community-close>Listo</button></div>
+    </section>
+  </form>
+</dialog>
+<style>
+  .privacy, small { color: var(--blue-700); font-size: 13px; line-height: 1.6; }
+  .privacy { margin: 0; }
+  .modal-submit:disabled { opacity: .6; cursor: wait; }
+  /* Focus treatment reuses the project-modal pattern (border + shadow from global/motion CSS). */
+</style>
+<script>
+  import { initCommunityForm } from "../scripts/community-form";
+  initCommunityForm();
+</script>

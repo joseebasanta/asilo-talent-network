@@ -7,7 +7,7 @@ describe("GET /api/projects", () => {
 
     const first = await GET(context);
     expect(first.status).toBe(200);
-    expect(first.headers.get("cache-control")).toContain("public");
+    expect(first.headers.get("cache-control")).toBe("no-store");
 
     for (let i = 1; i < 60; i += 1) await GET(context);
 

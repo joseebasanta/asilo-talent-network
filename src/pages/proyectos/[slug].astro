@@ -30,7 +30,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
 ---
 
 <BaseLayout
-  base="/"
+  noindex={!project}
   title={project ? `${project.title} · Asilo Builders` : "Proyecto no encontrado · Asilo Builders"}
   description={project?.description}
   canonical={project ? new URL(`/proyectos/${project.slug}`, Astro.url).href : undefined}

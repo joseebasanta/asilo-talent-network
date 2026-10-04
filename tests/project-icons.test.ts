@@ -12,7 +12,7 @@ describe("projectIconUrl", () => {
   });
 
   it("maps every selectable category to an explicit icon", () => {
-    expect(projectIconUrl(["Proptech"])).toBe("/icons/pixelarticons/home.svg");
+    expect(projectIconUrl(["PropTech"])).toBe("/icons/pixelarticons/home.svg");
     expect(projectIconUrl(["Legaltech"])).toBe("/icons/pixelarticons/shield.svg");
     for (const category of CATEGORIES) {
       if (category === "Agritech" || category === "Energía & Clima" || category === "Hardware & IoT") continue;

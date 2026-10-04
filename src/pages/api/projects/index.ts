@@ -20,6 +20,6 @@ export const GET: APIRoute = async ({ clientAddress, url }) => {
 
   const projects = await loadDirectory(resolveSort(url?.searchParams.get("orden")));
   return json({ projects }, 200, {
-    "cache-control": "public, max-age=15, s-maxage=15, stale-while-revalidate=30",
+    "cache-control": "no-store",
   });
 };

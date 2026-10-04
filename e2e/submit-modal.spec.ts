@@ -8,10 +8,10 @@ test.describe("Add project modal", () => {
     await expect(page.getByRole("dialog", { name: "Agrega tu proyecto" })).toBeVisible();
   });
 
-  test("lists categories alphabetically, including Legaltech and Proptech", async ({ page }) => {
+  test("lists categories alphabetically, including Legaltech and PropTech", async ({ page }) => {
     const names = await page.locator(".cat-name").allTextContents();
     expect(names).toEqual([...names].sort(collator.compare));
-    expect(names).toEqual(expect.arrayContaining(["Legaltech", "Proptech"]));
+    expect(names).toEqual(expect.arrayContaining(["Legaltech", "PropTech"]));
   });
 
   test("allows at most three categories", async ({ page }) => {
@@ -21,7 +21,7 @@ test.describe("Add project modal", () => {
     await expect(rows.nth(3).locator("input")).toBeDisabled();
   });
 
-  test("closes on Escape and on a real backdrop click, not on a drag", async ({ page }) => {
+  test("closes only through its explicit controls, never on Escape, a backdrop click or a drag", async ({ page }) => {
     const dialog = page.getByRole("dialog");
     const input = dialog.getByLabel("Nombre del proyecto");
 
@@ -33,11 +33,13 @@ test.describe("Add project modal", () => {
     await page.mouse.up();
     await expect(dialog).toBeVisible();
 
+    // Dismissal is explicit (Cancelar / Listo): a stray click or Escape keeps typed input.
     await page.mouse.click(5, 5);
-    await expect(dialog).toBeHidden();
-
-    await page.getByRole("button", { name: "AGREGA TU PROYECTO" }).click();
+    await expect(dialog).toBeVisible();
     await page.keyboard.press("Escape");
+    await expect(dialog).toBeVisible();
+
+    await dialog.getByRole("button", { name: "Cancelar" }).click();
     await expect(dialog).toBeHidden();
   });
 

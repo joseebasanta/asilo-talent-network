@@ -1,0 +1,44 @@
+// @vitest-environment happy-dom
+import { afterEach, expect, it, vi } from "vitest";
+import { startProjectRefresh } from "../src/lib/project-refresh";
+let stop: (() => void) | undefined;
+afterEach(() => { stop?.(); vi.useRealTimers(); vi.restoreAllMocks(); });
+it("coalesces slow requests, ignores tab-switch bursts and pauses hidden tabs", async () => {
+  vi.useFakeTimers();
+  const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
+  let finish!: () => void;
+  const refresh = vi.fn(() => new Promise<void>(resolve => { finish = resolve; }));
+  stop = startProjectRefresh(refresh);
+  for (let i = 0; i < 20; i++) document.dispatchEvent(new Event("visibilitychange"));
+  expect(refresh).not.toHaveBeenCalled();
+  await vi.advanceTimersByTimeAsync(30_000);
+  await vi.advanceTimersByTimeAsync(90_000);
+  expect(refresh).toHaveBeenCalledTimes(1);
+  finish();
+  await vi.advanceTimersByTimeAsync(0);
+  visibility.mockReturnValue("hidden");
+  await vi.advanceTimersByTimeAsync(60_000);
+  expect(refresh).toHaveBeenCalledTimes(1);
+  visibility.mockReturnValue("visible");
+  for (let i = 0; i < 20; i++) document.dispatchEvent(new Event("visibilitychange"));
+  expect(refresh).toHaveBeenCalledTimes(2);
+  finish();
+});
+it("backs off after failures and resumes normal polling after success", async () => {
+  vi.useFakeTimers();
+  vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
+  const refresh = vi.fn().mockRejectedValue(new Error("429"));
+  stop = startProjectRefresh(refresh);
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(refresh).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(30_000);
+  document.dispatchEvent(new Event("visibilitychange"));
+  expect(refresh).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(refresh).toHaveBeenCalledTimes(2);
+  refresh.mockResolvedValue(undefined);
+  await vi.advanceTimersByTimeAsync(120_000);
+  expect(refresh).toHaveBeenCalledTimes(3);
+  await vi.advanceTimersByTimeAsync(30_000);
+  expect(refresh).toHaveBeenCalledTimes(4);
+});

@@ -12,7 +12,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const src = (p: string) => join(__dirname, "..", "src", p);
 
 const SURFACES: Array<{ file: string; envVar: string }> = [
-  { file: "config/site.ts", envVar: "PUBLIC_COMMUNITY_JOIN_URL" },
   { file: "lib/projects-loader.ts", envVar: "GOOGLE_SHEETS_ID" },
   { file: "lib/projects-loader.ts", envVar: "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64" },
   { file: "lib/projects-loader.ts", envVar: "GOOGLE_SHEETS_RANGE" },

@@ -37,7 +37,9 @@ export default defineConfig({
       APPWRITE_API_KEY: "",
       TURNSTILE_SITE_KEY: "",
       TURNSTILE_SECRET_KEY: "",
-      PUBLIC_COMMUNITY_JOIN_URL: "",
+      GOOGLE_COMMUNITY_SHEETS_ID: "",
+      GOOGLE_BUILDERS_SHEETS_ID: "",
+      GOOGLE_BUILDERS_SHEETS_RANGE: "",
     },
   },
 });

@@ -13,16 +13,15 @@ test.describe("Proyectos directory", () => {
       .toContainText("USDT");
   });
 
-  test("paginates ten cards at a time", async ({ page }) => {
+  test("shows ten cards on the home and links to the full list", async ({ page }) => {
     await page.goto("/?orden=az");
     const pages = page.locator("[data-project-page]");
     await expect(pages.nth(0).locator(".prj-item")).toHaveCount(10);
     await expect(pages.nth(1)).toBeHidden();
 
-    await page.getByRole("button", { name: "Siguiente" }).click();
-    await expect(pages.nth(1)).toBeVisible();
-    await expect(pages.nth(0)).toBeHidden();
-    await expect(pages.nth(1).locator(".prj-item")).toHaveCount(2);
+    await page.getByRole("link", { name: "Ver todos" }).click();
+    await expect(page).toHaveURL(/\/proyectos$/);
+    await expect(page.locator("#project-count")).toContainText("12 proyectos");
   });
 
   test("sorts A–Z and Z–A without reloading", async ({ page }) => {

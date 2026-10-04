@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 /**
  * Pure, network-free gate for the optional project-logo upload. The submit
  * endpoint only touches Appwrite Storage after this validation passes; the
@@ -6,6 +8,8 @@
  */
 
 export const LOGO_BUCKET_ID = "project-logos";
+export const LOGO_MAX_DIMENSION = 4096;
+export const LOGO_MAX_PIXELS = 16_000_000;
 export const LOGO_MAX_BYTES = 1_048_576; // bucket limit: 1 MB
 
 export const LOGO_MIME_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
@@ -31,18 +35,18 @@ export function logoFileExtension(name: string): string | null {
  * Accepts an absent logo (the file is optional). Rejects oversized files and
  * anything whose MIME type or extension is not in the allowlist.
  */
-export function validateLogo(file: LogoFile | null | undefined): LogoValidation {
-  // Native multipart FormData serializes an untouched file input as an empty File.
-  if (!file || file.name === "") return { ok: true };
-  if (file.size > LOGO_MAX_BYTES) {
-    return { ok: false, error: "El logo debe pesar menos de 1 MB." };
-  }
-  if (!LOGO_MIME_TYPES.has(file.type)) {
-    return { ok: false, error: "El logo debe ser PNG, JPG o WebP." };
-  }
+const logoSchema = z.object({
+  name: z.string().min(1).max(255),
+  type: z.enum(["image/png", "image/jpeg", "image/webp"], { error: "El logo debe ser PNG, JPG o WebP." }),
+  size: z.number().int().positive("El archivo del logo está vacío.")
+    .max(LOGO_MAX_BYTES, "El logo debe pesar como máximo 1 MB."),
+}).refine((file) => {
   const ext = logoFileExtension(file.name);
-  if (!ext || !LOGO_EXTENSIONS.has(ext)) {
-    return { ok: false, error: "El logo debe ser PNG, JPG o WebP." };
-  }
-  return { ok: true };
+  return ext && ({ png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" } as Record<string, string>)[ext] === file.type;
+}, "La extensión del logo debe coincidir con su formato PNG, JPG o WebP.");
+
+export function validateLogo(file: LogoFile | null | undefined): LogoValidation {
+  if (!file || (file.name === "" && file.size === 0)) return { ok: true };
+  const result = logoSchema.safeParse(file);
+  return result.success ? { ok: true } : { ok: false, error: result.error.issues[0].message };
 }

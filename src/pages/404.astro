@@ -1,0 +1,52 @@
+---
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/motion.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SeoHead from "../components/SeoHead.astro";
+
+export const prerender = true;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
+const canonical = `${siteUrl}/404`;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#000a11" />
+    <SeoHead
+      title="Página no encontrada | Asilo Builders"
+      description="La página que buscas no existe o fue movida. Vuelve al inicio o explora los proyectos de Asilo Builders."
+      canonical={canonical}
+      noindex
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
+    <style is:global>
+      .not-found { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 48rem; margin: 0 auto; padding: calc(var(--header-h) + 100px) var(--gutter) 6rem; text-align: center; }
+      .not-found-code { font-family: var(--font-display); font-weight: 900; color: var(--blue-500); font-size: clamp(3rem, 10vw, 5rem); line-height: 1; }
+      .not-found h1 { max-width: 22ch; }
+      .not-found p { color: var(--blue-700); font-size: 1.125rem; line-height: 1.5; text-wrap: balance; }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <SiteHeader />
+    <main id="contenido">
+      <section class="not-found" aria-labelledby="not-found-title">
+        <p class="not-found-code" aria-hidden="true">[ 404 ]</p>
+        <h1 id="not-found-title">Página no encontrada</h1>
+        <p>La página que buscas no existe o fue movida. Vuelve al inicio o descubre lo que estamos construyendo.</p>
+        <div class="actions">
+          <a class="button button-primary" href="/">Volver al inicio</a>
+          <a class="button button-secondary" href="/proyectos">Ver proyectos</a>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </body>
+</html>

@@ -9,13 +9,15 @@ interface Props {
   sort?: SortMode;
   /** Likes configured: enables the "Más votados" order. */
   likesEnabled?: boolean;
+  /** Render only the add-project modal (used by /proyectos, which has its own list). */
+  modalOnly?: boolean;
 }
 
-const { projects, sort = "az", likesEnabled = false } = Astro.props;
+const { projects, sort = "az", likesEnabled = false, modalOnly = false } = Astro.props;
 const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value !== "populares");
 ---
 
-<section class="prj" id="proyectos">
+{!modalOnly && <section class="prj" id="proyectos">
   <div class="prj-inner">
     <div class="prj-head">
       <h2 class="prj-title" data-decode>Proyectos</h2>
@@ -29,14 +31,7 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
         </select>
         <noscript><button class="prj-sort-go" type="submit">Aplicar</button></noscript>
       </form>
-      <div class="prj-nav">
-        <button class="prj-arrow" type="button" aria-label="Anterior" aria-controls="project-directory-list" data-project-nav="previous">
-          <svg viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><path d="M16 26V22H20V26H16ZM20 22V18H24V22H20ZM20 30V26H24V30H20ZM24 18V14H28V18H24ZM24 34V30H28V34H24ZM28 14V10H32V14H28ZM28 38V34H32V38H28Z" /></svg>
-        </button>
-        <button class="prj-arrow" type="button" aria-label="Siguiente" aria-controls="project-directory-list" data-project-nav="next">
-          <svg viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><path d="M32 26V22H28V26H32ZM28 22V18H24V22H28ZM28 30V26H24V30H28ZM24 18V14H20V18H24ZM24 34V30H20V34H24ZM20 14V10H16V14H20ZM20 38V34H16V38H20Z" /></svg>
-        </button>
-      </div>
+      <a class="prj-browse" href="/proyectos">Ver todos</a>
     </div>
     <div class="prj-carousel" id="project-directory-list" aria-busy="false">
       <ProjectPages projects={projects} />
@@ -46,12 +41,13 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
       <button class="prj-cta" type="button" data-open-modal>AGREGA TU PROYECTO</button>
     </div>
   </div>
-</section>
+</section>}
 
 <ProjectFormModal mode="create" />
 
 <script>
   import { gsap } from "gsap";
+  import { startProjectRefresh } from "../lib/project-refresh";
   import { paintLikes } from "../scripts/likes";
 
   const projectCarousel = document.getElementById("project-directory-list");
@@ -70,6 +66,7 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
     if (!projectCarousel) return;
     const response = await fetch(`/partials/proyectos?orden=${encodeURIComponent(sort)}`, {
       headers: { accept: "text/html" },
+      signal: AbortSignal.timeout(15_000),
     });
     if (!response.ok) throw new Error(`partial ${response.status}`);
     const html = await response.text();
@@ -83,18 +80,20 @@ const sortOptions = SORT_OPTIONS.filter((option) => likesEnabled || option.value
 
   const currentSort = () => sortSelect?.value ?? "az";
 
+  // Background refresh: skip while someone is using the directory (browsing
+  // later pages, focus inside the list, an open dialog). Throwing on failure
+  // lets startProjectRefresh back off; the last rendered list stays on screen.
   const refreshProjects = async () => {
-    // Don't yank cards away from someone browsing later pages.
-    if (document.visibilityState !== "visible" || projectPageIndex !== 0 || projectPageAnimating) return;
-    try {
-      await loadPartial(currentSort());
-    } catch {
-      // Keep the last rendered directory when a background refresh fails.
-    }
+    const interacting = () =>
+      projectPageIndex !== 0 ||
+      projectPageAnimating ||
+      Boolean(projectCarousel?.contains(document.activeElement)) ||
+      Boolean(document.querySelector("dialog[open]"));
+    if (interacting()) return;
+    await loadPartial(currentSort());
   };
 
-  window.setInterval(refreshProjects, 60_000);
-  document.addEventListener("visibilitychange", refreshProjects);
+  if (projectCarousel) startProjectRefresh(refreshProjects);
 
   sortSelect?.addEventListener("change", async () => {
     const sort = currentSort();

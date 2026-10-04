@@ -23,7 +23,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Social & Comunidad": "/icons/pixelarticons/heart.svg",
   "Hardware & IoT": "/icons/pixelarticons/box.svg",
   Legaltech: "/icons/pixelarticons/shield.svg",
-  Proptech: "/icons/pixelarticons/home.svg",
+  PropTech: "/icons/pixelarticons/home.svg",
 };
 
 const DEFAULT_ICON = "/icons/pixelarticons/box.svg";

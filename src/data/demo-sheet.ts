@@ -21,7 +21,7 @@ const ROWS: Row[] = [
   ["Doc en Casa", "https://docencasa.example", "Consultas médicas a domicilio con historial digital.", "Andrés Silva", "Healthtech"],
   ["Finca Viva", "https://fincaviva.example", "Sensores de humedad accesibles para pequeños productores.", "Rosa Camacho", "Agritech, Hardware & IoT"],
   ["Ley Clara", "https://leyclara.example", "Contratos simples revisados por abogados.", "Daniel Ortega", "Legaltech"],
-  ["Casa Llave", "https://casallave.example", "Alquileres verificados sin intermediarios.", "Gabriela Nieto", "Proptech"],
+  ["Casa Llave", "https://casallave.example", "Alquileres verificados sin intermediarios.", "Gabriela Nieto", "PropTech"],
   ["Ruta Segura", "https://rutasegura.example", "Reportes colaborativos del estado de las vías.", "Miguel Rojas", "Movilidad, Social & Comunidad"],
   ["Zeta Games", "https://zetagames.example", "Juegos pixel art hechos en Maracaibo.", "Sofía Urdaneta", "Gaming, Diseño & Creatividad"],
   ["Pana Pay", "https://panapay.example", "Pagos entre amigos en bolívares, dólares y USDT.", "Ana Rivas", "Fintech, Blockchain & Crypto"],

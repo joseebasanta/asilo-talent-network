@@ -11,15 +11,15 @@ test.describe("Layout", () => {
     await expectNoHorizontalScroll(page);
 
     const title = (await page.locator(".prj-title").boundingBox())!;
-    const nav = (await page.locator(".prj-nav").boundingBox())!;
-    const sameRow = Math.abs(title.y - nav.y) < title.height;
-    if (sameRow) expect(title.x + title.width).toBeLessThanOrEqual(nav.x);
+    const browse = (await page.locator(".prj-browse").boundingBox())!;
+    const sameRow = Math.abs(title.y - browse.y) < title.height;
+    if (sameRow) expect(title.x + title.width).toBeLessThanOrEqual(browse.x);
   });
 
   test("closing CTA separates joining from adding a project", async ({ page }) => {
     await page.goto("/");
     const cta = page.locator("#unete-cta");
-    await expect(cta.getByRole("link", { name: /Únete a la comunidad/ })).toBeVisible();
+    await expect(cta.getByRole("link", { name: /Llenar formulario/ })).toBeVisible();
     await expect(cta.getByText("No necesitas registrarte de nuevo")).toBeVisible();
     await cta.getByRole("link", { name: "agrega tu proyecto al directorio" }).click();
     await expect(page).toHaveURL(/#proyectos$/);

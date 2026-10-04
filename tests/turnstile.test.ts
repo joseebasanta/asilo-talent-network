@@ -15,6 +15,7 @@ describe("verifyTurnstile", () => {
 
   it("posts secret+response form-encoded to siteverify and trusts success===true", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
       json: async () => ({ success: true }),
     } as Response);
     globalThis.fetch = fetchMock;
@@ -22,6 +23,7 @@ describe("verifyTurnstile", () => {
     await expect(verifyTurnstile("tok123", "sec456")).resolves.toBe(true);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe(TURNSTILE_VERIFY_URL);
+    expect(init.signal).toBeInstanceOf(AbortSignal);
     expect(init.method).toBe("POST");
     expect(init.headers).toEqual({ "content-type": "application/x-www-form-urlencoded" });
     expect(String(init.body)).toBe("secret=sec456&response=tok123");
@@ -29,8 +31,14 @@ describe("verifyTurnstile", () => {
 
   it("returns false when the server does not confirm success", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
       json: async () => ({ success: false }),
     });
+    await expect(verifyTurnstile("tok", "sec")).resolves.toBe(false);
+  });
+
+  it("rejects an unsuccessful HTTP response even when its body claims success", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({ ok: false, json: async () => ({ success: true }) });
     await expect(verifyTurnstile("tok", "sec")).resolves.toBe(false);
   });
 
@@ -39,6 +47,7 @@ describe("verifyTurnstile", () => {
     await expect(verifyTurnstile("tok", "sec")).resolves.toBe(false);
 
     globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
       json: async () => {
         throw new Error("bad json");
       },

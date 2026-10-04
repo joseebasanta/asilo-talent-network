@@ -1,5 +1,8 @@
 # Astro + Appwrite migration — implementation brief (v1.0)
 
+> Historical reference: describes the pre-Astro baseline or migration proposal.
+> Legacy prototype files have been removed; see README.md for the current app.
+
 **Decision:** replace the static GitHub Pages implementation with an Astro SSR application deployed to Appwrite Sites. Keep the current visual language and public browsing experience, but move identity, submissions, moderation, and unpublished data behind server-rendered routes and Appwrite resource permissions.
 
 ## Baseline and constraints

@@ -1,13 +1,14 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import type { Project } from "../data/projects";
 import { projectIconUrl } from "../lib/project-icons";
 import LikeButton from "./LikeButton.astro";
 
-interface Props {
+interface Props extends HTMLAttributes<"article"> {
   project: Project;
 }
 
-const { project } = Astro.props;
+const { project, ...attributes } = Astro.props;
 // Published projects open their detail page (likes, comments, edit request);
 // placeholders without an id keep their raw link. The title link is stretched
 // over the whole card in CSS, so the like button stays a separate control.
@@ -17,7 +18,7 @@ const linkAttrs = internal
   : { href: project.href, target: "_blank", rel: "noopener noreferrer" };
 ---
 
-<article class="prj-item">
+<article class="prj-item" {...attributes}>
   <div class="prj-thumb" aria-hidden="true">
     {project.logoUrl ? (
       <img class="prj-logo" src={project.logoUrl} alt="" loading="lazy" decoding="async" />

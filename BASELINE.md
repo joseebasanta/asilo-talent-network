@@ -1,5 +1,8 @@
 # Asilo — Project Baseline
 
+> Historical reference: describes the pre-Astro baseline or migration proposal.
+> Legacy prototype files have been removed; see README.md for the current app.
+
 This document marks the **base starting point** of the Asilo project. Everything
 below is implemented, working, and pushed to `claude/talent-network-landing-3dzvkj`.
 

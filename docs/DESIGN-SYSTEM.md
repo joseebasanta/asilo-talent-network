@@ -14,7 +14,7 @@ update this file.
 - **Canonical files:**
   - `src/styles/global.css` — tokens + every component (the real source of truth)
   - `src/styles/fonts.css` — `@font-face` for Doto + IBM Plex Sans
-  - `src/layouts/BaseLayout.astro` — `<head>`, header, footer shared by every page
+  - `src/layouts/BaseLayout.astro` — `<head>`, header, footer for inner pages (the homepage and `/proyectos` compose `SiteHeader` and `SiteFooter` directly)
   - `src/pages/index.astro` — homepage composition
   - `src/pages/proyectos/[slug].astro` — project detail (likes, comments, edit request)
   - `src/components/ProjectDirectory.astro` — Proyectos head, sort control, carousel
@@ -165,6 +165,9 @@ All class names live in `global.css`. Specs below are the current truth.
 ### Cards & surfaces
 - **Feature grid** (`.wwd-grid` / `.wwd-item`): single `1px solid --slate-800`
   outer border with `--slate-800` internal dividers (no per‑card boxes).
+  At ≤760px, use borderless rows with horizontal dividers, 28px icons beside
+  the text, 18px titles, and 16px `--blue-700` body copy. Row padding is 32px,
+  with no padding above the first or below the last row.
 - **Project card** (`.prj-item`): transparent at rest; **hover/focus** → bg
   `--slate-800` panel + reveal a `--blue-500` external‑link icon by the title.
 - The card is an `<article>`; its title link (`.prj-link`) is **stretched** over

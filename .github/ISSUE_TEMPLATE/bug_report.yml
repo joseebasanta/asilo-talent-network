@@ -1,0 +1,33 @@
+name: Bug report
+description: Report broken behavior in Asilo.
+body:
+  - type: markdown
+    attributes:
+      value: Search existing issues first. Keep one problem per report and remove private data.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the page and the actions that trigger the problem.
+      placeholder: "1. Open /proyectos..."
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: What should happen, and what happens instead?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, device, and local or live site; branch or commit if known.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or errors
+      description: Add relevant evidence without credentials or applicant details.
