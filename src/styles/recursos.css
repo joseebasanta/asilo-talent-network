@@ -1,7 +1,7 @@
 /* Recursos (library) page — reuses global tokens; one accent (--blue-500). */
 
 .library {
-  max-width: 80rem;
+  max-width: 92.5rem; /* same container as /proyectos (.explore) */
   margin: 0 auto;
   padding: calc(var(--header-h) + clamp(1.5rem, 4vw, 2.75rem)) var(--gutter) clamp(4rem, 8vw, 6rem);
 }
@@ -192,7 +192,8 @@
   margin: 0 -1.25rem;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  /* Up to 3 columns (as in the reference), fewer when cards would drop below 14rem. */
+  grid-template-columns: repeat(auto-fill, minmax(max(14rem, calc((100% - 0.5rem) / 3)), 1fr));
   gap: 0.25rem;
 }
 .resource {
