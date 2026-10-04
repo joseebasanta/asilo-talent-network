@@ -132,16 +132,17 @@
   font-size: 0.9375rem;
   color: var(--blue-700);
   text-decoration: none;
-  border-left: 2px solid transparent;
+  transition: background-color 0.15s, color 0.15s;
 }
+/* Same filled panel as the resource-card hover; no side stroke. */
 .library-nav a:hover,
-.library-nav a:focus-visible {
-  color: var(--blue-50);
-  background: var(--sky-alpha-5);
-}
+.library-nav a:focus-visible,
 .library-nav a.is-current {
   color: var(--blue-50);
-  border-left-color: var(--blue-500);
+  background: var(--slate-800);
+}
+.library-nav a.is-current small {
+  color: var(--blue-700);
 }
 .library-nav small {
   flex: none;
