@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import { resourceCategories } from "../src/data/resources";
@@ -61,6 +62,14 @@ describe("/recursos page", () => {
     expect(html).not.toContain("library-controls");
     // The empty state lives in the results column, next to the sidebar.
     expect(html).toMatch(/id="resource-sections"[\s\S]*id="resource-empty"/);
+  });
+
+  it("starts with the empty state hidden and lets [hidden] override its display", async () => {
+    const html = await renderResources();
+    expect(html).toMatch(/<div class="library-empty" id="resource-empty" hidden>/);
+
+    const css = readFileSync(new URL("../src/styles/recursos.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.resources-page \[hidden\]\s*\{\s*display:\s*none !important;/);
   });
 
   it("renders every category section and resource row", async () => {
