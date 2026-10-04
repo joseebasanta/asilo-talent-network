@@ -1,0 +1,122 @@
+---
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/motion.css";
+import "../styles/recursos.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SeoHead from "../components/SeoHead.astro";
+import { resourceCategories } from "../data/resources";
+
+export const prerender = true;
+
+const totalResources = resourceCategories.reduce((sum, category) => sum + category.resources.length, 0);
+
+// Favicon for a resource, resolved by its domain (loads the site's own icon).
+const faviconFor = (url: string): string => {
+  try {
+    return `https://www.google.com/s/favicons?sz=64&domain=${new URL(url).hostname}`;
+  } catch {
+    return "";
+  }
+};
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://builders.asilodigital.com";
+const canonical = `${siteUrl}/recursos`;
+const pageTitle = "Recursos | Asilo Builders";
+const pageDescription =
+  "Biblioteca curada de recursos de diseño de producto, UI/UX y web para builders de Venezuela: galerías, tipografía, color, íconos, design systems y más.";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#000a11" />
+    <SeoHead title={pageTitle} description={pageDescription} canonical={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body class="resources-page">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <SiteHeader />
+    <main id="contenido" class="library">
+      <section class="library-intro" aria-labelledby="page-title">
+        <a class="back-link" href="/">← Volver al inicio</a>
+        <h1 id="page-title" data-decode>Recursos</h1>
+        <p class="library-description">
+          Una biblioteca curada de herramientas y referencias de diseño de producto,
+          UI/UX y web.
+        </p>
+        <p class="library-count" id="resource-count" role="status" aria-live="polite" aria-atomic="true">
+          {totalResources} recursos · {resourceCategories.length} categorías
+        </p>
+      </section>
+
+      <section class="library-body" aria-label="Biblioteca de recursos">
+        <div class="library-layout">
+          <aside class="library-side" aria-label="Buscar y explorar recursos">
+            <form class="library-search" role="search" id="resource-filters" action="/recursos" method="get" onsubmit="return false">
+              <label class="sr-only" for="resource-query">Buscar recursos</label>
+              <div class="search-field">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 22H20V20H22V22ZM20 20H18V18H20V20ZM14 18H6V16H14V18ZM18 18H16V16H18V18ZM6 16H4V14H6V16ZM16 16H14V14H16V16ZM4 14H2V6H4V14ZM18 14H16V6H18V14ZM6 6H4V4H6V6ZM16 6H14V4H16V6ZM14 4H6V2H14V4Z" fill="currentColor" /></svg>
+                <input id="resource-query" type="search" name="q" placeholder="Buscar recursos…" autocomplete="off" aria-keyshortcuts="/" />
+                <kbd class="search-kbd" aria-hidden="true">/</kbd>
+              </div>
+            </form>
+
+            <p class="library-nav-title" id="library-nav-title">Categorías</p>
+            <nav class="library-nav" id="library-nav" aria-labelledby="library-nav-title">
+              <ul>
+                {resourceCategories.map((category) => (
+                  <li>
+                    <a href={`#${category.id}`} data-nav-for={category.id}>
+                      <span>{category.title}</span>
+                      <small>{category.resources.length}</small>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+
+          <div class="library-sections" id="resource-sections">
+            {resourceCategories.map((category) => (
+              <section class="library-category" id={category.id} data-category={category.id} aria-labelledby={`${category.id}-title`}>
+                <header class="library-category-head">
+                  <h2 id={`${category.id}-title`}>{category.title}</h2>
+                  {category.desc && <p>{category.desc}</p>}
+                </header>
+                <ul class="resource-list">
+                  {category.resources.map((resource) => (
+                    <li class="resource" data-name={resource.name} data-desc={resource.desc}>
+                      <a class="resource-link" href={resource.url} target="_blank" rel="noopener noreferrer">
+                        <span class="resource-name">
+                          {faviconFor(resource.url) && (
+                            <img class="resource-favicon" src={faviconFor(resource.url)} alt="" aria-hidden="true" width="20" height="20" loading="lazy" decoding="async" />
+                          )}
+                          {resource.name}
+                        </span>
+                        {resource.desc && <span class="resource-desc">{resource.desc}</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+
+            <div class="library-empty" id="resource-empty" hidden>
+              <span class="empty-symbol" aria-hidden="true">[ ? ]</span>
+              <h2>No encontramos recursos</h2>
+              <p>Prueba con otra palabra o explora por categoría.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+    <script src="../scripts/resources-explorer.ts"></script>
+  </body>
+</html>

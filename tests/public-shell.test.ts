@@ -57,7 +57,8 @@ describe("public shell", () => {
     const html = await renderShell();
 
     expect(html).toMatch(/<img\b[^>]*class=["']brand-mark["'][^>]*src=["']\/logo-asilo-builders\.svg["']/);
-    expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(3);
+    // Header "Únete" (desktop) + mobile menu "Únete" + two in-page CTAs.
+    expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(4);
     expect(html).not.toContain("↗");
   });
 
