@@ -86,6 +86,14 @@ describe("validateSubmission", () => {
     ).toBe(false);
   });
 
+  it("explains a missing founders field in natural Spanish", () => {
+    const result = validateSubmission({ ...validInput, fundadores: "" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.fundadores).toBe("Indica quién fundó el proyecto (hasta 160 caracteres).");
+    }
+  });
+
   it("rejects zero, too many, or non-allowlist categories", () => {
     expect(validateSubmission({ ...validInput, categorias: [] }).ok).toBe(false);
     expect(

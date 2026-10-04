@@ -34,8 +34,31 @@ test.describe("Project page", () => {
     const dialog = page.getByRole("dialog", { name: "Solicitar cambios" });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByLabel("Nombre del proyecto")).toHaveValue("Pana Pay");
-    await expect(dialog.getByLabel("Website URL")).toHaveAttribute("readonly", "");
+    await expect(dialog.getByLabel("URL del sitio web")).toHaveAttribute("readonly", "");
     await expect(dialog.getByLabel("Tu contacto")).toHaveAttribute("required", "");
+    await expect(dialog.locator(".cat-checkbox:checked")).toHaveCount(2);
+  });
+
+  test("reopening the edit request restores the original values and clears errors", async ({ page }) => {
+    await openPanaPay(page);
+    await page.getByRole("button", { name: "Solicita cambios" }).click();
+    const dialog = page.getByRole("dialog", { name: "Solicitar cambios" });
+    const name = dialog.getByLabel("Nombre del proyecto");
+    const original = await name.inputValue();
+    const description = await dialog.getByLabel("Descripción corta").inputValue();
+    await name.fill("Otro nombre");
+    await dialog.getByLabel("Descripción corta").fill("corta");
+    await dialog.getByRole("button", { name: "Enviar cambios" }).click();
+    await expect(dialog.locator("[data-field-error]:visible").first()).toBeVisible();
+    await dialog.getByRole("button", { name: "Cancelar" }).click();
+    await expect(dialog).toBeHidden();
+
+    await page.getByRole("button", { name: "Solicita cambios" }).click();
+    await expect(dialog).toBeVisible();
+    await expect(name).toHaveValue(original);
+    await expect(dialog.getByLabel("Descripción corta")).toHaveValue(description);
+    await expect(dialog.locator("[data-field-error]:visible")).toHaveCount(0);
+    await expect(dialog.getByRole("status")).toBeHidden();
     await expect(dialog.locator(".cat-checkbox:checked")).toHaveCount(2);
   });
 

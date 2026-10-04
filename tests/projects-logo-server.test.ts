@@ -77,7 +77,7 @@ describe("logo content validation", () => {
     frame.writeUInt16BE(10, 22);
     const apng = Buffer.concat([png.subarray(0, 33), chunk("acTL", animation), chunk("fcTL", frame), png.subarray(33)]);
     expect((await sharp(apng).metadata()).format).toBe("png");
-    expect(await prepareLogo(file(apng))).toEqual({ ok: false, error: "Usá un logo sin animación." });
+    expect(await prepareLogo(file(apng))).toEqual({ ok: false, error: "Usa un logo sin animación." });
   });
 
   it("rejects empty files and inconsistent extensions before decoding", () => {

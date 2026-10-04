@@ -76,7 +76,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   }
 
   if (rateLimited(clientAddress ?? "unknown")) {
-    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Intentá en 10 minutos." }, 429);
+    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Inténtalo en 10 minutos." }, 429);
   }
 
   let form: FormData;
@@ -96,7 +96,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   }
 
   if (Boolean(import.meta.env.TURNSTILE_SITE_KEY) !== Boolean(import.meta.env.TURNSTILE_SECRET_KEY)) {
-    return json({ ok: false, error: "La verificación no está disponible en este momento. Intentá más tarde." }, 503);
+    return json({ ok: false, error: "La verificación no está disponible en este momento. Inténtalo más tarde." }, 503);
   }
 
   // Captcha (Turnstile): when keys are configured, a token must be present and
@@ -109,7 +109,7 @@ export async function POST({ request, clientAddress }: APIContext) {
         {
           ok: false,
           field: "captcha",
-          error: "Completá la verificación para enviar.",
+          error: "Completa la verificación para enviar.",
         },
         400,
       );
@@ -119,7 +119,7 @@ export async function POST({ request, clientAddress }: APIContext) {
         {
           ok: false,
           field: "captcha",
-          error: "La verificación falló. Recargá e intentá de nuevo.",
+          error: "La verificación falló. Recarga e inténtalo de nuevo.",
         },
         403,
       );
@@ -138,7 +138,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     !/^\d+$/.test(submittedAtRaw) || !Number.isSafeInteger(submittedAt) || submittedAt <= 0 ||
     Date.now() - submittedAt < MIN_FILL_MS) {
     return json(
-      { ok: false, error: "El envío fue demasiado rápido. Intentá de nuevo." },
+      { ok: false, error: "El envío fue demasiado rápido. Inténtalo de nuevo." },
       429,
     );
   }
@@ -167,7 +167,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   // A supplied logo must validate and upload successfully; never silently drop it.
   const logoRaw = form.get("logo");
   if (form.getAll("logo").length > 1 || (logoRaw !== null && !(logoRaw instanceof File))) {
-    return json({ ok: false, field: "logo", error: "Seleccioná un solo archivo de imagen." }, 400);
+    return json({ ok: false, field: "logo", error: "Selecciona un solo archivo de imagen." }, 400);
   }
   // FormData returns an empty File for an untouched file input.
   const logo = logoRaw instanceof File && (logoRaw.name !== "" || logoRaw.size > 0) ? logoRaw : null;
@@ -242,7 +242,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+        error: "No se pudo verificar el envío. Inténtalo de nuevo en unos minutos.",
       },
       503,
     );
@@ -275,13 +275,13 @@ export async function POST({ request, clientAddress }: APIContext) {
       return json(
         {
           ok: false,
-          error: "No se pudo subir el logo. Intentá de nuevo en unos minutos.",
+          error: "No se pudo subir el logo. Inténtalo de nuevo en unos minutos.",
         },
         503,
       );
     }
   } else if (preparedLogo?.ok) {
-    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Intentá más tarde o quitá el logo." }, 503);
+    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Inténtalo más tarde o quita el logo." }, 503);
   }
 
   // A change request without a new logo keeps the published one.
@@ -297,7 +297,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+        error: "No se pudo verificar el envío. Inténtalo de nuevo en unos minutos.",
       },
       503,
     );
@@ -315,7 +315,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo guardar tu proyecto. Intentá de nuevo en unos minutos.",
+        error: "No se pudo guardar tu proyecto. Inténtalo de nuevo en unos minutos.",
       },
       503,
     );

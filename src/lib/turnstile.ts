@@ -50,10 +50,10 @@ export async function checkTurnstile(
   if (!turnstileConfigured()) return null;
   const token = form.get("cf-turnstile-response");
   if (typeof token !== "string" || token.trim() === "") {
-    return { status: 400, error: "Completá la verificación para enviar." };
+    return { status: 400, error: "Completa la verificación para enviar." };
   }
   if (!(await verifyTurnstile(token, import.meta.env.TURNSTILE_SECRET_KEY))) {
-    return { status: 403, error: "La verificación falló. Recargá e intentá de nuevo." };
+    return { status: 403, error: "La verificación falló. Recarga e inténtalo de nuevo." };
   }
   return null;
 }
