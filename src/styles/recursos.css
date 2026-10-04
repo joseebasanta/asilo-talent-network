@@ -94,14 +94,16 @@
   color: #5c6470;
 }
 
+/* Eyebrow treatment: muted, uppercase, wide tracking ("240 RECURSOS · 30 CATEGORÍAS"). */
 .library-count {
-  margin: 0.25rem 0 0;
+  margin: 0.5rem 0 0;
   font-family: var(--font-text);
   font-weight: 500;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  letter-spacing: -0.006em;
-  color: var(--blue-500);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--blue-800);
 }
 
 /* ---- Layout: sticky category nav + sections ---- */

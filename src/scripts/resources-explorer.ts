@@ -35,7 +35,7 @@ if (form && queryInput && countEl && emptyEl && resources.length) {
     }
 
     countEl.textContent =
-      `${visible} ${visible === 1 ? "recurso" : "recursos"} y ` +
+      `${visible} ${visible === 1 ? "recurso" : "recursos"} · ` +
       `${visibleCategories} ${visibleCategories === 1 ? "categoría" : "categorías"}`;
     emptyEl.hidden = visible > 0;
   };
