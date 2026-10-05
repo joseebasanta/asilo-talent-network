@@ -254,10 +254,7 @@ h1 {
 .prj-ext-icon { width: 16px; height: 16px; flex: none; color: var(--blue-500); opacity: 0; transition: opacity .15s ease; }
 .prj-item:hover .prj-ext-icon, .prj-item:has(.prj-link:focus-visible) .prj-ext-icon { opacity: 1; }
 .prj-thumb { width: 3.5rem; height: 3.5rem; flex: none; background: var(--slate-900); border-radius: .25rem; }
-/* Uploaded logos sit on a light tile: most marks are drawn for white paper, and
-   transparent PNGs with dark ink disappear on the dark page otherwise. */
-.prj-thumb:has(.prj-logo), .pd-thumb:has(.prj-logo), .logo-tile { background: var(--slate-50); box-shadow: inset 0 0 0 1px var(--sky-alpha-16); }
-.prj-logo { display: block; width: 100%; height: 100%; padding: .375rem; object-fit: contain; border-radius: inherit; }
+.prj-logo { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
 .prj-placeholder { display: block; width: 100%; height: 100%; padding: .75rem; }
 .prj-body { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: .5rem; }
 .prj-td { display: flex; flex-direction: column; gap: .125rem; min-width: 0; }
@@ -444,7 +441,7 @@ h1 {
 .logo-upload-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .logo-upload-title { color: var(--blue-50); font-size: 14px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .logo-upload-hint { color: #5c6470; font-size: 12px; line-height: 16px; }
-.logo-upload-thumb { flex: none; width: 42px; height: 42px; padding: 3px; object-fit: contain; border-radius: 4px; }
+.logo-upload-thumb { flex: none; width: 42px; height: 42px; object-fit: cover; border: 1px solid var(--sky-alpha-16); border-radius: 4px; }
 
 .cat-list { display: flex; flex-direction: column; height: 160px; padding: 6px; background: var(--bg); border: 1px solid var(--sky-alpha-16); border-radius: 8px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--sky-alpha-24) transparent; }
 .cat-list::-webkit-scrollbar { width: 6px; }
