@@ -19,7 +19,7 @@ test.describe("Layout", () => {
   test("closing CTA shows the join button and fits its heading", async ({ page }) => {
     await page.goto("/");
     const cta = page.locator("#unete-cta");
-    await expect(cta.getByRole("link", { name: /Llenar formulario/ })).toBeVisible();
+    await expect(cta.getByRole("link", { name: /Únete a la comunidad/ })).toBeVisible();
     await expect(cta.locator(".cta-note")).toHaveCount(0);
 
     const heading = page.locator(".cta-title");
