@@ -26,9 +26,9 @@ export function parseSortMode(raw: string | null | undefined): SortMode {
 const byTitle = new Intl.Collator("es", { sensitivity: "base", numeric: true });
 
 /** Returns a new, sorted array; never mutates the input. */
-export function sortProjects(projects: readonly Project[], mode: SortMode): Project[] {
+export function sortProjects<T extends Project>(projects: readonly T[], mode: SortMode): T[] {
   const list = [...projects];
-  const az = (a: Project, b: Project) => byTitle.compare(a.title, b.title);
+  const az = (a: T, b: T) => byTitle.compare(a.title, b.title);
 
   switch (mode) {
     case "az":
