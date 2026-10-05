@@ -13,7 +13,7 @@ async function render(query = "") {
   return container.renderToString(ProjectsPage, { request: new Request(`https://example.com/proyectos${query}`) });
 }
 function visibleCards(html: string) {
-  return [...html.matchAll(/<a\b[^>]*data-project-index[^>]*>/g)].map(match => match[0]).filter(tag => !/\bhidden(?:[\s=>])/.test(tag));
+  return [...html.matchAll(/<(?:a|article)\b[^>]*data-project-index[^>]*>/g)].map(match => match[0]).filter(tag => !/\bhidden(?:[\s=>])/.test(tag));
 }
 describe("server-rendered project pagination", () => {
   it("renders the second page and preserves filters in navigation without JavaScript", async () => {

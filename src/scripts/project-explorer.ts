@@ -12,9 +12,9 @@ const getOrder = () => sortOptions.find(option => option.checked)?.value ?? "az"
 const setOrder = (value: string) => sortOptions.forEach(option => { option.checked = option.value === value; });
 let boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
 const grid = document.querySelector<HTMLElement>("#project-results")!;
-let cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>("[data-project-index]"));
+let cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-project-index]"));
 let projects = cards.map(card => ({
-  href: card.href, title: card.dataset.title ?? "", description: card.dataset.description ?? "",
+  href: card.querySelector<HTMLAnchorElement>(".prj-link")?.href ?? "", title: card.dataset.title ?? "", description: card.dataset.description ?? "",
   author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[], card,
 }));
 const count = document.querySelector<HTMLElement>("#project-count")!;
@@ -248,9 +248,9 @@ async function refreshDirectory() {
     boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
     boxes.forEach(box => { box.checked = selected.includes(box.value); });
     categoryRows = Array.from(form.querySelectorAll<HTMLElement>("[data-category-name]"));
-    cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>("[data-project-index]"));
+    cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-project-index]"));
     projects = cards.map(card => ({
-      href: card.href, title: card.dataset.title ?? "", description: card.dataset.description ?? "",
+      href: card.querySelector<HTMLAnchorElement>(".prj-link")?.href ?? "", title: card.dataset.title ?? "", description: card.dataset.description ?? "",
       author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[], card,
     }));
     const nextEmpty = page.querySelector("#empty-results");

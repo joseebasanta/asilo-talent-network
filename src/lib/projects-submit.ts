@@ -14,7 +14,8 @@
  *   Categorías | Aprobado | Moderador | Fecha de moderación | ID del logo |
  *   ID de revisión | Nota interna | Nota interna
  * (`Moderador`, `Fecha de moderación` and `Nota interna` are moderator-owned
- * and must stay empty on submission). `buildRow` below is the legacy
+ * and stay empty on new-project submissions; an edit request writes its
+ * contact note into the first notes column). `buildRow` below is the legacy
  * positional A–J builder (logo at H, revision at I); new submissions must use
  * `buildRowForHeaders`, which maps fields to header names so logo/revision
  * land on J/K without touching H/I. The legacy 10-column layout keeps working
@@ -23,7 +24,7 @@
 
 export * from "./projects-schema";
 import { normalizeWebsiteUrl, type NormalizedSubmission } from "./projects-schema";
-import { normalizeHeader } from "./projects-loader";
+import { normalizeHeader } from "./normalize";
 
 /**
  * Dedupe key for the `Sitio web` column: scheme-stripped, lowercased hostname
@@ -72,6 +73,48 @@ export function findDuplicateWebsite(
   return rows.some((row) => normalizeWebsiteKey(row[column] ?? "") === key);
 }
 
+/** Column index of a header matching any of `keys` (normalized), or -1. */
+function columnIndex(headerRow: string[], keys: string[]): number {
+  const wanted = new Set(keys);
+  return headerRow.findIndex((header) => wanted.has(normalizeHeader(header)));
+}
+
+/**
+ * The latest APPROVED revision for a website, used by edit requests: it proves
+ * the project is published and lets an edit without a new logo keep the
+ * current one. Rows are append-only, so the last approved row is current.
+ */
+export function findLatestApprovedRevision(
+  values: string[][],
+  website: string,
+): { logoId: string; revisionId: string } | null {
+  const key = normalizeWebsiteKey(website);
+  if (!key) return null;
+  const [headerRow = [], ...rows] = values;
+  const site = websiteColumnIndex(headerRow);
+  const approved = columnIndex(headerRow, ["aprobado", "aprobacion", "estado", "status", "approved", "approval"]);
+  if (site < 0 || approved < 0) return null;
+  const logo = columnIndex(headerRow, ["id del logo", "logo", "logo file id"]);
+  const revision = columnIndex(headerRow, ["id de revision", "revision_id", "revision id"]);
+
+  for (let i = rows.length - 1; i >= 0; i -= 1) {
+    const row = rows[i];
+    if (normalizeWebsiteKey(row[site] ?? "") !== key) continue;
+    if (normalizeHeader(row[approved] ?? "") !== "si") continue;
+    return {
+      logoId: logo < 0 ? "" : (row[logo] ?? "").trim(),
+      revisionId: revision < 0 ? "" : (row[revision] ?? "").trim(),
+    };
+  }
+  return null;
+}
+
+/** Contact for edit requests (email or @handle); private, team-only. */
+export function validateContact(raw: string): string | null {
+  const contact = raw.replace(/\s+/g, " ").trim();
+  return contact.length >= 3 && contact.length <= 120 ? contact : null;
+}
+
 /**
  * Formats a Date as a human-facing local timestamp: 24h `HH:mm DD-MM-YYYY`,
  * zero-padded. Example: 2026-09-04 23:15 → `"23:15 04-09-2026"`.
@@ -91,7 +134,13 @@ export function formatFecha(date: Date): string {
  */
 export function buildRow(
   submission: NormalizedSubmission,
-  options: { revisionId?: string; submittedAt?: Date; logoId?: string } = {},
+  options: {
+    revisionId?: string;
+    submittedAt?: Date;
+    logoId?: string;
+    /** "Notas adicionales" — e.g. which revision an edit request replaces. */
+    notes?: string;
+  } = {},
 ): string[] {
   const revisionId = options.revisionId ?? crypto.randomUUID();
   const submittedAt = options.submittedAt ?? new Date();
@@ -105,7 +154,7 @@ export function buildRow(
     "PENDIENTE", // Aprobado — quarantined until reviewed
     options.logoId ?? "", // ID del logo (Appwrite Storage file id)
     revisionId, // ID de revisión (unique identifier)
-    "", // Notas adicionales
+    options.notes ?? "", // Notas adicionales
   ];
 }
 
@@ -269,7 +318,13 @@ export function resolveSubmissionColumns(
 export function buildRowForHeaders(
   headerRow: string[],
   submission: NormalizedSubmission,
-  options: { revisionId?: string; submittedAt?: Date; logoId?: string } = {},
+  options: {
+    revisionId?: string;
+    submittedAt?: Date;
+    logoId?: string;
+    /** Edit requests only: which revision is replaced and who to contact. */
+    notes?: string;
+  } = {},
 ): string[] {
   const resolved = resolveSubmissionColumns(headerRow);
   if (!resolved.ok) throw new Error(resolved.error);
@@ -289,6 +344,15 @@ export function buildRowForHeaders(
   const row = new Array<string>(headerRow.length).fill("");
   for (const [field, index] of resolved.columns) {
     row[index] = values.get(field) ?? "";
+  }
+  // Edit requests carry the requester's contact. There is no dedicated column
+  // on the live sheet, so it goes in the FIRST notes column; new-project
+  // submissions leave every notes column empty (moderator-owned).
+  if (options.notes) {
+    const notesIndex = headerRow.findIndex(
+      (cell) => SUBMISSION_HEADER_ALIASES[normalizeHeader(cell)] === "notes",
+    );
+    if (notesIndex >= 0) row[notesIndex] = options.notes;
   }
   return row;
 }

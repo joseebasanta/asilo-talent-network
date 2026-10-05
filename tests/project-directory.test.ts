@@ -24,21 +24,84 @@ describe("ProjectDirectory", () => {
     expect(html).not.toContain("data-project-nav=");
     expect(html).toContain('<a class="prj-browse" href="/proyectos">Ver todos</a>');
     expect(html).toContain('id="project-directory-list"');
+    // Projects without a detail page (no id) keep opening their site.
     expect((html.match(/target="_blank" rel="noopener noreferrer"/g) ?? []).length).toBe(20);
     expect((html.match(/icons\/pixelarticons\/box\.svg/g) ?? []).length).toBe(20);
     expect(readFileSync(new URL("../src/components/ProjectDirectory.astro", import.meta.url), "utf8"))
       .toContain("gsap.timeline");
   });
 
+  it("renders the sort control as a plain GET form with the current order selected", async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(ProjectDirectory, { props: { projects: [], sort: "za" } });
+
+    expect(html).toMatch(/<form class="prj-sort" method="get" action="\/#proyectos"/);
+    expect(html).toContain('<option value="za" selected>Nombre: Z–A</option>');
+    expect(html).toContain('<option value="az">Nombre: A–Z</option>');
+  });
+
+  it("links published projects to their detail page and has no like controls", async () => {
+    const projects: Project[] = [
+      {
+        href: "https://panapay.com",
+        title: "Pana Pay",
+        description: "Pagos",
+        author: "Ana",
+        tags: ["Fintech"],
+        id: "0123456789ab",
+        slug: "pana-pay-0123456789ab",
+      },
+      { href: "https://sin-id.example", title: "Sin id", description: "", author: "", tags: [], id: "ba9876543210", slug: "sin-id-ba9876543210" },
+    ];
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(ProjectDirectory, {
+      props: { projects, sort: "recientes" },
+    });
+
+    expect(html).toContain('href="/proyectos/pana-pay-0123456789ab"');
+    expect(html).not.toContain('href="https://panapay.com"');
+    expect(html).not.toContain("data-like");
+    expect(html).not.toContain("Más votados");
+    expect(html).toMatch(/<option value="recientes" selected>Más recientes<\/option>/);
+    expect(html).toContain('<option value="za">Nombre: Z–A</option>');
+  });
+
+  it("puts uploaded logos on the logo tile and keeps category icons otherwise", async () => {
+    const base = { description: "", author: "", tags: ["PropTech"] };
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(ProjectDirectory, {
+      props: {
+        projects: [
+          { ...base, href: "https://con-logo.example", title: "Con logo", logoUrl: "https://cdn.example/logo.png" },
+          { ...base, href: "https://sin-logo.example", title: "Sin logo" },
+        ],
+      },
+    });
+
+    expect(html).toMatch(/<div class="prj-thumb"[^>]*>\s*<img class="prj-logo" src="https:\/\/cdn\.example\/logo\.png"/);
+    expect(html).toContain('src="/icons/pixelarticons/home.svg"');
+  });
+
+  it("does not offer a likes order", async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(ProjectDirectory, {
+      props: { projects: [], sort: "az" },
+    });
+
+    expect(html).not.toContain('value="populares"');
+    expect(html).toContain("Todavía no hay proyectos publicados.");
+  });
+
   it("shows a complete success state with actions instead of a buried status message", () => {
     const component = readFileSync(
-      new URL("../src/components/ProjectDirectory.astro", import.meta.url),
+      new URL("../src/components/ProjectFormModal.astro", import.meta.url),
       "utf8",
     );
 
     expect(component).toContain('class="modal-success"');
-    expect(component).toContain("<span>Tu proyecto ya está</span>");
-    expect(component).toContain("<span>en revisión</span>");
+    expect(component).toContain('successA: "Tu proyecto ya está"');
+    expect(component).toContain('successB: "en revisión"');
+    expect(component).toContain("<span>{copy.successA}</span>");
     expect(component).toContain("Gracias por sumarte.");
     expect(component).toContain('src="/check-thanks.svg"');
     expect(component).not.toContain("Revisaremos el proyecto");
@@ -52,7 +115,7 @@ describe("ProjectDirectory", () => {
 
   it("uses explicit close controls without backdrop dismissal", () => {
     const component = readFileSync(
-      new URL("../src/components/ProjectDirectory.astro", import.meta.url),
+      new URL("../src/components/ProjectFormModal.astro", import.meta.url),
       "utf8",
     );
 
@@ -81,7 +144,8 @@ describe("ProjectDirectory", () => {
       "utf8",
     );
 
-    expect(component).toContain('fetch("/api/projects", { cache: "no-store", signal: AbortSignal.timeout(15_000) })');
+    expect(component).toContain("/partials/proyectos?orden=");
+    expect(component).toContain("signal: AbortSignal.timeout(15_000)");
     expect(component).toContain("startProjectRefresh(refreshProjects)");
     expect(component).toContain("projectCarousel?.contains(document.activeElement)");
   });
