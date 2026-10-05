@@ -1,5 +1,6 @@
 import { startProjectRefresh } from "../lib/project-refresh";
 import { filterProjects, paginateProjects, projectPageUrl, normalizeSearch } from "../lib/project-search";
+import { DEFAULT_SORT, parseSortMode, SORT_OPTIONS } from "../lib/project-sort";
 import { track } from "./analytics";
 
 const form = document.querySelector<HTMLFormElement>("#project-filters")!;
@@ -8,15 +9,17 @@ const sortDropdown = document.querySelector<HTMLDetailsElement>("#project-sort")
 const sortTrigger = sortDropdown.querySelector<HTMLElement>("summary")!;
 const sortLabel = document.querySelector<HTMLElement>("#sort-value")!;
 const sortOptions = Array.from(form.querySelectorAll<HTMLInputElement>('[name="orden"]'));
-const getOrder = () => sortOptions.find(option => option.checked)?.value ?? "az";
+const getOrder = () => sortOptions.find(option => option.checked)?.value ?? DEFAULT_SORT;
 const setOrder = (value: string) => sortOptions.forEach(option => { option.checked = option.value === value; });
 let boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
 const grid = document.querySelector<HTMLElement>("#project-results")!;
 let cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-project-index]"));
-let projects = cards.map(card => ({
+const readProjects = (items: HTMLElement[]) => items.map(card => ({
   href: card.querySelector<HTMLAnchorElement>(".prj-link")?.href ?? "", title: card.dataset.title ?? "", description: card.dataset.description ?? "",
-  author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[], card,
+  author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[],
+  addedIndex: card.dataset.addedIndex ? Number(card.dataset.addedIndex) : undefined, card,
 }));
+let projects = readProjects(cards);
 const count = document.querySelector<HTMLElement>("#project-count")!;
 const empty = document.querySelector<HTMLElement>("#empty-results")!;
 const clear = document.querySelector<HTMLElement>(".results-toolbar [data-clear-filters]")!;
@@ -54,7 +57,7 @@ function render(updateUrl = true, resetPage = true, pushHistory = false) {
     currentPage = 1;
     grid.style.minHeight = "";
   }
-  sortLabel.textContent = `Nombre: ${getOrder() === "za" ? "Z–A" : "A–Z"}`;
+  sortLabel.textContent = SORT_OPTIONS.find(option => option.value === parseSortMode(getOrder()))!.label;
   const categories = boxes.filter(box => box.checked).map(box => box.value);
   const filtered = filterProjects(projects, search.value, categories, getOrder());
   const active = Boolean(search.value.trim() || categories.length);
@@ -77,7 +80,7 @@ function render(updateUrl = true, resetPage = true, pushHistory = false) {
   url.searchParams.delete("orden");
   if (search.value.trim()) url.searchParams.set("q", search.value.trim());
   categories.forEach(category => url.searchParams.append("categoria", category));
-  if (getOrder() === "za") url.searchParams.set("orden", "za");
+  if (parseSortMode(getOrder()) !== DEFAULT_SORT) url.searchParams.set("orden", getOrder());
   all.href = search.value.trim() ? `/proyectos?q=${encodeURIComponent(search.value.trim())}` : "/proyectos";
   url.searchParams.delete("pagina");
   if (currentPage > 1) url.searchParams.set("pagina", String(currentPage));
@@ -103,13 +106,14 @@ function render(updateUrl = true, resetPage = true, pushHistory = false) {
 function restore() {
   const params = new URLSearchParams(location.search);
   search.value = params.get("q") ?? "";
-  setOrder(params.get("orden") === "za" ? "za" : "az");
+  setOrder(parseSortMode(params.get("orden")));
   const selected = params.getAll("categoria");
   boxes.forEach(box => { box.checked = selected.some(value => value.localeCompare(box.value, "es", { sensitivity: "base" }) === 0); });
   currentPage = Number(params.get("pagina") ?? 1);
   render(false, false);
 }
 let debounce: ReturnType<typeof setTimeout>;
+const SORT_ANALYTICS = { recientes: "recent", az: "name_az", za: "name_za" } as const;
 const searchMode = () => search.value.trim() ? "keyword_search" : "filter_only";
 const trackSearch = (resultCount: number) => {
   const searchQuery = search.value.trim();
@@ -118,7 +122,7 @@ const trackSearch = (resultCount: number) => {
     search_query: searchQuery,
     search_scope: "all_projects",
     result_count: resultCount,
-    sort_option: getOrder() === "za" ? "name_za" : "name_az",
+    sort_option: SORT_ANALYTICS[parseSortMode(getOrder())],
   });
 };
 search.addEventListener("input", () => { clearTimeout(debounce); debounce = setTimeout(() => trackSearch(render()), 120); });
@@ -138,7 +142,7 @@ form.addEventListener("change", event => {
 });
 all.addEventListener("click", event => { event.preventDefault(); boxes.forEach(box => { box.checked = false; }); resetCategorySearch(); render(); });
 document.querySelectorAll<HTMLAnchorElement>("[data-clear-filters]").forEach(link => link.addEventListener("click", event => {
-  event.preventDefault(); form.reset(); search.value = ""; setOrder("az");
+  event.preventDefault(); form.reset(); search.value = ""; setOrder(DEFAULT_SORT);
   boxes.forEach(box => { box.checked = false; }); resetCategorySearch(); render(); search.focus();
 }));
 pageLinks.forEach(link => link.addEventListener("click", event => {
@@ -249,10 +253,7 @@ async function refreshDirectory() {
     boxes.forEach(box => { box.checked = selected.includes(box.value); });
     categoryRows = Array.from(form.querySelectorAll<HTMLElement>("[data-category-name]"));
     cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-project-index]"));
-    projects = cards.map(card => ({
-      href: card.querySelector<HTMLAnchorElement>(".prj-link")?.href ?? "", title: card.dataset.title ?? "", description: card.dataset.description ?? "",
-      author: card.dataset.author ?? "", tags: JSON.parse(card.dataset.tags ?? "[]") as string[], card,
-    }));
+    projects = readProjects(cards);
     const nextEmpty = page.querySelector("#empty-results");
     if (nextEmpty) {
       empty.querySelector("h2")!.textContent = nextEmpty.querySelector("h2")!.textContent;

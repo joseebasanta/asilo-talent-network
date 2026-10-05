@@ -43,6 +43,23 @@ test.describe("Proyectos directory", () => {
     expect(titles.at(-1)).toBe("Pana Pay");
   });
 
+  test("sorts /proyectos by most recent and syncs the URL", async ({ page }) => {
+    await page.goto("/proyectos");
+    await page.locator("#project-sort summary").click();
+    await page.locator(".sort-option", { hasText: "Más recientes" }).click();
+    await expect(page).toHaveURL(/orden=recientes/);
+    await expect(page.locator("#sort-value")).toHaveText("Más recientes");
+    await expect(page.locator("#project-results .prj-name:visible").first()).toHaveText("Zeta Games");
+
+    await page.goto("/proyectos?orden=recientes");
+    await expect(page.locator("#sort-value")).toHaveText("Más recientes");
+    await expect(page.locator("#project-results .prj-name:visible").first()).toHaveText("Zeta Games");
+
+    await page.locator("#project-sort summary").click();
+    await page.locator(".sort-option", { hasText: "Nombre: A–Z" }).click();
+    await expect(page).not.toHaveURL(/orden=/);
+  });
+
   test("opens a project's page from its card", async ({ page }) => {
     await page.goto("/?orden=az");
     await page.locator(".prj-item", { hasText: "Ley Clara" }).click({ position: { x: 10, y: 10 } });
