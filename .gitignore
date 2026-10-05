@@ -14,3 +14,7 @@ coverage/
 .env.*
 !.env.example
 .vercel
+
+# Playwright
+test-results/
+playwright-report/

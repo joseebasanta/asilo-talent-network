@@ -30,7 +30,7 @@ describe("public shell", () => {
   it("preserves the live navigation and institutional sections", async () => {
     const html = await renderShell();
 
-    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Unete"]) {
+    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Únete"]) {
       expect(html).toContain(label);
     }
     expect(html).toContain("¿QUE HACEMOS?");
@@ -113,9 +113,9 @@ describe("Proyectos directory (slice 1b-b)", () => {
     expect((html.match(/class="prj-item"/g) ?? []).length).toBe(placeholderProjects.length);
     expect(html).toContain("Directorio de Builders");
     expect(html).toContain("Por Carlos Mendoza");
-    expect((html.match(/<a\b[^>]*class=["']prj-item["'][^>]*href="#"/g) ?? []).length).toBe(placeholderProjects.length);
+    expect((html.match(/<a\b[^>]*class=["']prj-link["'][^>]*href="#"/g) ?? []).length).toBe(placeholderProjects.length);
     expect(html).toContain("AGREGA TU PROYECTO");
-    expect(html).toContain("¿Eres parte de la comunidad y quieres sumarte al directorio?");
+    expect(html).toContain("¿Construiste algo? Súmalo al directorio.");
   });
 
   it("keeps project links local while using the Asilo Digital brand link", async () => {
@@ -144,13 +144,53 @@ describe("Proyectos directory (slice 1b-b)", () => {
   });
 });
 
-describe("CTA heading", () => {
-  it("keeps decode text plain and lets mobile CSS control its two-line wrap", () => {
-    const page = readFileSync(new URL("../src/pages/index.astro", import.meta.url), "utf8");
+describe("closing CTA", () => {
+  it("shows no extra note under the join button", async () => {
+    const html = await renderShell();
+
+    expect(html).not.toContain("cta-note");
+    expect(html).not.toContain("No necesitas registrarte de nuevo");
+  });
+
+  it("shows uploaded logos as-is, without a light tile behind them", () => {
     const styles = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
 
-    expect(page).toContain('data-decode>Deja de construir solo</h2>');
-    expect(page).not.toContain("cta-title-mobile-break");
-    expect(styles).toContain(".cta-title { max-width: 16ch; margin-inline: auto; }");
+    expect(styles).not.toContain("logo-tile");
+    expect(styles).not.toContain(".prj-thumb:has(.prj-logo)");
+    expect(styles).toContain(".prj-logo { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }");
+  });
+
+  it("keeps the outline style of the '¿Qué es ASILO Builders?' join button", () => {
+    const styles = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
+
+    expect(styles).toContain(".join, .button, .qeb-cta {");
+    expect(styles).toContain(".qeb-cta { padding: .5rem 1rem; border: 1px solid var(--blue-500);");
+  });
+});
+
+describe("CTA heading", () => {
+  // Its mobile wrap is checked in the browser (e2e/layout.spec.ts).
+  it("keeps the decode text plain, without manual line breaks", async () => {
+    const html = await renderShell();
+
+    expect(html).toContain('data-decode>Deja de construir solo</h2>');
+    expect(html).not.toContain("cta-title-mobile-break");
+  });
+
+  it("invites visitors to join the community", async () => {
+    const html = await renderShell();
+    const cta = html.slice(html.indexOf('id="unete-cta"'));
+    const button = cta.slice(cta.indexOf("button-primary"), cta.indexOf("</a>"));
+
+    expect(button).toContain("Únete a la comunidad");
+    expect(html).not.toContain("Llenar formulario");
+  });
+
+  it("spells every visible join label with an accent", async () => {
+    const text = (await renderShell()).replace(/<[^>]+>/g, " ");
+
+    expect(text).not.toMatch(/\bUnete\b/i);
+    expect(text).toMatch(/Únete a la comunidad/);
+    expect(text).toMatch(/ÚNETE A LA COMUNIDAD/);
   });
 });

@@ -24,6 +24,7 @@ const SURFACES: Array<{ file: string; envVar: string }> = [
   { file: "lib/turnstile.ts", envVar: "TURNSTILE_SITE_KEY" },
   { file: "lib/turnstile.ts", envVar: "TURNSTILE_SECRET_KEY" },
   { file: "pages/api/projects/submit.ts", envVar: "DEV_ALLOW_DUPLICATE_WEBSITE" },
+  { file: "lib/turnstile.ts", envVar: "TURNSTILE_SECRET_KEY" },
 ];
 
 describe("env read surface", () => {

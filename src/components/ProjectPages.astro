@@ -1,0 +1,35 @@
+---
+/**
+ * The directory carousel pages: ten projects per page in two five-card
+ * columns. Rendered by the homepage AND by the `/partials/proyectos` refresh
+ * endpoint, so the browser never re-implements card markup in JavaScript.
+ */
+import type { Project } from "../data/projects";
+import ProjectCard from "./ProjectCard.astro";
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+const PROJECTS_PER_PAGE = 10;
+const PROJECTS_PER_COLUMN = PROJECTS_PER_PAGE / 2;
+const pages = Array.from(
+  { length: Math.ceil(projects.length / PROJECTS_PER_PAGE) },
+  (_, pageIndex) => {
+    const page = projects.slice(pageIndex * PROJECTS_PER_PAGE, (pageIndex + 1) * PROJECTS_PER_PAGE);
+    return [page.slice(0, PROJECTS_PER_COLUMN), page.slice(PROJECTS_PER_COLUMN)];
+  },
+);
+---
+
+{pages.length === 0 && <p class="prj-empty">Todavía no hay proyectos publicados. ¡Sé el primero!</p>}
+{pages.map((columns, pageIndex) => (
+  <div class="prj-list" data-project-page={pageIndex} aria-hidden={pageIndex !== 0} hidden={pageIndex !== 0}>
+    {columns.map((column) => (
+      <div class="prj-col">
+        {column.map((project) => <ProjectCard project={project} />)}
+      </div>
+    ))}
+  </div>
+))}
