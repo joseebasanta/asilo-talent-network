@@ -37,6 +37,8 @@ export default defineConfig({
       APPWRITE_API_KEY: "",
       TURNSTILE_SITE_KEY: "",
       TURNSTILE_SECRET_KEY: "",
+      cloudflare_turnstile_site_key: "",
+      turnstile_secret_key: "",
       GOOGLE_COMMUNITY_SHEETS_ID: "",
       GOOGLE_BUILDERS_SHEETS_ID: "",
       GOOGLE_BUILDERS_SHEETS_RANGE: "",

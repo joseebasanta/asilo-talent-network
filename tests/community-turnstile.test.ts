@@ -54,6 +54,16 @@ describe("community form Turnstile protection", () => {
     expect(append).not.toHaveBeenCalled();
   });
 
+  it("verifies with the lowercase key names used in .env.local", async () => {
+    vi.stubEnv("cloudflare_turnstile_site_key", "site-alias");
+    vi.stubEnv("turnstile_secret_key", "secret-alias");
+    const fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true })));
+    vi.stubGlobal("fetch", fetch);
+    expect((await submit(withToken("good-token"))).status).toBe(201);
+    const params = new URLSearchParams(String(fetch.mock.calls[0][1].body));
+    expect(params.get("secret")).toBe("secret-alias");
+  });
+
   describe("with both keys configured", () => {
     beforeEach(() => {
       vi.stubEnv("TURNSTILE_SITE_KEY", "1x00000000000000000000AA");

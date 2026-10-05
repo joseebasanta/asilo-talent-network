@@ -12,6 +12,7 @@
  */
 import type { Project } from "../data/projects";
 import { CATEGORIES, MAX_CATEGORIES } from "../lib/projects-submit";
+import { turnstileSiteKey } from "../lib/turnstile";
 
 interface Props {
   mode?: "create" | "edit";
@@ -43,7 +44,7 @@ const copy = editing
 const selected = new Set(editing ? project.tags : []);
 const description = editing ? project.description : "";
 // Public site key — safe to embed; widget only renders when it's configured.
-const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY = turnstileSiteKey();
 ---
 
 <dialog class="modal" id="project-modal" aria-labelledby="project-modal-title" data-mode={editing ? "edit" : "create"} data-submit-label={copy.submit}>

@@ -30,7 +30,9 @@ member roster. Keep credentials server-only and out of commits.
 Optional project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
 and `APPWRITE_API_KEY`. Optional spam protection (Cloudflare Turnstile on the
 project and community join forms) uses `TURNSTILE_SITE_KEY` and
-`TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
+`TURNSTILE_SECRET_KEY` (the lowercase names `cloudflare_turnstile_site_key`
+and `turnstile_secret_key` are also accepted). These optional keys are
+included in `.env.example`.
 
 ## Checks
 

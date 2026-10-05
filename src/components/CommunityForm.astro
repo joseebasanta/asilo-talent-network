@@ -1,4 +1,6 @@
 ---
+import { turnstileSiteKey as readTurnstileSiteKey } from "../lib/turnstile";
+
 const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url"; autocomplete?: "email" | "name" | "tel"; placeholder?: string; hint?: string; max: number }> = [
   { name: "email", label: "Email", type: "email", autocomplete: "email", max: 254 },
   { name: "name", label: "Nombre y apellido", autocomplete: "name", max: 150 },
@@ -8,7 +10,7 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
   { name: "role", label: "Rol", placeholder: "Cargo que desempeñas o profesión", max: 150 },
   { name: "project", label: "Nombre del proyecto", max: 200 },
 ];
-const turnstileSiteKey = import.meta.env.TURNSTILE_SITE_KEY;
+const turnstileSiteKey = readTurnstileSiteKey();
 ---
 <dialog class="modal" id="community-dialog" aria-labelledby="community-title">
   <form class="modal-card" id="community-form" method="post" action="/api/community/submit" enctype="multipart/form-data" novalidate>
