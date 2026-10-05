@@ -43,7 +43,7 @@ test.describe("Add project modal", () => {
     await expect(dialog).toBeHidden();
   });
 
-  test("previews a valid logo on the light tile and rejects other formats", async ({ page }) => {
+  test("previews a valid logo and rejects other formats", async ({ page }) => {
     const dialog = page.getByRole("dialog");
     const input = dialog.locator('input[name="logo"]');
 
@@ -57,7 +57,6 @@ test.describe("Add project modal", () => {
     await input.setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: png });
     await expect(dialog.locator("[data-logo-title]")).toHaveText("logo.png");
     await expect(dialog.locator("[data-logo-thumb]")).toBeVisible();
-    await expect(dialog.locator("[data-logo-thumb]")).toHaveClass(/logo-tile/);
   });
 
   test("shows the server's error without losing what was typed", async ({ page }) => {

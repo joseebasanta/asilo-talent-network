@@ -152,6 +152,14 @@ describe("closing CTA", () => {
     expect(html).not.toContain("No necesitas registrarte de nuevo");
   });
 
+  it("shows uploaded logos as-is, without a light tile behind them", () => {
+    const styles = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
+
+    expect(styles).not.toContain("logo-tile");
+    expect(styles).not.toContain(".prj-thumb:has(.prj-logo)");
+    expect(styles).toContain(".prj-logo { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }");
+  });
+
   it("keeps the outline style of the '¿Qué es ASILO Builders?' join button", () => {
     const styles = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
 

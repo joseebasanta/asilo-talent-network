@@ -172,12 +172,6 @@ All class names live in `global.css`. Specs below are the current truth.
 - The card is an `<article>`; its title link (`.prj-link`) is **stretched** over
   the whole card (`::after`, `inset: 0`), so the card stays one click target.
   Focus ring shows on the card via `:has(.prj-link:focus-visible)`.
-- **Logo tile** (`.prj-thumb:has(.prj-logo)`, `.logo-tile`, `.pd-thumb`): uploaded
-  logos sit on `--slate-50` with an inset `--sky-alpha-16` hairline.
-  **Proposed extension, pending design approval** — the one light surface in the
-  dark world: most marks are drawn for white
-  paper and transparent PNGs with dark ink vanish on `--bg`. Category icons (no
-  upload) keep the dark `--slate-900` thumb.
 - **Chips/tags** (`.prj-tag`): bg `--slate-900`, `--blue-800` text, pill radius,
   11px uppercase.
 
