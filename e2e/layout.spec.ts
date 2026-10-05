@@ -16,13 +16,11 @@ test.describe("Layout", () => {
     if (sameRow) expect(title.x + title.width).toBeLessThanOrEqual(browse.x);
   });
 
-  test("closing CTA separates joining from adding a project", async ({ page }) => {
+  test("closing CTA shows the join button and fits its heading", async ({ page }) => {
     await page.goto("/");
     const cta = page.locator("#unete-cta");
     await expect(cta.getByRole("link", { name: /Llenar formulario/ })).toBeVisible();
-    await expect(cta.getByText("No necesitas registrarte de nuevo")).toBeVisible();
-    await cta.getByRole("link", { name: "agrega tu proyecto al directorio" }).click();
-    await expect(page).toHaveURL(/#proyectos$/);
+    await expect(cta.locator(".cta-note")).toHaveCount(0);
 
     const heading = page.locator(".cta-title");
     const fits = await heading.evaluate((el) => el.scrollWidth <= el.clientWidth);

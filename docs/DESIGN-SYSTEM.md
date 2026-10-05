@@ -194,7 +194,7 @@ back link (pixel arrow, Label/Small) → logo tile + Doto 900 title (`data-decod
 (Paragraph/Large) → tags → actions (primary "Visitar") → "¿Es tu
 proyecto? Solicita cambios".
 
-Inline text links inside prose (`.cta-note a`, `.pd-owner-link`) follow the
+Inline text links inside prose (`.pd-owner-link`) follow the
 footer-link convention: `--blue-500`, 500 weight, hover `--blue-50`, no underline.
 
 ### Inputs (modal form)

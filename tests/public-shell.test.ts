@@ -144,11 +144,19 @@ describe("Proyectos directory (slice 1b-b)", () => {
   });
 });
 
-describe("CTA separation (join vs. add project)", () => {
-  it("points existing members to the directory instead of asking them to re-register", async () => {
+describe("closing CTA", () => {
+  it("shows no extra note under the join button", async () => {
     const html = await renderShell();
 
-    expect(html).toMatch(/class="cta-note"[\s\S]*No necesitas registrarte de nuevo[\s\S]*href="#proyectos"/);
+    expect(html).not.toContain("cta-note");
+    expect(html).not.toContain("No necesitas registrarte de nuevo");
+  });
+
+  it("keeps the outline style of the '¿Qué es ASILO Builders?' join button", () => {
+    const styles = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
+
+    expect(styles).toContain(".join, .button, .qeb-cta {");
+    expect(styles).toContain(".qeb-cta { padding: .5rem 1rem; border: 1px solid var(--blue-500);");
   });
 });
 
