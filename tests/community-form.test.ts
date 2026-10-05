@@ -38,4 +38,11 @@ describe("membership form Turnstile widget", () => {
     expect(html).toContain('id="community-captcha-error"');
     expect(html).not.toContain("TURNSTILE_SECRET_KEY");
   });
+
+  it("also reads the site key from the lowercase name used in .env.local", async () => {
+    vi.stubEnv("TURNSTILE_SITE_KEY", "");
+    vi.stubEnv("cloudflare_turnstile_site_key", "1x00000000000000000000AA");
+    const html = await render();
+    expect(html).toContain('data-sitekey="1x00000000000000000000AA"');
+  });
 });

@@ -10,13 +10,20 @@
 export const TURNSTILE_VERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
+// Both spellings are accepted: the documented `TURNSTILE_*` names and the
+// lowercase names already used in the deployed `.env.local`.
 // Public: safe to embed in the client page for the widget.
-export const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
+export function turnstileSiteKey(): string {
+  return import.meta.env.TURNSTILE_SITE_KEY || import.meta.env.cloudflare_turnstile_site_key || "";
+}
+
+// Server-only: never pass this to a component or the client.
+export function turnstileSecretKey(): string {
+  return import.meta.env.TURNSTILE_SECRET_KEY || import.meta.env.turnstile_secret_key || "";
+}
 
 export function turnstileConfigured(): boolean {
-  return Boolean(
-    import.meta.env.TURNSTILE_SITE_KEY && import.meta.env.TURNSTILE_SECRET_KEY,
-  );
+  return Boolean(turnstileSiteKey() && turnstileSecretKey());
 }
 
 // ponytail: no caching of verification results — Turnstile tokens are
@@ -57,8 +64,8 @@ export async function checkTurnstile(
   form: FormData,
   remoteIp?: string,
 ): Promise<TurnstileOutcome> {
-  const site = import.meta.env.TURNSTILE_SITE_KEY;
-  const secret = import.meta.env.TURNSTILE_SECRET_KEY;
+  const site = turnstileSiteKey();
+  const secret = turnstileSecretKey();
   if (Boolean(site) !== Boolean(secret)) return "misconfigured";
   if (!turnstileConfigured()) return "ok";
   // Tokens are single-use; the widget refills the hidden `cf-turnstile-response`
