@@ -54,7 +54,7 @@ describe("parseProjects", () => {
     const projects = parseProjects(values);
 
     expect(projects.map((p) => p.title)).toEqual(["Gamma", "Zeta"]);
-    expect(projects[0]).toEqual({
+    expect(projects[0]).toMatchObject({
       href: "https://gamma.example",
       title: "Gamma",
       description: "Desc G",
@@ -83,7 +83,7 @@ describe("parseProjects", () => {
     const values = [
       HEADERS,
       ["OkHttps", "https://ok.example", "", "", "", "SI"],
-      ["OkHttp", "http://ok.example", "", "", "", "SI"],
+      ["OkHttp", "http://ok-http.example", "", "", "", "SI"],
       ["JsUrl", "javascript:alert(1)", "", "", "", "SI"],
       ["DataUrl", "data:text/html,<h1>hi</h1>", "", "", "", "SI"],
       ["FtpUrl", "ftp://files.example", "", "", "", "SI"],
@@ -133,7 +133,7 @@ describe("parseProjects", () => {
 
     const [project] = parseProjects(values);
 
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       href: "https://colj.example",
       title: "Columna J",
       description: "Desc J",
@@ -190,7 +190,7 @@ describe("parseProjects", () => {
 
     const [project] = parseProjects(values);
 
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       href: "https://etiquetas.example",
       title: "Etiquetas",
       description: "Descripción",
@@ -222,7 +222,7 @@ describe("parseProjects", () => {
 
     const [project] = parseProjects(values);
 
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       href: "https://orden.example",
       title: "Orden",
       description: "Desc corta",
@@ -459,5 +459,49 @@ describe("loadApprovedProjects", () => {
     await loadApprovedProjects(fetcher);
 
     expect(calls).toBe(1);
+  });
+});
+
+describe("parseProjects revisions and identity", () => {
+  it("gives each project a stable id and a readable slug", () => {
+    const [project] = parseProjects([
+      HEADERS,
+      ["Pana Pay", "https://www.PanaPay.com/", "Pagos", "Ana", "Fintech", "SI"],
+    ]);
+
+    expect(project.id).toMatch(/^[0-9a-f]{12}$/);
+    expect(project.slug).toBe(`pana-pay-${project.id}`);
+    // Same normalized website → same id, whatever the spelling.
+    const [again] = parseProjects([
+      HEADERS,
+      ["Renombrado", "https://panapay.com", "Pagos", "Ana", "Fintech", "SI"],
+    ]);
+    expect(again.id).toBe(project.id);
+  });
+
+  it("publishes the last approved revision of a project, keeping its first position", () => {
+    const projects = parseProjects([
+      HEADERS,
+      ["Otro", "https://otro.example", "Otro", "Leo", "SaaS", "SI"],
+      ["Pana v1", "https://panapay.com", "Vieja", "Ana", "Fintech", "SI"],
+      ["Pana v2", "https://panapay.com", "Nueva", "Ana", "Fintech", "SI"],
+      ["Pana v3", "https://panapay.com", "Pendiente", "Ana", "Fintech", "PENDIENTE"],
+    ]);
+
+    expect(projects.map((p) => p.title)).toEqual(["Otro", "Pana v2"]);
+    const pana = projects.find((p) => p.title === "Pana v2")!;
+    expect(pana.description).toBe("Nueva");
+    expect(pana.addedIndex).toBe(1);
+  });
+});
+
+describe("demo sheet", () => {
+  it("parses like a real sheet: approved only, latest revision wins", async () => {
+    const { DEMO_SHEET } = await import("../src/data/demo-sheet");
+    const projects = parseProjects(DEMO_SHEET);
+
+    expect(projects).toHaveLength(12);
+    expect(projects.map((p) => p.title)).not.toContain("Borrador");
+    expect(projects.find((p) => p.title === "Pana Pay")?.description).toContain("USDT");
   });
 });
