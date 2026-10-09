@@ -30,7 +30,7 @@ describe("public shell", () => {
   it("preserves the live navigation and institutional sections", async () => {
     const html = await renderShell();
 
-    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Unete"]) {
+    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Únete"]) {
       expect(html).toContain(label);
     }
     expect(html).toContain("¿QUE HACEMOS?");
@@ -152,5 +152,22 @@ describe("CTA heading", () => {
     expect(page).toContain('data-decode>Deja de construir solo</h2>');
     expect(page).not.toContain("cta-title-mobile-break");
     expect(styles).toContain(".cta-title { max-width: 16ch; margin-inline: auto; }");
+  });
+
+  it("invites visitors to join the community", async () => {
+    const html = await renderShell();
+    const cta = html.slice(html.indexOf('id="unete-cta"'));
+    const button = cta.slice(cta.indexOf("button-primary"), cta.indexOf("</a>"));
+
+    expect(button).toContain("Únete a la comunidad");
+    expect(html).not.toContain("Llenar formulario");
+  });
+
+  it("spells every visible join label with an accent", async () => {
+    const text = (await renderShell()).replace(/<[^>]+>/g, " ");
+
+    expect(text).not.toMatch(/\bUnete\b/i);
+    expect(text).toMatch(/Únete a la comunidad/);
+    expect(text).toMatch(/ÚNETE A LA COMUNIDAD/);
   });
 });
