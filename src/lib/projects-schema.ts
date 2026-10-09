@@ -43,7 +43,7 @@ const textField = (min: number, max: number, message: string) =>
       message: "El texto contiene caracteres de control no permitidos.",
     });
 
-const websiteMessage = "Ingresá una URL válida de un sitio público (http:// o https://).";
+const websiteMessage = "Ingresa una URL válida de un sitio público (http:// o https://).";
 
 export const submissionSchema = z.object({
   nombre: textField(2, 80, "El nombre debe tener entre 2 y 80 caracteres."),
@@ -65,10 +65,10 @@ export const submissionSchema = z.object({
     }, websiteMessage),
   descripcion: textField(10, 140, "La descripción debe tener entre 10 y 140 caracteres."),
   fundadores: textField(1, 160, "El campo fundadores debe tener entre 1 y 160 caracteres."),
-  categorias: z.array(z.enum(CATEGORIES, { error: "Seleccioná categorías válidas." }), {
-    error: "Seleccioná entre 1 y 3 categorías válidas.",
-  }).min(1, "Seleccioná entre 1 y 3 categorías válidas.")
-    .max(MAX_CATEGORIES, "Seleccioná entre 1 y 3 categorías válidas.")
+  categorias: z.array(z.enum(CATEGORIES, { error: "Selecciona categorías válidas." }), {
+    error: "Selecciona entre 1 y 3 categorías válidas.",
+  }).min(1, "Selecciona entre 1 y 3 categorías válidas.")
+    .max(MAX_CATEGORIES, "Selecciona entre 1 y 3 categorías válidas.")
     .refine((values) => new Set(values).size === values.length, "No repitas categorías."),
 });
 
@@ -102,7 +102,7 @@ export function validateSubmissionForm(form: FormData): ValidationResult {
   const fields = ["nombre", "website", "descripcion", "fundadores"] as const;
   for (const field of fields) {
     if (form.getAll(field).length > 1) {
-      const message = "Enviá un solo valor para este campo.";
+      const message = "Envía un solo valor para este campo.";
       return { ok: false, field, message, errors: { [field]: message } };
     }
   }

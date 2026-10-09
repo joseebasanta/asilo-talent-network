@@ -5,10 +5,14 @@ interface Props {
   canonical: string;
   image?: string;
   noindex?: boolean;
+  /** Structured data emitted as a single JSON-LD block. */
+  jsonLd?: Record<string, unknown>;
 }
 
 const SITE_URL = "https://builders.asilodigital.com";
-const { title, description, canonical, image = `${SITE_URL}/og-image.png`, noindex = false } = Astro.props;
+const { title, description, canonical, image = `${SITE_URL}/og-image.png`, noindex = false, jsonLd } = Astro.props;
+// `<` is escaped so project text can never close the script element.
+const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, "\\u003c") : null;
 ---
 <title>{title}</title>
 <meta name="description" content={description} />
@@ -27,3 +31,4 @@ const { title, description, canonical, image = `${SITE_URL}/og-image.png`, noind
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={image} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
+{jsonLdText && <script is:inline type="application/ld+json" set:html={jsonLdText} />}

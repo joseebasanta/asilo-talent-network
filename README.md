@@ -21,7 +21,7 @@ Sheets integrations; see [membership form setup](docs/community-form.md).
 Membership applications must use a separate spreadsheet from projects and the
 member roster. Keep credentials server-only and out of commits.
 
-Optional project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
+Project logo uploads (the logo is required to submit a project) use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
 and `APPWRITE_API_KEY`. Optional spam protection uses `TURNSTILE_SITE_KEY`
 and `TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
 

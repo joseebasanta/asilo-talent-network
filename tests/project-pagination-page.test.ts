@@ -15,27 +15,30 @@ async function render(query = "") {
 function visibleCards(html: string) {
   return [...html.matchAll(/<a\b[^>]*data-project-index[^>]*>/g)].map(match => match[0]).filter(tag => !/\bhidden(?:[\s=>])/.test(tag));
 }
-describe("server-rendered project pagination", () => {
-  it("renders the second page and preserves filters in navigation without JavaScript", async () => {
-    const html = await render("?categoria=AI&pagina=2");
-    const cards = visibleCards(html);
-    expect(cards).toHaveLength(2);
-    expect(cards[0]).toContain('data-title="Project 11"');
-    expect(html).toContain("Página 2 de 2");
-    expect(html).toContain("11–12 de 12 proyectos");
-    expect(html).toContain('/proyectos?categoria=AI#project-results');
-    expect(html).toMatch(/data-page-direction="next"[^>]*aria-disabled="true"/);
+describe("server-rendered show more", () => {
+  it("starts with ten projects and links to the next ten without JavaScript", async () => {
+    const html = await render();
+    expect(visibleCards(html)).toHaveLength(10);
+    expect(html).toContain("Mostrando 10 de 25 proyectos");
+    expect(html).toMatch(/data-show-more href="\/proyectos\?mostrar=20#project-results"/);
+    expect(html).not.toMatch(/<div class="show-more"[^>]*hidden/);
   });
-  it("limits the initial page and clamps out-of-range requests to the last page", async () => {
-    expect(visibleCards(await render())).toHaveLength(10);
-    const html = await render("?pagina=999");
-    expect(visibleCards(html)).toHaveLength(5);
-    expect(html).toContain("Página 3 de 3");
-    expect(html).toContain("21–25 de 25 proyectos");
+  it("reveals more on request, keeps filters in the link, and hides the button when everything is shown", async () => {
+    const more = await render("?categoria=AI&mostrar=20");
+    expect(visibleCards(more)).toHaveLength(12);
+    expect(more).toMatch(/<div class="show-more"[^>]*hidden/);
+    const mid = await render("?mostrar=20");
+    expect(visibleCards(mid)).toHaveLength(20);
+    expect(mid).toContain("Mostrando 20 de 25 proyectos");
+    expect(mid).toContain("mostrar=30#project-results");
+    const all = await render("?mostrar=999");
+    expect(visibleCards(all)).toHaveLength(25);
+    expect(all).toMatch(/<div class="show-more"[^>]*hidden/);
   });
-  it("hides pagination when a search fits on one page", async () => {
-    const html = await render("?q=Project+01&pagina=3");
+  it("never shows fewer than ten and drops the button for small result sets", async () => {
+    expect(visibleCards(await render("?mostrar=3"))).toHaveLength(10);
+    const html = await render("?q=Project+01&mostrar=50");
     expect(visibleCards(html)).toHaveLength(1);
-    expect(html).toMatch(/<nav class="project-pagination"[^>]*hidden/);
+    expect(html).toMatch(/<div class="show-more"[^>]*hidden/);
   });
 });

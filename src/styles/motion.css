@@ -38,12 +38,12 @@
 .modal-success:not([hidden]) .modal-success-actions { animation: detail-in 360ms var(--ease-out) 100ms both; }
 .field-error:not([hidden]), .form-status:not([hidden]) { animation: detail-in 180ms var(--ease-out) both; }
 
-:is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-cancel,
+:is(.join, .button, .prj-cta, .modal-submit, .modal-cancel,
 .modal-success-done, .modal-success-secondary, .modal-close, .search-submit) {
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
     transform 180ms var(--ease-out), box-shadow 180ms ease;
 }
-:is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-cancel,
+:is(.join, .button, .prj-cta, .modal-submit, .modal-cancel,
 .modal-success-done, .modal-success-secondary, .modal-close, .search-submit):active:not(:disabled):not([aria-disabled="true"]) {
   transform: translateY(1px) scale(.98);
 }
@@ -67,8 +67,7 @@
 }
 .nav-links a:is(:hover, :focus-visible, [aria-current="page"])::after { transform: scaleX(1); }
 @media (hover: hover) and (pointer: fine) {
-  :is(.join, .button, .qeb-cta, .prj-cta, .modal-submit, .modal-success-done, .modal-success-secondary):hover:not(:active):not(:disabled):not([aria-disabled="true"]) { transform: translateY(-2px); }
-  .modal-close:hover { transform: rotate(90deg); }
+    .modal-close:hover { transform: rotate(90deg); }
 }
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }

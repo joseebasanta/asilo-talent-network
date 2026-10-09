@@ -16,7 +16,7 @@ function initAscii(canvas, IMAGE_SRC) {
     cell: 7,
     ramp: " .·:;-=+|",          // dots + line/vertical strokes only (no block glyphs)
     color: getVar("--ink", "#6f7075"),
-    blue: getVar("--blue-500", "#CEE2FF"),
+    blue: getVar("--blue-500", "#FFFFFF"),
     blueFrac: 0.06,   // fraction of the *brightest* glyphs that glow blue
     background: getVar("--bg", "#0a0a0b"),
     gamma: 0.82,
@@ -160,9 +160,23 @@ function initAscii(canvas, IMAGE_SRC) {
   var PHOTO_INVERT=false;   // false = true-tone (keep the photo's light↔shadow); sky killed by a positional mask instead
   // Cool-grey brightness LUT: glyph ink brightness encodes the photo's tone
   // (lit → bright glyph, shadow → dim), so light and shadow read like the photo.
-  var LUTG=(function(){ var a=[]; for(var i=0;i<32;i++){ var t=i/31,
-      r=Math.round(46+t*(232-46)), g=Math.round(48+t*(234-48)), b=Math.round(54+t*(240-54));
-      a.push("rgb("+r+","+g+","+b+")"); } return a; })();
+  var LUTG=null;
+  function buildLut(light){
+    var a=[];
+    for(var i=0;i<32;i++){ var t=i/31, r, g, b;
+      if(light){ r=Math.round(206-t*(206-38)); g=Math.round(208-t*(208-40)); b=Math.round(214-t*(214-46)); }
+      else { r=Math.round(46+t*(232-46)); g=Math.round(48+t*(234-48)); b=Math.round(54+t*(240-54)); }
+      a.push("rgb("+r+","+g+","+b+")"); }
+    return a;
+  }
+  // Re-read the theme tokens so the canvas follows the light/dark switch.
+  function applyTheme(){
+    CONFIG.color=getVar("--ink","#6a6b6b");
+    CONFIG.blue=getVar("--pure","#FFFFFF");
+    CONFIG.background=getVar("--bg","#0f1011");
+    LUTG=buildLut(document.documentElement.dataset.theme==="light");
+  }
+  applyTheme();
   var STEPS=8, fonts=null, bufX=null, bufY=null, bufC=null, bufN=null, chars=null;
   var bufBX=null, bufBY=null, bufBC=null, bufBN=null;   // parallel buffers for blue glyphs
   var bufV=null;   // per-cell brightness (tone) for the normal glyphs
@@ -306,6 +320,7 @@ function initAscii(canvas, IMAGE_SRC) {
   function boot(){
     if(layout()) paint(0,0);
     document.addEventListener("visibilitychange", sync);
+    document.addEventListener("themechange", function(){ applyTheme(); if(grid && !running) paint(0,0); });
     if(reduced.addEventListener) reduced.addEventListener("change", sync);
     var lastW=0,lastH=0;
     new ResizeObserver(function(){ var w=canvas.clientWidth,h=canvas.clientHeight; if(w===lastW&&h===lastH) return; lastW=w; lastH=h; if(!layout()) return; if(running) return; sync(); if(!running) paint(0,0); }).observe(canvas);

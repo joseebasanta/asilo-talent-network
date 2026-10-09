@@ -99,14 +99,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
         <span class="field-error" data-field-error hidden></span>
       </label>
       <div class="field" data-field="logo">
-        <span class="field-label">Logo (opcional)</span>
+        <span class="field-label">Logo</span>
         <label class="logo-upload" data-logo-drop>
           <span class="logo-upload-icon" aria-hidden="true">
             <img src="/icon-upload.svg" width="20" height="20" alt="" />
           </span>
           <span class="logo-upload-text">
             <span class="logo-upload-title" data-logo-title>Subir logo</span>
-            <span class="logo-upload-hint">Opcional · PNG, JPG o WebP · máximo permitido: 1 MB · sin animación · hasta 4096 × 4096 px y 16 MP</span>
+            <span class="logo-upload-hint">PNG, JPG o WebP · máximo permitido: 1 MB · sin animación · hasta 4096 × 4096 px y 16 MP</span>
           </span>
           <img class="logo-upload-thumb" data-logo-thumb src="/icon-upload.svg" alt="" hidden />
           <input class="logo-upload-input" type="file" name="logo" accept="image/png,image/jpeg,image/webp" />
@@ -119,16 +119,31 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           <span class="field-label">Categorias</span>
           <span class="field-count" data-cat-count>0 / {MAX_CATEGORIES} SELECCIONADAS</span>
         </div>
-        <div class="cat-list">
-          {CATEGORIES.map((cat) => (
-            <label class="cat-row">
-              <input class="cat-checkbox" type="checkbox" name="categorias" value={cat} />
-              <span class="cat-box" aria-hidden="true">
-                <svg class="cat-check" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.5 11 1.5" /></svg>
-              </span>
-              <span class="cat-name">{cat}</span>
-            </label>
-          ))}
+        <div class="combo" data-combo>
+          <div class="combo-control" data-combo-control>
+            <ul class="combo-chips" data-combo-chips aria-label="Categorías seleccionadas"></ul>
+            <input
+              class="combo-input" type="text" id="category-combobox" data-combo-input
+              role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="category-listbox"
+              aria-autocomplete="list" aria-label="Buscar y elegir categorías" autocomplete="off"
+              placeholder={`Busca y elige hasta ${MAX_CATEGORIES} categorías`} />
+            <span class="combo-chevron" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
+            </span>
+          </div>
+          <div class="combo-popup" id="category-listbox" role="listbox" aria-multiselectable="true" aria-label="Categorías" data-combo-popup hidden>
+            {CATEGORIES.map((cat) => (
+              <label class="cat-row" role="option" aria-selected="false" data-combo-option data-name={cat}>
+                <input class="cat-checkbox" type="checkbox" name="categorias" value={cat} tabindex="-1" />
+                <span class="cat-box" aria-hidden="true">
+                  <svg class="cat-check" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.5 11 1.5" /></svg>
+                </span>
+                <span class="cat-name">{cat}</span>
+              </label>
+            ))}
+            <p class="combo-note" data-combo-empty hidden>No encontramos categorías.</p>
+            <p class="combo-note" data-combo-max hidden>Máximo {MAX_CATEGORIES} categorías. Quita una para elegir otra.</p>
+          </div>
         </div>
         <span class="field-error" data-field-error hidden></span>
       </div>
@@ -175,7 +190,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
   import { createDialogMotion } from "../lib/dialog-motion";
   import { gsap } from "gsap";
   import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
-  import { validateLogo } from "../lib/projects-logo";
+  import { validateLogo, validateRequiredLogo } from "../lib/projects-logo";
   import { createSubmissionClock, resetCaptchaWidget } from "../lib/project-form-client";
   import { track } from "../scripts/analytics";
 
@@ -375,7 +390,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       const api = (window as Window & { turnstile?: { reset: (container: HTMLElement) => void } }).turnstile;
       const widget = form?.querySelector<HTMLElement>(".cf-turnstile");
       if (!resetCaptchaWidget(widget ?? null, api)) {
-        setStatus("No se pudo reiniciar la verificación. Recargá la página antes de intentar de nuevo.", true);
+        setStatus("No se pudo reiniciar la verificación. Recarga la página antes de intentar de nuevo.", true);
       }
     };
     const submissionClock = createSubmissionClock(
@@ -465,13 +480,116 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
     // categories: enforce a max of 3 selected + live counter
     const boxes = Array.from(dialog.querySelectorAll<HTMLInputElement>(".cat-checkbox"));
     const catCount = dialog.querySelector("[data-cat-count]");
+    // Combobox UI over the checkbox group: the checkboxes stay the source of
+    // truth (form data, max-3 rule, reset), the combobox renders and drives them.
+    const combo = dialog.querySelector<HTMLElement>("[data-combo]");
+    const comboInput = combo?.querySelector<HTMLInputElement>("[data-combo-input]") ?? null;
+    const comboControl = combo?.querySelector<HTMLElement>("[data-combo-control]") ?? null;
+    const comboPopup = combo?.querySelector<HTMLElement>("[data-combo-popup]") ?? null;
+    const comboChips = combo?.querySelector<HTMLElement>("[data-combo-chips]") ?? null;
+    const comboEmpty = combo?.querySelector<HTMLElement>("[data-combo-empty]") ?? null;
+    const comboMax = combo?.querySelector<HTMLElement>("[data-combo-max]") ?? null;
+    const options = Array.from(combo?.querySelectorAll<HTMLElement>("[data-combo-option]") ?? []);
+    let activeIndex = -1;
+    const norm = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const visibleOptions = () => options.filter((o) => !o.hidden);
+    const setActive = (option: HTMLElement | null) => {
+      options.forEach((o) => { o.classList.toggle("is-active", o === option); o.removeAttribute("id"); });
+      activeIndex = option ? visibleOptions().indexOf(option) : -1;
+      if (option) {
+        option.id = "category-active-option";
+        comboInput?.setAttribute("aria-activedescendant", option.id);
+        option.scrollIntoView({ block: "nearest" });
+      } else comboInput?.removeAttribute("aria-activedescendant");
+    };
+    const filterOptions = () => {
+      const query = norm(comboInput?.value ?? "");
+      options.forEach((o) => { o.hidden = !norm(o.dataset.name ?? "").includes(query); });
+      if (comboEmpty) comboEmpty.hidden = visibleOptions().length > 0;
+      setActive(visibleOptions()[0] ?? null);
+    };
+    const openCombo = () => {
+      if (!comboPopup || !comboPopup.hidden) return;
+      comboPopup.hidden = false;
+      comboInput?.setAttribute("aria-expanded", "true");
+      comboControl?.scrollIntoView({ block: "nearest" });
+    };
+    const closeCombo = () => {
+      if (!comboPopup || comboPopup.hidden) return;
+      comboPopup.hidden = true;
+      comboInput?.setAttribute("aria-expanded", "false");
+      setActive(null);
+    };
+    function renderCombo() {
+      if (!comboChips) return;
+      comboChips.replaceChildren(...boxes.filter((b) => b.checked).map((b) => {
+        const chip = document.createElement("li");
+        chip.className = "combo-chip";
+        const label = document.createElement("span");
+        label.textContent = b.value;
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "combo-chip-remove";
+        remove.setAttribute("aria-label", `Quitar ${b.value}`);
+        remove.textContent = "×";
+        remove.addEventListener("click", (event) => {
+          event.stopPropagation();
+          b.checked = false;
+          b.dispatchEvent(new Event("change", { bubbles: true }));
+          comboInput?.focus();
+        });
+        chip.append(label, remove);
+        return chip;
+      }));
+      options.forEach((o) => o.setAttribute("aria-selected", String(o.querySelector<HTMLInputElement>(".cat-checkbox")?.checked ?? false)));
+      if (comboMax) comboMax.hidden = boxes.filter((b) => b.checked).length < MAX;
+      if (comboInput) comboInput.placeholder = boxes.some((b) => b.checked) ? "" : `Busca y elige hasta ${MAX} categorías`;
+    }
     const syncCats = () => {
       const n = boxes.filter((b) => b.checked).length;
       if (catCount) catCount.textContent = `${n} / ${MAX} SELECCIONADAS`;
       boxes.forEach((b) => { b.disabled = !b.checked && n >= MAX; });
+      renderCombo();
     };
     boxes.forEach((b) => b.addEventListener("change", syncCats));
-    // optional logo: picker via the label+input, drag-and-drop onto the label,
+    comboControl?.addEventListener("mousedown", (event) => {
+      if (event.target !== comboInput) { event.preventDefault(); comboInput?.focus(); }
+      if (comboPopup?.hidden) openCombo(); else if (event.target !== comboInput) closeCombo();
+    });
+    // Keep focus in the text field while options are clicked.
+    comboPopup?.addEventListener("mousedown", (event) => event.preventDefault());
+    comboPopup?.addEventListener("change", () => { if (comboInput) { comboInput.value = ""; filterOptions(); } });
+    comboInput?.addEventListener("focus", openCombo);
+    comboInput?.addEventListener("input", () => { openCombo(); filterOptions(); });
+    comboInput?.addEventListener("keydown", (event) => {
+      const list = visibleOptions();
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        openCombo();
+        if (!list.length) return;
+        const next = event.key === "ArrowDown" ? Math.min(activeIndex + 1, list.length - 1) : Math.max(activeIndex - 1, 0);
+        setActive(list[next < 0 ? 0 : next]);
+      } else if (event.key === "Enter") {
+        event.preventDefault(); // never submit the form from the combobox
+        if (comboPopup?.hidden) openCombo();
+        else list[activeIndex]?.querySelector<HTMLInputElement>(".cat-checkbox")?.click();
+      } else if (event.key === "Escape" && comboPopup && !comboPopup.hidden) {
+        event.preventDefault(); // close the list, not the dialog
+        closeCombo();
+      } else if (event.key === "Backspace" && !comboInput.value) {
+        const last = boxes.filter((b) => b.checked).pop();
+        if (last) { last.checked = false; last.dispatchEvent(new Event("change", { bubbles: true })); }
+      } else if (event.key === "Tab") closeCombo();
+    });
+    combo?.addEventListener("focusout", (event) => {
+      const next = event.relatedTarget;
+      if (!(next instanceof Node) || !combo.contains(next)) closeCombo();
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (combo && event.target instanceof Node && !combo.contains(event.target)) closeCombo();
+    });
+    syncCats();
+    // required logo: picker via the label+input, drag-and-drop onto the label,
     // and a client-side mirror of the server's validateLogo (1 MB, png/jpg/jpeg/webp)
     const logoInput = dialog.querySelector<HTMLInputElement>('input[name="logo"]');
     const logoTitle = dialog.querySelector("[data-logo-title]");
@@ -596,14 +714,14 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       const validation = validateSubmissionForm(body);
       if (!validation.ok) {
         for (const [field, message] of Object.entries(validation.errors)) setFieldError(field, message, false);
-        setStatus("Revisá los campos marcados antes de enviar.", true);
+        setStatus("Revisa los campos marcados antes de enviar.", true);
         setFieldError(validation.field, validation.message);
         return;
       }
-      const logoCheck = validateLogo(logoInput?.files?.[0]);
+      const logoCheck = validateRequiredLogo(logoInput?.files?.[0]);
       if (!logoCheck.ok) { setFieldError("logo", logoCheck.error); return; }
       if (form.querySelector(".cf-turnstile") && !body.get("cf-turnstile-response")) {
-        setFieldError("captcha", "Completá la verificación antes de enviar.");
+        setFieldError("captcha", "Completa la verificación antes de enviar.");
         form.querySelector<HTMLElement>("[data-turnstile]")?.focus();
         return;
       }
@@ -647,7 +765,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
           const message =
             data && typeof data.error === "string"
               ? data.error
-              : "No se pudo enviar. Intentá de nuevo.";
+              : "No se pudo enviar. Intenta de nuevo.";
           const field = data && typeof data.field === "string" ? data.field : null;
           if (field && FIELD_NAMES.has(field)) {
             setFieldError(field, message);
@@ -679,7 +797,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
         playConfetti();
         if (dialog.open) successTitle?.focus();
       } catch {
-        setStatus("Hubo un problema de conexión. Intentá de nuevo.", true);
+        setStatus("Hubo un problema de conexión. Intenta de nuevo.", true);
       } finally {
         submitting = false;
         form.removeAttribute("aria-busy");

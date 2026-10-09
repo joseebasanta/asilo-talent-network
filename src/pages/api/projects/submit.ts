@@ -14,8 +14,8 @@
  *   GOOGLE_SHEETS_ID, GOOGLE_SERVICE_ACCOUNT_JSON_BASE64,
  *   GOOGLE_SHEETS_RANGE (optional, default "Projects!A1:M" — must cover the
  *   full A–M table so the header mapping sees J/K),
- *   APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY (optional —
- *   logo upload; a supplied logo requires all three values),
+ *   APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY (the logo is
+ *   mandatory, so submissions need all three values to be accepted),
  *   TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY (optional — captcha; without them
  *   the captcha is skipped and the other anti-abuse layers still apply)
  */
@@ -33,7 +33,7 @@ import {
   MIN_FILL_MS,
   validateSubmissionForm,
 } from "../../../lib/projects-submit";
-import { LOGO_BUCKET_ID, validateLogo } from "../../../lib/projects-logo";
+import { LOGO_BUCKET_ID, validateRequiredLogo } from "../../../lib/projects-logo";
 import {
   turnstileConfigured,
   verifyTurnstile,
@@ -87,7 +87,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   }
 
   if (rateLimited(clientAddress ?? "unknown")) {
-    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Intentá en 10 minutos." }, 429);
+    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Intenta en 10 minutos." }, 429);
   }
 
   let form: FormData;
@@ -107,7 +107,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   }
 
   if (Boolean(import.meta.env.TURNSTILE_SITE_KEY) !== Boolean(import.meta.env.TURNSTILE_SECRET_KEY)) {
-    return json({ ok: false, error: "La verificación no está disponible en este momento. Intentá más tarde." }, 503);
+    return json({ ok: false, error: "La verificación no está disponible en este momento. Intenta más tarde." }, 503);
   }
 
   // Captcha (Turnstile): when keys are configured, a token must be present and
@@ -120,7 +120,7 @@ export async function POST({ request, clientAddress }: APIContext) {
         {
           ok: false,
           field: "captcha",
-          error: "Completá la verificación para enviar.",
+          error: "Completa la verificación para enviar.",
         },
         400,
       );
@@ -130,7 +130,7 @@ export async function POST({ request, clientAddress }: APIContext) {
         {
           ok: false,
           field: "captcha",
-          error: "La verificación falló. Recargá e intentá de nuevo.",
+          error: "La verificación falló. Recarga e intenta de nuevo.",
         },
         403,
       );
@@ -149,7 +149,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     !/^\d+$/.test(submittedAtRaw) || !Number.isSafeInteger(submittedAt) || submittedAt <= 0 ||
     Date.now() - submittedAt < MIN_FILL_MS) {
     return json(
-      { ok: false, error: "El envío fue demasiado rápido. Intentá de nuevo." },
+      { ok: false, error: "El envío fue demasiado rápido. Intenta de nuevo." },
       429,
     );
   }
@@ -162,15 +162,15 @@ export async function POST({ request, clientAddress }: APIContext) {
     );
   }
 
-  // Optional logo: validate, then upload to Appwrite Storage when configured.
-  // A supplied logo must validate and upload successfully; never silently drop it.
+  // Required logo: validate, then upload to Appwrite Storage when configured.
+  // The logo must validate and upload successfully; never silently drop it.
   const logoRaw = form.get("logo");
   if (form.getAll("logo").length > 1 || (logoRaw !== null && !(logoRaw instanceof File))) {
-    return json({ ok: false, field: "logo", error: "Seleccioná un solo archivo de imagen." }, 400);
+    return json({ ok: false, field: "logo", error: "Selecciona un solo archivo de imagen." }, 400);
   }
   // FormData returns an empty File for an untouched file input.
   const logo = logoRaw instanceof File && (logoRaw.name !== "" || logoRaw.size > 0) ? logoRaw : null;
-  const logoCheck = validateLogo(logo);
+  const logoCheck = validateRequiredLogo(logo);
   if (!logoCheck.ok) {
     return json({ ok: false, field: "logo", error: logoCheck.error }, 400);
   }
@@ -228,7 +228,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+        error: "No se pudo verificar el envío. Intenta de nuevo en unos minutos.",
       },
       503,
     );
@@ -261,13 +261,13 @@ export async function POST({ request, clientAddress }: APIContext) {
       return json(
         {
           ok: false,
-          error: "No se pudo subir el logo. Intentá de nuevo en unos minutos.",
+          error: "No se pudo subir el logo. Intenta de nuevo en unos minutos.",
         },
         503,
       );
     }
   } else if (preparedLogo?.ok) {
-    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Intentá más tarde o quitá el logo." }, 503);
+    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Intenta más tarde." }, 503);
   }
 
   let row: string[];
@@ -277,7 +277,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+        error: "No se pudo verificar el envío. Intenta de nuevo en unos minutos.",
       },
       503,
     );
@@ -295,7 +295,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo guardar tu proyecto. Intentá de nuevo en unos minutos.",
+        error: "No se pudo guardar tu proyecto. Intenta de nuevo en unos minutos.",
       },
       503,
     );

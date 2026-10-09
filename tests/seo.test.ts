@@ -59,7 +59,7 @@ describe("proyectos SEO head", () => {
       new Request("https://example.com/proyectos?q=ai&pagina=2"),
     );
 
-    expect(html).toContain(`<title>Proyectos | Asilo Builders</title>`);
+    expect(html).toContain(`<title>Directorio de proyectos y startups de Venezuela | Asilo Builders</title>`);
     expect(html).toMatch(
       /<meta\b[^>]*name=["']description["'][^>]*content=["']Explora los proyectos de Asilo Builders/,
     );
@@ -68,6 +68,22 @@ describe("proyectos SEO head", () => {
     expect(html).toContain(`<meta property="og:url" content="${SITE}/proyectos"`);
     expect(html).toContain(`<meta property="og:image" content="${SITE}/og-image.png"`);
     expect(html).toContain(`<meta name="twitter:card" content="summary_large_image"`);
+  });
+
+  it("shows an intro paragraph under the h1 and emits CollectionPage JSON-LD with safe project links", async () => {
+    const html = await render(ProyectosPage, new Request("https://example.com/proyectos"));
+    expect(html).toMatch(/<h1[^>]*id="page-title"[\s\S]*<\/h1>\s*<p class="explore-intro">[^<]*builders venezolanos/);
+
+    const block = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    expect(block).not.toBeNull();
+    const data = JSON.parse(block![1]);
+    expect(data["@type"]).toBe("CollectionPage");
+    expect(data.url).toBe(`${SITE}/proyectos`);
+    expect(data.mainEntity["@type"]).toBe("ItemList");
+    expect(data.mainEntity.itemListElement.every((item: { url: string }) => /^https?:\/\//.test(item.url))).toBe(true);
+    // Only one structured-data block, and no raw "<" can break out of it.
+    expect(html.match(/application\/ld\+json/g)).toHaveLength(1);
+    expect(block![1]).not.toContain("<");
   });
 });
 

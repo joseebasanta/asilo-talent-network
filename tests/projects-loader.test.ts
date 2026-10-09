@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   loadApprovedProjects,
   parseProjects,
+  parseSheetDate,
   resetProjectsCache,
   TTL_MS,
 } from "../src/lib/projects-loader";
@@ -459,5 +460,28 @@ describe("loadApprovedProjects", () => {
     await loadApprovedProjects(fetcher);
 
     expect(calls).toBe(1);
+  });
+});
+
+describe("optional project metrics", () => {
+  it("parses the row date, visits and trending columns when present", () => {
+    const values = [
+      [...HEADERS, "Fecha", "Visitas", "Tendencia"],
+      ["Alfa", "https://alfa.dev", "d", "A", "AI", "SI", "9/10/2026 14:30:00", "1.250", "7"],
+      ["Beta", "https://beta.dev", "d", "B", "AI", "SI", "", "", ""],
+    ];
+    const [alfa, beta] = parseProjects(values);
+    expect(alfa.addedAt).toBe(Date.UTC(2026, 9, 9, 14, 30, 0));
+    expect(alfa.visits).toBe(1250);
+    expect(alfa.trending).toBe(7);
+    expect(beta.addedAt).toBeUndefined();
+    expect(beta.visits).toBeUndefined();
+  });
+
+  it("understands ISO and es-VE dates and rejects garbage", () => {
+    expect(parseSheetDate("2026-10-09T10:00:00Z")).toBe(Date.UTC(2026, 9, 9, 10));
+    expect(parseSheetDate("09/10/2026")).toBe(Date.UTC(2026, 9, 9));
+    expect(parseSheetDate("pronto")).toBeUndefined();
+    expect(parseSheetDate("")).toBeUndefined();
   });
 });

@@ -5,6 +5,7 @@ import "../styles/motion.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SeoHead from "../components/SeoHead.astro";
+import ThemeInit from "../components/ThemeInit.astro";
 
 export const prerender = true;
 
@@ -16,7 +17,8 @@ const canonical = `${siteUrl}/404`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#000a11" />
+    <meta name="theme-color" content="#0f1011" />
+    <ThemeInit />
     <SeoHead
       title="Página no encontrada | Asilo Builders"
       description="La página que buscas no existe o fue movida. Vuelve al inicio o explora los proyectos de Asilo Builders."
@@ -24,8 +26,6 @@ const canonical = `${siteUrl}/404`;
       noindex
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
     <style is:global>
       .not-found { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; max-width: 48rem; margin: 0 auto; padding: calc(var(--header-h) + 100px) var(--gutter) 6rem; text-align: center; }
       .not-found-code { font-family: var(--font-display); font-weight: 900; color: var(--blue-500); font-size: clamp(3rem, 10vw, 5rem); line-height: 1; }

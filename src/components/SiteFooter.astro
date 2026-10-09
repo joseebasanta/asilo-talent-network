@@ -7,16 +7,14 @@ const { home = false } = Astro.props;
       <canvas class="footer-ascii" data-ascii-src="/bg-2-footer.png" aria-hidden="true"></canvas>
       <div class="footer-inner">
         <div class="footer-brand">
-          <img class="footer-logo" src="/logo-asilo-builders.svg" alt="Asilo Builders" width="156" height="28" />
-          <h2 class="footer-title">La comunidad #1 de tecnologia de Venezuela</h2>
-          <p class="footer-tagline">Impulsado por <a class="asilo-digital-link" href="https://www.asilodigital.com/">Asilo Digital</a>.</p>
+          <p class="footer-eyebrow">Impulsado por <a class="asilo-digital-link" href="https://www.asilodigital.com/">Asilo Digital</a></p>
+          <h2 class="footer-title">La comunidad #1 de tecnología de Venezuela</h2>
         </div>
         <div class="footer-links">
           <ul class="footer-linklist">
             <li><a href="mailto:hello@asilodigital.com">hello@asilodigital.com</a></li>
             <li><a href="#">WhatsApp</a></li>
             <li><a href="/proyectos">Proyectos</a></li>
-            <li><a href={home ? "#que-es-asilo" : "/#que-es-asilo"}>Sobre nosotros</a></li>
             <li>
               <a class="footer-top" href="#contenido">
                 Volver arriba

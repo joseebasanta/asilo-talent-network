@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterProjects, paginateProjects, projectPageUrl } from "../src/lib/project-search";
+import { filterProjects, limitProjects, normalizeVisibleLimit, parseProjectOrder, showMoreUrl } from "../src/lib/project-search";
 import type { Project } from "../src/data/projects";
 const projects: Project[] = [
   { title: "Zeta", author: "María Pérez", description: "Pagos para equipos", tags: ["Fintech"], href: "https://example.com/z" },
@@ -24,27 +24,46 @@ describe("project discovery", () => {
   });
 });
 
-describe("project pagination", () => {
+describe("show more", () => {
   const items = Array.from({ length: 25 }, (_, index) => index);
-  it("shows ten items per page, with no overlap and a partial final page", () => {
-    expect(paginateProjects(items, 1).items).toEqual(items.slice(0, 10));
-    expect(paginateProjects(items, 2)).toMatchObject({ items: items.slice(10, 20), page: 2, start: 11, end: 20, totalPages: 3 });
-    expect(paginateProjects(items, 3).items).toEqual(items.slice(20));
+  it("always starts with ten and reveals ten more per step", () => {
+    expect(limitProjects(items, 10)).toMatchObject({ limit: 10, shown: 10, total: 25, hasMore: true });
+    expect(limitProjects(items, 10).items).toEqual(items.slice(0, 10));
+    expect(limitProjects(items, 20).items).toEqual(items.slice(0, 20));
+    expect(limitProjects(items, 30)).toMatchObject({ limit: 30, shown: 25, hasMore: false });
+    expect(limitProjects(items.slice(0, 10), 10).hasMore).toBe(false);
+    expect(limitProjects([], 10)).toMatchObject({ shown: 0, total: 0, hasMore: false, items: [] });
   });
-  it("clamps invalid pages and handles empty or shrinking result sets", () => {
-    for (const page of [0, -1, NaN, Infinity]) expect(paginateProjects(items, page).page).toBe(1);
-    expect(paginateProjects(items, 999).page).toBe(3);
-    expect(paginateProjects(items.slice(0, 3), 3)).toMatchObject({ page: 1, totalPages: 1, end: 3 });
-    expect(paginateProjects([], 2)).toMatchObject({ page: 1, totalPages: 1, start: 0, end: 0, items: [] });
-    expect(paginateProjects(items.slice(0, 10), 1).totalPages).toBe(1);
+  it("normalizes invalid or off-step limits to whole steps of ten, never below ten", () => {
+    for (const value of [0, -5, NaN, Infinity, 3]) expect(normalizeVisibleLimit(value)).toBe(10);
+    expect(normalizeVisibleLimit(11)).toBe(20);
+    expect(normalizeVisibleLimit(40)).toBe(40);
   });
-  it("preserves search, categories, and sort when linking to another page", () => {
-    const url = new URL("https://example.com/proyectos?q=ai&categoria=AI&categoria=SaaS&orden=za&pagina=2");
-    const next = new URL(projectPageUrl(url, 3), url);
+  it("preserves search, categories, and sort when linking to the next batch", () => {
+    const url = new URL("https://example.com/proyectos?q=ai&categoria=AI&categoria=SaaS&orden=trending&pagina=2");
+    const next = new URL(showMoreUrl(url, 20), url);
     expect(next.searchParams.getAll("categoria")).toEqual(["AI", "SaaS"]);
     expect(next.searchParams.get("q")).toBe("ai");
-    expect(next.searchParams.get("orden")).toBe("za");
-    expect(next.searchParams.get("pagina")).toBe("3");
-    expect(projectPageUrl(url, 1)).not.toContain("pagina=");
+    expect(next.searchParams.get("orden")).toBe("trending");
+    expect(next.searchParams.get("mostrar")).toBe("20");
+    expect(next.searchParams.has("pagina")).toBe(false);
+    expect(next.hash).toBe("#project-results");
+    expect(showMoreUrl(url, 10)).not.toContain("mostrar=");
+  });
+
+  it("sorts by date, visits and trending with unset values last, and falls back to the default order", () => {
+    const list = [
+      { title: "Alfa", href: "#", description: "", author: "", tags: [], addedAt: 100, visits: 5, trending: 1 },
+      { title: "Beta", href: "#", description: "", author: "", tags: [] },
+      { title: "Zeta", href: "#", description: "", author: "", tags: [], addedAt: 300, visits: 2, trending: 9 },
+    ];
+    const titles = (order: string) => filterProjects(list, "", [], order).map(project => project.title);
+    expect(titles("recientes")).toEqual(["Zeta", "Alfa", "Beta"]);
+    expect(titles("visitas")).toEqual(["Alfa", "Zeta", "Beta"]);
+    expect(titles("trending")).toEqual(["Zeta", "Alfa", "Beta"]);
+    expect(titles("az")).toEqual(["Alfa", "Beta", "Zeta"]);
+    expect(parseProjectOrder("trending")).toBe("trending");
+    expect(parseProjectOrder("za")).toBe("recientes");
+    expect(parseProjectOrder(null)).toBe("recientes");
   });
 });

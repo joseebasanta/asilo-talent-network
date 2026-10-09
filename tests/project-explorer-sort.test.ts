@@ -4,66 +4,52 @@ vi.mock("../src/scripts/analytics", () => ({ track: vi.fn() }));
 vi.mock("../src/lib/project-refresh", () => ({ startProjectRefresh: vi.fn() }));
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 
-it("keeps label activation available, sorts results, and supports keyboard dismissal", async () => {
+it("reorders results from the order tabs and keeps the default order out of the URL", async () => {
   vi.useFakeTimers();
+  const tab = (value: string, checked = false) => `<label class="order-tab"><input name="orden" value="${value}" type="radio"${checked ? " checked" : ""}><span>${value}</span></label>`;
   document.body.innerHTML = `
     <form id="project-filters">
       <input id="project-query">
-      <details id="project-sort"><summary></summary><span id="sort-value"></span><label class="sort-option"><input name="orden" value="az" type="radio" checked><span>A–Z</span></label><label class="sort-option"><input name="orden" value="za" type="radio"><span>Z–A</span></label></details>
-      <details id="project-categories"><summary></summary>
-        <span data-category-selection></span><input id="category-query">
-        <div data-category-search hidden></div><button data-category-done hidden></button>
-        <div class="category-list"><p data-category-empty></p></div>
-      </details><a data-all-categories></a>
+      <fieldset class="order-tabs">${tab("recientes", true)}${tab("visitas")}${tab("trending")}${tab("az")}</fieldset>
+      <fieldset class="category-list"><label data-category-name="AI"><input name="categoria" type="checkbox" value="AI"></label></fieldset>
+      <a data-all-categories></a>
     </form>
     <div class="results-toolbar"><a data-clear-filters></a></div>
-    <div id="project-results"><a data-project-index="0" data-title="Alfa"></a><a data-project-index="1" data-title="Zeta"></a></div><p id="project-count"></p>
+    <div id="project-results">
+      <a data-project-index="0" data-title="Alfa" data-added="100" data-visits="5" data-trending="1"></a>
+      <a data-project-index="1" data-title="Zeta" data-added="300" data-visits="2" data-trending="9"></a>
+      <a data-project-index="2" data-title="Beta" data-added="200"></a>
+    </div>
+    <p id="project-count"></p>
     <div id="empty-results"><h2></h2><p></p></div>
-    <nav class="project-pagination"><span data-page-status></span><span data-page-range></span></nav>`;
+    <div class="show-more" hidden><p data-show-status></p><a data-show-more></a></div>`;
 
   await import("../src/scripts/project-explorer");
-  const dropdown = document.querySelector<HTMLDetailsElement>("#project-sort")!;
-  const trigger = dropdown.querySelector("summary")!;
-  dropdown.open = true;
-  trigger.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: document.body }));
-  await vi.runAllTimersAsync();
-  expect(dropdown.open).toBe(true);
-  dropdown.querySelectorAll<HTMLElement>(".sort-option span")[1].click();
-  await vi.runAllTimersAsync();
-  expect(document.querySelector("#sort-value")!.textContent).toBe("Nombre: Z–A");
-  expect([...document.querySelectorAll<HTMLElement>("[data-project-index]")].map(card => card.dataset.title)).toEqual(["Zeta", "Alfa"]);
-  expect(location.search).toContain("orden=za");
-  expect(dropdown.open).toBe(false);
-  expect(document.activeElement).toBe(trigger);
-  trigger.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
-  expect(dropdown.open).toBe(true);
-  expect(document.activeElement).toBe(dropdown.querySelector('[value="za"]'));
-  // Native keyboard activation emits a click with detail 0 and must keep
-  // the menu open so arrow-key navigation can continue.
-  dropdown.querySelector<HTMLInputElement>('[value="az"]')!.click();
-  await vi.runAllTimersAsync();
-  expect(dropdown.open).toBe(true);
-  expect(document.querySelector("#sort-value")!.textContent).toBe("Nombre: A–Z");
-  expect([...document.querySelectorAll<HTMLElement>("[data-project-index]")].map(card => card.dataset.title)).toEqual(["Alfa", "Zeta"]);
+  const titles = () => [...document.querySelectorAll<HTMLElement>("[data-project-index]")].map(card => card.dataset.title);
+  const choose = async (value: string) => {
+    const input = document.querySelector<HTMLInputElement>(`[name="orden"][value="${value}"]`)!;
+    input.checked = true;
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    await vi.runAllTimersAsync();
+  };
+
+  // Default: newest first; projects without counters sort after those with them only for those fields.
+  expect(titles()).toEqual(["Zeta", "Beta", "Alfa"]);
   expect(location.search).not.toContain("orden=");
-  document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-  expect(dropdown.open).toBe(false);
-  expect(document.activeElement).toBe(trigger);
-  // Selecting the already-checked label must still dismiss the menu even
-  // though the browser does not emit a change event.
-  dropdown.open = true;
-  dropdown.querySelectorAll<HTMLElement>(".sort-option span")[0].click();
-  await vi.runAllTimersAsync();
-  expect(dropdown.open).toBe(false);
-  expect(document.activeElement).toBe(trigger);
-  trigger.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
-  document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
-  expect(dropdown.open).toBe(false);
-  expect(document.activeElement).toBe(trigger);
-  dropdown.open = true;
-  document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-  expect(dropdown.open).toBe(false);
-  dropdown.open = true;
-  document.querySelector<HTMLElement>("#project-query")!.focus();
-  expect(dropdown.open).toBe(false);
+
+  await choose("visitas");
+  expect(titles()).toEqual(["Alfa", "Zeta", "Beta"]);
+  expect(location.search).toContain("orden=visitas");
+
+  await choose("trending");
+  expect(titles()).toEqual(["Zeta", "Alfa", "Beta"]);
+  expect(location.search).toContain("orden=trending");
+
+  await choose("az");
+  expect(titles()).toEqual(["Alfa", "Beta", "Zeta"]);
+  expect(location.search).toContain("orden=az");
+
+  await choose("recientes");
+  expect(titles()).toEqual(["Zeta", "Beta", "Alfa"]);
+  expect(location.search).not.toContain("orden=");
 });

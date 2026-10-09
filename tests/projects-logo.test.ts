@@ -3,6 +3,8 @@ import {
   logoFileExtension,
   LOGO_MAX_BYTES,
   validateLogo,
+  validateRequiredLogo,
+  LOGO_REQUIRED_MESSAGE,
 } from "../src/lib/projects-logo";
 
 describe("logoFileExtension", () => {
@@ -72,5 +74,16 @@ describe("validateLogo", () => {
         `logo.${ext} should be accepted`,
       ).toBe(true);
     }
+  });
+});
+
+describe("validateRequiredLogo", () => {
+  it("rejects a missing or empty selection and otherwise applies the format gate", () => {
+    const missing = { ok: false, error: LOGO_REQUIRED_MESSAGE };
+    expect(validateRequiredLogo(null)).toEqual(missing);
+    expect(validateRequiredLogo(undefined)).toEqual(missing);
+    expect(validateRequiredLogo({ name: "", type: "application/octet-stream", size: 0 })).toEqual(missing);
+    expect(validateRequiredLogo({ name: "logo.png", type: "image/png", size: 100 })).toEqual({ ok: true });
+    expect(validateRequiredLogo({ name: "logo.gif", type: "image/gif", size: 100 }).ok).toBe(false);
   });
 });
