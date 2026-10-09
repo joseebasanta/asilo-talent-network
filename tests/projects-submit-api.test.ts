@@ -18,6 +18,9 @@ vi.mock("@googleapis/sheets", () => ({
 import sharp from "sharp";
 import { POST } from "../src/pages/api/projects/submit";
 
+// Every valid submission now carries a logo.
+const defaultLogo = await sharp({ create: { width: 4, height: 4, channels: 3, background: "blue" } }).png().toBuffer();
+
 // Live Projects headers A–M: H Moderador, I Fecha de moderación, J ID del
 // logo, K ID de revisión, L/M Nota interna.
 const CURRENT_HEADERS = [
@@ -45,6 +48,7 @@ function submit(overrides: Record<string, string> = {}, edit?: (form: FormData) 
     fundadores: "Ana Rodríguez", categorias: "Fintech",
     submitted_at: String(Date.now() - 10_000), ...overrides,
   })) form.append(key, value);
+  form.set("logo", new Blob([new Uint8Array(defaultLogo)], { type: "image/png" }), "logo.png");
   edit?.(form);
   return POST({
     request: new Request("https://example.com/api/projects/submit", { method: "POST", body: form }),
@@ -61,9 +65,9 @@ beforeEach(() => {
   vi.stubEnv("TURNSTILE_SECRET_KEY", "");
   vi.stubEnv("DEV_ALLOW_DUPLICATE_WEBSITE", "");
   storage.createFile.mockResolvedValue({ $id: "sanitized-logo-id" });
-  vi.stubEnv("APPWRITE_ENDPOINT", "");
-  vi.stubEnv("APPWRITE_PROJECT_ID", "");
-  vi.stubEnv("APPWRITE_API_KEY", "");
+  vi.stubEnv("APPWRITE_ENDPOINT", "https://example.com/v1");
+  vi.stubEnv("APPWRITE_PROJECT_ID", "project");
+  vi.stubEnv("APPWRITE_API_KEY", "mock-key");
   sheets.get.mockResolvedValue({ data: { values: [CURRENT_HEADERS] } });
   sheets.append.mockResolvedValue({});
 });
@@ -127,6 +131,17 @@ describe("POST /api/projects/submit validation", () => {
   it("fails closed when only one CAPTCHA key is configured", async () => {
     vi.stubEnv("TURNSTILE_SITE_KEY", "site-only");
     expect((await submit()).status).toBe(503);
+    expect(sheets.append).not.toHaveBeenCalled();
+  });
+
+  it("requires a logo before touching the sheet or storage", async () => {
+    const response = await submit({}, (form) => form.delete("logo"));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ ok: false, field: "logo", error: "Sube el logo de tu proyecto." });
+    const empty = await submit({}, (form) => form.set("logo", new File([], "")));
+    expect(empty.status).toBe(400);
+    expect(await empty.json()).toMatchObject({ field: "logo" });
+    expect(storage.createFile).not.toHaveBeenCalled();
     expect(sheets.append).not.toHaveBeenCalled();
   });
 
@@ -221,7 +236,7 @@ describe("POST /api/projects/submit validation", () => {
     expect(row).toHaveLength(CURRENT_HEADERS.length);
     expect(row[7]).toBe(""); // H Moderador untouched
     expect(row[8]).toBe(""); // I Fecha de moderación untouched
-    expect(row[9]).toBe(""); // J ID del logo (no logo supplied)
+    expect(row[9]).toBe("sanitized-logo-id"); // J ID del logo (required upload)
     expect(row[10]).toMatch(/^[0-9a-f-]{36}$/); // K ID de revisión
     expect(row[11]).toBe("");
     expect(row[12]).toBe("");

@@ -47,7 +47,9 @@ describe("ProjectDirectory", () => {
     expect(component).toContain('data-submit-another');
     expect(component).toContain("playConfetti();");
     expect(component).toContain('layer.className = "modal-confetti"');
-    expect(component).toContain("Logo (opcional)");
+    expect(component).toContain('<span class="field-label">Logo</span>');
+    expect(component).not.toContain("Logo (opcional)");
+    expect(component).toContain("validateRequiredLogo(logoInput?.files?.[0])");
   });
 
   it("uses explicit close controls without backdrop dismissal", () => {
@@ -72,7 +74,7 @@ describe("ProjectDirectory", () => {
     expect(styles).toContain('.modal-card > [data-form-view][hidden] { display: none; }');
     expect(styles).toContain("@keyframes modal-confetti-fall");
     expect(styles).toContain('.modal-success-check { width: 74px; height: 40px; }');
-    expect(styles).toContain('font-size: clamp(2rem, 5vw, 2.75rem)');
+    expect(styles).toContain('font-size: clamp(2.4rem, 6vw, 3.5rem)');
   });
 
   it("refreshes the directory in the background without reloading the page", () => {

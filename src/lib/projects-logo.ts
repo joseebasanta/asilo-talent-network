@@ -32,8 +32,8 @@ export function logoFileExtension(name: string): string | null {
 }
 
 /**
- * Accepts an absent logo (the file is optional). Rejects oversized files and
- * anything whose MIME type or extension is not in the allowlist.
+ * Format gate: an absent file passes here (see `validateRequiredLogo`). Rejects
+ * oversized files and anything whose MIME type or extension is not in the allowlist.
  */
 const logoSchema = z.object({
   name: z.string().min(1).max(255),
@@ -44,6 +44,14 @@ const logoSchema = z.object({
   const ext = logoFileExtension(file.name);
   return ext && ({ png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" } as Record<string, string>)[ext] === file.type;
 }, "La extensión del logo debe coincidir con su formato PNG, JPG o WebP.");
+
+export const LOGO_REQUIRED_MESSAGE = "Sube el logo de tu proyecto.";
+
+/** The logo is mandatory for submissions: absent → error, otherwise the format gate. */
+export function validateRequiredLogo(file: LogoFile | null | undefined): LogoValidation {
+  if (!file || (file.name === "" && file.size === 0)) return { ok: false, error: LOGO_REQUIRED_MESSAGE };
+  return validateLogo(file);
+}
 
 export function validateLogo(file: LogoFile | null | undefined): LogoValidation {
   if (!file || (file.name === "" && file.size === 0)) return { ok: true };

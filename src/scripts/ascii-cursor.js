@@ -10,7 +10,10 @@ export function initAsciiCursor(scope = document.body) {
   if (window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  var INK = "#CEE2FF"; // pale blue (matches the hero accent)
+  var INK = "#FFFFFF";
+  var readInk = function () { INK = getComputedStyle(document.documentElement).getPropertyValue("--pure").trim() || "#FFFFFF"; };
+  readInk();
+  document.addEventListener("themechange", readInk);
   var GLYPHS = "!<>-_/\\[]{}=+*^?#%&$:;.";
   var BLOCKS = "█▓▒░";
   var MAX_PARTICLES = 140;

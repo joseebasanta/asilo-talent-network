@@ -1,0 +1,15 @@
+---
+// Runs before first paint so a stored light preference never flashes dark.
+---
+<script is:inline>
+  (function () {
+    var theme = "dark";
+    try {
+      var stored = localStorage.getItem("theme");
+      if (stored === "light" || stored === "dark") theme = stored;
+    } catch (e) {}
+    document.documentElement.dataset.theme = theme;
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta && theme === "light") meta.setAttribute("content", "#f5f5f7");
+  })();
+</script>

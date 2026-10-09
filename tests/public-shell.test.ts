@@ -6,10 +6,6 @@ import IndexPage from "../src/pages/index.astro";
 
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const pixelArrowPath = "M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z";
-const featureIconPaths = [
-  "M21.6641 38.3385H18.3307V35.0052H21.6641V38.3385ZM18.3307 35.0052H14.9974V31.6719H18.3307V35.0052ZM24.9974 35.0052H21.6641V31.6719H24.9974V35.0052ZM14.9974 31.6719H11.6641V28.3385H14.9974V31.6719ZM21.6641 31.6719H18.3307V26.6719H21.6641V31.6719ZM28.3307 31.6719H24.9974V28.3385H28.3307V31.6719ZM11.6641 28.3385H8.33073V25.0052H11.6641V28.3385ZM31.6641 28.3385H28.3307V25.0052H31.6641V28.3385ZM18.3307 26.6719H14.9974V21.6719H18.3307V26.6719ZM24.9974 26.6719H21.6641V21.6719H24.9974V26.6719ZM8.33073 25.0052H4.9974V21.6719H8.33073V25.0052ZM34.9974 25.0052H31.6641V21.6719H34.9974V25.0052ZM14.9974 15.0052H24.9974V10.0052H28.3307V15.0052H34.9974V11.6719H38.3307V21.6719H34.9974V18.3385H28.3307V21.6719H24.9974V18.3385H14.9974V21.6719H11.6641V18.3385H4.9974V21.6719H1.66406V11.6719H4.9974V15.0052H11.6641V10.0052H14.9974V15.0052ZM8.33073 11.6719H4.9974V8.33854H8.33073V11.6719ZM34.9974 11.6719H31.6641V8.33854H34.9974V11.6719ZM24.9974 10.0052H21.6641V5.00521H18.3307V10.0052H14.9974V5.00521H11.6641V1.67188H28.3307V5.00521H24.9974V10.0052ZM11.6641 8.33854H8.33073V5.00521H11.6641V8.33854ZM31.6641 8.33854H28.3307V5.00521H31.6641V8.33854Z",
-  "M13.332 33.3359H23.332V36.6693H9.9987V33.3359H6.66536V30.0026H13.332V33.3359ZM33.332 30.0026H36.6654V33.3359H33.332V36.6693H29.9987V33.3359H26.6654V30.0026H29.9987V26.6693H33.332V30.0026ZM6.66536 30.0026H3.33203V10.0026H6.66536V30.0026ZM23.332 30.0026H13.332V26.6693H23.332V30.0026ZM23.332 23.3359H16.6654V20.0026H23.332V23.3359ZM36.6654 23.3359H33.332V10.0026H36.6654V23.3359ZM16.6654 20.0026H13.332V13.3359H16.6654V20.0026ZM26.6654 20.0026H23.332V13.3359H26.6654V20.0026ZM23.332 13.3359H16.6654V10.0026H23.332V13.3359ZM9.9987 10.0026H6.66536V6.66927H9.9987V10.0026ZM33.332 10.0026H29.9987V6.66927H33.332V10.0026ZM29.9987 6.66927H9.9987V3.33594H29.9987V6.66927Z",
-];
 
 async function renderShell() {
   const container = await AstroContainer.create();
@@ -21,7 +17,7 @@ describe("public shell", () => {
     const html = await renderShell();
 
     expect(html).toContain('<html lang="es">');
-    expect(html).toContain("La comunidad de<br>builders de Venezuela");
+    expect(html).toContain("La comunidad de<br><em>builders</em> de Venezuela");
     expect(html).toContain('class="hero-eyebrow-count">+180</span>');
     expect(html).toMatch(/<main\b/);
     expect(html).toContain("Navegación principal");
@@ -30,20 +26,19 @@ describe("public shell", () => {
   it("preserves the live navigation and institutional sections", async () => {
     const html = await renderShell();
 
-    for (const label of ["Comunidad", "Proyectos", "Sobre nosotros", "Únete"]) {
+    for (const label of ["Proyectos", "Recursos", "Registrarme"]) {
       expect(html).toContain(label);
     }
-    expect(html).toContain("¿QUE HACEMOS?");
-    expect(html).toContain("Reunir el talento");
-    expect(html).toContain("Dinamizar las relaciones");
-    expect(html).toContain("Acelerar el aprendizaje");
-    expect(html).toContain("¿Qué es ASILO Builders?");
+    // The "¿Qué hacemos?" and "¿Qué es Asilo Builders?" sections were removed from the design.
+    expect(html).not.toContain("¿Qué hacemos?");
+    expect(html).not.toContain("Reunir el talento");
+    expect(html).not.toContain("Sobre nosotros");
   });
 
   it("declares dark theme metadata and a static favicon", async () => {
     const html = await renderShell();
 
-    expect(html).toMatch(/<meta\b[^>]*name=["']theme-color["'][^>]*content=["']#000a11["']/);
+    expect(html).toMatch(/<meta\b[^>]*name=["']theme-color["'][^>]*content=["']#0f1011["']/);
     expect(html).toMatch(/<link\b[^>]*rel=["']icon["'][^>]*href=["']\/favicon\.svg\?v=20260911["']/);
   });
 
@@ -53,24 +48,14 @@ describe("public shell", () => {
     expect(html).not.toContain('id="analytics-consent"');
   });
 
-  it("restores the legacy wordmark and pixel-art action arrows", async () => {
+  it("renders the logo mark with the Builders wordmark and pixel-art action arrows", async () => {
     const html = await renderShell();
 
-    expect(html).toMatch(/<img\b[^>]*class=["']brand-mark["'][^>]*src=["']\/logo-asilo-builders\.svg["']/);
-    // Header "Únete" (desktop) + mobile menu "Únete" + two in-page CTAs.
+    expect(html).toMatch(/<img\b[^>]*class=["']brand-mark["'][^>]*src=["']\/logo-mark\.png["']/);
+    expect(html).toMatch(/<span class=["']brand-name["']>Builders<\/span>/);
+    // Header "Registrarme" (desktop) + mobile menu "Registrarme" + two in-page CTAs.
     expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(4);
     expect(html).not.toContain("↗");
-  });
-
-  it("restores the three decorative pixel-art feature icons", async () => {
-    const html = await renderShell();
-
-    expect((html.match(/class=["']wwd-icon["']/g) ?? []).length).toBe(3);
-    expect((html.match(/aria-hidden=["']true["']/g) ?? []).length).toBeGreaterThanOrEqual(4);
-    for (const path of featureIconPaths) {
-      expect(html).toContain(path);
-    }
-    expect(html).not.toContain("item-number");
   });
 
   it("declares the canonical pnpm toolchain and pinned Node types", () => {
@@ -138,9 +123,9 @@ describe("Proyectos directory (slice 1b-b)", () => {
       ...socialUrls,
     ].sort());
     // Shared shell and form images, plus one local icon per placeholder project.
-    expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 8);
+    expect((html.match(/<img\b/g) ?? []).length).toBe(placeholderProjects.length + 7);
     expect((html.match(/class="prj-placeholder"/g) ?? []).length).toBe(placeholderProjects.length);
-    expect(html).toContain('src="/logo-asilo-builders.svg"');
+    expect(html).toContain('src="/logo-mark.png"');
   });
 });
 
@@ -168,6 +153,5 @@ describe("CTA heading", () => {
 
     expect(text).not.toMatch(/\bUnete\b/i);
     expect(text).toMatch(/Únete a la comunidad/);
-    expect(text).toMatch(/ÚNETE A LA COMUNIDAD/);
   });
 });

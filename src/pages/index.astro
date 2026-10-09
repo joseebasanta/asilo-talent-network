@@ -5,6 +5,7 @@ import "../styles/motion.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SeoHead from "../components/SeoHead.astro";
+import ThemeInit from "../components/ThemeInit.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 
@@ -30,10 +31,9 @@ const pageDescription =
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#000a11" />
+    <meta name="theme-color" content="#0f1011" />
+    <ThemeInit />
     <SeoHead title={pageTitle} description={pageDescription} canonical={canonical} />
-    <link rel="preload" href="/fonts/doto.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/ibm-plex-sans.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg?v=20260911" type="image/svg+xml" />
   </head>
   <body>
@@ -52,7 +52,7 @@ const pageDescription =
           <span class="hero-eyebrow-label">Builders forman parte</span>
           <img class="hero-eyebrow-brace" src="/icon-bracket-right.svg" alt="" aria-hidden="true" width="8" height="24" />
         </p>
-        <h1 id="hero-title">La comunidad de<br />builders de Venezuela</h1>
+        <h1 id="hero-title">La comunidad de<br /><em>builders</em> de Venezuela</h1>
         <p class="hero-sub">
           Un espacio donde construir productos y crecer con IA es nuestro día a día. Impulsado por <a class="asilo-digital-link" href="https://www.asilodigital.com/">Asilo Digital</a>.
         </p>
@@ -70,49 +70,8 @@ const pageDescription =
 
     <span id="comunidad" class="fragment-alias" aria-hidden="true"></span>
     <span id="beneficios" class="fragment-alias" aria-hidden="true"></span>
-    <section class="wwd" id="que-hacemos" aria-labelledby="wwd-title">
-      <div class="section-inner">
-        <h2 id="wwd-title" data-decode>¿QUE HACEMOS?</h2>
-        <div class="wwd-grid">
-          <article class="wwd-item" data-reveal style="--reveal-i: 0">
-            <svg class="wwd-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <path d="M21.6641 38.3385H18.3307V35.0052H21.6641V38.3385ZM18.3307 35.0052H14.9974V31.6719H18.3307V35.0052ZM24.9974 35.0052H21.6641V31.6719H24.9974V35.0052ZM14.9974 31.6719H11.6641V28.3385H14.9974V31.6719ZM21.6641 31.6719H18.3307V26.6719H21.6641V31.6719ZM28.3307 31.6719H24.9974V28.3385H28.3307V31.6719ZM11.6641 28.3385H8.33073V25.0052H11.6641V28.3385ZM31.6641 28.3385H28.3307V25.0052H31.6641V28.3385ZM18.3307 26.6719H14.9974V21.6719H18.3307V26.6719ZM24.9974 26.6719H21.6641V21.6719H24.9974V26.6719ZM8.33073 25.0052H4.9974V21.6719H8.33073V25.0052ZM34.9974 25.0052H31.6641V21.6719H34.9974V25.0052ZM14.9974 15.0052H24.9974V10.0052H28.3307V15.0052H34.9974V11.6719H38.3307V21.6719H34.9974V18.3385H28.3307V21.6719H24.9974V18.3385H14.9974V21.6719H11.6641V18.3385H4.9974V21.6719H1.66406V11.6719H4.9974V15.0052H11.6641V10.0052H14.9974V15.0052ZM8.33073 11.6719H4.9974V8.33854H8.33073V11.6719ZM34.9974 11.6719H31.6641V8.33854H34.9974V11.6719ZM24.9974 10.0052H21.6641V5.00521H18.3307V10.0052H14.9974V5.00521H11.6641V1.67188H28.3307V5.00521H24.9974V10.0052ZM11.6641 8.33854H8.33073V5.00521H11.6641V8.33854ZM31.6641 8.33854H28.3307V5.00521H31.6641V8.33854Z" fill="currentColor" />
-            </svg>
-            <h3>Reunir el talento</h3>
-            <p>Hacer visible a quienes construyen en Venezuela, dentro y fuera del país.</p>
-          </article>
-          <article class="wwd-item" data-reveal style="--reveal-i: 1">
-            <svg class="wwd-icon" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <path d="M13.332 33.3359H23.332V36.6693H9.9987V33.3359H6.66536V30.0026H13.332V33.3359ZM33.332 30.0026H36.6654V33.3359H33.332V36.6693H29.9987V33.3359H26.6654V30.0026H29.9987V26.6693H33.332V30.0026ZM6.66536 30.0026H3.33203V10.0026H6.66536V30.0026ZM23.332 30.0026H13.332V26.6693H23.332V30.0026ZM23.332 23.3359H16.6654V20.0026H23.332V23.3359ZM36.6654 23.3359H33.332V10.0026H36.6654V23.3359ZM16.6654 20.0026H13.332V13.3359H16.6654V20.0026ZM26.6654 20.0026H23.332V13.3359H26.6654V20.0026ZM23.332 13.3359H16.6654V10.0026H23.332V13.3359ZM9.9987 10.0026H6.66536V6.66927H9.9987V10.0026ZM33.332 10.0026H29.9987V6.66927H33.332V10.0026ZM29.9987 6.66927H9.9987V3.33594H29.9987V6.66927Z" fill="currentColor" />
-            </svg>
-            <h3>Dinamizar las relaciones</h3>
-            <p>Networking con propósito entre developers, diseñadores y founders.</p>
-          </article>
-          <article class="wwd-item" data-reveal style="--reveal-i: 2">
-            <svg class="wwd-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M3 3H9V5H3V3ZM9 5H11V7H9V5ZM13 5H15V7H13V5ZM15 3H21V5H15V3ZM1 5H3V19H1V5ZM21 5H23V19H21V5ZM3 19H9V21H3V19ZM15 19H21V21H15V19ZM9 21H15V23H9V21ZM11 7H13V21H11V7ZM5 7H7V9H5V7ZM5 11H9V13H5V11ZM5 15H9V17H5V15ZM17 7H19V9H17V7ZM15 11H19V13H15V11ZM15 15H19V17H15V15Z" fill="currentColor" />
-            </svg>
-            <h3>Acelerar el aprendizaje</h3>
-            <p>Dejar de construir solo. Comparte el proceso, no solo el resultado.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <span id="talent" class="fragment-alias" aria-hidden="true"></span>
     <span id="unete" class="fragment-alias" aria-hidden="true"></span>
-    <section class="qeb" id="que-es-asilo" aria-labelledby="qeb-title">
-      <div class="qeb-inner">
-        <div class="qeb-titles">
-          <p class="qeb-eyebrow" data-reveal="fade" style="--reveal-i: 0">ok, pero</p>
-          <h2 id="qeb-title" data-reveal="fade" style="--reveal-i: 1">¿Qué es ASILO Builders?</h2>
-        </div>
-        <p class="qeb-copy" data-reveal="fade" style="--reveal-i: 2">
-          Somos el grupo de builders de Asilo Digital en WhatsApp. Diseñamos y desarrollamos productos y flujos de trabajo con IA desde Venezuela. Compartimos experimentos, aprendemos juntos y nos damos feedback para llevar las ideas a la práctica.
-        </p>
-        <a class="qeb-cta" href="#unete" data-reveal="fade" style="--reveal-i: 3">ÚNETE A LA COMUNIDAD</a>
-      </div>
-    </section>
     <ProjectDirectory projects={projects} />
     <section class="cta" id="unete-cta" aria-labelledby="cta-title">
       <div class="cta-inner">
