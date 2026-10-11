@@ -10,7 +10,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -26,6 +27,7 @@
     "@astrojs/check": "^0.9.10",
     "@astrojs/ts-plugin": "^1.10.11",
     "@astrojs/vercel": "^11.0.10",
+    "@playwright/test": "1.56.1",
     "@types/node": "26.4.0",
     "happy-dom": "^20.14.3",
     "typescript": "^6.0.3",

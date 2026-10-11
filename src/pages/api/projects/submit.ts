@@ -1,6 +1,14 @@
 /**
  * Public project-submission endpoint — no auth by design.
  *
+ * Two modes share every anti-abuse layer:
+ * - `create` (default): a new project; rejected when the website exists.
+ * - `edit`: a change request for a PUBLISHED project (matched by website).
+ *   It appends a new `PENDIENTE` revision instead of touching the live row;
+ *   once approved, the loader serves it as the latest revision. The previous
+ *   logo is carried over when no new one is uploaded, and the requester's
+ *   contact goes into the first notes column so the team can verify ownership.
+ *
  * Validates untrusted form input server-side, quarantines it as a `PENDIENTE`
  * row (private sheet) and answers with JSON. Anti-abuse is in-process and
  * minimal: honeypot, min-time-to-fill, per-IP sliding-window rate limit and an
@@ -29,15 +37,16 @@ import { InputFile } from "node-appwrite/file";
 import {
   buildRowForHeaders,
   findDuplicateWebsite,
+  findLatestApprovedRevision,
   websiteColumnIndex,
   MIN_FILL_MS,
+  validateContact,
   validateSubmissionForm,
 } from "../../../lib/projects-submit";
+import { json } from "../../../lib/http";
+import { createRateLimiter } from "../../../lib/rate-limit";
 import { LOGO_BUCKET_ID, validateLogo } from "../../../lib/projects-logo";
-import {
-  turnstileConfigured,
-  verifyTurnstile,
-} from "../../../lib/turnstile";
+import { checkTurnstile } from "../../../lib/turnstile";
 
 export const prerender = false;
 
@@ -48,31 +57,8 @@ const SHEET_RANGE = import.meta.env.GOOGLE_SHEETS_RANGE ?? "Projects!A1:M";
 // Anchor the table, not a row: Sheets detects its end and appends automatically.
 const APPEND_RANGE = "Projects!A1";
 
-const RATE_MAX = 5;
-const RATE_WINDOW_MS = 10 * 60_000;
-
-// ponytail: per-process sliding window; not shared across instances and resets
-// on restart — swap for Redis when the app runs multi-instance.
-const ipHits = new Map<string, number[]>();
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const hits = (ipHits.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-  if (hits.length >= RATE_MAX) {
-    ipHits.set(ip, hits);
-    return true;
-  }
-  hits.push(now);
-  ipHits.set(ip, hits);
-  return false;
-}
-
-function json(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8" },
-  });
-}
+// ponytail: per-process sliding window (see lib/rate-limit.ts).
+const rateLimited = createRateLimiter(5, 10 * 60_000);
 
 export async function POST({ request, clientAddress }: APIContext) {
   // Fail-closed: no credentials, no writes.
@@ -87,7 +73,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   }
 
   if (rateLimited(clientAddress ?? "unknown")) {
-    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Intentá en 10 minutos." }, 429);
+    return json({ ok: false, error: "Demasiados envíos desde esta conexión. Inténtalo en 10 minutos." }, 429);
   }
 
   let form: FormData;
@@ -106,35 +92,17 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json({ ok: true }, 201);
   }
 
-  if (Boolean(import.meta.env.TURNSTILE_SITE_KEY) !== Boolean(import.meta.env.TURNSTILE_SECRET_KEY)) {
-    return json({ ok: false, error: "La verificación no está disponible en este momento. Intentá más tarde." }, 503);
-  }
-
   // Captcha (Turnstile): when keys are configured, a token must be present and
-  // verify server-side before anything else is checked. Tokens are single-use;
-  // the widget refills the hidden `cf-turnstile-response` input on each solve.
-  if (turnstileConfigured()) {
-    const token = form.get("cf-turnstile-response");
-    if (form.getAll("cf-turnstile-response").length !== 1 || typeof token !== "string" || token.trim() === "" || token.length > 2048) {
-      return json(
-        {
-          ok: false,
-          field: "captcha",
-          error: "Completá la verificación para enviar.",
-        },
-        400,
-      );
-    }
-    if (!(await verifyTurnstile(token, import.meta.env.TURNSTILE_SECRET_KEY))) {
-      return json(
-        {
-          ok: false,
-          field: "captcha",
-          error: "La verificación falló. Recargá e intentá de nuevo.",
-        },
-        403,
-      );
-    }
+  // verify server-side before anything else is checked.
+  const captcha = await checkTurnstile(form);
+  if (captcha === "misconfigured") {
+    return json({ ok: false, error: "La verificación no está disponible en este momento. Inténtalo más tarde." }, 503);
+  }
+  if (captcha === "missing") {
+    return json({ ok: false, field: "captcha", error: "Completa la verificación para enviar." }, 400);
+  }
+  if (captcha === "failed") {
+    return json({ ok: false, field: "captcha", error: "La verificación falló. Recarga e inténtalo de nuevo." }, 403);
   }
   // ponytail: captcha is fail-open when TURNSTILE_* are unset so local/dev
   // submits keep working; honeypot, min-time, rate limit and dedupe still
@@ -149,9 +117,21 @@ export async function POST({ request, clientAddress }: APIContext) {
     !/^\d+$/.test(submittedAtRaw) || !Number.isSafeInteger(submittedAt) || submittedAt <= 0 ||
     Date.now() - submittedAt < MIN_FILL_MS) {
     return json(
-      { ok: false, error: "El envío fue demasiado rápido. Intentá de nuevo." },
+      { ok: false, error: "El envío fue demasiado rápido. Inténtalo de nuevo." },
       429,
     );
+  }
+
+  const mode = form.get("mode") === "edit" ? "edit" : "create";
+  let contact: string | null = null;
+  if (mode === "edit") {
+    contact = validateContact(String(form.get("contacto") ?? ""));
+    if (!contact) {
+      return json(
+        { ok: false, field: "contacto", error: "Déjanos un email o @usuario (3 a 120 caracteres)." },
+        400,
+      );
+    }
   }
 
   const validation = validateSubmissionForm(form);
@@ -166,7 +146,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   // A supplied logo must validate and upload successfully; never silently drop it.
   const logoRaw = form.get("logo");
   if (form.getAll("logo").length > 1 || (logoRaw !== null && !(logoRaw instanceof File))) {
-    return json({ ok: false, field: "logo", error: "Seleccioná un solo archivo de imagen." }, 400);
+    return json({ ok: false, field: "logo", error: "Selecciona un solo archivo de imagen." }, 400);
   }
   // FormData returns an empty File for an untouched file input.
   const logo = logoRaw instanceof File && (logoRaw.name !== "" || logoRaw.size > 0) ? logoRaw : null;
@@ -207,7 +187,11 @@ export async function POST({ request, clientAddress }: APIContext) {
     ["1", "true", "yes"].includes(
       String(import.meta.env.DEV_ALLOW_DUPLICATE_WEBSITE ?? "").toLowerCase(),
     );
+  // Create: reject a website that already exists (pending OR approved).
+  // Edit: the website MUST belong to a published project; the request carries
+  // its current logo forward and records which revision it replaces.
   let headerRow: string[];
+  let current: { logoId: string; revisionId: string } | null = null;
   try {
     const { data } = await sheets.spreadsheets.values.get({
       spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
@@ -215,11 +199,20 @@ export async function POST({ request, clientAddress }: APIContext) {
     });
     const values = data.values ?? [];
     headerRow = values[0] ?? [];
-    if (!devOverride) {
+    if (mode === "edit") {
+      if (websiteColumnIndex(headerRow) < 0) throw new Error("Missing website column");
+      current = findLatestApprovedRevision(values, validation.value.website);
+      if (!current) {
+        return json(
+          { ok: false, error: "No encontramos un proyecto publicado con ese sitio web." },
+          404,
+        );
+      }
+    } else if (!devOverride) {
       if (websiteColumnIndex(headerRow) < 0) throw new Error("Missing website column");
       if (findDuplicateWebsite(values, validation.value.website)) {
         return json(
-          { ok: false, error: "Este proyecto ya fue enviado al directorio." },
+          { ok: false, error: "Este proyecto ya fue enviado al directorio. Si es tuyo, abre su página y usa «Solicita cambios»." },
           409,
         );
       }
@@ -228,7 +221,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+        error: "No se pudo verificar el envío. Inténtalo de nuevo en unos minutos.",
       },
       503,
     );
@@ -261,23 +254,29 @@ export async function POST({ request, clientAddress }: APIContext) {
       return json(
         {
           ok: false,
-          error: "No se pudo subir el logo. Intentá de nuevo en unos minutos.",
+          error: "No se pudo subir el logo. Inténtalo de nuevo en unos minutos.",
         },
         503,
       );
     }
   } else if (preparedLogo?.ok) {
-    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Intentá más tarde o quitá el logo." }, 503);
+    return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Inténtalo más tarde o quita el logo." }, 503);
   }
+
+  // A change request without a new logo keeps the published one.
+  if (current) logoId ??= current.logoId || undefined;
+  const notes = current
+    ? `Solicitud de edición de ${current.revisionId || "la revisión publicada"} · Contacto: ${contact}`
+    : undefined;
 
   let row: string[];
   try {
-    row = buildRowForHeaders(headerRow, validation.value, { logoId });
+    row = buildRowForHeaders(headerRow, validation.value, { logoId, notes });
   } catch {
     return json(
       {
         ok: false,
-        error: "No se pudo verificar el envío. Intentá de nuevo en unos minutos.",
+        error: "No se pudo verificar el envío. Inténtalo de nuevo en unos minutos.",
       },
       503,
     );
@@ -295,7 +294,7 @@ export async function POST({ request, clientAddress }: APIContext) {
     return json(
       {
         ok: false,
-        error: "No se pudo guardar tu proyecto. Intentá de nuevo en unos minutos.",
+        error: "No se pudo guardar tu proyecto. Inténtalo de nuevo en unos minutos.",
       },
       503,
     );

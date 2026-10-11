@@ -1,0 +1,20 @@
+---
+/**
+ * HTML fragment for the directory's background refresh and client-side
+ * sorting (`?orden=`). Astro partials render without <html>/<head>, so the
+ * client swaps this straight into `#project-directory-list`.
+ */
+import ProjectPages from "../../components/ProjectPages.astro";
+import { loadDirectory, resolveSort } from "../../lib/directory";
+
+export const partial = true;
+
+const projects = await loadDirectory(resolveSort(Astro.url.searchParams.get("orden")));
+
+// Same response for every visitor so a short
+// shared CDN cache absorbs the polling of every open tab.
+Astro.response.headers.set("cache-control", "public, max-age=0, s-maxage=15, stale-while-revalidate=30");
+Astro.response.headers.set("x-robots-tag", "noindex");
+---
+
+<ProjectPages projects={projects} />

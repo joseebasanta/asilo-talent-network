@@ -33,6 +33,9 @@ import {
 } from "../data/projects";
 import { LOGO_BUCKET_ID } from "./projects-logo";
 import { projectIconUrl } from "./project-icons";
+import { normalizeHeader } from "./normalize";
+import { projectIdFor, projectSlug } from "./project-identity";
+import { demoMode, demoSheet } from "./demo";
 
 const READONLY_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 
@@ -119,6 +122,11 @@ export function resetProjectsCache(): void {
  * Maps a sheet `values` grid (header row + data rows) to the homepage
  * `Project[]` shape: only explicitly approved rows with a safe http(s) URL
  * survive, sorted alphabetically by title.
+ *
+ * Rows are append-only revisions, so several approved rows can describe the
+ * same project (same normalized website). The LAST approved revision wins —
+ * that is how an approved edit request replaces the published card — while
+ * `addedIndex` keeps the position of the first one for "Más recientes".
  */
 export function parseProjects(values: string[][]): Project[] {
   const [headerRow = [], ...dataRows] = values;
@@ -134,10 +142,18 @@ export function parseProjects(values: string[][]): Project[] {
   // safely consider public.
   if (!headerMap.has("title") || !headerMap.has("approved")) return [];
 
-  return dataRows
-    .map((row) => toProject(row, headerMap))
-    .filter((project): project is Project => project !== null)
-    .sort((a, b) => a.title.localeCompare(b.title));
+  const byId = new Map<string, Project>();
+  dataRows.forEach((row, rowIndex) => {
+    const project = toProject(row, headerMap, rowIndex);
+    if (!project?.id) return;
+    const previous = byId.get(project.id);
+    byId.set(
+      project.id,
+      previous ? { ...project, addedIndex: previous.addedIndex } : project,
+    );
+  });
+
+  return [...byId.values()].sort((a, b) => a.title.localeCompare(b.title));
 }
 
 /**
@@ -149,6 +165,7 @@ export function parseProjects(values: string[][]): Project[] {
 export async function loadApprovedProjects(
   fetchValues: ValuesFetcher = fetchSheetValues,
 ): Promise<Project[]> {
+  if (demoMode()) return parseProjects(demoSheet());
   if (!isConfigured()) return placeholderProjects;
 
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
@@ -212,18 +229,10 @@ function isConfigured(): boolean {
   );
 }
 
-export function normalizeHeader(raw: string): string {
-  return raw
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function toProject(
   row: string[],
   headerMap: Map<string, number>,
+  rowIndex: number,
 ): Project | null {
   const cell = (field: string): string => {
     const index = headerMap.get(field);
@@ -245,8 +254,12 @@ function toProject(
     .map((tag) => tag.trim())
     .filter(Boolean);
 
+  const id = projectIdFor(href);
   const logoUrl = logoViewUrl(cell("logoId"));
   return {
+    id,
+    slug: projectSlug(title, id),
+    addedIndex: rowIndex,
     href,
     title,
     description: cell("description"),

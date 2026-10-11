@@ -1,299 +1,110 @@
 ---
 import type { Project } from "../data/projects";
-import ProjectCard from "./ProjectCard.astro";
-import { CATEGORIES, MAX_CATEGORIES } from "../lib/projects-submit";
+import { SORT_OPTIONS, type SortMode } from "../lib/project-sort";
+import ProjectFormModal from "./ProjectFormModal.astro";
+import ProjectPages from "./ProjectPages.astro";
 
 interface Props {
   projects: Project[];
+  sort?: SortMode;
+  /** Render only the add-project modal (used by /proyectos, which has its own list). */
   modalOnly?: boolean;
 }
 
-const { projects, modalOnly = false } = Astro.props;
-const PROJECTS_PER_PAGE = 10;
-const PROJECTS_PER_COLUMN = PROJECTS_PER_PAGE / 2;
-const pages = Array.from(
-  { length: Math.ceil(projects.length / PROJECTS_PER_PAGE) },
-  (_, pageIndex) => {
-    const page = projects.slice(
-      pageIndex * PROJECTS_PER_PAGE,
-      (pageIndex + 1) * PROJECTS_PER_PAGE,
-    );
-    return [page.slice(0, PROJECTS_PER_COLUMN), page.slice(PROJECTS_PER_COLUMN)];
-  },
-);
-const hashProjects = (value: Project[]) => {
-  let hash = 0;
-  for (const char of JSON.stringify(value)) hash = (hash * 31 + char.charCodeAt(0)) | 0;
-  return String(hash);
-};
-const PROJECTS_SIGNATURE = hashProjects(projects);
-// Public site key — safe to embed; widget only renders when it's configured.
-const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
+const { projects, sort = "az", modalOnly = false } = Astro.props;
 ---
 
 {!modalOnly && <section class="prj" id="proyectos">
   <div class="prj-inner">
     <div class="prj-head">
       <h2 class="prj-title" data-decode>Proyectos</h2>
+      <!-- Works without JS (GET reload); with JS it swaps in the sorted partial. -->
+      <form class="prj-sort" method="get" action="/#proyectos" data-project-sort>
+        <label class="prj-sort-label" for="project-sort">Ordenar</label>
+        <select class="prj-sort-select" id="project-sort" name="orden">
+          {SORT_OPTIONS.map((option) => (
+            <option value={option.value} selected={option.value === sort}>{option.label}</option>
+          ))}
+        </select>
+        <noscript><button class="prj-sort-go" type="submit">Aplicar</button></noscript>
+      </form>
       <a class="prj-browse" href="/proyectos">Ver todos</a>
     </div>
-    <div class="prj-carousel" id="project-directory-list" data-projects-signature={PROJECTS_SIGNATURE}>
-      {pages.map((columns, pageIndex) => (
-        <div class="prj-list" data-project-page={pageIndex} aria-hidden={pageIndex !== 0} hidden={pageIndex !== 0}>
-          {columns.map((column) => (
-            <div class="prj-col">
-              {column.map((project) => (
-                <ProjectCard project={project} />
-              ))}
-            </div>
-          ))}
-        </div>
-      ))}
+    <div class="prj-carousel" id="project-directory-list" aria-busy="false">
+      <ProjectPages projects={projects} />
     </div>
     <div class="prj-cta-row">
-      <p class="prj-cta-text">¿Eres parte de la comunidad y quieres sumarte al directorio?</p>
+      <p class="prj-cta-text">¿Construiste algo? Súmalo al directorio. No hace falta volver a registrarte en la comunidad.</p>
       <button class="prj-cta" type="button" data-open-modal>AGREGA TU PROYECTO</button>
     </div>
   </div>
 </section>}
 
-<dialog class="modal" id="project-modal" aria-labelledby="project-modal-title">
-  <form class="modal-card" novalidate>
-    <!-- Honeypot: humans never see it; bots fill it and get a fake success. -->
-    <input class="honeypot" type="text" name="contact_email" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
-    <!-- Server render time (ms): fills faster than the server minimum are bots. -->
-    <input type="hidden" name="submitted_at" value={Date.now()} />
-    <div data-form-view>
-    <header class="modal-header">
-      <div class="modal-titles">
-        <h2 class="modal-title" id="project-modal-title">Agrega tu proyecto</h2>
-        <p class="modal-sub">Súmalo al directorio de builders de Venezuela.</p>
-      </div>
-      <button class="modal-close" type="button" data-close-modal aria-label="Cerrar">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 19H5V17H7V19ZM19 19H17V17H19V19ZM9 15V17H7V15H9ZM17 17H15V15H17V17ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM13 13H11V11H13V13ZM11 11H9V9H11V11ZM15 11H13V9H15V11ZM9 9H7V7H9V9ZM17 9H15V7H17V9ZM7 7H5V5H7V7ZM19 7H17V5H19V7Z" /></svg>
-      </button>
-    </header>
-    <div class="modal-divider" aria-hidden="true"></div>
-    <div class="modal-body">
-      <label class="field" data-field="nombre">
-        <span class="field-label">Nombre del proyecto</span>
-        <input class="field-input" type="text" name="nombre" minlength="2" placeholder="Ej. Pana Pay" autocomplete="off" required maxlength="80" aria-describedby="project-form-status" />
-        <span class="field-error" data-field-error hidden></span>
-      </label>
-      <label class="field" data-field="website">
-        <span class="field-label">Website URL</span>
-        <input class="field-input" type="text" name="website" maxlength="2048" placeholder="miproyecto.com" autocomplete="off" required inputmode="url" aria-describedby="project-form-status" />
-        <span class="field-error" data-field-error hidden></span>
-      </label>
-      <label class="field" data-field="descripcion">
-        <span class="field-label">Descripcion corta</span>
-        <div class="field-textarea-box">
-          <textarea class="field-textarea" name="descripcion" rows="2" minlength="10" maxlength="140" placeholder="Cuéntanos del proyecto: debe ser directo y fácil de entender" required aria-describedby="project-form-status"></textarea>
-          <span class="field-counter" data-counter>0/140</span>
-        </div>
-        <span class="field-error" data-field-error hidden></span>
-      </label>
-      <label class="field" data-field="fundadores">
-        <span class="field-label">Fundadores</span>
-        <input class="field-input field-input--sm" type="text" name="fundadores" placeholder="Ej. Luis Fernández, Ana Rodríguez" autocomplete="off" required maxlength="160" aria-describedby="project-form-status" />
-        <span class="field-error" data-field-error hidden></span>
-      </label>
-      <div class="field" data-field="logo">
-        <span class="field-label">Logo (opcional)</span>
-        <label class="logo-upload" data-logo-drop>
-          <span class="logo-upload-icon" aria-hidden="true">
-            <img src="/icon-upload.svg" width="20" height="20" alt="" />
-          </span>
-          <span class="logo-upload-text">
-            <span class="logo-upload-title" data-logo-title>Subir logo</span>
-            <span class="logo-upload-hint">Opcional · PNG, JPG o WebP · máximo permitido: 1 MB · sin animación · hasta 4096 × 4096 px y 16 MP</span>
-          </span>
-          <img class="logo-upload-thumb" data-logo-thumb src="/icon-upload.svg" alt="" hidden />
-          <input class="logo-upload-input" type="file" name="logo" accept="image/png,image/jpeg,image/webp" />
-        </label>
-        <span class="field-error" data-field-error hidden></span>
-        <button type="button" data-remove-logo hidden>Quitar logo</button>
-      </div>
-      <div class="field" data-field="categorias">
-        <div class="field-label-row">
-          <span class="field-label">Categorias</span>
-          <span class="field-count" data-cat-count>0 / {MAX_CATEGORIES} SELECCIONADAS</span>
-        </div>
-        <div class="cat-list">
-          {CATEGORIES.map((cat) => (
-            <label class="cat-row">
-              <input class="cat-checkbox" type="checkbox" name="categorias" value={cat} />
-              <span class="cat-box" aria-hidden="true">
-                <svg class="cat-check" viewBox="0 0 12 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.5 11 1.5" /></svg>
-              </span>
-              <span class="cat-name">{cat}</span>
-            </label>
-          ))}
-        </div>
-        <span class="field-error" data-field-error hidden></span>
-      </div>
-      {TURNSTILE_SITE_KEY && (
-        <div class="field" data-field="captcha">
-          <div class="turnstile" data-turnstile tabindex="-1">
-            <div
-              class="cf-turnstile"
-              data-sitekey={TURNSTILE_SITE_KEY}
-              data-theme="dark"
-              data-callback="onTurnstileSolve"
-            ></div>
-          </div>
-          <span class="field-error" data-field-error hidden></span>
-        </div>
-      )}
-      <p class="form-status" id="project-form-status" data-form-status role="status" hidden></p>
-    </div>
-    <footer class="modal-footer">
-      <button class="modal-cancel" type="button" data-close-modal>Cancelar</button>
-      <button class="modal-submit" type="submit">Agregar tu proyecto</button>
-    </footer>
-    </div>
-    <section class="modal-success" data-success-view hidden aria-labelledby="modal-success-title">
-      <img class="modal-success-check" src="/check-thanks.svg" width="74" height="40" alt="" />
-      <div class="modal-success-copy">
-        <h2 id="modal-success-title" tabindex="-1">
-          <span>Tu proyecto ya está</span>
-          <span>en revisión</span>
-        </h2>
-        <p>Gracias por sumarte.</p>
-      </div>
-      <div class="modal-success-actions">
-        <button class="modal-success-secondary" type="button" data-submit-another>Agregar otro proyecto</button>
-        <button class="modal-success-done" type="button" data-close-modal>Listo</button>
-      </div>
-    </section>
-  </form>
-</dialog>
+<ProjectFormModal mode="create" />
 
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
-  import { startProjectRefresh } from "../lib/project-refresh";
-  import { createDialogMotion } from "../lib/dialog-motion";
   import { gsap } from "gsap";
-  import { MAX_CATEGORIES, SUBMISSION_FIELDS, validateSubmissionForm } from "../lib/projects-schema";
-  import { validateLogo } from "../lib/projects-logo";
-  import { createSubmissionClock, resetCaptchaWidget } from "../lib/project-form-client";
-  import { track } from "../scripts/analytics";
+  import { startProjectRefresh } from "../lib/project-refresh";
 
   const projectCarousel = document.getElementById("project-directory-list");
+  const sortForm = document.querySelector<HTMLFormElement>("[data-project-sort]");
+  const sortSelect = sortForm?.querySelector<HTMLSelectElement>("select") ?? null;
   let projectPages = Array.from(document.querySelectorAll<HTMLElement>("[data-project-page]"));
   const projectNavButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-project-nav]"));
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let projectPageIndex = 0;
   let projectPageAnimating = false;
-  let projectSignature = projectCarousel?.dataset.projectsSignature ?? "";
+  let lastPartial = "";
 
-  type LiveProject = {
-    href: string;
-    title: string;
-    description: string;
-    author: string;
-    tags: string[];
-    logoUrl?: string;
-    iconUrl?: string;
-  };
-
-  const signatureFor = (projects: LiveProject[]) => {
-    let hash = 0;
-    for (const char of JSON.stringify(projects)) hash = (hash * 31 + char.charCodeAt(0)) | 0;
-    return String(hash);
-  };
-
-  const createProjectCard = (project: LiveProject) => {
-    const card = document.createElement("a");
-    card.className = "prj-item";
-    card.href = project.href;
-    card.target = "_blank";
-    card.rel = "noopener noreferrer";
-
-    const thumb = document.createElement("div");
-    thumb.className = "prj-thumb";
-    thumb.setAttribute("aria-hidden", "true");
-    const image = document.createElement("img");
-    image.className = project.logoUrl ? "prj-logo" : "prj-placeholder";
-    image.src = project.logoUrl ?? project.iconUrl ?? "/icons/pixelarticons/box.svg";
-    image.alt = "";
-    image.loading = "lazy";
-    image.decoding = "async";
-    thumb.append(image);
-
-    const body = document.createElement("div");
-    body.className = "prj-body";
-    const details = document.createElement("div");
-    details.className = "prj-td";
-    const nameRow = document.createElement("div");
-    nameRow.className = "prj-name-row";
-    const name = document.createElement("p");
-    name.className = "prj-name";
-    name.textContent = project.title;
-    const external = document.createElement("span");
-    external.className = "prj-ext-icon";
-    external.setAttribute("aria-hidden", "true");
-    external.textContent = "↗";
-    nameRow.append(name, external);
-    const description = document.createElement("p");
-    description.className = "prj-desc";
-    description.textContent = project.description;
-    const author = document.createElement("p");
-    author.className = "prj-author";
-    author.textContent = project.author;
-    details.append(nameRow, description, author);
-    const tags = document.createElement("div");
-    tags.className = "prj-tags";
-    project.tags.forEach((tag) => {
-      const item = document.createElement("span");
-      item.className = "prj-tag";
-      item.textContent = tag;
-      tags.append(item);
-    });
-    body.append(details, tags);
-    card.append(thumb, body);
-    return card;
-  };
-
-  const renderProjectPages = (projects: LiveProject[]) => {
+  // The server renders the cards (see /partials/proyectos); the browser only
+  // swaps HTML in, so card markup exists in exactly one place.
+  const loadPartial = async (sort: string, { force = false } = {}) => {
     if (!projectCarousel) return;
-    const nextPageIndex = Math.min(projectPageIndex, Math.max(0, Math.ceil(projects.length / 10) - 1));
-    const fragment = document.createDocumentFragment();
-    for (let start = 0; start < projects.length; start += 10) {
-      const pageIndex = start / 10;
-      const page = document.createElement("div");
-      page.className = "prj-list";
-      page.dataset.projectPage = String(pageIndex);
-      page.setAttribute("aria-hidden", String(pageIndex !== nextPageIndex));
-      page.hidden = pageIndex !== nextPageIndex;
-      for (const columnProjects of [projects.slice(start, start + 5), projects.slice(start + 5, start + 10)]) {
-        const column = document.createElement("div");
-        column.className = "prj-col";
-        columnProjects.forEach((project) => column.append(createProjectCard(project)));
-        page.append(column);
-      }
-      fragment.append(page);
-    }
-    projectCarousel.replaceChildren(fragment);
+    const response = await fetch(`/partials/proyectos?orden=${encodeURIComponent(sort)}`, {
+      headers: { accept: "text/html" },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!response.ok) throw new Error(`partial ${response.status}`);
+    const html = await response.text();
+    if (!force && html === lastPartial) return;
+    lastPartial = html;
+    projectCarousel.innerHTML = html;
     projectPages = Array.from(projectCarousel.querySelectorAll<HTMLElement>("[data-project-page]"));
-    projectPageIndex = nextPageIndex;
+    projectPageIndex = 0;
   };
 
+  const currentSort = () => sortSelect?.value ?? "az";
+
+  // Background refresh: skip while someone is using the directory (browsing
+  // later pages, focus inside the list, an open dialog). Throwing on failure
+  // lets startProjectRefresh back off; the last rendered list stays on screen.
   const refreshProjects = async () => {
-    const interacting = () => projectPageAnimating || projectCarousel?.contains(document.activeElement) || Boolean(document.querySelector("dialog[open]"));
+    const interacting = () =>
+      projectPageIndex !== 0 ||
+      projectPageAnimating ||
+      Boolean(projectCarousel?.contains(document.activeElement)) ||
+      Boolean(document.querySelector("dialog[open]"));
     if (interacting()) return;
-    const response = await fetch("/api/projects", { cache: "no-store", signal: AbortSignal.timeout(15_000) });
-    if (!response.ok) throw new Error("Project refresh failed");
-    const data = await response.json() as { projects?: LiveProject[] };
-    if (!Array.isArray(data.projects)) throw new Error("Invalid project response");
-    if (interacting()) return;
-    const nextSignature = signatureFor(data.projects);
-    if (nextSignature === projectSignature) return;
-    renderProjectPages(data.projects);
-    projectSignature = nextSignature;
+    await loadPartial(currentSort());
   };
 
   if (projectCarousel) startProjectRefresh(refreshProjects);
+
+  sortSelect?.addEventListener("change", async () => {
+    const sort = currentSort();
+    const url = new URL(window.location.href);
+    url.searchParams.set("orden", sort);
+    history.replaceState(null, "", url);
+    projectCarousel?.setAttribute("aria-busy", "true");
+    try {
+      await loadPartial(sort, { force: true });
+    } catch {
+      // Progressive enhancement: fall back to the plain GET form.
+      sortForm?.submit();
+    } finally {
+      projectCarousel?.setAttribute("aria-busy", "false");
+    }
+  });
 
   const showProjectPage = (nextPageIndex: number) => {
     if (projectPages.length === 0 || projectPageAnimating || nextPageIndex === projectPageIndex) return;
@@ -307,7 +118,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       projectNavButtons.forEach((button) => { button.disabled = false; });
       gsap.set([...currentCards, ...nextCards], { clearProps: "willChange" });
       const firstCard = nextCards[0];
-      firstCard?.focus({ preventScroll: true });
+      firstCard?.querySelector<HTMLElement>(".prj-link")?.focus({ preventScroll: true });
       firstCard?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
     };
     const swapPages = () => {
@@ -357,339 +168,4 @@ const TURNSTILE_SITE_KEY = import.meta.env.TURNSTILE_SITE_KEY;
       showProjectPage(nextPageIndex);
     });
   });
-
-  const dialog = document.getElementById("project-modal") as HTMLDialogElement | null;
-  const openBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-open-modal]"));
-  if (dialog && openBtns.length) {
-    const motion = createDialogMotion(dialog);
-    const MAX = MAX_CATEGORIES;
-    const form = dialog.querySelector("form");
-    const formView = form?.querySelector<HTMLElement>("[data-form-view]") ?? null;
-    const successView = form?.querySelector<HTMLElement>("[data-success-view]") ?? null;
-    const successTitle = form?.querySelector<HTMLElement>("#modal-success-title") ?? null;
-    const submitBtn = form?.querySelector<HTMLButtonElement>(".modal-submit") ?? null;
-    const statusEl = form?.querySelector<HTMLElement>("[data-form-status]") ?? null;
-    let submitted = false;
-    let submitting = false;
-    const resetCaptcha = () => {
-      const api = (window as Window & { turnstile?: { reset: (container: HTMLElement) => void } }).turnstile;
-      const widget = form?.querySelector<HTMLElement>(".cf-turnstile");
-      if (!resetCaptchaWidget(widget ?? null, api)) {
-        setStatus("No se pudo reiniciar la verificación. Recargá la página antes de intentar de nuevo.", true);
-      }
-    };
-    const submissionClock = createSubmissionClock(
-      Number(form?.querySelector<HTMLInputElement>('[name="submitted_at"]')?.value),
-      () => performance.now(),
-    );
-    const resetTimestamp = () => {
-      const timestamp = form?.querySelector<HTMLInputElement>('[name="submitted_at"]');
-      if (timestamp) timestamp.value = submissionClock();
-    };
-    // Associate each inline message with all controls in its field, including checkbox groups.
-    form?.querySelectorAll<HTMLElement>("[data-field]").forEach((field) => {
-      const error = field.querySelector<HTMLElement>("[data-field-error]");
-      if (!error) return;
-      error.id = `project-error-${field.dataset.field}`;
-      field.querySelectorAll("input, textarea").forEach((input) => {
-        input.setAttribute("aria-describedby", error.id);
-      });
-    });
-    const playConfetti = () => {
-      if (reduceMotion) return;
-      const layer = document.createElement("div");
-      layer.className = "modal-confetti";
-      layer.setAttribute("aria-hidden", "true");
-      for (let i = 0; i < 64; i += 1) {
-        const particle = document.createElement("i");
-        particle.style.setProperty("--confetti-x", `${(i * 37) % 100}vw`);
-        particle.style.setProperty("--confetti-delay", `${(i % 12) * 0.04}s`);
-        particle.style.setProperty("--confetti-drift", `${((i % 9) - 4) * 10}px`);
-        particle.style.setProperty("--confetti-duration", `${1.55 + (i % 6) * 0.12}s`);
-        layer.append(particle);
-      }
-      dialog.append(layer);
-      window.setTimeout(() => layer.remove(), 2_500);
-    };
-    const setStatus = (message: string, isError: boolean) => {
-      if (!statusEl) return;
-      statusEl.textContent = message;
-      statusEl.classList.toggle("is-error", isError);
-      statusEl.hidden = false;
-    };
-    // per-field error: shows an inline message under a field and focuses it
-    const setFieldError = (field: string, message: string, focus = true) => {
-      const el = form?.querySelector<HTMLElement>(`[data-field="${field}"] [data-field-error]`) ?? null;
-      if (!el) return;
-      el.textContent = message;
-      el.hidden = false;
-      const input = form?.querySelector<HTMLElement>(`[data-field="${field}"] input, [data-field="${field}"] textarea`) ?? null;
-      if (focus) input?.focus();
-      form?.querySelectorAll(`[data-field="${field}"] input, [data-field="${field}"] textarea`)
-        .forEach((control) => control.setAttribute("aria-invalid", "true"));
-    };
-    // hide a field's error and clear its invalid flag once the user edits it
-    const clearFieldError = (field: string) => {
-      const el = form?.querySelector<HTMLElement>(`[data-field="${field}"] [data-field-error]`) ?? null;
-      if (el) { el.hidden = true; el.textContent = ""; }
-      form?.querySelectorAll(`[data-field="${field}"] input, [data-field="${field}"] textarea`)
-        .forEach((control) => control.removeAttribute("aria-invalid"));
-    };
-    // map a validation/error field name to the closest form field
-    const FIELD_NAMES = new Set(["nombre", "website", "descripcion", "fundadores", "logo", "categorias", "captcha"]);
-    openBtns.forEach((openBtn) => openBtn.addEventListener("click", () => {
-      if (submitting) return;
-      track("submit_project_modal_opened", {
-        entry_source: openBtn.closest(".explore-invite") ? "directory_cta" : "landing_directory_cta",
-        modal_variant: "default",
-        is_logged_in: false,
-      });
-      motion.open();
-      if (submitted) {
-        startNewProject();
-        return;
-      }
-      if (!form?.querySelector<HTMLInputElement>('[name="nombre"]')?.value) resetTimestamp();
-      if (formView) formView.hidden = false;
-      if (successView) successView.hidden = true;
-    }));
-    dialog.querySelectorAll("[data-close-modal]").forEach((el) =>
-      el.addEventListener("click", () => { void motion.close(); })
-    );
-    // short-description character counter
-    const ta = dialog.querySelector<HTMLTextAreaElement>('textarea[name="descripcion"]');
-    const counter = dialog.querySelector("[data-counter]");
-    ta?.addEventListener("input", () => {
-      if (counter) counter.textContent = `${ta.value.length}/140`;
-    });
-    // categories: enforce a max of 3 selected + live counter
-    const boxes = Array.from(dialog.querySelectorAll<HTMLInputElement>(".cat-checkbox"));
-    const catCount = dialog.querySelector("[data-cat-count]");
-    const syncCats = () => {
-      const n = boxes.filter((b) => b.checked).length;
-      if (catCount) catCount.textContent = `${n} / ${MAX} SELECCIONADAS`;
-      boxes.forEach((b) => { b.disabled = !b.checked && n >= MAX; });
-    };
-    boxes.forEach((b) => b.addEventListener("change", syncCats));
-    // optional logo: picker via the label+input, drag-and-drop onto the label,
-    // and a client-side mirror of the server's validateLogo (1 MB, png/jpg/jpeg/webp)
-    const logoInput = dialog.querySelector<HTMLInputElement>('input[name="logo"]');
-    const logoTitle = dialog.querySelector("[data-logo-title]");
-    const logoThumb = dialog.querySelector<HTMLImageElement>("[data-logo-thumb]");
-    const removeLogo = form?.querySelector<HTMLButtonElement>("[data-remove-logo]");
-    let logoObjectUrl: string | null = null;
-    const logoErrorEl = form?.querySelector<HTMLElement>('[data-field="logo"] [data-field-error]') ?? null;
-    const resetLogo = () => {
-      if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
-      logoObjectUrl = null;
-      if (removeLogo) removeLogo.hidden = true;
-      if (logoInput) logoInput.value = "";
-      if (logoTitle) logoTitle.textContent = "Subir logo";
-      if (logoThumb) {
-        logoThumb.hidden = true;
-        logoThumb.removeAttribute("src");
-      }
-    };
-    const acceptLogo = (file: File | null): boolean => {
-      if (logoErrorEl) logoErrorEl.hidden = true;
-      if (!file) return true;
-      const check = validateLogo(file);
-      if (!check.ok) {
-        resetLogo();
-        setFieldError("logo", check.error);
-        return false;
-      }
-      if (logoObjectUrl) URL.revokeObjectURL(logoObjectUrl);
-      if (removeLogo) removeLogo.hidden = false;
-      if (logoInput) {
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        logoInput.files = dt.files;
-      }
-      if (logoTitle) logoTitle.textContent = file.name;
-      if (logoThumb) {
-        logoObjectUrl = URL.createObjectURL(file);
-        logoThumb.src = logoObjectUrl;
-        logoThumb.hidden = false;
-      }
-      return true;
-    };
-    removeLogo?.addEventListener("click", () => { resetLogo(); clearFieldError("logo"); });
-    logoInput?.addEventListener("change", () => {
-      if (acceptLogo(logoInput.files?.[0] ?? null)) clearFieldError("logo");
-    });
-    dialog.querySelector("[data-logo-drop]")?.addEventListener("dragover", (e) => e.preventDefault());
-    dialog.querySelector("[data-logo-drop]")?.addEventListener("drop", (e) => {
-      e.preventDefault();
-      if (acceptLogo((e as DragEvent).dataTransfer?.files[0] ?? null)) clearFieldError("logo");
-    });
-    // clear a field's inline error as soon as the user edits it
-    form?.addEventListener("input", (e) => {
-      const t = e.target as HTMLElement;
-      const field = t.getAttribute("name");
-      if (field && FIELD_NAMES.has(field)) clearFieldError(field);
-    });
-    form?.addEventListener("change", (e) => {
-      const control = e.target;
-      if (!(control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement)) return;
-      if (!FIELD_NAMES.has(control.name)) return;
-      track("submit_project_form_updated", {
-        field_name: ({ nombre: "project_name", website: "url", descripcion: "description", fundadores: "founders", categorias: "category", logo: "logo" } as Record<string, string>)[control.name] ?? control.name,
-        field_filled: control instanceof HTMLInputElement && control.type === "checkbox" ? control.checked : Boolean(control.value),
-        form_step: "details",
-        is_autosaved: false,
-      });
-    });
-    boxes.forEach((b) => b.addEventListener("change", () => clearFieldError("categorias")));
-    // Validate completed text fields on blur without interrupting typing.
-    form?.addEventListener("focusout", (e) => {
-      if (submitting) return;
-      const field = (e.target as HTMLInputElement).name;
-      if (!["nombre", "website", "descripcion", "fundadores"].includes(field)) return;
-      const result = validateSubmissionForm(new FormData(form));
-      if (!result.ok && result.errors[field]) setFieldError(field, result.errors[field], false);
-      else clearFieldError(field);
-    });
-    // Turnstile calls this global with a fresh token after each solve; hide the
-    // captcha error so the visitor knows a re-submit will be accepted.
-    Object.assign(window, { onTurnstileSolve: () => clearFieldError("captcha") });
-    // Clear submitted data immediately; both restart paths use this same reset.
-    const clearProjectForm = () => {
-      form?.reset();
-      resetTimestamp();
-      FIELD_NAMES.forEach(clearFieldError);
-      if (statusEl) {
-        statusEl.hidden = true;
-        statusEl.textContent = "";
-        statusEl.classList.remove("is-error");
-      }
-      // Widget-generated inputs can retain a default value across native reset().
-      form?.querySelectorAll<HTMLInputElement>('[name="cf-turnstile-response"]')
-        .forEach((input) => { input.value = ""; });
-      resetLogo();
-      syncCats();
-      if (counter) counter.textContent = "0/140";
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Agregar tu proyecto";
-      }
-      const body = form?.querySelector<HTMLElement>(".modal-body");
-      if (body) body.scrollTop = 0;
-    };
-    const startNewProject = () => {
-      clearProjectForm();
-      submitted = false;
-      if (formView) formView.hidden = false;
-      if (successView) successView.hidden = true;
-      resetCaptcha();
-      form?.querySelector<HTMLInputElement>('input[name="nombre"]')?.focus();
-    };
-    form?.querySelector("[data-submit-another]")?.addEventListener("click", startNewProject);
-    // submit: POST the FormData to the same-origin endpoint; keep the user's
-    // input untouched on error, reset + announce success before closing
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!form || submitting || submitted) return;
-      FIELD_NAMES.forEach(clearFieldError);
-      if (statusEl) statusEl.hidden = true;
-      const body = new FormData(form);
-      const validation = validateSubmissionForm(body);
-      if (!validation.ok) {
-        for (const [field, message] of Object.entries(validation.errors)) setFieldError(field, message, false);
-        setStatus("Revisá los campos marcados antes de enviar.", true);
-        setFieldError(validation.field, validation.message);
-        return;
-      }
-      const logoCheck = validateLogo(logoInput?.files?.[0]);
-      if (!logoCheck.ok) { setFieldError("logo", logoCheck.error); return; }
-      if (form.querySelector(".cf-turnstile") && !body.get("cf-turnstile-response")) {
-        setFieldError("captcha", "Completá la verificación antes de enviar.");
-        form.querySelector<HTMLElement>("[data-turnstile]")?.focus();
-        return;
-      }
-      // Send the same normalized values that passed the shared schema.
-      for (const field of SUBMISSION_FIELDS) {
-        body.delete(field);
-        const value = validation.value[field];
-        if (Array.isArray(value)) value.forEach((item) => body.append(field, item));
-        else body.set(field, value);
-      }
-      submitting = true;
-      form.setAttribute("aria-busy", "true");
-      if (formView) formView.inert = true;
-      // honeypot: if a bot filled it, still POST so it gets the fake success
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Enviando…";
-      }
-      try {
-        const res = await fetch("/api/projects/submit", {
-          method: "POST",
-          body,
-          signal: AbortSignal.timeout(30_000),
-        });
-        const data = (await res.json().catch(() => null)) as
-          | { ok: boolean; error?: string; field?: string; errors?: Record<string, string> }
-          | null;
-        if (formView) formView.inert = false;
-        if (!res.ok || !data?.ok) {
-          track("submit_project_submitted", {
-            submission_success: false,
-            error_code: "submission_rejected",
-            submission_source: "modal_submit_button",
-            project_category_selected: body.getAll("categorias").join(","),
-          });
-          if (data?.errors) {
-            for (const [field, message] of Object.entries(data.errors)) {
-              if (FIELD_NAMES.has(field) && typeof message === "string") setFieldError(field, message, false);
-            }
-          }
-          const message =
-            data && typeof data.error === "string"
-              ? data.error
-              : "No se pudo enviar. Intentá de nuevo.";
-          const field = data && typeof data.field === "string" ? data.field : null;
-          if (field && FIELD_NAMES.has(field)) {
-            setFieldError(field, message);
-            if (field === "captcha") {
-              form?.querySelector<HTMLElement>("[data-turnstile]")?.focus();
-            }
-          } else {
-            setStatus(message, true);
-          }
-          return;
-        }
-        submitted = true;
-        const category = body.getAll("categorias").join(",");
-        track("submit_project_submitted", {
-          submission_success: true,
-          error_code: "none",
-          submission_source: "modal_submit_button",
-          project_category_selected: category,
-        });
-        track("project_submission_completed_marker", {
-          submission_date: new Date().toISOString(),
-          submission_success: true,
-          project_category_selected: category,
-          is_logged_in: false,
-        });
-        clearProjectForm();
-        if (formView) formView.hidden = true;
-        if (successView) successView.hidden = false;
-        playConfetti();
-        if (dialog.open) successTitle?.focus();
-      } catch {
-        setStatus("Hubo un problema de conexión. Intentá de nuevo.", true);
-      } finally {
-        submitting = false;
-        form.removeAttribute("aria-busy");
-        if (formView) formView.inert = false;
-        if (submitBtn && !submitted) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Agregar tu proyecto";
-        }
-        if (!submitted) resetCaptcha();
-      }
-    });
-  }
 </script>

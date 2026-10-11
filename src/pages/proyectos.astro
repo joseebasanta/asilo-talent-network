@@ -9,6 +9,7 @@ import SeoHead from "../components/SeoHead.astro";
 import ProjectDirectory from "../components/ProjectDirectory.astro";
 import { loadApprovedProjects } from "../lib/projects-loader";
 import ProjectCard from "../components/ProjectCard.astro";
+import { parseSortMode, SORT_OPTIONS } from "../lib/project-sort";
 import { filterProjects, normalizeSearch, paginateProjects, projectPageUrl } from "../lib/project-search";
 
 const projects = (await loadApprovedProjects()).map((project, index) => ({ ...project, index }));
@@ -16,7 +17,7 @@ const categories = Array.from(new Map(projects.flatMap(project => project.tags)
   .map(tag => [normalizeSearch(tag), tag])).values()).sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
 const query = Astro.url.searchParams.get("q") ?? "";
 const selected = categories.filter(category => Astro.url.searchParams.getAll("categoria").some(value => normalizeSearch(value) === normalizeSearch(category)));
-const order = Astro.url.searchParams.get("orden") === "za" ? "za" : "az";
+const order = parseSortMode(Astro.url.searchParams.get("orden"));
 const matches = filterProjects(projects, query, selected, order);
 const pagination = paginateProjects(matches, Number(Astro.url.searchParams.get("pagina") ?? 1));
 const positions = new Map(pagination.items.map((project, index) => [project.index, index]));
@@ -107,12 +108,12 @@ const pageDescription =
               <span class="filter-label" id="sort-label">Ordenar</span>
               <details class="sort-dropdown" id="project-sort">
                 <summary aria-labelledby="sort-label sort-value">
-                  <span id="sort-value">Nombre: {order === "za" ? "Z–A" : "A–Z"}</span>
+                  <span id="sort-value">{SORT_OPTIONS.find(option => option.value === order)!.label}</span>
                   <svg class="sort-chevron" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 8h3v3H5zm3 3h3v3H8zm3 3h2v3h-2zm2-3h3v3h-3zm3-3h3v3h-3z" /></svg>
                 </summary>
                 <fieldset class="sort-options">
-                  <legend class="sr-only">Ordenar proyectos por nombre</legend>
-                  {[{ value: "az", label: "Nombre: A–Z" }, { value: "za", label: "Nombre: Z–A" }].map(option => (
+                  <legend class="sr-only">Ordenar proyectos</legend>
+                  {SORT_OPTIONS.map(option => (
                     <label class="sort-option">
                       <input type="radio" name="orden" value={option.value} checked={order === option.value} />
                       <span>{option.label}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11h3v3H3zm3 3h3v3H6zm3 3h3v3H9zm3-3h3v3h-3zm3-3h3v3h-3zm3-3h3v3h-3z" /></svg></span>
@@ -131,7 +132,7 @@ const pageDescription =
         <div class="explore-grid" id="project-results" tabindex="-1" aria-label="Resultados de proyectos">
           {[...pagination.items, ...projects.filter(project => !positions.has(project.index))].map(project => (
             <ProjectCard project={project}
-              data-project-index={project.index} data-title={project.title}
+              data-project-index={project.index} data-added-index={project.addedIndex} data-title={project.title}
               data-description={project.description} data-author={project.author}
               data-tags={JSON.stringify(project.tags)} hidden={!positions.has(project.index)}
               style={`order: ${positions.get(project.index) ?? 0}`}

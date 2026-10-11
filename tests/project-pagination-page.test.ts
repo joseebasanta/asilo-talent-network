@@ -4,6 +4,7 @@ vi.mock("../src/lib/projects-loader", () => ({
   loadApprovedProjects: async () => Array.from({ length: 25 }, (_, index) => ({
     title: `Project ${String(index + 1).padStart(2, "0")}`,
     href: `https://example.com/${index + 1}`,
+    addedIndex: index,
     author: "Test builder", description: "Project description", tags: index < 12 ? ["AI"] : ["SaaS"],
   })),
 }));
@@ -13,8 +14,27 @@ async function render(query = "") {
   return container.renderToString(ProjectsPage, { request: new Request(`https://example.com/proyectos${query}`) });
 }
 function visibleCards(html: string) {
-  return [...html.matchAll(/<a\b[^>]*data-project-index[^>]*>/g)].map(match => match[0]).filter(tag => !/\bhidden(?:[\s=>])/.test(tag));
+  return [...html.matchAll(/<(?:a|article)\b[^>]*data-project-index[^>]*>/g)].map(match => match[0]).filter(tag => !/\bhidden(?:[\s=>])/.test(tag));
 }
+describe("server-rendered sort", () => {
+  it("offers the same options as the home and defaults to A–Z", async () => {
+    const html = await render();
+    expect([...html.matchAll(/<input[^>]*name="orden"[^>]*>/g)].map(m => m[0].match(/value="([^"]+)"/)![1])).toEqual(["recientes", "az", "za"]);
+    expect(html).toMatch(/<input[^>]*value="az"[^>]*checked/);
+    expect(html).toContain("Nombre: A–Z");
+    expect(html).toContain(">Ordenar proyectos<");
+  });
+  it("renders newest first and preselects Más recientes", async () => {
+    const html = await render("?orden=recientes");
+    const cards = visibleCards(html);
+    expect(cards[0]).toContain('data-title="Project 25"');
+    expect(cards[0]).toContain('data-added-index="24"');
+    expect(cards[9]).toContain('data-title="Project 16"');
+    expect(html).toMatch(/<input[^>]*value="recientes"[^>]*checked/);
+    expect(html).toMatch(/<span id="sort-value">Más recientes<\/span>/);
+  });
+});
+
 describe("server-rendered project pagination", () => {
   it("renders the second page and preserves filters in navigation without JavaScript", async () => {
     const html = await render("?categoria=AI&pagina=2");

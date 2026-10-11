@@ -2,7 +2,7 @@
 
 Spanish-language community site and project directory for Venezuelan builders.
 Built with Astro SSR and the Vercel adapter. Project submissions and approved
-listings use Google Sheets; uploaded logos use Appwrite Storage.
+listings use Google Sheets; uploaded logos use Appwrite.
 
 Browse projects at `/proyectos` or apply to join the community from the homepage.
 
@@ -16,14 +16,23 @@ cp .env.example .env.local
 pnpm dev
 ```
 
+To try the site without credentials, run on fictional projects:
+
+```sh
+DEMO_DATA=1 pnpm dev
+```
+
 Open the local URL printed by Astro. Fill in `.env.local` to use the Google
 Sheets integrations; see [membership form setup](docs/community-form.md).
 Membership applications must use a separate spreadsheet from projects and the
 member roster. Keep credentials server-only and out of commits.
 
 Optional project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`,
-and `APPWRITE_API_KEY`. Optional spam protection uses `TURNSTILE_SITE_KEY`
-and `TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
+and `APPWRITE_API_KEY`. Optional spam protection (Cloudflare Turnstile on the
+project and community join forms) uses `TURNSTILE_SITE_KEY` and
+`TURNSTILE_SECRET_KEY` (the lowercase names `cloudflare_turnstile_site_key`
+and `turnstile_secret_key` are also accepted). These optional keys are
+included in `.env.example`.
 
 ## Checks
 
@@ -31,6 +40,7 @@ and `TURNSTILE_SECRET_KEY`. These optional keys are included in `.env.example`.
 pnpm test
 pnpm check
 pnpm build
+pnpm test:e2e   # Playwright browser tests against DEMO_DATA=1
 ```
 
 ## Issues and pull requests
@@ -54,6 +64,17 @@ cover bug reports, improvements, and PRs. Coding agents should start with
 The standalone HTML/React prototypes and their unused assets have been removed.
 `BASELINE.md`, `docs/astro-appwrite-migration.md`, and `openspec/config.yaml`
 record historical baseline/planning context, not the current application setup.
+
+## How the directory works
+
+- Each sheet row is an immutable **revision**. A project is identified by its
+  normalized website; the **latest approved** revision is what the site shows.
+- Each project has its own page at `/proyectos/<slug>`. The homepage directory
+  can sort by name or recency. Likes and comments are deferred until user
+  accounts exist (see the `feat/engagement-parked` branch).
+- **New projects** and **edit requests** ("Solicita cambios" on a project page)
+  both append a `PENDIENTE` row. Approving = setting it to `SI`. Edit requests
+  carry the requester's contact in *Notas adicionales*.
 
 ## Conteo de Builders
 

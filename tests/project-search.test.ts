@@ -24,6 +24,21 @@ describe("project discovery", () => {
   });
 });
 
+describe("recent ordering", () => {
+  const dated: Project[] = [
+    { ...projects[0], addedIndex: 1 },
+    { ...projects[1], addedIndex: 5 },
+    { ...projects[2], addedIndex: 5 },
+    { title: "Sin fecha", author: "X", description: "", tags: [], href: "https://example.com/n" },
+  ];
+  it("puts the newest first, breaks ties by title and leaves undated projects last", () => {
+    expect(filterProjects(dated, "", [], "recientes").map(p => p.title)).toEqual(["Ávila", "Builder", "Zeta", "Sin fecha"]);
+  });
+  it("falls back to A–Z for unknown modes", () => {
+    expect(filterProjects(projects, "", [], "nope").map(p => p.title)).toEqual(["Ávila", "Builder", "Zeta"]);
+  });
+});
+
 describe("project pagination", () => {
   const items = Array.from({ length: 25 }, (_, index) => index);
   it("shows ten items per page, with no overlap and a partial final page", () => {

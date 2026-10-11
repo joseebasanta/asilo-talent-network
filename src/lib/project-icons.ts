@@ -22,6 +22,8 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Diseño & Creatividad": "/icons/pixelarticons/gamepad.svg",
   "Social & Comunidad": "/icons/pixelarticons/heart.svg",
   "Hardware & IoT": "/icons/pixelarticons/box.svg",
+  Legaltech: "/icons/pixelarticons/shield.svg",
+  PropTech: "/icons/pixelarticons/home.svg",
 };
 
 const DEFAULT_ICON = "/icons/pixelarticons/box.svg";

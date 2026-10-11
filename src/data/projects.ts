@@ -9,6 +9,12 @@ export type Project = {
   logoUrl?: string;
   /** Local Pixelarticons fallback selected from the first project category. */
   iconUrl?: string;
+  /** Stable public id (hash of the normalized website); absent on placeholders. */
+  id?: string;
+  /** `/proyectos/<slug>` detail page path segment; absent on placeholders. */
+  slug?: string;
+  /** Sheet position of the project's first approved revision (for "recientes"). */
+  addedIndex?: number;
 };
 
 const placeholderProject: Project = {
