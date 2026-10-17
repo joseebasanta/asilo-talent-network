@@ -25,16 +25,31 @@ import { CTA_HREF, CTA_LABEL, services } from "../../data/landing";
             </svg>
           </summary>
           <div class="l-acc-body">
-            <div class="l-media l-acc-media">
-              <img
-                src={service.image.src}
-                alt={service.image.alt}
-                width="720"
-                height="480"
-                loading={i === 0 ? "eager" : "lazy"}
-                decoding="async"
-              />
-            </div>
+            {service.stack ? (
+              /* Pantallas apiladas que rotan una tras otra (phone-stack.ts). Sin JS se ven quietas, como en Figma. */
+              <div class="l-media l-acc-media l-stack" data-phone-stack>
+                <img class="l-stack-bg" src={service.stack.background} alt="" width="720" height="480" decoding="async" />
+                <span class="l-stack-glow" aria-hidden="true"></span>
+                <ul class="l-stack-screens">
+                  {service.stack.screens.map((screen, k) => (
+                    <li class="l-stack-card" data-stack-card style={`--slot: ${k}`}>
+                      <img src={screen.src} alt={screen.alt} width="350" height="707" loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : service.image && (
+              <div class="l-media l-acc-media">
+                <img
+                  src={service.image.src}
+                  alt={service.image.alt}
+                  width="720"
+                  height="480"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              </div>
+            )}
             <div class="l-acc-content">
               <div class="l-acc-text">
                 <p class="l-acc-desc">{service.hook} {service.detail}</p>

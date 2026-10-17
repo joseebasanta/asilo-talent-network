@@ -30,6 +30,13 @@ export const hero = {
   clientLogos: [1, 2, 3, 4, 5, 6].map((n) => ({ src: `/placeholders/logo-${n}.svg`, name: `Cliente ${n}` })),
 };
 
+// Pantallas de teléfono apiladas sobre un fondo; rotan una tras otra (phone-stack.ts).
+// La primera pantalla es la que va adelante. Imágenes en PNG/WebP con fondo transparente.
+export interface PhoneStack {
+  background: string;
+  screens: ImageAsset[];
+}
+
 export interface Service {
   number: string;
   name: string;
@@ -37,7 +44,9 @@ export interface Service {
   // Sigue al gancho en la descripción del servicio abierto.
   detail: string;
   includes: string[];
-  image: ImageAsset;
+  // Cada servicio muestra un stack animado o, si no lo tiene, una imagen fija.
+  stack?: PhoneStack;
+  image?: ImageAsset;
 }
 
 export const services: Service[] = [
@@ -53,8 +62,15 @@ export const services: Service[] = [
       "Benchmark de competidores",
       "Reporte con quick wins",
     ],
-    // Exportada de Figma (Asilo Services, nodo 28:838).
-    image: { src: "/services/ux-assessment.webp", alt: "Pantallas de la app Tilín apiladas sobre un fondo azul" },
+    // Diseño: Figma "Asilo Services", nodo 28:838. Fondo exportado de Figma; pantallas a 2×.
+    stack: {
+      background: "/services/ux-assessment/background.webp",
+      screens: [
+        { src: "/services/ux-assessment/screen-1.webp", alt: "Tilín: pantalla de búsqueda del mejor profesional" },
+        { src: "/services/ux-assessment/screen-2.webp", alt: "Tilín: inicio con promociones y servicios rápidos" },
+        { src: "/services/ux-assessment/screen-3.webp", alt: "Mattelsa: ficha de producto de una camiseta" },
+      ],
+    },
   },
   {
     number: "02",

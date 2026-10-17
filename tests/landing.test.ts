@@ -68,9 +68,15 @@ describe("landing de servicios", () => {
 
     for (const service of services) {
       expect(section).toContain(`${service.hook} ${service.detail}`);
-      expect(section).toContain(`src="${service.image.src}"`);
+      const media = service.stack ? [service.stack.background, ...service.stack.screens.map((s) => s.src)] : [service.image?.src];
+      expect(media.every(Boolean)).toBe(true);
+      for (const src of media) expect(section).toContain(`src="${src}"`);
       for (const item of service.includes) expect(section).toContain(`<li>${item}</li>`);
     }
+    // UX Assessment rota sus pantallas: una tarjeta por pantalla, de adelante (0) hacia atrás.
+    expect(section).toContain("data-phone-stack");
+    expect(section.match(/data-stack-card/g)).toHaveLength(services[0]!.stack!.screens.length);
+    expect(section).toContain('style="--slot: 0"');
     // Cada servicio cierra con el CTA del sitio.
     expect(anchorsWithText(section, "Contáctanos")).toEqual(services.map(() => CTA_HREF));
   });
@@ -144,7 +150,9 @@ describe("landing de servicios", () => {
       ...hero.avatars,
       ...hero.clientLogos.map((logo) => logo.src),
       ...projects.map((project) => project.image.src),
-      ...services.map((service) => service.image.src),
+      ...services.flatMap((service) =>
+        service.stack ? [service.stack.background, ...service.stack.screens.map((s) => s.src)] : [service.image!.src],
+      ),
       ...testimonials.items.map((item) => item.avatar),
       faq.card.avatar,
       "/og-servicios.png",

@@ -366,6 +366,32 @@ html:has(body.landing) {
 
 .l-acc-media { aspect-ratio: 3 / 2; max-width: 100%; border-radius: var(--radius-md); }
 
+/* Stack de pantallas (Figma 28:838). Medidas en % del marco de 720×480 para que escale.
+   --slot: 0 adelante, 1 y 2 detrás; la que sale lleva [data-leaving] y vuelve a entrar por detrás. */
+.l-stack { position: relative; background: #fff; }
+.l-stack .l-stack-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.l-stack-glow {
+  position: absolute; left: 21.25%; top: 9.79%; width: 43.47%; height: 67.92%;
+  border-top-right-radius: 12px;
+  background: linear-gradient(224.7deg, rgb(59, 139, 255) 5.6%, rgba(35, 83, 153, 0) 35.44%);
+}
+.l-stack-screens { position: absolute; inset: 0; }
+.l-stack-card {
+  position: absolute; left: 35.42%; top: 18.13%; width: 24.31%;
+  z-index: calc(10 - var(--slot));
+  transform: translate(calc(var(--slot) * 9.4%), calc(var(--slot) * -4.4%));
+  transition: transform 900ms cubic-bezier(.65, 0, .35, 1), opacity 900ms cubic-bezier(.65, 0, .35, 1);
+  will-change: transform, opacity;
+}
+.l-stack-card[data-hidden] { opacity: 0; }
+/* La de adelante sale hacia el frente y se desvanece más rápido para no superponerse con la que entra. */
+.l-stack-card[data-leaving] {
+  z-index: 11; opacity: 0;
+  transform: translate(-6%, 5%) scale(1.04);
+  transition-duration: 700ms, 420ms;
+}
+.l-stack .l-stack-card img { width: 100%; height: auto; object-fit: contain; }
+
 .l-acc-content { display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-32); min-width: 0; }
 .l-acc-text { display: flex; flex-direction: column; gap: var(--spacing-24); }
 .l-acc-desc {
