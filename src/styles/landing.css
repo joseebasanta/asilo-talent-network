@@ -326,75 +326,81 @@ html:has(body.landing) {
 @media (min-width: 1024px) { .l-projects { grid-template-columns: repeat(3, 1fr); row-gap: 56px; margin-top: 56px; } }
 
 /* ── 3. Servicios (acordeón) ──────────────────────────────────────────── */
+/* Diseño: Figma "Asilo Services", nodo 24:121 (Servicios / Detalle). */
 
 .l-accordion { border-top: 1px solid var(--color-hairline); }
 .l-acc { border-bottom: 1px solid var(--color-hairline); }
 
 .l-acc summary {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: start;
-  column-gap: var(--spacing-16);
-  row-gap: var(--spacing-4);
-  padding-block: var(--spacing-24);
+  grid-template-columns: 48px minmax(0, 1fr) 40px;
+  align-items: center;
+  column-gap: var(--spacing-12);
+  padding-block: var(--spacing-32);
   cursor: pointer;
   list-style: none;
 }
 .l-acc summary::-webkit-details-marker { display: none; }
 .l-acc summary:focus-visible { outline-offset: 4px; }
 
-.l-acc-num { padding-top: 10px; font-family: var(--font-geist-mono); font-size: 12px; letter-spacing: 0.071em; color: var(--color-stone); }
-.l-acc-title { display: flex; flex-direction: column; gap: var(--spacing-4); }
-.l-acc-name { font-size: clamp(24px, 4vw, var(--text-heading)); font-weight: 450; line-height: 1.1; letter-spacing: -0.05em; }
-.l-acc-hook { font-size: 16px; color: var(--color-charcoal); }
+.l-acc-num, .l-acc-name {
+  font-size: clamp(28px, 4.2vw, 40px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.056em;
+  color: var(--color-obsidian);
+}
 
-.l-acc-icon {
-  position: relative; width: 44px; height: 44px; flex: none;
-  border-radius: var(--radius-md); box-shadow: var(--ring-ghost);
-  background: var(--color-pure-white);
-}
-.l-acc-icon::before, .l-acc-icon::after {
-  content: ""; position: absolute; left: 50%; top: 50%;
-  width: 14px; height: 1.5px; background: var(--color-obsidian);
-  transform: translate(-50%, -50%);
-  transition: transform 220ms var(--ease-out);
-}
-.l-acc-icon::after { transform: translate(-50%, -50%) rotate(90deg); }
-.l-acc[open] .l-acc-icon::after { transform: translate(-50%, -50%) rotate(0deg); }
-.l-acc summary:hover .l-acc-icon { box-shadow: 0 0 0 1px var(--color-ash); }
+.l-acc-icon { color: var(--color-accent); transition: transform 220ms var(--ease-out); }
+.l-acc-icon-v { transform-origin: 20px 20px; transition: transform 220ms var(--ease-out); }
+.l-acc[open] .l-acc-icon-v { transform: scaleY(0); }
+.l-acc summary:hover .l-acc-icon { transform: rotate(90deg); }
+.l-acc[open] summary:hover .l-acc-icon { transform: none; }
 
 .l-acc-body {
-  display: grid; gap: var(--spacing-24);
-  padding-bottom: var(--spacing-32);
+  display: grid;
+  gap: var(--spacing-24);
+  padding-bottom: var(--spacing-40);
 }
 .l-acc[open] .l-acc-body { animation: l-rise 320ms var(--ease-out) both; }
 
-.l-acc-list-label { margin-bottom: var(--spacing-12); }
-.l-checklist { display: flex; flex-direction: column; }
-.l-checklist li {
-  display: flex; gap: var(--spacing-12); align-items: baseline;
-  padding-block: var(--spacing-12);
-  border-bottom: 1px solid var(--color-hairline);
-  font-size: 16px; color: var(--color-obsidian);
+.l-acc-media { aspect-ratio: 3 / 2; max-width: 100%; border-radius: var(--radius-md); }
+
+.l-acc-content { display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-32); min-width: 0; }
+.l-acc-text { display: flex; flex-direction: column; gap: var(--spacing-24); }
+.l-acc-desc {
+  font-size: 20px; font-weight: 500; line-height: 1.375; letter-spacing: -0.01em;
+  color: var(--color-obsidian); text-wrap: pretty;
 }
-.l-checklist li::before {
-  content: "✓"; flex: none;
-  font-family: var(--font-geist-mono); font-size: 13px;
-  color: var(--color-accent);
+.l-acc-includes { display: flex; flex-direction: column; gap: var(--spacing-12); }
+.l-acc-includes li {
+  display: flex; gap: 10px;
+  font-size: 17px; line-height: 1.4; color: var(--color-charcoal);
 }
+.l-acc-includes li::before { content: "•"; flex: none; }
+
+.l-acc-link {
+  display: inline-flex; align-items: center; gap: var(--spacing-8);
+  align-self: flex-start; min-height: 44px;
+  font-size: 18px; font-weight: 500; line-height: 26px;
+  color: var(--color-obsidian);
+  text-decoration: underline; text-underline-offset: 4px;
+  text-decoration-color: var(--color-ash);
+  transition: text-decoration-color 160ms ease;
+}
+.l-acc-link:hover { text-decoration-color: currentColor; }
+.l-acc-link svg { flex: none; transition: transform 200ms var(--ease-out); }
+.l-acc-link:hover svg { transform: translateX(3px); }
 
 @media (min-width: 768px) {
-  .l-acc summary { grid-template-columns: 64px 1fr auto; }
-  .l-acc-body { grid-template-columns: 64px 1fr; gap: var(--spacing-32); }
-  .l-acc-body > .l-acc-list { grid-column: 2; }
+  .l-acc summary { grid-template-columns: 120px minmax(0, 1fr) 40px; padding-block: var(--spacing-40); column-gap: 0; }
 }
-@media (min-width: 1280px) {
-  .l-acc summary { grid-template-columns: 96px 1fr 1fr auto; align-items: center; }
-  .l-acc-title { display: contents; }
-  .l-acc-hook { padding-right: var(--spacing-24); }
-  /* La lista queda bajo el gancho (misma columna), alineada con el resto de la fila. */
-  .l-acc-body { grid-template-columns: 96px 1fr 1fr 44px; column-gap: var(--spacing-16); }
-  .l-acc-body > .l-acc-list { grid-column: 3; }
+@media (min-width: 1024px) {
+  .l-acc summary { grid-template-columns: 200px minmax(0, 1fr) 40px; }
+  .l-acc-body { grid-template-columns: minmax(0, 720fr) minmax(0, 520fr); gap: var(--spacing-40); padding-bottom: 56px; }
+  .l-acc-desc { font-size: 24px; line-height: 33px; }
+  .l-acc-includes { gap: 14px; }
+  .l-acc-includes li { font-size: 20px; line-height: 28px; }
 }
 
 /* ── Testimonios (carrusel escalonado) ───────────────────────────────── */

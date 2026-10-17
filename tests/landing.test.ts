@@ -49,24 +49,30 @@ describe("landing de servicios", () => {
     const html = await render();
     const ctas = anchorsWithText(html, "Contáctanos");
 
-    // Nav, hero, tarjeta de la FAQ y CTA final.
-    expect(ctas.length).toBe(4);
+    // Nav, hero, un link por servicio, tarjeta de la FAQ y CTA final.
+    expect(ctas.length).toBe(4 + services.length);
     expect(new Set(ctas)).toEqual(new Set([CTA_HREF]));
     expect(CTA_HREF).toMatch(/^https:\/\/wa\.me\/584126310981\?text=/);
     expect(anchorsWithText(html, "Ver servicios")).toEqual(["#servicios"]);
   });
 
-  it("renders the services as an exclusive accordion with every item closed", async () => {
+  it("renders the services as an exclusive accordion with only the first item open", async () => {
     const html = await render();
     const section = html.slice(html.indexOf('id="servicios"'), html.indexOf('id="testimonios"'));
     const details = section.match(/<details\b[^>]*>/g) ?? [];
 
     expect(details).toHaveLength(services.length);
     expect(details.every((tag) => tag.includes('name="servicios"'))).toBe(true);
-    expect(details.some((tag) => /\bopen\b/.test(tag))).toBe(false);
-    for (const item of ["Benchmark de competidores", "Sitios en Framer/Webflow", "Design system base"]) {
-      expect(html).toContain(item);
+    expect(details[0]).toMatch(/\bopen\b/);
+    expect(details.slice(1).some((tag) => /\bopen\b/.test(tag))).toBe(false);
+
+    for (const service of services) {
+      expect(section).toContain(`${service.hook} ${service.detail}`);
+      expect(section).toContain(`src="${service.image.src}"`);
+      for (const item of service.includes) expect(section).toContain(`<li>${item}</li>`);
     }
+    // Cada servicio cierra con el CTA del sitio.
+    expect(anchorsWithText(section, "Contáctanos")).toEqual(services.map(() => CTA_HREF));
   });
 
   it("renders the projects grid in the hero and the testimonials without team cards", async () => {
@@ -138,6 +144,7 @@ describe("landing de servicios", () => {
       ...hero.avatars,
       ...hero.clientLogos.map((logo) => logo.src),
       ...projects.map((project) => project.image.src),
+      ...services.map((service) => service.image.src),
       ...testimonials.items.map((item) => item.avatar),
       faq.card.avatar,
       "/og-servicios.png",

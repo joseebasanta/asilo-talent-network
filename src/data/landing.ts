@@ -34,7 +34,10 @@ export interface Service {
   number: string;
   name: string;
   hook: string;
+  // Sigue al gancho en la descripción del servicio abierto.
+  detail: string;
   includes: string[];
+  image: ImageAsset;
 }
 
 export const services: Service[] = [
@@ -42,24 +45,36 @@ export const services: Service[] = [
     number: "01",
     name: "UX Assessment",
     hook: "Tu app no convierte y no sabes por qué.",
+    detail:
+      "La revisamos como lo haría un usuario nuevo, encontramos dónde se pierde la gente y te decimos qué cambiar primero.",
     includes: [
       "Auditoría heurística",
       "Análisis de flujos críticos",
       "Benchmark de competidores",
       "Reporte con quick wins",
     ],
+    // Exportada de Figma (Asilo Services, nodo 28:838).
+    image: { src: "/services/ux-assessment.webp", alt: "Pantallas de la app Tilín apiladas sobre un fondo azul" },
   },
   {
     number: "02",
     name: "UI/UX e Identidad",
     hook: "Tu app funciona, pero se ve como todas.",
+    detail:
+      "Rediseñamos los flujos que más importan y le damos una identidad que se reconoce, con un design system para que tu equipo siga sin perder consistencia.",
     includes: ["Rediseño de flujos", "UI de alta fidelidad", "Identidad de marca", "Design system base"],
+    // TODO: reemplazar por una composición como la de UX Assessment.
+    image: { src: "/projects/tilin.webp", alt: "Pantallas de Tilín, app de servicios para el hogar" },
   },
   {
     number: "03",
     name: "Implementaciones",
     hook: "Tienes el diseño, falta construirlo.",
+    detail:
+      "Lo llevamos a producción en Framer, Webflow o front-end, y revisamos cada pantalla para que se vea y funcione como se diseñó.",
     includes: ["Sitios en Framer/Webflow", "Front-end", "QA de diseño"],
+    // TODO: reemplazar por una composición como la de UX Assessment.
+    image: { src: "/projects/gama.webp", alt: "Cajas de autopago de Automercados Gama" },
   },
 ];
 

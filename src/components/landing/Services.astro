@@ -1,5 +1,5 @@
 ---
-import { services } from "../../data/landing";
+import { CTA_HREF, CTA_LABEL, services } from "../../data/landing";
 ---
 <section class="l-section" id="servicios" aria-labelledby="servicios-title">
   <div class="l-container">
@@ -10,24 +10,42 @@ import { services } from "../../data/landing";
       </div>
     </div>
 
-    {/* <details name> hace el acordeón exclusivo de forma nativa; landing.ts lo replica donde no hay soporte. */}
+    {/* <details name> hace el acordeón exclusivo de forma nativa; landing.ts lo replica donde no hay soporte.
+        El primer servicio empieza abierto, como en el diseño (Figma: Asilo Services, nodo 24:121). */}
     <div class="l-accordion" data-accordion data-reveal style="--reveal-i: 1">
-      {services.map((service) => (
-        <details class="l-acc" name="servicios">
+      {services.map((service, i) => (
+        <details class="l-acc" name="servicios" open={i === 0}>
           <summary>
             <span class="l-acc-num">{service.number}</span>
-            <span class="l-acc-title">
-              <span class="l-acc-name">{service.name}</span>
-              <span class="l-acc-hook">{service.hook}</span>
-            </span>
-            <span class="l-acc-icon" aria-hidden="true"></span>
+            <span class="l-acc-name">{service.name}</span>
+            {/* "+" que pierde el trazo vertical al abrir y queda en "−". */}
+            <svg class="l-acc-icon" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M8 20H32" stroke="currentColor" stroke-width="3" />
+              <path class="l-acc-icon-v" d="M20 8V32" stroke="currentColor" stroke-width="3" />
+            </svg>
           </summary>
           <div class="l-acc-body">
-            <div class="l-acc-list">
-              <h3 class="l-eyebrow l-acc-list-label">Incluye</h3>
-              <ul class="l-checklist">
-                {service.includes.map((item) => <li>{item}</li>)}
-              </ul>
+            <div class="l-media l-acc-media">
+              <img
+                src={service.image.src}
+                alt={service.image.alt}
+                width="720"
+                height="480"
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </div>
+            <div class="l-acc-content">
+              <div class="l-acc-text">
+                <p class="l-acc-desc">{service.hook} {service.detail}</p>
+                <ul class="l-acc-includes" aria-label="Incluye">
+                  {service.includes.map((item) => <li>{item}</li>)}
+                </ul>
+              </div>
+              <a class="l-acc-link" href={CTA_HREF}>
+                {CTA_LABEL}
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 9H15M10 4L15 9L10 14" stroke="currentColor" stroke-width="1.5" /></svg>
+              </a>
             </div>
           </div>
         </details>
