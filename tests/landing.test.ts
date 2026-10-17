@@ -93,8 +93,10 @@ describe("landing de servicios", () => {
       expect(hero).toContain(project.year);
       expect(hero).toContain(project.tags);
     }
-    expect(hero).toContain("data-kinetic-grid");
-    expect(hero).toContain("data-kinetic-canvas");
+    expect(hero).toContain("data-grid-pulse");
+    expect(hero).not.toContain("data-kinetic-grid");
+    // La luz de la cuadrícula se atenúa detrás del titular, el subtítulo, los botones y la prueba social.
+    expect(hero.match(/data-grid-avoid/g)).toHaveLength(4);
     expect(html).not.toContain('id="proceso"');
     expect(html).not.toContain('id="trabajo"');
     expect(html).not.toContain('id="nosotros"');

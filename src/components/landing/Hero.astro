@@ -2,14 +2,15 @@
 import { CTA_HREF, CTA_LABEL, hero, projects } from "../../data/landing";
 ---
 <section class="l-hero" id="inicio" aria-labelledby="hero-title">
-  {/* Cuadrícula que se deforma hacia el puntero (kinetic-grid.ts); el contenido se pinta encima. */}
-  <div class="l-hero-field" data-kinetic-grid data-cell-size="56" data-influence-radius="260" data-max-warp="24">
-    <canvas class="l-hero-canvas" data-kinetic-canvas aria-hidden="true"></canvas>
+  <div class="l-hero-field">
+    {/* Cuadrícula que toma color donde pasa el puntero (grid-pulse.ts), debajo del contenido.
+        La luz se atenúa detrás de las líneas de texto marcadas con data-grid-avoid. */}
+    <div class="l-grid-pulse" data-grid-pulse aria-hidden="true"><canvas></canvas></div>
     <div class="l-container">
     <div class="l-hero-copy">
-      <h1 class="l-display" id="hero-title" data-reveal>{hero.title}</h1>
-      <p class="l-lead" data-reveal style="--reveal-i: 1">{hero.subtitle}</p>
-      <div class="l-hero-ctas" data-reveal style="--reveal-i: 2">
+      <h1 class="l-display" id="hero-title" data-reveal data-grid-avoid>{hero.title}</h1>
+      <p class="l-lead" data-reveal data-grid-avoid style="--reveal-i: 1">{hero.subtitle}</p>
+      <div class="l-hero-ctas" data-reveal data-grid-avoid style="--reveal-i: 2">
         <a class="l-btn l-btn--primary" href={CTA_HREF}>{CTA_LABEL}</a>
         <a class="l-btn l-btn--ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
       </div>
@@ -17,7 +18,7 @@ import { CTA_HREF, CTA_LABEL, hero, projects } from "../../data/landing";
         <ul class="l-avatars" aria-hidden="true">
           {hero.avatars.map((src) => <li><img src={src} alt="" width="32" height="32" loading="eager" /></li>)}
         </ul>
-        <p>{hero.proof}</p>
+        <p data-grid-avoid>{hero.proof}</p>
       </div>
     </div>
 

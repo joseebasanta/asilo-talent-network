@@ -269,18 +269,22 @@ html:has(body.landing) {
 .l-hero { padding-bottom: var(--spacing-40); }
 .l-hero-field { position: relative; isolation: isolate; overflow: hidden; padding-top: var(--spacing-40); padding-bottom: var(--spacing-8); }
 @media (min-width: 768px) { .l-hero-field { padding-top: 48px; } }
-.l-hero-canvas {
+/* GridPulse (grid-pulse.ts): líneas finas al 7 % del color de texto; las celdas encendidas van en el canvas.
+   Se desvanece abajo para que lo que sigue pueda pasarle por encima. */
+.l-grid-pulse {
+  --grid-pulse-cell: 24px;
+  --grid-pulse-line: color-mix(in oklab, var(--color-obsidian) 7%, transparent);
   position: absolute; inset: 0; z-index: -1;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
-  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  overflow: hidden; pointer-events: none;
+  color: var(--color-obsidian);
+  background-image:
+    linear-gradient(to right, var(--grid-pulse-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-pulse-line) 1px, transparent 1px);
+  background-size: var(--grid-pulse-cell) var(--grid-pulse-cell);
+  -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent);
+  mask-image: linear-gradient(to bottom, #000 92%, transparent);
 }
-/* Velo sobre la cuadrícula, del lado del texto, para que el copy se lea con los anillos pasando por debajo. */
-.l-hero-field::after {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(90deg, rgba(22, 22, 24, 0.9) 0%, rgba(22, 22, 24, 0.55) 40%, rgba(22, 22, 24, 0) 75%);
-}
+.l-grid-pulse canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 .l-hero-copy { display: flex; flex-direction: column; gap: var(--spacing-24); max-width: 960px; }
 .l-hero-ctas { display: flex; flex-wrap: wrap; gap: var(--spacing-12); }
