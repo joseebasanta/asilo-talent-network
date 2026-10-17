@@ -20,7 +20,7 @@ export async function prepareLogo(file: File): Promise<
     if (file.type === "image/png") {
       for (let offset = 8; offset + 12 <= input.length;) {
         if (input.toString("ascii", offset + 4, offset + 8) === "acTL") {
-          return { ok: false, error: "Usá un logo sin animación." };
+          return { ok: false, error: "Usa un logo sin animación." };
         }
         offset += input.readUInt32BE(offset) + 12;
       }
@@ -35,13 +35,13 @@ export async function prepareLogo(file: File): Promise<
     }
     if (!metadata.width || !metadata.height || metadata.width > LOGO_MAX_DIMENSION ||
       metadata.height > LOGO_MAX_DIMENSION || (metadata.pages ?? 1) > 1) {
-      return { ok: false, error: "Usá un logo sin animación de hasta 4096 × 4096 píxeles (16 megapíxeles)." };
+      return { ok: false, error: "Usa un logo sin animación de hasta 4096 × 4096 píxeles (16 megapíxeles)." };
     }
     const buffer = await image.rotate().resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
       .webp({ quality: 90 }).toBuffer();
-    if (buffer.length > LOGO_MAX_BYTES) return { ok: false, error: "Reducí el tamaño o la resolución del logo." };
+    if (buffer.length > LOGO_MAX_BYTES) return { ok: false, error: "Reduce el tamaño o la resolución del logo." };
     return { ok: true, buffer, filename: "logo.webp" };
   } catch {
-    return { ok: false, error: "No se pudo leer el logo. Usá una imagen válida de hasta 16 megapíxeles." };
+    return { ok: false, error: "No se pudo leer el logo. Usa una imagen válida de hasta 16 megapíxeles." };
   }
 }

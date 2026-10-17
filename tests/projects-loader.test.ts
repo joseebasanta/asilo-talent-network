@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   loadApprovedProjects,
   parseProjects,
+  parseSheetDate,
   resetProjectsCache,
   TTL_MS,
 } from "../src/lib/projects-loader";
@@ -54,7 +55,7 @@ describe("parseProjects", () => {
     const projects = parseProjects(values);
 
     expect(projects.map((p) => p.title)).toEqual(["Gamma", "Zeta"]);
-    expect(projects[0]).toEqual({
+    expect(projects[0]).toMatchObject({
       href: "https://gamma.example",
       title: "Gamma",
       description: "Desc G",
@@ -83,7 +84,7 @@ describe("parseProjects", () => {
     const values = [
       HEADERS,
       ["OkHttps", "https://ok.example", "", "", "", "SI"],
-      ["OkHttp", "http://ok.example", "", "", "", "SI"],
+      ["OkHttp", "http://ok-http.example", "", "", "", "SI"],
       ["JsUrl", "javascript:alert(1)", "", "", "", "SI"],
       ["DataUrl", "data:text/html,<h1>hi</h1>", "", "", "", "SI"],
       ["FtpUrl", "ftp://files.example", "", "", "", "SI"],
@@ -133,7 +134,7 @@ describe("parseProjects", () => {
 
     const [project] = parseProjects(values);
 
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       href: "https://colj.example",
       title: "Columna J",
       description: "Desc J",
@@ -190,7 +191,7 @@ describe("parseProjects", () => {
 
     const [project] = parseProjects(values);
 
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       href: "https://etiquetas.example",
       title: "Etiquetas",
       description: "Descripción",
@@ -222,7 +223,7 @@ describe("parseProjects", () => {
 
     const [project] = parseProjects(values);
 
-    expect(project).toEqual({
+    expect(project).toMatchObject({
       href: "https://orden.example",
       title: "Orden",
       description: "Desc corta",
@@ -459,5 +460,72 @@ describe("loadApprovedProjects", () => {
     await loadApprovedProjects(fetcher);
 
     expect(calls).toBe(1);
+  });
+});
+
+describe("parseProjects revisions and identity", () => {
+  it("gives each project a stable id and a readable slug", () => {
+    const [project] = parseProjects([
+      HEADERS,
+      ["Pana Pay", "https://www.PanaPay.com/", "Pagos", "Ana", "Fintech", "SI"],
+    ]);
+
+    expect(project.id).toMatch(/^[0-9a-f]{12}$/);
+    expect(project.slug).toBe(`pana-pay-${project.id}`);
+    // Same normalized website → same id, whatever the spelling.
+    const [again] = parseProjects([
+      HEADERS,
+      ["Renombrado", "https://panapay.com", "Pagos", "Ana", "Fintech", "SI"],
+    ]);
+    expect(again.id).toBe(project.id);
+  });
+
+  it("publishes the last approved revision of a project, keeping its first position", () => {
+    const projects = parseProjects([
+      HEADERS,
+      ["Otro", "https://otro.example", "Otro", "Leo", "SaaS", "SI"],
+      ["Pana v1", "https://panapay.com", "Vieja", "Ana", "Fintech", "SI"],
+      ["Pana v2", "https://panapay.com", "Nueva", "Ana", "Fintech", "SI"],
+      ["Pana v3", "https://panapay.com", "Pendiente", "Ana", "Fintech", "PENDIENTE"],
+    ]);
+
+    expect(projects.map((p) => p.title)).toEqual(["Otro", "Pana v2"]);
+    const pana = projects.find((p) => p.title === "Pana v2")!;
+    expect(pana.description).toBe("Nueva");
+    expect(pana.addedIndex).toBe(1);
+  });
+});
+
+describe("demo sheet", () => {
+  it("parses like a real sheet: approved only, latest revision wins", async () => {
+    const { DEMO_SHEET } = await import("../src/data/demo-sheet");
+    const projects = parseProjects(DEMO_SHEET);
+
+    expect(projects).toHaveLength(12);
+    expect(projects.map((p) => p.title)).not.toContain("Borrador");
+    expect(projects.find((p) => p.title === "Pana Pay")?.description).toContain("USDT");
+  });
+});
+
+describe("optional project metrics", () => {
+  it("parses the row date, visits and trending columns when present", () => {
+    const values = [
+      [...HEADERS, "Fecha", "Visitas", "Tendencia"],
+      ["Alfa", "https://alfa.dev", "d", "A", "AI", "SI", "9/10/2026 14:30:00", "1.250", "7"],
+      ["Beta", "https://beta.dev", "d", "B", "AI", "SI", "", "", ""],
+    ];
+    const [alfa, beta] = parseProjects(values);
+    expect(alfa.addedAt).toBe(Date.UTC(2026, 9, 9, 14, 30, 0));
+    expect(alfa.visits).toBe(1250);
+    expect(alfa.trending).toBe(7);
+    expect(beta.addedAt).toBeUndefined();
+    expect(beta.visits).toBeUndefined();
+  });
+
+  it("understands ISO and es-VE dates and rejects garbage", () => {
+    expect(parseSheetDate("2026-10-09T10:00:00Z")).toBe(Date.UTC(2026, 9, 9, 10));
+    expect(parseSheetDate("09/10/2026")).toBe(Date.UTC(2026, 9, 9));
+    expect(parseSheetDate("pronto")).toBeUndefined();
+    expect(parseSheetDate("")).toBeUndefined();
   });
 });

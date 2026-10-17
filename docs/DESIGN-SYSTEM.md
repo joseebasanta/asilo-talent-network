@@ -8,15 +8,19 @@ update this file.
 - **Aesthetic in one line:** a dark, terminal/pixel world — navy‑black ground,
   one sky‑blue accent, a pixel display face over clean sans body, hairline
   borders, and restrained ambient motion.
-- **Stack:** Astro (SSR, but the landing page is `prerender`ed) · vanilla JS ·
+- **Stack:** Astro (SSR on Vercel; the homepage reads the directory per request) · vanilla JS ·
   plain CSS with custom‑property tokens. **No CSS framework, no UI/animation
   libraries.** Prefer native elements (`<dialog>`, form validation) over deps.
 - **Canonical files:**
   - `src/styles/global.css` — tokens + every component (the real source of truth)
-  - `src/styles/fonts.css` — `@font-face` for Doto + IBM Plex Sans
-  - `src/pages/index.astro` — page composition
-  - `src/components/ProjectDirectory.astro` — Proyectos list + the modal form
-  - `src/scripts/` — `ascii-background.js`, `ascii-cursor.js`, `scroll-reveal.js`
+  - `src/styles/fonts.css` — `@font-face` for Averia Serif Libre, Geist and Roboto Mono
+  - `src/layouts/BaseLayout.astro` — `<head>`, header, footer for inner pages (the homepage and `/proyectos` compose `SiteHeader` and `SiteFooter` directly)
+  - `src/pages/index.astro` — homepage composition
+  - `src/pages/proyectos/[slug].astro` — project detail (edit request)
+  - `src/components/ProjectDirectory.astro` — Proyectos head, sort control, carousel
+  - `src/components/ProjectCard.astro` / `ProjectPages.astro` — card + carousel pages
+  - `src/components/ProjectFormModal.astro` — the add / edit-request modal form
+  - `src/scripts/` — `ascii-background.js`, `scroll-reveal.js`
 
 ---
 
@@ -26,8 +30,8 @@ update this file.
    names. Add the token first, use it everywhere.
 2. **One accent.** Sky blue `--blue-500` (`#cee2ff`) is the *only* accent. No
    second hue. (A saturated `#0066ff` was tried and removed.)
-3. **Two typefaces, used with discipline.** Doto for identity (display), IBM Plex
-   Sans for everything readable. Never add a third family.
+3. **Two typefaces, used with discipline.** Averia Serif Libre for identity
+   (display), Geist for everything readable; Roboto Mono only for counters.
 4. **Hairlines, not boxes.** Separate things with 1px borders and faint fills,
    not heavy cards/shadows. Spend border/fill/radius by role.
 5. **Dark‑first, on purpose.** `:root { color-scheme: dark }`. The page commits
@@ -98,23 +102,24 @@ Two families, loaded via `fonts.css` (self‑hosted woff2) and preloaded in the
 
 | Role | Family | Token | Notes |
 |---|---|---|---|
-| Display | **Doto** (pixel) | `--font-display` | headings, hero title, counters, section titles. Weight **900** (`font-variation-settings: "wght" 900`). Usually `text-transform: uppercase`. |
-| Body / UI | **IBM Plex Sans** | `--font-text` | all running text, labels, buttons, inputs. Weights 400/500. |
+| Display | **Averia Serif Libre** | `--font-display` | headings, hero title, section titles. Weights 400/700 (+ italic 400). |
+| Body / UI | **Geist** | `--font-text` | all running text, labels, buttons, inputs. Variable 400–500 (never 600+: no synthetic bold). |
 
-Fallbacks: `--font-display: "Doto", ui-monospace, monospace` ·
-`--font-text: "IBM Plex Sans", system-ui, sans-serif`.
+Fallbacks: `--font-display: "Averia Serif Libre", Georgia, serif` ·
+`--font-text: "Geist", system-ui, sans-serif` ·
+`--font-mono: "Roboto Mono", ui-monospace, monospace` (counters, 400–500).
 
 ### Named type roles (from Figma → used across components)
 | Role | Family / weight | Size / line | Tracking |
 |---|---|---|---|
-| Hero H1 | Doto 900 | `clamp(2.4rem,5.4vw,4rem)` / 1.0 | −.01em, uppercase |
-| Section H2 (Doto) | Doto 900 | `clamp(2rem,6vw,4rem)` per section | −.01em, uppercase |
-| Card title (H3) | IBM Plex 500 | 1.5rem / 1.33 | −.015em |
-| **Label/Medium** | IBM Plex **500** | **16px / 24px** | **−.011em** — the button/label default |
-| Label/Small | IBM Plex 500 | 14px / 20px | −.006em |
-| Paragraph/Large | IBM Plex 400 | 1.125rem / 1.5 | — |
-| Paragraph/Small | IBM Plex 400 | 14px / 20px | −.006em |
-| Eyebrow / 2XS | IBM Plex 500 | 11–12px | uppercase, wide tracking (.02–.04em) |
+| Hero H1 | Averia 700 | `clamp(2.4rem,5.4vw,4rem)` / 1.0 | −.01em, uppercase |
+| Section H2 | Averia 700 | `clamp(2rem,6vw,4rem)` per section | −.01em, uppercase |
+| Card title (H3) | Geist 500 | 1.5rem / 1.33 | −.015em |
+| **Label/Medium** | Geist **500** | **16px / 24px** | **−.011em** — the button/label default |
+| Label/Small | Geist 500 | 14px / 20px | −.006em |
+| Paragraph/Large | Geist 400 | 1.125rem / 1.5 | — |
+| Paragraph/Small | Geist 400 | 14px / 20px | −.006em |
+| Eyebrow / 2XS | Geist 500 | 11–12px | uppercase, wide tracking (.02–.04em) |
 
 **Rule of thumb:** any button or form label = **Label/Medium** (500, 16/24,
 −.011em). Set `font-weight: 500` explicitly — don’t rely on inheritance (buttons
@@ -165,8 +170,27 @@ All class names live in `global.css`. Specs below are the current truth.
   with no padding above the first or below the last row.
 - **Project card** (`.prj-item`): transparent at rest; **hover/focus** → bg
   `--slate-800` panel + reveal a `--blue-500` external‑link icon by the title.
+- The card is an `<article>`; its title link (`.prj-link`) is **stretched** over
+  the whole card (`::after`, `inset: 0`), so the card stays one click target.
+  Focus ring shows on the card via `:has(.prj-link:focus-visible)`.
 - **Chips/tags** (`.prj-tag`): bg `--slate-900`, `--blue-800` text, pill radius,
   11px uppercase.
+
+### Sort control (`.prj-sort`)
+Eyebrow label ("ORDENAR", 12px uppercase .04em, `--blue-800`) + native `<select>`
+with the exact `.field-input` spec (h40, `0 14px`, `--sky-alpha-16`, 4px, focus
+`--sky-alpha-24`, `--blue-50` text). The chevron is the section's pixel arrow
+rotated −90°. It is a GET form: works without JS; with JS it swaps the
+server-rendered partial. Wraps to its own row under 820px.
+
+### Detail page (`.pd`)
+Single 48rem column under the absolute header (`padding-top: --header-h + 3rem`):
+back link (pixel arrow, Label/Small) → logo tile + Averia 700 title (`data-decode`) → description
+(Paragraph/Large) → tags → actions (primary "Visitar") → "¿Es tu
+proyecto? Solicita cambios".
+
+Inline text links inside prose (`.pd-owner-link`) follow the
+footer-link convention: `--blue-500`, 500 weight, hover `--blue-50`, no underline.
 
 ### Inputs (modal form)
 - Text input `.field-input`: h40, `padding 0 14px`, bg `--bg`, border
@@ -175,6 +199,9 @@ All class names live in `global.css`. Specs below are the current truth.
 - Textarea box `.field-textarea-box`: same border, holds the textarea + a
   bottom‑right `.field-counter` (e.g. `0/140`).
 - Label `.field-label`: `--blue-700`, 14/20, 500.
+- Hint `.field-hint`: `#5c6470`, 12/16 (same literal as the dropzone hint).
+- Read-only input (`[readonly]`, e.g. the website in an edit request):
+  `--blue-700` text on `--sky-alpha-5`, `cursor: not-allowed`.
 
 ### Dropzone (`.dropzone`)
 Dashed `--sky-alpha-24` border, radius 4px; 46px icon tile (bg `--sky-alpha-5`,
@@ -191,7 +218,7 @@ Supports a “max N selected” rule by disabling unchecked inputs (JS).
 - Card: bg `--bg`, border `--sky-alpha-16`, **radius 16px**, `max-height:
   calc(100dvh - 2rem)` with the body scrolling.
 - `::backdrop`: `rgba(0,10,17,.72)` + `blur(2px)`.
-- Header: Doto title (24/32, `--blue-500`) + `--blue-700` subtitle + 24px close
+- Header: Averia title (24/32, `--blue-500`) + `--blue-700` subtitle + 24px close
   (`--blue-800`, hover `--blue-50`); `.modal-divider` = `--sky-alpha-16`.
 - Behavior: open with `dialog.showModal()`; close on ✕ / Cancel / **backdrop
   click** / **Esc** (native). Get focus‑trap + background `inert` for free.
@@ -204,7 +231,7 @@ Supports a “max N selected” rule by disabling unchecked inputs (JS).
 
 ## 6. Icons
 
-- **Style:** pixel/8‑bit glyphs matching Doto (brackets, arrows, smile, external‑link,
+- **Style:** pixel/8‑bit glyphs matching the display face (brackets, arrows, smile, external‑link,
   close, upload). Social icons are standard brand marks.
 - **Convention:** inline the SVG `<path>` in markup and set
   **`fill="currentColor"`** so the icon inherits text color and reacts to
@@ -241,21 +268,17 @@ content shows without JS; `prefers-reduced-motion` shows everything instantly.
 CSS lives at the bottom of `global.css` (`.js [data-reveal] …`).
 
 ### ASCII background — `src/scripts/ascii-background.js`
-Renders an image as animated ASCII on a canvas. Generalized to boot on **any**
+Renders an image as ASCII on a canvas, with a one‑shot materialize reveal when it scrolls into view (then it holds still). Generalized to boot on **any**
 `<canvas data-ascii-src="/img.png">`, so the hero and any section can each have
 their own image with one engine.
 
 ```html
-<canvas id="ascii" data-ascii-src="/ascii-skyline.png" aria-hidden="true"></canvas>
+<canvas id="ascii" data-ascii-src="/ascii-skyline.jpg" aria-hidden="true"></canvas>
 ```
 
 Pair a background canvas with a **veil** (`::after` gradient) so overlaid text
 stays readable, and content on top via `z-index`. Instances pause off‑screen via
 `IntersectionObserver`; honors reduced‑motion. Accent glyph color = `--blue-500`.
-
-### Cursor trail — `src/scripts/ascii-cursor.js`
-A page‑wide wake of flickering glyphs following the pointer. Disabled on
-touch/coarse pointers and under reduced‑motion; idle cost is zero.
 
 ---
 
@@ -282,10 +305,10 @@ touch/coarse pointers and under reduced‑motion; idle cost is zero.
 
 1. Copy the `:root` block from `global.css` — the color + slate + sky‑alpha
    tokens are a ready starter system.
-2. Load **Doto** + **IBM Plex Sans**; keep the two‑family rule and one accent.
+2. Load **Averia Serif Libre** + **Geist**; keep the two‑family rule and one accent.
 3. Copy `scroll-reveal.js` + its CSS for `data-decode` / `data-reveal`.
 4. Keep `ascii-background.js` (the `data-ascii-src` engine) for image‑driven
-   backgrounds; keep `ascii-cursor.js` for the pointer trail.
+   backgrounds.
 5. Default to native elements (`<dialog>`, form validation) before any library.
 6. Build section‑by‑section against the design; each risky idea = its own commit.
 

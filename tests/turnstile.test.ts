@@ -84,3 +84,14 @@ describe("turnstileConfigured", () => {
     expect(turnstileConfigured()).toBe(true);
   });
 });
+
+describe("verifyTurnstile remoteip", () => {
+  afterEach(() => { globalThis.fetch = originalFetch; });
+
+  it("sends remoteip only when an IP is provided", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) } as Response);
+    globalThis.fetch = fetchMock;
+    await verifyTurnstile("tok", "sec", "198.51.100.4");
+    expect(String(fetchMock.mock.calls[0][1].body)).toBe("secret=sec&response=tok&remoteip=198.51.100.4");
+  });
+});

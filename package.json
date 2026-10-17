@@ -10,13 +10,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "astro check",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@googleapis/sheets": "^14.0.0",
     "astro": "^7.2.10",
-    "gsap": "^3.15.0",
     "mixpanel-browser": "^2.83.0",
     "node-appwrite": "^29.0.0",
     "sharp": "^0.35.4",
@@ -26,6 +26,7 @@
     "@astrojs/check": "^0.9.10",
     "@astrojs/ts-plugin": "^1.10.11",
     "@astrojs/vercel": "^11.0.10",
+    "@playwright/test": "1.56.1",
     "@types/node": "26.4.0",
     "happy-dom": "^20.14.3",
     "typescript": "^6.0.3",

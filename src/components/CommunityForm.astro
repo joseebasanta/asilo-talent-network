@@ -1,4 +1,6 @@
 ---
+import { turnstileSiteKey as readTurnstileSiteKey } from "../lib/turnstile";
+
 const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url"; autocomplete?: "email" | "name" | "tel"; placeholder?: string; hint?: string; max: number }> = [
   { name: "email", label: "Email", type: "email", autocomplete: "email", max: 254 },
   { name: "name", label: "Nombre y apellido", autocomplete: "name", max: 150 },
@@ -8,6 +10,7 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
   { name: "role", label: "Rol", placeholder: "Cargo que desempeñas o profesión", max: 150 },
   { name: "project", label: "Nombre del proyecto", max: 200 },
 ];
+const turnstileSiteKey = readTurnstileSiteKey();
 ---
 <dialog class="modal" id="community-dialog" aria-labelledby="community-title">
   <form class="modal-card" id="community-form" method="post" action="/api/community/submit" enctype="multipart/form-data" novalidate>
@@ -39,6 +42,14 @@ const fields: Array<{ name: string; label: string; type?: "email" | "tel" | "url
           </div>
           <span class="field-error" id="community-description-error" hidden></span>
         </label>
+        {turnstileSiteKey && (
+          <div class="field" data-community-captcha>
+            <div class="turnstile" data-community-turnstile tabindex="-1">
+              <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="dark" data-callback="onCommunityTurnstileSolve"></div>
+            </div>
+            <span class="field-error" id="community-captcha-error" hidden></span>
+          </div>
+        )}
         <p class="privacy">Usaremos estos datos para revisar tu solicitud y contactarte sobre Asilo Builders.</p>
         <p class="form-status is-error" id="community-status" role="status" aria-live="polite" tabindex="-1" hidden></p>
       </div>

@@ -33,6 +33,9 @@ import {
 } from "../data/projects";
 import { LOGO_BUCKET_ID } from "./projects-logo";
 import { projectIconUrl } from "./project-icons";
+import { normalizeHeader } from "./normalize";
+import { projectIdFor, projectSlug } from "./project-identity";
+import { demoMode, demoSheet } from "./demo";
 
 const READONLY_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 
@@ -94,6 +97,16 @@ const HEADER_ALIASES: Record<string, string> = {
   status: "approved",
   approved: "approved",
   approval: "approved",
+  // date added
+  fecha: "addedAt",
+  "fecha de registro": "addedAt",
+  "marca temporal": "addedAt",
+  timestamp: "addedAt",
+  // optional counters (numeric)
+  visitas: "visits",
+  visits: "visits",
+  tendencia: "trending",
+  trending: "trending",
   // logo
   "id del logo": "logoId",
   logo: "logoId",
@@ -119,6 +132,11 @@ export function resetProjectsCache(): void {
  * Maps a sheet `values` grid (header row + data rows) to the homepage
  * `Project[]` shape: only explicitly approved rows with a safe http(s) URL
  * survive, sorted alphabetically by title.
+ *
+ * Rows are append-only revisions, so several approved rows can describe the
+ * same project (same normalized website). The LAST approved revision wins —
+ * that is how an approved edit request replaces the published card — while
+ * `addedIndex` keeps the position of the first one for "Últimos añadidos".
  */
 export function parseProjects(values: string[][]): Project[] {
   const [headerRow = [], ...dataRows] = values;
@@ -134,10 +152,18 @@ export function parseProjects(values: string[][]): Project[] {
   // safely consider public.
   if (!headerMap.has("title") || !headerMap.has("approved")) return [];
 
-  return dataRows
-    .map((row) => toProject(row, headerMap))
-    .filter((project): project is Project => project !== null)
-    .sort((a, b) => a.title.localeCompare(b.title));
+  const byId = new Map<string, Project>();
+  dataRows.forEach((row, rowIndex) => {
+    const project = toProject(row, headerMap, rowIndex);
+    if (!project?.id) return;
+    const previous = byId.get(project.id);
+    byId.set(
+      project.id,
+      previous ? { ...project, addedIndex: previous.addedIndex } : project,
+    );
+  });
+
+  return [...byId.values()].sort((a, b) => a.title.localeCompare(b.title));
 }
 
 /**
@@ -149,6 +175,7 @@ export function parseProjects(values: string[][]): Project[] {
 export async function loadApprovedProjects(
   fetchValues: ValuesFetcher = fetchSheetValues,
 ): Promise<Project[]> {
+  if (demoMode()) return parseProjects(demoSheet());
   if (!isConfigured()) return placeholderProjects;
 
   if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
@@ -212,18 +239,10 @@ function isConfigured(): boolean {
   );
 }
 
-export function normalizeHeader(raw: string): string {
-  return raw
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function toProject(
   row: string[],
   headerMap: Map<string, number>,
+  rowIndex: number,
 ): Project | null {
   const cell = (field: string): string => {
     const index = headerMap.get(field);
@@ -245,8 +264,15 @@ function toProject(
     .map((tag) => tag.trim())
     .filter(Boolean);
 
+  const id = projectIdFor(href);
   const logoUrl = logoViewUrl(cell("logoId"));
+  const addedAt = parseSheetDate(cell("addedAt"));
+  const visits = parseCount(cell("visits"));
+  const trending = parseCount(cell("trending"));
   return {
+    id,
+    slug: projectSlug(title, id),
+    addedIndex: rowIndex,
     href,
     title,
     description: cell("description"),
@@ -254,7 +280,29 @@ function toProject(
     tags,
     ...(logoUrl ? { logoUrl } : {}),
     iconUrl: projectIconUrl(tags),
+    ...(addedAt !== undefined ? { addedAt } : {}),
+    ...(visits !== undefined ? { visits } : {}),
+    ...(trending !== undefined ? { trending } : {}),
   };
+}
+
+/** Accepts ISO dates and the es-VE `d/m/yyyy [h:mm[:ss]]` format Sheets exports. */
+export function parseSheetDate(raw: string): number | undefined {
+  const value = (raw ?? "").trim();
+  if (!value) return undefined;
+  const local = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (local) {
+    const [, d, m, y, hh = "0", mm = "0", ss = "0"] = local;
+    const time = Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), Number(ss));
+    return Number.isFinite(time) ? time : undefined;
+  }
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : undefined;
+}
+
+function parseCount(raw: string): number | undefined {
+  const value = Number((raw ?? "").replace(/[.,\s]/g, ""));
+  return raw.trim() && Number.isFinite(value) && value >= 0 ? value : undefined;
 }
 
 /**

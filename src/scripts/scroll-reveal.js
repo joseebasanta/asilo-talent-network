@@ -3,6 +3,7 @@
    Scroll reveal — fires once when an element scrolls into view.
    - [data-decode]  headings: a subtle left-to-right "decode" (glyph scramble
      that resolves into the real text), using the ASCII ramp glyphs.
+   - [data-reveal-lines]  headings: each .cta-line slides up out of a mask.
    - [data-reveal]  items: a soft fade + slide-up, staggered by --reveal-i.
    Robust: the hidden start-state only applies once JS marks <html> with .js,
    so content is visible without JS; prefers-reduced-motion shows everything
@@ -48,6 +49,6 @@
     }
   }, { threshold: 0.25, rootMargin: "0px 0px -10% 0px" });
 
-  var targets = document.querySelectorAll("[data-decode], [data-reveal]");
+  var targets = document.querySelectorAll("[data-decode], [data-reveal], [data-reveal-lines]");
   for (var t = 0; t < targets.length; t++) io.observe(targets[t]);
 })();

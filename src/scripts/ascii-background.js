@@ -1,9 +1,9 @@
 
 /* ==========================================================================
-   ASCII background — El Ávila + Caracas skyline rendered as breathing glyphs.
+   ASCII background — El Ávila + Caracas skyline rendered as glyphs.
    Adapted from the mushenzhen ascii-portrait technique: sample a source into a
    coarse luminance grid, pick one glyph per cell by brightness, add a small
-   time-wobble so the picture shimmers without moving. Source here is drawn
+   one-shot reveal so the picture materializes once and then holds still. Source here is drawn
    procedurally (no photo needed); swap SRC for an <img> to use a real photo.
    ========================================================================== */
 /* Each <canvas data-ascii-src="/path.png"> on the page gets its own instance.
@@ -16,14 +16,14 @@ function initAscii(canvas, IMAGE_SRC) {
     cell: 7,
     ramp: " .·:;-=+|",          // dots + line/vertical strokes only (no block glyphs)
     color: getVar("--ink", "#6f7075"),
-    blue: getVar("--blue-500", "#CEE2FF"),
+    blue: getVar("--blue-500", "#FFFFFF"),
     blueFrac: 0.06,   // fraction of the *brightest* glyphs that glow blue
     background: getVar("--bg", "#0a0a0b"),
     gamma: 0.82,
     skyTop: 0.40, skyBot: 0.58,   // vertical band where sky fades out → mountain fades in (fractions of height)
     minScale: 1.0, maxScale: 1.5,
-    fps: 24, wave: 0.045, twinkle: 0.045,
-    revealMs: 1400, revealAmp: 0.55,
+    fps: 30,
+    revealMs: 2000, band: 0.35,   // one-shot materialize: a soft front sweeps left→right, then the picture holds still
   };
   function getVar(name, dflt){
     try{ var v=getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return v||dflt; }
@@ -160,9 +160,23 @@ function initAscii(canvas, IMAGE_SRC) {
   var PHOTO_INVERT=false;   // false = true-tone (keep the photo's light↔shadow); sky killed by a positional mask instead
   // Cool-grey brightness LUT: glyph ink brightness encodes the photo's tone
   // (lit → bright glyph, shadow → dim), so light and shadow read like the photo.
-  var LUTG=(function(){ var a=[]; for(var i=0;i<32;i++){ var t=i/31,
-      r=Math.round(46+t*(232-46)), g=Math.round(48+t*(234-48)), b=Math.round(54+t*(240-54));
-      a.push("rgb("+r+","+g+","+b+")"); } return a; })();
+  var LUTG=null;
+  function buildLut(light){
+    var a=[];
+    for(var i=0;i<32;i++){ var t=i/31, r, g, b;
+      if(light){ r=Math.round(206-t*(206-38)); g=Math.round(208-t*(208-40)); b=Math.round(214-t*(214-46)); }
+      else { r=Math.round(46+t*(232-46)); g=Math.round(48+t*(234-48)); b=Math.round(54+t*(240-54)); }
+      a.push("rgb("+r+","+g+","+b+")"); }
+    return a;
+  }
+  // Re-read the theme tokens so the canvas follows the light/dark switch.
+  function applyTheme(){
+    CONFIG.color=getVar("--ink","#6a6b6b");
+    CONFIG.blue=getVar("--pure","#FFFFFF");
+    CONFIG.background=getVar("--bg","#0f1011");
+    LUTG=buildLut(document.documentElement.dataset.theme==="light");
+  }
+  applyTheme();
   var STEPS=8, fonts=null, bufX=null, bufY=null, bufC=null, bufN=null, chars=null;
   var bufBX=null, bufBY=null, bufBC=null, bufBN=null;   // parallel buffers for blue glyphs
   var bufV=null;   // per-cell brightness (tone) for the normal glyphs
@@ -253,18 +267,20 @@ function initAscii(canvas, IMAGE_SRC) {
     return true;
   }
 
-  function paint(t, extra){
+  function paint(p){
     ctx.fillStyle=CONFIG.background; ctx.fillRect(0,0,cssW,cssH);
     ctx.textAlign="center"; ctx.textBaseline="middle";
     var cell=CONFIG.cell, half=cell/2, lum=grid.lum, lumB=grid.lumB, phase=grid.phase, blue=grid.blue, gw=grid.w;
-    var last=CONFIG.ramp.length-1, nRamp=CONFIG.ramp.length, waveAmp=CONFIG.wave, twAmp=CONFIG.twinkle+extra;
+    var last=CONFIG.ramp.length-1, nRamp=CONFIG.ramp.length, band=CONFIG.band, front=p*(1+band);
     var blueMin=last-2;  // only the brightest few glyphs may go blue
     for(var s=0;s<STEPS;s++){ bufN[s]=0; bufBN[s]=0; }
     for(var r=0;r<rows;r++){
-      var y=r*cell+half, wa=r*0.09-t*1.6, wb=-r*0.13+t*1.1, base=r*gw;
+      var y=r*cell+half, base=r*gw;
       for(var c=0;c<cols;c++){
         var i=base+c;
-        var v=lum[i]+waveAmp*(Math.sin(c*0.16+wa)*0.6+Math.sin(c*0.07+wb)*0.4)+twAmp*Math.sin(t*2.6+phase[i]);
+        var k=(front-(c/cols*0.7+phase[i]/6.2831853*0.3))/band;   // per-cell progress; jitter keeps the front grainy
+        if(k<=0) continue; if(k>1) k=1;
+        var v=lum[i]*k*k*(3-2*k);
         if(v<=0) continue; if(v>0.999) v=0.999;
         var idx=(v*nRamp)|0; if(idx>last) idx=last; if(idx===0) continue;
         var step=(v*STEPS)|0; if(step>STEPS-1) step=STEPS-1;
@@ -289,31 +305,33 @@ function initAscii(canvas, IMAGE_SRC) {
     }
   }
 
-  var running=false, rafId=0, startedAt=0, lastFrame=0, inView=true;
+  var running=false, done=false, rafId=0, startedAt=0, lastFrame=0, inView=true, progress=0;
+  function idle(){ paint(done ? 1 : progress); }
   function frame(now){
     if(!running){ rafId=0; return; }
     rafId=requestAnimationFrame(frame);
     if(now-lastFrame < 1000/CONFIG.fps-1) return;
     lastFrame=now;
-    var elapsed=now-startedAt, p=Math.min(1,elapsed/CONFIG.revealMs);
-    var extra=p>=1?0:CONFIG.revealAmp*Math.pow(1-p,2.2);
-    paint(elapsed/1000, extra);
+    var p=progress=Math.min(1,(now-startedAt)/CONFIG.revealMs);
+    paint(p);
+    if(p>=1){ done=true; stop(); }   // settled: no more frames until the theme or size changes
   }
-  function start(){ if(running||!layout()) return; running=true; startedAt=performance.now(); lastFrame=0; rafId=requestAnimationFrame(frame); }
+  function start(){ if(running||!layout()) return; running=true; startedAt=performance.now()-progress*CONFIG.revealMs; lastFrame=0; rafId=requestAnimationFrame(frame); }
   function stop(){ running=false; if(rafId) cancelAnimationFrame(rafId); rafId=0; }
-  function sync(){ if(reduced.matches){ stop(); if(layout()) paint(0,0); return; } if(document.visibilityState==="visible"&&inView&&canvas.clientWidth>0) start(); else stop(); }
+  function sync(){ if(reduced.matches){ stop(); done=true; if(layout()) paint(1); return; } if(done){ stop(); return; } if(document.visibilityState==="visible"&&inView&&canvas.clientWidth>0) start(); else stop(); }
 
   function boot(){
-    if(layout()) paint(0,0);
+    if(layout()) paint(0);
     document.addEventListener("visibilitychange", sync);
+    document.addEventListener("themechange", function(){ applyTheme(); if(grid && !running) idle(); });
     if(reduced.addEventListener) reduced.addEventListener("change", sync);
     var lastW=0,lastH=0;
-    new ResizeObserver(function(){ var w=canvas.clientWidth,h=canvas.clientHeight; if(w===lastW&&h===lastH) return; lastW=w; lastH=h; if(!layout()) return; if(running) return; sync(); if(!running) paint(0,0); }).observe(canvas);
-    // Only animate while the canvas is on (or near) screen — keeps a second
-    // instance cheap when it's below the fold.
+    new ResizeObserver(function(){ var w=canvas.clientWidth,h=canvas.clientHeight; if(w===lastW&&h===lastH) return; lastW=w; lastH=h; if(!layout()) return; if(running) return; sync(); if(!running) idle(); }).observe(canvas);
+    // Play the reveal when the canvas is actually seen, so the footer's
+    // transition runs on scroll instead of while it is off screen.
     if("IntersectionObserver" in window){
       inView=false;
-      new IntersectionObserver(function(entries){ inView=entries[0].isIntersecting; sync(); }, {rootMargin:"200px"}).observe(canvas);
+      new IntersectionObserver(function(entries){ inView=entries[0].isIntersecting; sync(); }, {threshold:0}).observe(canvas);
     }
     sync();
   }

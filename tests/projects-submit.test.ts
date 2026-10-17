@@ -4,11 +4,13 @@ import {
   buildRowForHeaders,
   CATEGORIES,
   findDuplicateWebsite,
+  findLatestApprovedRevision,
   formatFecha,
   MAX_CATEGORIES,
   normalizeWebsiteKey,
   normalizeWebsiteUrl,
   resolveSubmissionColumns,
+  validateContact,
   validateSubmission,
   validateSubmissionForm,
   websiteColumnIndex,
@@ -82,6 +84,14 @@ describe("validateSubmission", () => {
     expect(
       validateSubmission({ ...validInput, fundadores: "x".repeat(161) }).ok,
     ).toBe(false);
+  });
+
+  it("explains a missing founders field in natural Spanish", () => {
+    const result = validateSubmission({ ...validInput, fundadores: "" });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.fundadores).toBe("Indica quién fundó el proyecto (hasta 160 caracteres).");
+    }
   });
 
   it("rejects zero, too many, or non-allowlist categories", () => {
@@ -314,6 +324,72 @@ describe("buildRow", () => {
     });
     expect(withLogo[7]).toBe("logo-abc123");
     expect(withLogo).toHaveLength(10);
+  });
+});
+
+describe("CATEGORIES", () => {
+  it("is listed in Spanish alphabetical order so the form is scannable", () => {
+    const sorted = [...CATEGORIES].sort(new Intl.Collator("es").compare);
+    expect([...CATEGORIES]).toEqual(sorted);
+  });
+
+  it("includes Legaltech and PropTech", () => {
+    expect(CATEGORIES).toContain("Legaltech");
+    expect(CATEGORIES).toContain("PropTech");
+    expect(
+      validateSubmission({ ...validInput, categorias: ["Legaltech", "PropTech"] }).ok,
+    ).toBe(true);
+  });
+});
+
+describe("edit requests", () => {
+  const header = ["Fecha", "Nombre del proyecto", "Sitio web", "Descripción corta", "Fundadores", "Categorías", "Aprobado", "ID del logo", "ID de revisión", "Notas adicionales"];
+  const row = (site: string, approved: string, logo: string, rev: string) =>
+    ["", "Pana", site, "desc", "Ana", "Fintech", approved, logo, rev, ""];
+
+  it("finds the latest APPROVED revision of a website", () => {
+    const values = [
+      header,
+      row("https://panapay.com", "SI", "logo-1", "rev-1"),
+      row("https://www.panapay.com/", "SI", "logo-2", "rev-2"),
+      row("https://panapay.com", "PENDIENTE", "logo-3", "rev-3"),
+      row("https://otro.com", "SI", "logo-x", "rev-x"),
+    ];
+    expect(findLatestApprovedRevision(values, "panapay.com")).toEqual({ logoId: "logo-2", revisionId: "rev-2" });
+  });
+
+  it("returns null for unpublished or unknown websites", () => {
+    const values = [header, row("https://panapay.com", "PENDIENTE", "", "rev-1")];
+    expect(findLatestApprovedRevision(values, "panapay.com")).toBeNull();
+    expect(findLatestApprovedRevision(values, "nuevo.com")).toBeNull();
+    expect(findLatestApprovedRevision([], "panapay.com")).toBeNull();
+  });
+
+  it("writes the edit note into Notas adicionales and validates the contact", () => {
+    const cells = buildRow(
+      { nombre: "Pana", website: "https://panapay.com/", descripcion: "Pagos rápidos", fundadores: "Ana", categorias: ["Fintech"] },
+      { revisionId: "rev-new", notes: "Solicitud de edición de rev-2 · Contacto: @ana" },
+    );
+    expect(cells[6]).toBe("PENDIENTE");
+    expect(cells[9]).toBe("Solicitud de edición de rev-2 · Contacto: @ana");
+    expect(validateContact("  @ana  ")).toBe("@ana");
+    expect(validateContact("a")).toBeNull();
+  });
+
+  it("places the edit note in the first notes column of the current A–M sheet", () => {
+    const headers = ["Fecha", "Nombre del proyecto", "Sitio web", "Descripción corta", "Fundadores", "Categorías", "Aprobado", "Moderador", "Fecha de moderación", "ID del logo", "ID de revisión", "Nota interna", "Nota interna"];
+    const submission: NormalizedSubmission = { nombre: "Pana", website: "https://panapay.com/", descripcion: "Pagos rápidos", fundadores: "Ana", categorias: ["Fintech"] };
+    const note = "Solicitud de edición de rev-2 · Contacto: @ana";
+    const withNote = buildRowForHeaders(headers, submission, { revisionId: "rev-new", logoId: "logo-2", notes: note });
+    expect(withNote[11]).toBe(note);
+    expect(withNote[12]).toBe("");
+    expect(withNote[7]).toBe("");
+    expect(withNote[8]).toBe("");
+    expect(withNote[9]).toBe("logo-2");
+    expect(withNote[10]).toBe("rev-new");
+    // New-project submissions leave every moderator-owned column empty.
+    const plain = buildRowForHeaders(headers, submission, { revisionId: "rev-new" });
+    expect(plain.slice(11)).toEqual(["", ""]);
   });
 });
 

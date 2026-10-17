@@ -19,7 +19,7 @@ it("refreshes cards and categories, preserves search, and retains results on fai
     <div class="results-toolbar"><a data-clear-filters></a></div>
     <div id="project-results"></div><p id="project-count"></p>
     <div id="empty-results"><h2></h2><p></p></div>
-    <nav class="project-pagination"><span data-page-status></span><span data-page-range></span></nav>`;
+    <div class="show-more" hidden><p data-show-status></p><a data-show-more></a></div>`;
   vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
   const fetcher = vi.fn().mockResolvedValue(new Response(`
     <div id="project-results"><a href="https://example.com" data-project-index="0" data-title="Nuevo" data-tags='["AI"]'>Nuevo</a></div>
