@@ -289,17 +289,6 @@ html:has(body.landing) {
 .l-hero-copy { display: flex; flex-direction: column; gap: var(--spacing-24); max-width: 960px; }
 .l-hero-ctas { display: flex; flex-wrap: wrap; gap: var(--spacing-12); }
 
-.l-proof { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-12); margin-top: var(--spacing-8); }
-.l-avatars { display: flex; }
-.l-avatars img {
-  width: 32px; height: 32px;
-  border-radius: var(--radius-full);
-  box-shadow: 0 0 0 2px var(--color-paper-white);
-  object-fit: cover;
-}
-.l-avatars li + li { margin-left: -8px; }
-.l-proof p { font-size: 14px; color: var(--color-charcoal); }
-
 /* Banda de logos con scroll infinito. */
 .l-logos {
   margin-top: var(--spacing-40);

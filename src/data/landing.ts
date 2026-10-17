@@ -23,9 +23,6 @@ export const hero = {
   subtitle:
     "Diagnosticamos tu UX, rediseñamos tu producto con identidad propia y lo llevamos a producción.",
   secondaryCta: { label: "Ver servicios", href: "#servicios" },
-  proof: "Comunidad tech de LatAm desde 2021",
-  // TODO: reemplazar con avatares reales de la comunidad.
-  avatars: [1, 2, 3, 4, 5].map((n) => `/placeholders/avatar-${n}.webp`),
   // TODO: reemplazar con logos reales de clientes (con permiso). SVG o PNG en escala de grises.
   clientLogos: [1, 2, 3, 4, 5, 6].map((n) => ({ src: `/placeholders/logo-${n}.svg`, name: `Cliente ${n}` })),
 };

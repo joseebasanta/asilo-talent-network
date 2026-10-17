@@ -95,8 +95,10 @@ describe("landing de servicios", () => {
     }
     expect(hero).toContain("data-grid-pulse");
     expect(hero).not.toContain("data-kinetic-grid");
-    // La luz de la cuadrícula se atenúa detrás del titular, el subtítulo, los botones y la prueba social.
-    expect(hero.match(/data-grid-avoid/g)).toHaveLength(4);
+    // La luz de la cuadrícula se atenúa detrás del titular, el subtítulo y los botones.
+    expect(hero.match(/data-grid-avoid/g)).toHaveLength(3);
+    // Sin prueba social de avatares en el hero.
+    expect(hero).not.toContain("Comunidad tech de LatAm desde 2021");
     expect(html).not.toContain('id="proceso"');
     expect(html).not.toContain('id="trabajo"');
     expect(html).not.toContain('id="nosotros"');
@@ -150,7 +152,6 @@ describe("landing de servicios", () => {
 
   it("references placeholder assets that exist in public/", () => {
     const paths = [
-      ...hero.avatars,
       ...hero.clientLogos.map((logo) => logo.src),
       ...projects.map((project) => project.image.src),
       ...services.flatMap((service) =>
