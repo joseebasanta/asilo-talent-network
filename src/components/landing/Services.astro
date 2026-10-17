@@ -26,10 +26,9 @@ import { CTA_HREF, CTA_LABEL, services } from "../../data/landing";
           </summary>
           <div class="l-acc-body">
             {service.stack ? (
-              /* Pantallas apiladas que rotan una tras otra (phone-stack.ts). Sin JS se ven quietas, como en Figma. */
+              /* Pantallas en cascada que avanzan una tras otra (phone-stack.ts). Sin JS se ven quietas. */
               <div class="l-media l-acc-media l-stack" data-phone-stack>
                 <img class="l-stack-bg" src={service.stack.background} alt="" width="720" height="480" decoding="async" />
-                <span class="l-stack-glow" aria-hidden="true"></span>
                 <ul class="l-stack-screens">
                   {service.stack.screens.map((screen, k) => (
                     <li class="l-stack-card" data-stack-card style={`--slot: ${k}`}>

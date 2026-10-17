@@ -30,7 +30,7 @@ export const hero = {
   clientLogos: [1, 2, 3, 4, 5, 6].map((n) => ({ src: `/placeholders/logo-${n}.svg`, name: `Cliente ${n}` })),
 };
 
-// Pantallas de teléfono apiladas sobre un fondo; rotan una tras otra (phone-stack.ts).
+// Pantallas de teléfono en cascada sobre un fondo; avanzan una tras otra (phone-stack.ts).
 // La primera pantalla es la que va adelante. Imágenes en PNG/WebP con fondo transparente.
 export interface PhoneStack {
   background: string;

@@ -77,6 +77,7 @@ describe("landing de servicios", () => {
     expect(section).toContain("data-phone-stack");
     expect(section.match(/data-stack-card/g)).toHaveLength(services[0]!.stack!.screens.length);
     expect(section).toContain('style="--slot: 0"');
+    expect(section).not.toContain("l-stack-glow");
     // Cada servicio cierra con el CTA del sitio.
     expect(anchorsWithText(section, "Contáctanos")).toEqual(services.map(() => CTA_HREF));
   });
