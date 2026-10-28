@@ -3,6 +3,7 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
 import {
+  clientLogos,
   CONTACT_EMAIL,
   CTA_HREF,
   CTA_LABEL,
@@ -256,5 +257,22 @@ describe("landing de servicios v2", () => {
     // Sin páginas legales todavía: no se publican links vacíos.
     expect(footerLegalLinks).toHaveLength(0);
     expect(section).not.toContain('href="#"');
+  });
+
+  it("renders the client logo strip inside the hero with a single announced copy", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-hero"');
+    const hero = html.slice(start, html.indexOf("</section>", start));
+
+    expect(hero).toContain('<div class="s-logos">');
+    expect(hero.match(/<ul class="s-logos-set"/g)).toHaveLength(4);
+    expect(hero.match(/aria-label="Clientes"/g)).toHaveLength(1);
+    expect(hero.match(/aria-hidden="true"/g)).toHaveLength(3);
+    expect(hero.match(/<li class="s-logos-item">/g)).toHaveLength(clientLogos.length * 4);
+    for (const logo of clientLogos) {
+      expect(hero).toContain(`alt="${logo.alt}"`);
+      expect(existsSync(new URL(`../public${logo.src}`, import.meta.url))).toBe(true);
+    }
+    expect(hero).not.toMatch(/webflow|relume/i);
   });
 });

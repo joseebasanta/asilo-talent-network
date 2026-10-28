@@ -37,6 +37,14 @@ export const hero = {
   secondaryCta: { label: "Ver servicios", href: "#servicios" },
 };
 
+// Franja de logos al pie del hero (Figma: Asilo Services, nodo 91:7568). Se muestran en blanco.
+// TODO: reemplazar con logos reales de clientes (con permiso), en SVG. Los de Figma son de marcas
+// que no son clientes (Webflow y Relume), así que mientras tanto van logos neutros de relleno.
+export const clientLogos = Array.from({ length: 6 }, (_, i) => ({
+  src: `/placeholders/logo-${i + 1}.svg`,
+  alt: `Cliente 0${i + 1}`,
+}));
+
 export interface Project {
   name: string;
   description: string;

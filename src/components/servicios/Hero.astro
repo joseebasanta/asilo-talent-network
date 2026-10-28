@@ -1,6 +1,10 @@
 ---
 // Hero de la landing de servicios v2 (Figma: Asilo Services, nodo 91:7203).
-import { CTA_HREF, CTA_LABEL, hero } from "../../data/servicios";
+import { CTA_HREF, CTA_LABEL, clientLogos, hero } from "../../data/servicios";
+
+// La franja se repite cuatro veces y se desplaza la mitad de su ancho en bucle: así no queda un hueco
+// ni en pantallas anchas. Solo la primera copia se anuncia; las demás son decorativas.
+const copies = [0, 1, 2, 3];
 ---
 <section class="s-hero" id="inicio" aria-labelledby="hero-title">
   <div class="s-hero-inner">
@@ -13,6 +17,21 @@ import { CTA_HREF, CTA_LABEL, hero } from "../../data/servicios";
     <div class="s-hero-actions">
       <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{CTA_LABEL}</a>
       <a class="s-btn s-btn--lg s-btn--secondary s-label-md" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+    </div>
+  </div>
+  <div class="s-logos">
+    <div class="s-logos-track">
+      {
+        copies.map((copy) => (
+          <ul class="s-logos-set" aria-label={copy === 0 ? "Clientes" : undefined} aria-hidden={copy === 0 ? undefined : "true"}>
+            {clientLogos.map((logo) => (
+              <li class="s-logos-item">
+                <img src={logo.src} alt={copy === 0 ? logo.alt : ""} width="160" height="32" loading="lazy" decoding="async" />
+              </li>
+            ))}
+          </ul>
+        ))
+      }
     </div>
   </div>
 </section>
