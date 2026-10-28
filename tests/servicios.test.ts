@@ -8,6 +8,7 @@ import {
   CTA_LABEL,
   faqItems,
   faqSection,
+  finalCta,
   hero,
   navLinks,
   projects,
@@ -47,13 +48,9 @@ describe("landing de servicios v2", () => {
     expect(html).toContain(`<meta property="og:image" content="${SITE}/og-servicios.png">`);
   });
 
-  it("does not render any v1 section", async () => {
+  it("does not load the v1 styles", async () => {
     const html = await render();
 
-    // Las secciones de la v1 que todavía no tienen reemplazo en la v2.
-    for (const id of ["contacto"]) {
-      expect(html).not.toContain(`id="${id}"`);
-    }
     expect(html).not.toContain("landing.css");
   });
 
@@ -224,5 +221,17 @@ describe("landing de servicios v2", () => {
     for (const asset of [faqSection.card.avatar, "/servicios/icons/close.svg"]) {
       expect(existsSync(new URL(`../public${asset}`, import.meta.url))).toBe(true);
     }
+  });
+
+  it("renders the final CTA with the WhatsApp button and every nav anchor has its section", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-cta"');
+    const section = html.slice(start, html.indexOf("</section>", start));
+
+    expect(section).toContain('id="contacto"');
+    expect(section).toContain(`<h2 class="s-section-title" id="contacto-title">${finalCta.title}</h2>`);
+    expect(section).toContain(finalCta.subtitle);
+    expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
   });
 });

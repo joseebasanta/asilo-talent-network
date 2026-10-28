@@ -461,6 +461,22 @@ html:has(body.servicios) { interpolate-size: allow-keywords; }
   .s-faq-icon, .s-faq-item::details-content { transition: none; }
 }
 
+/* CTA final (Figma 91:7534): bloque centrado de 768px con título, bajada y el botón de WhatsApp. */
+.s-cta { padding: 64px var(--page-gutter); }
+.s-cta-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 32px;
+  max-width: 768px; margin-inline: auto; text-align: center;
+}
+.s-cta-text { display: flex; flex-direction: column; gap: 24px; }
+.s-cta-lead { color: var(--color-white); text-wrap: pretty; }
+
+@media (min-width: 768px) {
+  .s-cta { padding-block: 80px; }
+}
+@media (min-width: 1024px) {
+  .s-cta { padding-block: 112px; }
+}
+
 .s-skip {
   position: absolute; left: 16px; top: -100px; z-index: 100;
   padding: 8px 12px; border-radius: 6px;

@@ -1,0 +1,13 @@
+---
+import { CTA_HREF, CTA_LABEL, finalCta } from "../../data/servicios";
+---
+
+<section class="s-cta" id="contacto" aria-labelledby="contacto-title">
+  <div class="s-cta-inner">
+    <div class="s-cta-text">
+      <h2 class="s-section-title" id="contacto-title">{finalCta.title}</h2>
+      <p class="s-cta-lead s-label-lg">{finalCta.subtitle}</p>
+    </div>
+    <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{CTA_LABEL}</a>
+  </div>
+</section>

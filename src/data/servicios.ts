@@ -251,3 +251,10 @@ export const faqItems: FaqItem[] = [
       "Depende del alcance y del tipo de acompañamiento. Una evaluación UX inicial parte desde 600$; un sitio web desde 800$; y los productos o plataformas a medida se cotizan por fases. Si necesitas diseño, desarrollo o posicionamiento SEO de forma continua, ofrecemos planes mensuales ajustados a tu necesidad. Después de conocer tu contexto te enviamos una propuesta clara, con alcance, tiempos y costos, sin sorpresas.",
   },
 ];
+
+// CTA final (Figma: Asilo Services, nodo 91:7534). El botón usa CTA_LABEL y CTA_HREF (WhatsApp).
+export const finalCta = {
+  title: "Cuéntanos qué estás construyendo",
+  subtitle:
+    "Te ayudamos a definir el alcance, el equipo, los tiempos y los próximos pasos adecuados para tu proyecto.",
+};
