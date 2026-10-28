@@ -1,16 +1,16 @@
 ---
 import { projects, projectsSection } from "../../data/servicios";
+import SectionHead from "./SectionHead.astro";
 ---
 
 <section class="s-projects" id="trabajo" aria-labelledby="proyectos-title">
   <div class="s-projects-inner">
-    <header class="s-section-head">
-      <p class="s-section-tagline s-subheading-sm">{projectsSection.tagline}</p>
-      <div class="s-section-head-text">
-        <h2 class="s-section-title" id="proyectos-title">{projectsSection.title}</h2>
-        <p class="s-section-lead s-paragraph-lg">{projectsSection.subtitle}</p>
-      </div>
-    </header>
+    <SectionHead
+      tagline={projectsSection.tagline}
+      title={projectsSection.title}
+      subtitle={projectsSection.subtitle}
+      titleId="proyectos-title"
+    />
 
     <ul class="s-projects-grid">
       {

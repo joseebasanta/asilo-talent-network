@@ -2,7 +2,17 @@ import { existsSync, readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
-import { CTA_HREF, CTA_LABEL, hero, navLinks, projects, projectsSection, seo } from "../src/data/servicios";
+import {
+  CTA_HREF,
+  CTA_LABEL,
+  hero,
+  navLinks,
+  projects,
+  projectsSection,
+  serviceTabs,
+  servicesSection,
+  seo,
+} from "../src/data/servicios";
 
 const SITE = "https://builders.asilodigital.com";
 
@@ -36,7 +46,7 @@ describe("landing de servicios v2", () => {
     const html = await render();
 
     // Las secciones de la v1 que todavía no tienen reemplazo en la v2.
-    for (const id of ["servicios", "testimonios", "preguntas", "contacto"]) {
+    for (const id of ["testimonios", "preguntas", "contacto"]) {
       expect(html).not.toContain(`id="${id}"`);
     }
     expect(html).not.toContain("landing.css");
@@ -128,6 +138,30 @@ describe("landing de servicios v2", () => {
       expect(section).toContain(`alt="${project.image.alt}"`);
       expect(existsSync(new URL(`../public${project.image.src}`, import.meta.url))).toBe(true);
       for (const tag of project.tags) expect(section).toContain(`<li class="s-tag s-label-sm">${tag}</li>`);
+    }
+  });
+
+  it("renders the services section as tabs with the first one open", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-services"');
+    const section = html.slice(start, html.indexOf("</section>", start));
+
+    expect(section).toContain('id="servicios"');
+    expect(navLinks.map((l) => l.href)).toContain("#servicios");
+    expect(hero.secondaryCta.href).toBe("#servicios");
+    expect(section.match(/class="s-section-title-line"/g)).toHaveLength(servicesSection.titleLines.length);
+    expect(section).toContain(servicesSection.subtitle);
+    expect(section).toContain('role="tablist" aria-label="Servicios" aria-orientation="vertical"');
+    expect(section.match(/role="tab"/g)).toHaveLength(4);
+    expect(section.match(/role="tabpanel"/g)).toHaveLength(4);
+    expect(section.match(/aria-selected="true"/g)).toHaveLength(1);
+    expect(section.match(/ hidden[ >]/g)).toHaveLength(3);
+
+    for (const tab of serviceTabs) {
+      expect(section).toContain(`id="servicio-tab-${tab.id}" aria-controls="servicio-${tab.id}"`);
+      expect(section).toContain(`>${tab.label}</button>`);
+      expect(section).toContain(`<h3 class="s-services-panel-title">${tab.title}</h3>`);
+      for (const item of tab.items) expect(section).toContain(`<li>${item}</li>`);
     }
   });
 });

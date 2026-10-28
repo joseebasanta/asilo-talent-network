@@ -93,3 +93,78 @@ export const projects: Project[] = [
     image: { src: "/servicios/proyectos/corona.webp", alt: "Corona App: inicio, ingreso y catálogo de productos" },
   },
 ];
+
+export interface ServiceTab {
+  id: string;
+  label: string;
+  title: string;
+  body: string;
+  items: string[];
+}
+
+// Servicios (Figma: Asilo Services, nodo 91:7299). Websites sale del panel de Figma; el copy de las
+// otras pestañas sale de la capa de texto "Servicios (ES)" del mismo archivo.
+export const servicesSection = {
+  tagline: "Servicios",
+  titleLines: ["Que funcione es lo mínimo.", "Que se sienta bien es lo nuestro."],
+  subtitle:
+    "Auditamos, diseñamos, construimos e implementamos productos digitales que no se ven como todos los demás.",
+};
+
+export const serviceTabs: ServiceTab[] = [
+  {
+    id: "websites",
+    label: "Websites",
+    title: "Sitios que se sienten como una marca, no como una plantilla.",
+    body: "Diseñamos y construimos en un solo equipo, sin traspasos ni versiones que pierden detalle en el camino. El sitio sale a producción viéndose exactamente como se diseñó, con tipografía, ritmo y movimiento pensados a mano.",
+    items: [
+      "Landing pages y marketing websites",
+      "Identidad visual aplicada a web",
+      "Arquitectura de contenido y CMS",
+      "Estructura lista para SEO",
+      "Rendimiento y QA",
+    ],
+  },
+  {
+    id: "product-design",
+    label: "Product Design",
+    title: "Interfaces que se ven y se sienten hechas por alguien a quien le importa.",
+    body: "Diseñamos tu producto desde el MVP hasta su versión escalada, con criterio visual en cada decisión. Trabajamos junto a tu equipo de desarrollo y entregamos interfaces listas para construir: lo que lanzamos es lo que tus usuarios ven.",
+    items: [
+      "Diseño UI y UX",
+      "MVP y prototipos",
+      "Sistemas de diseño y librerías de componentes",
+      "Flujos de usuario y wireframes",
+      "Diseño mobile y responsive",
+      "Pruebas de usabilidad e iteración",
+    ],
+  },
+  {
+    id: "ux-audit",
+    label: "UX Audit",
+    title: "Tu app no convierte y no sabes por qué.",
+    body: "Revisamos tu producto con ojo de diseñador: dónde se pierde la gente, qué se siente genérico y qué detalles frenan la confianza. Te entregamos un diagnóstico claro y un plan priorizado por impacto, no un PDF de 80 páginas.",
+    items: [
+      "Auditoría heurística de UX y UI",
+      "Análisis de flujos y puntos de fricción",
+      "Revisión de onboarding y conversión",
+      "Evaluación de consistencia visual (taste audit)",
+      "Benchmark de competidores",
+      "Plan de mejoras priorizado",
+    ],
+  },
+  {
+    id: "implementaciones",
+    label: "Implementaciones",
+    title: "Tecnología que se integra a tu operación sin que tengas que entenderla.",
+    body: "Llevamos la idea al despliegue: automatizaciones, integraciones con IA y herramientas internas ajustadas al contexto venezolano. Dejamos capacidades dentro de tu equipo para que todo siga funcionando cuando terminamos.",
+    items: [
+      "Flujos automatizados",
+      "Integraciones con IA",
+      "Sistemas internos y herramientas colaborativas",
+      "APIs, autenticación e integraciones",
+      "Formación y transferencia al equipo",
+      "Acompañamiento continuo",
+    ],
+  },
+];

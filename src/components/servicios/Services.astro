@@ -1,0 +1,61 @@
+---
+import { serviceTabs, servicesSection } from "../../data/servicios";
+import SectionHead from "./SectionHead.astro";
+---
+
+<section class="s-services" id="servicios" aria-labelledby="servicios-title">
+  <div class="s-services-inner">
+    <SectionHead
+      tagline={servicesSection.tagline}
+      title={servicesSection.titleLines}
+      subtitle={servicesSection.subtitle}
+      titleId="servicios-title"
+    />
+
+    <div class="s-services-card" data-tabs>
+      <div class="s-services-tabs" role="tablist" aria-label="Servicios" aria-orientation="vertical">
+        {
+          serviceTabs.map((tab, i) => (
+            <button
+              class="s-services-tab"
+              type="button"
+              role="tab"
+              id={`servicio-tab-${tab.id}`}
+              aria-controls={`servicio-${tab.id}`}
+              aria-selected={i === 0 ? "true" : "false"}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {tab.label}
+            </button>
+          ))
+        }
+      </div>
+      <div class="s-services-panels">
+        {
+          serviceTabs.map((tab, i) => (
+            <div
+              class="s-services-panel"
+              role="tabpanel"
+              id={`servicio-${tab.id}`}
+              aria-labelledby={`servicio-tab-${tab.id}`}
+              tabindex="0"
+              hidden={i !== 0}
+            >
+              <h3 class="s-services-panel-title">{tab.title}</h3>
+              <p class="s-services-panel-body s-label-md">{tab.body}</p>
+              <ul class="s-services-list s-paragraph-md">
+                {tab.items.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initTabs } from "../../scripts/servicios-tabs";
+
+  document.querySelectorAll<HTMLElement>("[data-tabs]").forEach(initTabs);
+</script>

@@ -7,6 +7,7 @@ import SeoHead from "../components/SeoHead.astro";
 import Nav from "../components/servicios/Nav.astro";
 import Hero from "../components/servicios/Hero.astro";
 import Projects from "../components/servicios/Projects.astro";
+import Services from "../components/servicios/Services.astro";
 import { seo } from "../data/servicios";
 
 export const prerender = true;
@@ -38,6 +39,7 @@ const canonical = `${siteUrl}/servicios`;
     <main id="contenido">
       <Hero />
       <Projects />
+      <Services />
     </main>
   </body>
 </html>
