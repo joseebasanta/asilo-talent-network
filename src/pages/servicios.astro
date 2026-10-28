@@ -1,15 +1,10 @@
 ---
+// Landing de servicios v2. Se construye sección por sección desde Figma:
+// cada sección nueva es un componente en src/components/servicios/ montado dentro de <main>.
 import "../styles/fonts.css";
-import "../styles/landing.css";
+import "../styles/servicios.css";
 import SeoHead from "../components/SeoHead.astro";
-import Nav from "../components/landing/Nav.astro";
-import Hero from "../components/landing/Hero.astro";
-import Services from "../components/landing/Services.astro";
-import Faq from "../components/landing/Faq.astro";
-import Testimonials from "../components/landing/Testimonials.astro";
-import ContactCta from "../components/landing/ContactCta.astro";
-import Footer from "../components/landing/Footer.astro";
-import { seo } from "../data/landing";
+import { seo } from "../data/servicios";
 
 export const prerender = true;
 
@@ -34,23 +29,8 @@ const canonical = `${siteUrl}/servicios`;
     <link rel="preload" href="/fonts/geist-sans.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossorigin />
   </head>
-  <body class="landing">
-    <a class="l-skip" href="#contenido">Saltar al contenido</a>
-    <Nav />
-    <main id="contenido">
-      <Hero />
-      <Services />
-      <Testimonials />
-      <Faq />
-      <ContactCta />
-    </main>
-    <Footer />
-    <script>
-      import "../scripts/scroll-reveal.js";
-      import "../scripts/landing.ts";
-      import "../scripts/grid-pulse.ts";
-      import "../scripts/stagger-testimonials.ts";
-      import "../scripts/phone-stack.ts";
-    </script>
+  <body class="servicios">
+    <a class="s-skip" href="#contenido">Saltar al contenido</a>
+    <main id="contenido"></main>
   </body>
 </html>
