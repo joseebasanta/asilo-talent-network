@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
-import { CTA_HREF, CTA_LABEL, navLinks, seo } from "../src/data/servicios";
+import { CTA_HREF, CTA_LABEL, hero, navLinks, seo } from "../src/data/servicios";
 
 const SITE = "https://builders.asilodigital.com";
 
@@ -14,13 +14,13 @@ async function render() {
 // La v2 se construye sección por sección; cada sección nueva agrega aquí sus tests.
 // Los tests de la v1 quedaron en la rama landing-page-v1-2026-10-28.
 describe("landing de servicios v2", () => {
-  it("renders the base page in Spanish with an empty main and a skip link", async () => {
+  it("renders the base page in Spanish with a main landmark and a skip link", async () => {
     const html = await render();
 
     expect(html).toContain('<html lang="es">');
     expect(html).toContain('<body class="servicios">');
     expect(html).toContain('<a class="s-skip" href="#contenido">Saltar al contenido</a>');
-    expect(html).toMatch(/<main id="contenido"><\/main>/);
+    expect(html).toContain('<main id="contenido">');
   });
 
   it("keeps the SEO head of the landing", async () => {
@@ -35,7 +35,8 @@ describe("landing de servicios v2", () => {
   it("does not render any v1 section", async () => {
     const html = await render();
 
-    for (const id of ["inicio", "servicios", "testimonios", "preguntas", "contacto"]) {
+    // Las secciones de la v1 que todavía no tienen reemplazo en la v2.
+    for (const id of ["servicios", "testimonios", "preguntas", "contacto"]) {
       expect(html).not.toContain(`id="${id}"`);
     }
     expect(html).not.toContain("landing.css");
@@ -93,5 +94,19 @@ describe("landing de servicios v2", () => {
     expect(nav).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
     expect(CTA_HREF).toMatch(/^https:\/\/wa\.me\/584126310981\?text=/);
     expect(existsSync(new URL("../public/logo-asilo-digital-white.svg", import.meta.url))).toBe(true);
+  });
+
+  it("renders the hero with a single h1, the subtitle and both CTAs", async () => {
+    const html = await render();
+    const section = html.slice(html.indexOf('<section class="s-hero"'), html.indexOf("</section>"));
+
+    expect(html.match(/<h1\b/g)).toHaveLength(1);
+    const titleStart = section.indexOf('id="hero-title">') + 'id="hero-title">'.length;
+    const title = section.slice(titleStart, section.indexOf("</h1>")).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    expect(title).toBe(hero.titleLines.join(" "));
+    expect(section.match(/class="s-hero-title-line"/g)).toHaveLength(2);
+    expect(section).toContain(hero.subtitle);
+    expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    expect(section).toContain('href="#servicios">Ver servicios</a>');
   });
 });

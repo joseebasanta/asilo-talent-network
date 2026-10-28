@@ -1,0 +1,18 @@
+---
+// Hero de la landing de servicios v2 (Figma: Asilo Services, nodo 91:7203).
+import { CTA_HREF, CTA_LABEL, hero } from "../../data/servicios";
+---
+<section class="s-hero" id="inicio" aria-labelledby="hero-title">
+  <div class="s-hero-inner">
+    <div class="s-hero-text">
+      <h1 class="s-hero-title" id="hero-title">
+        {hero.titleLines.map((line, i) => <span class="s-hero-title-line">{i > 0 && " "}{line}</span>)}
+      </h1>
+      <p class="s-hero-lead s-paragraph-lg">{hero.subtitle}</p>
+    </div>
+    <div class="s-hero-actions">
+      <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{CTA_LABEL}</a>
+      <a class="s-btn s-btn--lg s-btn--secondary s-label-md" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+    </div>
+  </div>
+</section>

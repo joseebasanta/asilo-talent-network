@@ -27,3 +27,12 @@ export const navLinks: NavLink[] = [
   { label: "Nuestro trabajo", href: "#trabajo" },
   { label: "Contacto", href: "#contacto" },
 ];
+
+// Hero (Figma: Asilo Services, nodo 91:7203).
+export const hero = {
+  // Una frase por línea, como en Figma.
+  titleLines: ["Todas las apps se ven igual.", "La tuya no debería."],
+  subtitle:
+    "Las apps ya se pueden generar en minutos, y todas terminan viéndose igual. Nosotros les damos lo que no se automatiza: taste, estilo y cuidado al detalle.",
+  secondaryCta: { label: "Ver servicios", href: "#servicios" },
+};
