@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
-import { CTA_HREF, CTA_LABEL, hero, navLinks, seo } from "../src/data/servicios";
+import { CTA_HREF, CTA_LABEL, hero, navLinks, projects, projectsSection, seo } from "../src/data/servicios";
 
 const SITE = "https://builders.asilodigital.com";
 
@@ -108,5 +108,26 @@ describe("landing de servicios v2", () => {
     expect(section).toContain(hero.subtitle);
     expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
     expect(section).toContain('href="#servicios">Ver servicios</a>');
+  });
+
+  it("renders the projects section with six cards, their images and service tags", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-projects"');
+    const section = html.slice(start, html.indexOf("</section>", start));
+
+    expect(section).toContain('id="trabajo"');
+    expect(navLinks.map((l) => l.href)).toContain("#trabajo");
+    expect(section).toContain(`<h2 class="s-section-title" id="proyectos-title">${projectsSection.title}</h2>`);
+    expect(section).toContain(projectsSection.subtitle);
+    expect(section.match(/<li class="s-project">/g)).toHaveLength(6);
+    expect(section.match(/<h3\b/g)).toHaveLength(6);
+
+    for (const project of projects) {
+      expect(section).toContain(`>${project.name}</h3>`);
+      expect(section).toContain(`src="${project.image.src}"`);
+      expect(section).toContain(`alt="${project.image.alt}"`);
+      expect(existsSync(new URL(`../public${project.image.src}`, import.meta.url))).toBe(true);
+      for (const tag of project.tags) expect(section).toContain(`<li class="s-tag s-label-sm">${tag}</li>`);
+    }
   });
 });

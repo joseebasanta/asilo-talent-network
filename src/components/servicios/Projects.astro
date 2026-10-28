@@ -1,0 +1,42 @@
+---
+import { projects, projectsSection } from "../../data/servicios";
+---
+
+<section class="s-projects" id="trabajo" aria-labelledby="proyectos-title">
+  <div class="s-projects-inner">
+    <header class="s-section-head">
+      <p class="s-section-tagline s-subheading-sm">{projectsSection.tagline}</p>
+      <div class="s-section-head-text">
+        <h2 class="s-section-title" id="proyectos-title">{projectsSection.title}</h2>
+        <p class="s-section-lead s-paragraph-lg">{projectsSection.subtitle}</p>
+      </div>
+    </header>
+
+    <ul class="s-projects-grid">
+      {
+        projects.map((project) => (
+          <li class="s-project">
+            <img
+              class="s-project-image"
+              src={project.image.src}
+              alt={project.image.alt}
+              width="811"
+              height="568"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="s-project-body">
+              <div class="s-project-text">
+                <h3 class="s-project-name s-title-h5">{project.name}</h3>
+                <p class="s-project-description s-paragraph-md">{project.description}</p>
+              </div>
+              <ul class="s-tags" aria-label={`Servicios en ${project.name}`}>
+                {project.tags.map((tag) => <li class="s-tag s-label-sm">{tag}</li>)}
+              </ul>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

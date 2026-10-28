@@ -230,6 +230,50 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-hero-title { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }
 }
 
+/* Encabezado de sección: tagline, título y bajada centrados en 768px (Figma 91:7757). */
+.s-section-head {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  width: 100%; max-width: 768px; margin-inline: auto; text-align: center;
+}
+.s-section-tagline { color: var(--color-grey-300); }
+.s-section-head-text { display: flex; flex-direction: column; gap: 24px; }
+/* Title/H2 en desktop; Title/H4 en móvil, igual que el hero. */
+.s-section-title {
+  font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking);
+  color: var(--color-white); text-wrap: balance;
+}
+.s-section-lead { color: var(--color-grey-300); text-wrap: pretty; }
+
+/* Proyectos (Figma 91:7755): contenedor de 1280px, 3 columnas con 32px entre tarjetas y 64px entre filas. */
+.s-projects { padding: 64px var(--page-gutter); }
+.s-projects-inner {
+  display: flex; flex-direction: column; gap: 48px;
+  max-width: 1280px; margin-inline: auto;
+}
+.s-projects-grid { display: grid; grid-template-columns: 1fr; gap: 48px 32px; }
+.s-project { display: flex; flex-direction: column; gap: 24px; }
+.s-project-image { width: 100%; border-radius: 2px; background: var(--color-grey-900); }
+.s-project-body { display: flex; flex-direction: column; gap: 16px; }
+.s-project-text { display: flex; flex-direction: column; gap: 8px; }
+.s-project-name { color: var(--color-white); }
+.s-project-description { color: var(--color-grey-300); }
+.s-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.s-tag {
+  padding: 4px 8px; border: 1px solid var(--color-grey-550); border-radius: 2px;
+  color: var(--color-grey-300); white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  /* Desde tablet se parte como en Figma (ajuste normal, sin equilibrar líneas). */
+  .s-section-title { font: var(--text-title-h2); letter-spacing: var(--text-title-h2-tracking); text-wrap: wrap; }
+  .s-projects { padding-block: 80px; }
+  .s-projects-inner { gap: 80px; }
+  .s-projects-grid { grid-template-columns: repeat(2, 1fr); row-gap: 64px; }
+}
+@media (min-width: 1024px) {
+  .s-projects-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 .s-skip {
   position: absolute; left: 16px; top: -100px; z-index: 100;
   padding: 8px 12px; border-radius: 6px;

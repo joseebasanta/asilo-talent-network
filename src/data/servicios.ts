@@ -36,3 +36,60 @@ export const hero = {
     "Las apps ya se pueden generar en minutos, y todas terminan viéndose igual. Nosotros les damos lo que no se automatiza: taste, estilo y cuidado al detalle.",
   secondaryCta: { label: "Ver servicios", href: "#servicios" },
 };
+
+export interface Project {
+  name: string;
+  description: string;
+  tags: string[];
+  image: { src: string; alt: string };
+}
+
+// Proyectos (Figma: Asilo Services, nodo 91:7755). Imágenes exportadas de Figma a 2× (811×568).
+export const projectsSection = {
+  tagline: "Proyectos",
+  title: "Diferénciate de otras apps acelerado con AI",
+  subtitle:
+    "Un equipo que traduce la tecnología a tu contexto y la convierte en productos que se ven, se sienten y funcionan mejor.",
+};
+
+// TODO: reemplazar las descripciones de relleno con una línea real por proyecto.
+const PLACEHOLDER_DESCRIPTION = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+
+export const projects: Project[] = [
+  {
+    name: "Olímpica App",
+    description: PLACEHOLDER_DESCRIPTION,
+    tags: ["UI/UX", "E-commerce"],
+    image: { src: "/servicios/proyectos/olimpica.webp", alt: "Olímpica App: bienvenida, supermercado y carrito de compras" },
+  },
+  {
+    name: "Tillin",
+    description: PLACEHOLDER_DESCRIPTION,
+    tags: ["UI/UX", "Branding"],
+    image: { src: "/servicios/proyectos/tilin.webp", alt: "Tillin: perfil del técnico, inicio, búsqueda y pago de un servicio" },
+  },
+  {
+    name: "Gama",
+    description: PLACEHOLDER_DESCRIPTION,
+    tags: ["Web", "UI/UX", "Implementación"],
+    image: { src: "/servicios/proyectos/gama.webp", alt: "Gama: pantalla de la caja de autopago con la lista de productos" },
+  },
+  {
+    name: "Diners Club Mall App",
+    description: PLACEHOLDER_DESCRIPTION,
+    tags: ["UI/UX", "E-commerce"],
+    image: { src: "/servicios/proyectos/diners.webp", alt: "Diners Club Mall App: inicio, ficha de producto y confirmación de compra" },
+  },
+  {
+    name: "Mattelsa",
+    description: PLACEHOLDER_DESCRIPTION,
+    tags: ["UX Assessment", "Web"],
+    image: { src: "/servicios/proyectos/mattelsa.webp", alt: "Mattelsa: inicio de sesión, portada, ficha de una camiseta y bolsa de compras" },
+  },
+  {
+    name: "Corona App",
+    description: PLACEHOLDER_DESCRIPTION,
+    tags: ["UI/UX", "Implementación"],
+    image: { src: "/servicios/proyectos/corona.webp", alt: "Corona App: inicio, ingreso y catálogo de productos" },
+  },
+];

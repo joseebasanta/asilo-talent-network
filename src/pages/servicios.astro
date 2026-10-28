@@ -6,6 +6,7 @@ import "../styles/servicios.css";
 import SeoHead from "../components/SeoHead.astro";
 import Nav from "../components/servicios/Nav.astro";
 import Hero from "../components/servicios/Hero.astro";
+import Projects from "../components/servicios/Projects.astro";
 import { seo } from "../data/servicios";
 
 export const prerender = true;
@@ -36,6 +37,7 @@ const canonical = `${siteUrl}/servicios`;
     <Nav />
     <main id="contenido">
       <Hero />
+      <Projects />
     </main>
   </body>
 </html>
