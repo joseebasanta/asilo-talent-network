@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
-import { seo } from "../src/data/servicios";
+import { CTA_HREF, CTA_LABEL, navLinks, seo } from "../src/data/servicios";
 
 const SITE = "https://builders.asilodigital.com";
 
@@ -78,5 +78,20 @@ describe("landing de servicios v2", () => {
     expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(26);
     expect(css).toContain("background: var(--color-background);");
     expect(await render()).toMatch(/<meta\b[^>]*name="theme-color"[^>]*content="#0f0f0f"/);
+  });
+
+  it("renders the nav with logo, centered section links and the WhatsApp CTA", async () => {
+    const html = await render();
+    const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
+
+    expect(nav).toContain('src="/logo-asilo-digital-white.svg"');
+    expect(nav).toContain('aria-label="Asilo Digital, ir al inicio"');
+    expect(nav).toContain('aria-label="Navegación principal"');
+    expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Nuestro trabajo", "Contacto"]);
+    for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
+    expect(CTA_LABEL).toBe("Contáctanos");
+    expect(nav).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    expect(CTA_HREF).toMatch(/^https:\/\/wa\.me\/584126310981\?text=/);
+    expect(existsSync(new URL("../public/logo-asilo-digital-white.svg", import.meta.url))).toBe(true);
   });
 });

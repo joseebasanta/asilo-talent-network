@@ -4,6 +4,7 @@
 import "../styles/fonts.css";
 import "../styles/servicios.css";
 import SeoHead from "../components/SeoHead.astro";
+import Nav from "../components/servicios/Nav.astro";
 import { seo } from "../data/servicios";
 
 export const prerender = true;
@@ -31,6 +32,7 @@ const canonical = `${siteUrl}/servicios`;
   </head>
   <body class="servicios">
     <a class="s-skip" href="#contenido">Saltar al contenido</a>
+    <Nav />
     <main id="contenido"></main>
   </body>
 </html>

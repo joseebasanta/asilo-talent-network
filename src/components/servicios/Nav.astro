@@ -1,0 +1,19 @@
+---
+// Nav de la landing de servicios v2 (Figma: Asilo Services, nodo 91:7190).
+import { CTA_HREF, CTA_LABEL, navLinks } from "../../data/servicios";
+---
+<header class="s-nav">
+  <div class="s-nav-inner">
+    <a class="s-nav-logo" href="#contenido" aria-label="Asilo Digital, ir al inicio">
+      <img src="/logo-asilo-digital-white.svg" alt="" width="151" height="22" />
+    </a>
+    <nav class="s-nav-menu" aria-label="Navegación principal">
+      <ul class="s-nav-links">
+        {navLinks.map((link) => <li><a class="s-paragraph-md" href={link.href}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+    <div class="s-nav-actions">
+      <a class="s-btn s-btn--primary s-label-md" href={CTA_HREF}>{CTA_LABEL}</a>
+    </div>
+  </div>
+</header>

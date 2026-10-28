@@ -156,6 +156,52 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-docs-label { font: var(--text-docs-label); letter-spacing: var(--text-docs-label-tracking); }
 .s-docs-paragraph { font: var(--text-docs-paragraph); letter-spacing: var(--text-docs-paragraph-tracking); }
 
+/* Layout: margen lateral de página (64px en desktop, como en Figma). */
+.servicios { --page-gutter: 16px; }
+@media (min-width: 768px) { .servicios { --page-gutter: 24px; } }
+@media (min-width: 1280px) { .servicios { --page-gutter: 64px; } }
+
+/* Botones */
+.s-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 20px; border-radius: 2px;
+  text-decoration: none; white-space: nowrap;
+  transition: background-color 160ms ease;
+}
+.s-btn--primary { background: var(--color-blue-500); color: var(--color-white); }
+.s-btn--primary:hover { background: var(--color-blue-600); }
+
+/* Nav (Figma 91:7190): 80px de alto, logo | enlaces centrados | botón, línea inferior grey-700.
+   Sus textos usan la variante ss11 de Geist sin ligaduras, como en Figma. */
+.s-nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-grey-700);
+  font-feature-settings: "ss11" 1, "calt" 0, "liga" 0;
+}
+.s-nav-inner {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
+  /* 79px + 1px de línea inferior = 80px, como en Figma. */
+  min-height: 79px; padding-inline: var(--page-gutter);
+}
+.s-nav-logo { display: inline-flex; align-items: center; justify-self: start; min-height: 44px; }
+.s-nav-logo img { width: 151px; height: auto; }
+.s-nav-menu { display: none; }
+.s-nav-links { display: flex; gap: 32px; }
+.s-nav-links a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  color: var(--color-white); text-decoration: none;
+  transition: color 160ms ease;
+}
+.s-nav-links a:hover { color: var(--color-grey-300); }
+.s-nav-actions { display: flex; justify-content: flex-end; }
+
+@media (min-width: 768px) {
+  /* Columnas laterales iguales para que los enlaces queden en el centro exacto de la página. */
+  .s-nav-inner { grid-template-columns: 1fr auto 1fr; }
+  .s-nav-menu { display: block; }
+}
+
 .s-skip {
   position: absolute; left: 16px; top: -100px; z-index: 100;
   padding: 8px 12px; border-radius: 6px;
