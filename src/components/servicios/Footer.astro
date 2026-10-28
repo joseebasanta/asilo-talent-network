@@ -1,0 +1,38 @@
+---
+import { footer, footerLegalLinks, footerSocialLinks } from "../../data/servicios";
+---
+
+<footer class="s-footer">
+  <div class="s-footer-inner">
+    <div class="s-footer-top">
+      <a class="s-footer-logo" href="#contenido" aria-label="Asilo Digital, volver al inicio">
+        <img src="/logo-asilo-digital-white.svg" alt="" width="151" height="22" loading="lazy" />
+      </a>
+      <ul class="s-footer-social" aria-label="Redes sociales">
+        {
+          footerSocialLinks.map((link) => (
+            <li>
+              <a href={link.href} target="_blank" rel="noopener noreferrer" aria-label={`Asilo Digital en ${link.label}`}>
+                <img src={`/servicios/icons/${link.icon}.svg`} alt="" width="24" height="24" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="s-footer-credits s-paragraph-sm">
+      <p>{footer.copyright}</p>
+      {
+        footerLegalLinks.length > 0 && (
+          <ul class="s-footer-legal">
+            {footerLegalLinks.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</footer>

@@ -9,6 +9,9 @@ import {
   faqItems,
   faqSection,
   finalCta,
+  footer,
+  footerLegalLinks,
+  footerSocialLinks,
   hero,
   navLinks,
   projects,
@@ -233,5 +236,25 @@ describe("landing de servicios v2", () => {
     expect(section).toContain(finalCta.subtitle);
     expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${CTA_LABEL}</a>`);
     for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
+  });
+
+  it("renders the footer after main with the logo, social links and copyright", async () => {
+    const html = await render();
+    const start = html.indexOf('<footer class="s-footer">');
+    const section = html.slice(start, html.indexOf("</footer>", start));
+
+    expect(start).toBeGreaterThan(html.indexOf("</main>"));
+    expect(section).toContain('src="/logo-asilo-digital-white.svg"');
+    expect(section).toContain('aria-label="Redes sociales"');
+    expect(footerSocialLinks.map((l) => l.icon)).toEqual(["instagram", "x", "linkedin"]);
+    for (const link of footerSocialLinks) {
+      expect(section).toContain(`href="${link.href}" target="_blank" rel="noopener noreferrer" aria-label="Asilo Digital en ${link.label}"`);
+      expect(existsSync(new URL(`../public/servicios/icons/${link.icon}.svg`, import.meta.url))).toBe(true);
+    }
+    expect(section).toContain(`<p>${footer.copyright}</p>`);
+    expect(footer.copyright).toMatch(/^© \d{4} Asilo Digital\. Todos los derechos reservados$/);
+    // Sin páginas legales todavía: no se publican links vacíos.
+    expect(footerLegalLinks).toHaveLength(0);
+    expect(section).not.toContain('href="#"');
   });
 });

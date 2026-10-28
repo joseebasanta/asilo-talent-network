@@ -258,3 +258,26 @@ export const finalCta = {
   subtitle:
     "Te ayudamos a definir el alcance, el equipo, los tiempos y los próximos pasos adecuados para tu proyecto.",
 };
+
+export interface FooterLink {
+  label: string;
+  href: string;
+}
+
+// Footer (Figma: Asilo Services, nodo 91:7543). Mismo orden de redes que en Figma; los íconos están en
+// /public/servicios/icons con el nombre de `icon`.
+export const footerSocialLinks: (FooterLink & { icon: "instagram" | "x" | "linkedin" | "youtube" })[] = [
+  { label: "Instagram", href: "https://www.instagram.com/asilodigitalcom/", icon: "instagram" },
+  { label: "X", href: "https://x.com/asilodigital", icon: "x" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/asilodigital/", icon: "linkedin" },
+  // TODO: agregar YouTube cuando tengamos el link del canal (el ícono ya está en /servicios/icons/youtube.svg):
+  // { label: "YouTube", href: "https://www.youtube.com/@…", icon: "youtube" },
+];
+
+// TODO: Figma tiene "Política de privacidad", "Términos de servicio" y "Configuración de cookies".
+// Se agregan aquí cuando existan esas páginas, para no publicar links que no llevan a ningún lado.
+export const footerLegalLinks: FooterLink[] = [];
+
+export const footer = {
+  copyright: `© ${new Date().getFullYear()} Asilo Digital. Todos los derechos reservados`,
+};

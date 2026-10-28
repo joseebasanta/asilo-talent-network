@@ -477,6 +477,29 @@ html:has(body.servicios) { interpolate-size: allow-keywords; }
   .s-cta { padding-block: 112px; }
 }
 
+/* Footer (Figma 91:7543): logo y redes arriba, línea blanca y créditos centrados abajo. */
+.s-footer { padding: 64px var(--page-gutter); border-top: 1px solid var(--color-grey-700); }
+.s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; }
+.s-footer-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+.s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
+.s-footer-logo img { width: 151px; height: auto; }
+.s-footer-social { display: flex; margin-right: -6px; } /* el último ícono queda al ras del margen, como en Figma */
+/* Ícono de 24px con 6px de aire por lado: 12px entre íconos, como en Figma, y un área de toque de 36px. */
+.s-footer-social a { display: grid; place-items: center; padding: 6px; border-radius: 2px; transition: opacity 160ms ease; }
+.s-footer-social a:hover { opacity: 0.7; }
+.s-footer-credits {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px;
+  padding-top: 32px; border-top: 1px solid var(--color-white);
+  color: var(--color-white); text-align: center;
+}
+.s-footer-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
+.s-footer-legal a { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (min-width: 768px) {
+  .s-footer { padding-block: 80px; }
+  .s-footer-inner { gap: 80px; }
+}
+
 .s-skip {
   position: absolute; left: 16px; top: -100px; z-index: 100;
   padding: 8px 12px; border-radius: 6px;
