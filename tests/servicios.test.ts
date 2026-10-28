@@ -63,4 +63,16 @@ describe("landing de servicios v2", () => {
     expect(classes).toHaveLength(22);
     expect(css).toMatch(/\.s-subheading-md \{[^}]*text-transform: uppercase;/);
   });
+
+  it("defines the Figma color scale and uses it for the page base", async () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain("--color-background: #0f0f0f;");
+    expect(css).toContain("--color-grey-550: #707070;");
+    expect(css).toContain("--color-blue-500: #0066ff;");
+    expect(css).toContain("--color-blue: var(--color-blue-500);");
+    // Fondo, blanco, negro, 12 grises y 11 azules.
+    expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(26);
+    expect(css).toContain("background: var(--color-background);");
+    expect(await render()).toMatch(/<meta\b[^>]*name="theme-color"[^>]*content="#0f0f0f"/);
+  });
 });
