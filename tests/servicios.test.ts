@@ -3,8 +3,11 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
 import {
+  CONTACT_EMAIL,
   CTA_HREF,
   CTA_LABEL,
+  faqItems,
+  faqSection,
   hero,
   navLinks,
   projects,
@@ -48,7 +51,7 @@ describe("landing de servicios v2", () => {
     const html = await render();
 
     // Las secciones de la v1 que todavía no tienen reemplazo en la v2.
-    for (const id of ["preguntas", "contacto"]) {
+    for (const id of ["contacto"]) {
       expect(html).not.toContain(`id="${id}"`);
     }
     expect(html).not.toContain("landing.css");
@@ -193,6 +196,32 @@ describe("landing de servicios v2", () => {
       "/servicios/icons/arrow-forward.svg",
       ...testimonials.flatMap((t) => [t.avatar, t.logo?.src ?? ""]).filter(Boolean),
     ]) {
+      expect(existsSync(new URL(`../public${asset}`, import.meta.url))).toBe(true);
+    }
+  });
+
+  it("renders the FAQ as native accordions with the first one open and the contact card", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-faq"');
+    const section = html.slice(start, html.indexOf("</section>", start));
+
+    expect(section).toContain('id="preguntas"');
+    expect(section).toContain(`<p class="s-section-tagline s-subheading-sm">${faqSection.tagline}</p>`);
+    expect(section).toContain(`id="preguntas-title">${faqSection.title}</h2>`);
+    expect(section.match(/<details class="s-faq-item"/g)).toHaveLength(faqItems.length);
+    expect(section.match(/<details class="s-faq-item" open>/g)).toHaveLength(1);
+    for (const item of faqItems) {
+      expect(section).toContain(`<span>${item.question}</span>`);
+      expect(section).toContain(item.answer);
+    }
+    expect(section).not.toContain("Respuesta por definir");
+    expect(section).not.toContain("Asilo Labs");
+
+    expect(section).toContain(`<h3 class="s-faq-card-title s-title-h6" id="faq-card-title">${faqSection.card.title}</h3>`);
+    expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    expect(section).toContain(`href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
+    expect(section).not.toContain("designme");
+    for (const asset of [faqSection.card.avatar, "/servicios/icons/close.svg"]) {
       expect(existsSync(new URL(`../public${asset}`, import.meta.url))).toBe(true);
     }
   });

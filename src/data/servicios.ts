@@ -195,3 +195,59 @@ export const testimonials: Testimonial[] = Array.from({ length: 6 }, (_, i) => (
   // Logos neutros de relleno (los de Figma son de una marca real que no es cliente).
   logo: { src: `/placeholders/logo-${i + 1}.svg`, alt: `Cliente 0${i + 1}` },
 }));
+
+// TODO: confirmar el correo de contacto definitivo (es el mismo de la v1).
+export const CONTACT_EMAIL = "hola@asilodigital.com";
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+// FAQ (Figma: Asilo Services, nodo 91:7493).
+export const faqSection = {
+  tagline: "¿Aún tienes dudas?",
+  title: "Lee las FAQs",
+  // En Figma esta tarjeta es una captura de referencia de otra agencia; aquí va con el copy de Asilo.
+  card: {
+    title: "¿No encuentras tu respuesta?",
+    body: "Lo hablamos en una llamada.",
+    emailLabel: "O escríbenos →",
+    // TODO: reemplazar con la foto de quien atiende las llamadas.
+    avatar: "/placeholders/faq-contact.webp",
+  },
+};
+
+export const faqItems: FaqItem[] = [
+  {
+    question: "¿Necesito saber de tecnología para trabajar con ustedes?",
+    answer:
+      "No. Acompañamos desde cero a quienes tienen un negocio y necesitan un equipo de confianza. Nosotros traducimos la tecnología a tu idioma, tú nos cuentas qué quieres lograr.",
+  },
+  {
+    question: "¿Con qué tipo de organizaciones trabajan?",
+    answer:
+      "Con empresas, instituciones, startups y creadores que quieren adoptar tecnología con claridad. Desde un emprendimiento que está arrancando hasta una organización que necesita digitalizar sus procesos.",
+  },
+  {
+    question: "¿Cómo es el trabajo día a día con ustedes?",
+    // TODO: en Figma dice "Respuesta por definir por servicio"; mientras tanto va la respuesta de la v1.
+    answer:
+      "Con un canal de comunicación compartido y revisiones periódicas. Ves el avance desde el primer día y no esperas a una gran entrega final para opinar.",
+  },
+  {
+    question: "¿Pueden ayudarme a crear un producto desde cero?",
+    answer:
+      "Sí, y es donde más disfrutamos trabajar. No necesitas saber de tecnología para empezar: te ayudamos a definir el alcance, trazar los flujos de usuario, diseñar la experiencia, construir el producto o el sitio y acompañar el lanzamiento. Según lo que necesites, podemos ser tu equipo completo de ejecución o integrarnos con tu equipo actual de producto.",
+  },
+  {
+    question: "¿Qué tan rápido pueden empezar?",
+    answer:
+      "Normalmente en pocos días. Si necesitas arrancar esta semana, cuéntanoslo en la primera conversación y organizamos el equipo alrededor de tu fecha.",
+  },
+  {
+    question: "¿Cuánto cuesta trabajar con Asilo Digital?",
+    answer:
+      "Depende del alcance y del tipo de acompañamiento. Una evaluación UX inicial parte desde 600$; un sitio web desde 800$; y los productos o plataformas a medida se cotizan por fases. Si necesitas diseño, desarrollo o posicionamiento SEO de forma continua, ofrecemos planes mensuales ajustados a tu necesidad. Después de conocer tu contexto te enviamos una propuesta clara, con alcance, tiempos y costos, sin sorpresas.",
+  },
+];

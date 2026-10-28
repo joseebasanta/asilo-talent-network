@@ -1,0 +1,40 @@
+---
+import { CONTACT_EMAIL, CTA_HREF, CTA_LABEL, faqItems, faqSection } from "../../data/servicios";
+import SectionHead from "./SectionHead.astro";
+
+const { card } = faqSection;
+---
+
+<section class="s-faq" id="preguntas" aria-labelledby="preguntas-title">
+  <div class="s-faq-inner">
+    <div class="s-faq-head">
+      <SectionHead tagline={faqSection.tagline} title={faqSection.title} titleId="preguntas-title" align="start" />
+    </div>
+
+    <aside class="s-faq-card" aria-labelledby="faq-card-title">
+      <img class="s-faq-card-avatar" src={card.avatar} alt="" width="40" height="40" loading="lazy" decoding="async" />
+      <div class="s-faq-card-text">
+        <h3 class="s-faq-card-title s-title-h6" id="faq-card-title">{card.title}</h3>
+        <p class="s-faq-card-body s-paragraph-sm">{card.body}</p>
+      </div>
+      <a class="s-btn s-btn--primary s-label-sm" href={CTA_HREF}>{CTA_LABEL}</a>
+      <p class="s-faq-card-email s-paragraph-sm">
+        {card.emailLabel} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+      </p>
+    </aside>
+
+    <div class="s-faq-list">
+      {
+        faqItems.map((item, i) => (
+          <details class="s-faq-item" open={i === 0}>
+            <summary class="s-faq-question s-label-lg">
+              <span>{item.question}</span>
+              <img class="s-faq-icon" src="/servicios/icons/close.svg" alt="" width="24" height="24" />
+            </summary>
+            <p class="s-faq-answer s-paragraph-md">{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
