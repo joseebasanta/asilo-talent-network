@@ -1,18 +1,20 @@
 ---
 // Encabezado de sección (Figma 91:7757): tagline, título h2 y bajada, centrados en 768px.
-// `title` acepta varias líneas para respetar los saltos de Figma.
+// `title` acepta varias líneas para respetar los saltos de Figma. Con `align="start"` va alineado a la
+// izquierda y sin ancho máximo, como en Testimonios.
 interface Props {
   tagline: string;
   title: string | string[];
-  subtitle: string;
+  subtitle?: string;
   titleId: string;
+  align?: "center" | "start";
 }
 
-const { tagline, title, subtitle, titleId } = Astro.props;
+const { tagline, title, subtitle, titleId, align = "center" } = Astro.props;
 const lines = Array.isArray(title) ? title : null;
 ---
 
-<header class="s-section-head">
+<header class:list={["s-section-head", { "s-section-head--start": align === "start" }]}>
   <p class="s-section-tagline s-subheading-sm">{tagline}</p>
   <div class="s-section-head-text">
     {
@@ -24,6 +26,6 @@ const lines = Array.isArray(title) ? title : null;
         <h2 class="s-section-title" id={titleId}>{title}</h2>
       )
     }
-    <p class="s-section-lead s-paragraph-lg">{subtitle}</p>
+    {subtitle && <p class="s-section-lead s-paragraph-lg">{subtitle}</p>}
   </div>
 </header>

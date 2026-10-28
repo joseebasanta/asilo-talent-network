@@ -1,0 +1,76 @@
+---
+import { testimonials, testimonialsSection } from "../../data/servicios";
+import SectionHead from "./SectionHead.astro";
+
+const total = testimonials.length;
+---
+
+<section class="s-testimonials" id="testimonios" aria-labelledby="testimonios-title">
+  <div class="s-testimonials-inner">
+    <SectionHead
+      tagline={testimonialsSection.tagline}
+      title={testimonialsSection.title}
+      titleId="testimonios-title"
+      align="start"
+    />
+
+    <div class="s-carousel" data-carousel aria-roledescription="carrusel" aria-label="Testimonios">
+      <div class="s-carousel-slides" aria-live="polite">
+        {
+          testimonials.map((t, i) => (
+            <figure
+              class="s-testimonial"
+              role="group"
+              aria-roledescription="testimonio"
+              aria-label={`${i + 1} de ${total}`}
+              data-slide
+              hidden={i !== 0}
+            >
+              {t.logo && <img class="s-testimonial-logo" src={t.logo.src} alt={t.logo.alt} loading="lazy" />}
+              <blockquote class="s-testimonial-quote s-label-lg">
+                <p>“{t.quote}”</p>
+              </blockquote>
+              <figcaption class="s-testimonial-author">
+                <img class="s-testimonial-avatar" src={t.avatar} alt="" width="56" height="56" loading="lazy" decoding="async" />
+                <span class="s-testimonial-meta">
+                  <span class="s-testimonial-name s-label-md">{t.name}</span>
+                  <span class="s-testimonial-role s-paragraph-md">{t.role}</span>
+                </span>
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+
+      <div class="s-carousel-controls">
+        <div class="s-carousel-dots">
+          {
+            testimonials.map((_, i) => (
+              <button
+                class="s-carousel-dot"
+                type="button"
+                aria-label={`Ver testimonio ${i + 1}`}
+                aria-current={i === 0 ? "true" : undefined}
+                data-dot
+              />
+            ))
+          }
+        </div>
+        <div class="s-carousel-arrows">
+          <button class="s-carousel-arrow" type="button" aria-label="Testimonio anterior" data-prev>
+            <img src="/servicios/icons/arrow-back.svg" alt="" width="24" height="24" />
+          </button>
+          <button class="s-carousel-arrow" type="button" aria-label="Siguiente testimonio" data-next>
+            <img src="/servicios/icons/arrow-forward.svg" alt="" width="24" height="24" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCarousel } from "../../scripts/servicios-carousel";
+
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach(initCarousel);
+</script>

@@ -168,3 +168,30 @@ export const serviceTabs: ServiceTab[] = [
     ],
   },
 ];
+
+export interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+  avatar: string;
+  // Logo de la empresa del cliente (SVG o PNG). Opcional: sin logo la tarjeta empieza por la cita.
+  logo?: { src: string; alt: string };
+}
+
+// Testimonios (Figma: Asilo Services, nodo 91:7386).
+export const testimonialsSection = {
+  tagline: "Testimonios",
+  title: "Lo que dicen los equipos con los que trabajamos.",
+};
+
+// TODO: reemplazar con testimonios reales (con permiso): cita, nombre, cargo y empresa, foto y logo.
+// Figma tiene seis puntos en el slider; el número de puntos sale de esta lista.
+export const testimonials: Testimonial[] = Array.from({ length: 6 }, (_, i) => ({
+  quote:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare.",
+  name: "Nombre Apellido",
+  role: "Cargo, Empresa",
+  avatar: "/servicios/testimonios/avatar-placeholder.webp",
+  // Logos neutros de relleno (los de Figma son de una marca real que no es cliente).
+  logo: { src: `/placeholders/logo-${i + 1}.svg`, alt: `Cliente 0${i + 1}` },
+}));

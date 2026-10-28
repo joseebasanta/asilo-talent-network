@@ -12,6 +12,8 @@ import {
   serviceTabs,
   servicesSection,
   seo,
+  testimonials,
+  testimonialsSection,
 } from "../src/data/servicios";
 
 const SITE = "https://builders.asilodigital.com";
@@ -46,7 +48,7 @@ describe("landing de servicios v2", () => {
     const html = await render();
 
     // Las secciones de la v1 que todavía no tienen reemplazo en la v2.
-    for (const id of ["testimonios", "preguntas", "contacto"]) {
+    for (const id of ["preguntas", "contacto"]) {
       expect(html).not.toContain(`id="${id}"`);
     }
     expect(html).not.toContain("landing.css");
@@ -162,6 +164,36 @@ describe("landing de servicios v2", () => {
       expect(section).toContain(`>${tab.label}</button>`);
       expect(section).toContain(`<h3 class="s-services-panel-title">${tab.title}</h3>`);
       for (const item of tab.items) expect(section).toContain(`<li>${item}</li>`);
+    }
+  });
+
+  it("renders the testimonials carousel with one visible card, a dot per card and both arrows", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-testimonials"');
+    const section = html.slice(start, html.indexOf("</section>", start));
+    const total = testimonials.length;
+
+    expect(section).toContain('id="testimonios"');
+    expect(section).toContain('class="s-section-head s-section-head--start"');
+    expect(section).toContain(`id="testimonios-title">${testimonialsSection.title}</h2>`);
+    expect(section).not.toContain("s-section-lead");
+    expect(section.match(/data-slide/g)).toHaveLength(total);
+    expect(section.match(/data-slide hidden/g)).toHaveLength(total - 1);
+    expect(section).toContain(`aria-label="1 de ${total}"`);
+    expect(section.match(/data-dot/g)).toHaveLength(total);
+    expect(section.match(/aria-current="true"/g)).toHaveLength(1);
+    expect(section).toContain('aria-label="Testimonio anterior"');
+    expect(section).toContain('aria-label="Siguiente testimonio"');
+    expect(section).toContain(`“${testimonials[0].quote}”`);
+    expect(section).toContain(testimonials[0].name);
+    expect(section).toContain(testimonials[0].role);
+
+    for (const asset of [
+      "/servicios/icons/arrow-back.svg",
+      "/servicios/icons/arrow-forward.svg",
+      ...testimonials.flatMap((t) => [t.avatar, t.logo?.src ?? ""]).filter(Boolean),
+    ]) {
+      expect(existsSync(new URL(`../public${asset}`, import.meta.url))).toBe(true);
     }
   });
 });

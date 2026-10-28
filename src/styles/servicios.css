@@ -244,6 +244,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-section-lead { color: var(--color-grey-300); text-wrap: pretty; }
 .s-section-title-line { display: block; }
+/* Variante alineada a la izquierda (Testimonios). */
+.s-section-head--start { align-items: flex-start; max-width: none; margin-inline: 0; text-align: left; }
 
 /* Proyectos (Figma 91:7755): contenedor de 1280px, 3 columnas con 32px entre tarjetas y 64px entre filas. */
 .s-projects { padding: 64px var(--page-gutter); }
@@ -329,6 +331,71 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   /* Centrado vertical como en Figma; en móvil y tablet arranca arriba para no dejar un hueco sobre el texto. */
   .s-services-panel { justify-content: center; padding: 64px; }
   .s-services-panel-title { font: var(--text-title-h3); letter-spacing: var(--text-title-h3-tracking); }
+}
+
+/* Testimonios (Figma 91:7386): título a la izquierda y carrusel a la derecha, columnas iguales con 80px entre ellas. */
+.s-testimonials { padding: 64px var(--page-gutter); }
+.s-testimonials-inner {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px;
+  max-width: 1280px; margin-inline: auto;
+}
+.s-carousel { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+/* Todas las tarjetas ocupan la misma celda: el carrusel toma el alto de la más larga y no salta. */
+.s-carousel-slides { display: grid; }
+.s-testimonial {
+  grid-area: 1 / 1;
+  display: flex; flex-direction: column; gap: 24px;
+  margin: 0; padding: 24px;
+  border: 1px solid var(--color-grey-550); border-radius: 2px;
+  transition: opacity 240ms ease;
+}
+.s-testimonial[hidden] { display: flex; visibility: hidden; opacity: 0; }
+/* Hueco de logo de 48px de alto, como en Figma; el logo se ajusta dentro sin deformarse. */
+/* .servicios delante para ganarle a `.servicios img { height: auto }`. */
+.servicios .s-testimonial-logo {
+  align-self: flex-start; width: auto; max-width: 160px; height: 48px;
+  object-fit: contain; object-position: left center; margin-bottom: 24px;
+}
+.s-testimonial-quote { margin: 0; color: var(--color-white); }
+.s-testimonial-author { display: flex; align-items: center; gap: 20px; }
+.s-testimonial-avatar { flex: none; width: 56px; height: 56px; border-radius: 50%; }
+.s-testimonial-meta { display: flex; flex-direction: column; min-width: 0; }
+.s-testimonial-name { color: var(--color-white); }
+.s-testimonial-role { color: var(--color-grey-300); }
+.s-carousel-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.s-carousel-dots { display: flex; margin-left: -4px; } /* el primer punto queda al ras, como en Figma */
+/* Botones de 16×24 para que los puntos de 8px queden a 16px de distancia, como en Figma. */
+.s-carousel-dot {
+  display: grid; place-items: center; width: 16px; height: 24px;
+  padding: 0; border: 0; background: none; cursor: pointer;
+}
+.s-carousel-dot::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--color-grey-600); transition: background-color 160ms ease;
+}
+.s-carousel-dot:hover::before { background: var(--color-grey-400); }
+.s-carousel-dot[aria-current="true"]::before { background: var(--color-white); }
+.s-carousel-dot:focus-visible { outline-color: var(--color-white); outline-offset: 0; }
+.s-carousel-arrows { display: flex; gap: 16px; }
+.s-carousel-arrow {
+  display: grid; place-items: center; padding: 12px;
+  border: 1px solid var(--color-white); border-radius: 2px;
+  background: transparent; cursor: pointer; transition: background-color 160ms ease;
+}
+.s-carousel-arrow:hover { background: var(--color-grey-800); }
+.s-carousel-arrow:focus-visible { outline-color: var(--color-white); }
+
+@media (min-width: 768px) {
+  .s-testimonials { padding-block: 80px; }
+  .s-testimonial { padding: 32px; }
+  .s-carousel { gap: 48px; }
+}
+@media (min-width: 1024px) {
+  .s-testimonials { padding-block: 112px; }
+  .s-testimonials-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 80px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s-testimonial { transition: none; }
 }
 
 .s-skip {
