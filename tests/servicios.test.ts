@@ -53,11 +53,15 @@ describe("landing de servicios v2", () => {
 
   it("defines a text token and class for each Figma text style", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    // Una muestra por grupo, con los valores exactos de Figma (tamaño/interlineado en rem, tracking en em).
-    expect(css).toContain("--text-title-h1: 500 3.5rem/4rem var(--font-frama);");
+    // Una muestra por grupo: tamaño en rem, line height como multiplicador (120 % = 1.2), tracking en em.
+    expect(css).toContain("--text-title-h1: 500 3.5rem/1.2 var(--font-frama);");
+    expect(css).toContain("--text-title-h4: 500 2rem/1.3 var(--font-frama);");
+    expect(css).toContain("--text-title-h6: 500 1.25rem/1.4 var(--font-frama);");
     expect(css).toContain("--text-title-h1-tracking: -0.01em;");
-    expect(css).toContain("--text-label-lg: 500 1.125rem/1.5rem var(--font-sans);");
-    expect(css).toContain("--text-paragraph-md: 400 1rem/1.5rem var(--font-sans);");
+    expect(css).toContain("--text-label-lg: 500 1.125rem/1.5 var(--font-sans);");
+    expect(css).toContain("--text-paragraph-md: 400 1rem/1.5 var(--font-sans);");
+    expect(css).toContain("--text-subheading-2xs: 500 0.6875rem/1.1 var(--font-sans);");
+    expect(css).toContain("--text-docs-paragraph: 400 1.125rem/1.75 var(--font-sans);");
     expect(css).toContain("--text-subheading-2xs-tracking: 0.02em;");
     const classes = [...css.matchAll(/^\.s-([a-z0-9-]+) \{ font: var\(--text-\1\);/gm)].map((m) => m[1]);
     expect(classes).toHaveLength(22);
