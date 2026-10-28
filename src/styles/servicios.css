@@ -3,9 +3,8 @@
    Todo vive bajo body.servicios para no tocar el resto del sitio.
    ========================================================================== */
 
-/* Tokens: la escala tipográfica y la escala de color de la v2 van aquí
-   (--font-*, --text-*, --color-*) cuando lleguen desde Figma. Mientras tanto,
-   solo lo mínimo para que la página base se vea y sea legible. */
+/* Tokens de la v2: familias (--font-*) y escala tipográfica (--text-*), tomadas de Figma.
+   La escala de color (--color-*) llega después; mientras tanto, fondo y texto base fijos. */
 .servicios {
   /* Familias (declaradas en fonts.css). Qué rol usa cada una lo define la escala tipográfica. */
   --font-frama: "PP Frama", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -13,12 +12,81 @@
   --font-sans: "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+  /* Escala tipográfica (Figma "Asilo Services", estilos de texto locales).
+     --text-<estilo> es el shorthand de font (peso tamaño/interlineado familia) en rem;
+     --text-<estilo>-tracking va aparte porque font no lo incluye. Úsalos con las clases .s-<estilo>. */
+  /* Title/H1 Title — PP Frama 500, 56/64, -1% */
+  --text-title-h1: 500 3.5rem/4rem var(--font-frama);
+  --text-title-h1-tracking: -0.01em;
+  /* Title/H2 Title — PP Frama 500, 48/56, -1% */
+  --text-title-h2: 500 3rem/3.5rem var(--font-frama);
+  --text-title-h2-tracking: -0.01em;
+  /* Title/H3 Title — PP Frama 500, 40/48, -1% */
+  --text-title-h3: 500 2.5rem/3rem var(--font-frama);
+  --text-title-h3-tracking: -0.01em;
+  /* Title/H4 Title — PP Frama 500, 32/40, -0.5% */
+  --text-title-h4: 500 2rem/2.5rem var(--font-frama);
+  --text-title-h4-tracking: -0.005em;
+  /* Title/H5 Title — PP Frama 500, 24/32, 0% */
+  --text-title-h5: 500 1.5rem/2rem var(--font-frama);
+  --text-title-h5-tracking: 0;
+  /* Title/H6 Title — PP Frama 500, 20/28, 0% */
+  --text-title-h6: 500 1.25rem/1.75rem var(--font-frama);
+  --text-title-h6-tracking: 0;
+  /* Label/X Large — Geist 500, 24/32, -1.5% */
+  --text-label-xl: 500 1.5rem/2rem var(--font-sans);
+  --text-label-xl-tracking: -0.015em;
+  /* Label/Large — Geist 500, 18/24, -1.33% */
+  --text-label-lg: 500 1.125rem/1.5rem var(--font-sans);
+  --text-label-lg-tracking: -0.0133em;
+  /* Label/Medium — Geist 500, 16/24, -1.1% */
+  --text-label-md: 500 1rem/1.5rem var(--font-sans);
+  --text-label-md-tracking: -0.011em;
+  /* Label/Small — Geist 500, 14/20, -0.6% */
+  --text-label-sm: 500 0.875rem/1.25rem var(--font-sans);
+  --text-label-sm-tracking: -0.006em;
+  /* Label/X Small — Geist 500, 12/16, 0% */
+  --text-label-xs: 500 0.75rem/1rem var(--font-sans);
+  --text-label-xs-tracking: 0;
+  /* Paragraph/X Large — Geist 400, 24/32, -1.5% */
+  --text-paragraph-xl: 400 1.5rem/2rem var(--font-sans);
+  --text-paragraph-xl-tracking: -0.015em;
+  /* Paragraph/Large — Geist 400, 18/24, -1.33% */
+  --text-paragraph-lg: 400 1.125rem/1.5rem var(--font-sans);
+  --text-paragraph-lg-tracking: -0.0133em;
+  /* Paragraph/Medium — Geist 400, 16/24, -1.1% */
+  --text-paragraph-md: 400 1rem/1.5rem var(--font-sans);
+  --text-paragraph-md-tracking: -0.011em;
+  /* Paragraph/Small — Geist 400, 14/20, -0.6% */
+  --text-paragraph-sm: 400 0.875rem/1.25rem var(--font-sans);
+  --text-paragraph-sm-tracking: -0.006em;
+  /* Paragraph/X Small — Geist 400, 12/16, 0% */
+  --text-paragraph-xs: 400 0.75rem/1rem var(--font-sans);
+  --text-paragraph-xs-tracking: 0;
+  /* Subheading/Medium — Geist 500, 16/24, 6%, mayúsculas */
+  --text-subheading-md: 500 1rem/1.5rem var(--font-sans);
+  --text-subheading-md-tracking: 0.06em;
+  /* Subheading/Small — Geist 500, 14/20, 6%, mayúsculas */
+  --text-subheading-sm: 500 0.875rem/1.25rem var(--font-sans);
+  --text-subheading-sm-tracking: 0.06em;
+  /* Subheading/X Small — Geist 500, 12/16, 4%, mayúsculas */
+  --text-subheading-xs: 500 0.75rem/1rem var(--font-sans);
+  --text-subheading-xs-tracking: 0.04em;
+  /* Subheading/2X Small — Geist 500, 11/12, 2%, mayúsculas */
+  --text-subheading-2xs: 500 0.6875rem/0.75rem var(--font-sans);
+  --text-subheading-2xs-tracking: 0.02em;
+  /* Docs/Label — Geist 500, 18/32, -1.5% */
+  --text-docs-label: 500 1.125rem/2rem var(--font-sans);
+  --text-docs-label-tracking: -0.015em;
+  /* Docs/Paragraph — Geist 400, 18/32, -1.5% */
+  --text-docs-paragraph: 400 1.125rem/2rem var(--font-sans);
+  --text-docs-paragraph-tracking: -0.015em;
+
   margin: 0;
   background: #161618;
   color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.5;
+  font: var(--text-paragraph-md);
+  letter-spacing: var(--text-paragraph-md-tracking);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -32,6 +100,30 @@ html:has(body.servicios) { color-scheme: dark; background: #161618; scroll-behav
 :where(.servicios a) { color: inherit; }
 
 .servicios :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+/* Estilos de texto: una clase por estilo de Figma. */
+.s-title-h1 { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }
+.s-title-h2 { font: var(--text-title-h2); letter-spacing: var(--text-title-h2-tracking); }
+.s-title-h3 { font: var(--text-title-h3); letter-spacing: var(--text-title-h3-tracking); }
+.s-title-h4 { font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking); }
+.s-title-h5 { font: var(--text-title-h5); letter-spacing: var(--text-title-h5-tracking); }
+.s-title-h6 { font: var(--text-title-h6); letter-spacing: var(--text-title-h6-tracking); }
+.s-label-xl { font: var(--text-label-xl); letter-spacing: var(--text-label-xl-tracking); }
+.s-label-lg { font: var(--text-label-lg); letter-spacing: var(--text-label-lg-tracking); }
+.s-label-md { font: var(--text-label-md); letter-spacing: var(--text-label-md-tracking); }
+.s-label-sm { font: var(--text-label-sm); letter-spacing: var(--text-label-sm-tracking); }
+.s-label-xs { font: var(--text-label-xs); letter-spacing: var(--text-label-xs-tracking); }
+.s-paragraph-xl { font: var(--text-paragraph-xl); letter-spacing: var(--text-paragraph-xl-tracking); }
+.s-paragraph-lg { font: var(--text-paragraph-lg); letter-spacing: var(--text-paragraph-lg-tracking); }
+.s-paragraph-md { font: var(--text-paragraph-md); letter-spacing: var(--text-paragraph-md-tracking); }
+.s-paragraph-sm { font: var(--text-paragraph-sm); letter-spacing: var(--text-paragraph-sm-tracking); }
+.s-paragraph-xs { font: var(--text-paragraph-xs); letter-spacing: var(--text-paragraph-xs-tracking); }
+.s-subheading-md { font: var(--text-subheading-md); letter-spacing: var(--text-subheading-md-tracking); text-transform: uppercase; }
+.s-subheading-sm { font: var(--text-subheading-sm); letter-spacing: var(--text-subheading-sm-tracking); text-transform: uppercase; }
+.s-subheading-xs { font: var(--text-subheading-xs); letter-spacing: var(--text-subheading-xs-tracking); text-transform: uppercase; }
+.s-subheading-2xs { font: var(--text-subheading-2xs); letter-spacing: var(--text-subheading-2xs-tracking); text-transform: uppercase; }
+.s-docs-label { font: var(--text-docs-label); letter-spacing: var(--text-docs-label-tracking); }
+.s-docs-paragraph { font: var(--text-docs-paragraph); letter-spacing: var(--text-docs-paragraph-tracking); }
 
 .s-skip {
   position: absolute; left: 16px; top: -100px; z-index: 100;
