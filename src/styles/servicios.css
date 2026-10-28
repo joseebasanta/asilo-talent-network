@@ -7,6 +7,9 @@
    (--font-*, --text-*, --color-*) cuando lleguen desde Figma. Mientras tanto,
    solo lo mínimo para que la página base se vea y sea legible. */
 .servicios {
+  /* Familias (declaradas en fonts.css). Qué rol usa cada una lo define la escala tipográfica. */
+  --font-frama: "PP Frama", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-frama-text: "PP Frama Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-sans: "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 

@@ -28,3 +28,157 @@
   font-display: swap;
   src: url("/fonts/geist-mono.woff2") format("woff2");
 }
+
+/* PP Frama y PP Frama Text (Pangram Pangram, licencia comercial): usadas por la landing de servicios v2.
+   Solo los .woff2 web; no subir archivos de escritorio al repo, que es público. */
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFrama-Thin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFrama-Extralight.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFrama-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFrama-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFrama-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFrama-Black.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-ThinItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-ExtralightItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-LightItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-RegularItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-MediumItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-BoldItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama";
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFrama-BlackItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama Text";
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFramaText-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama Text";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFramaText-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama Text";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PPFramaText-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama Text";
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFramaText-LightItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama Text";
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFramaText-RegularItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "PP Frama Text";
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  src: url("/fonts/PPFramaText-BoldItalic.woff2") format("woff2");
+}

@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from "node:fs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
@@ -38,5 +39,15 @@ describe("landing de servicios v2", () => {
       expect(html).not.toContain(`id="${id}"`);
     }
     expect(html).not.toContain("landing.css");
+  });
+
+  it("declares PP Frama, PP Frama Text and Geist with files that exist", () => {
+    const css = readFileSync(new URL("../src/styles/fonts.css", import.meta.url), "utf8");
+    for (const family of ["PP Frama", "PP Frama Text", "Geist Sans", "Geist Mono"]) {
+      expect(css).toContain(`font-family: "${family}";`);
+    }
+    const files = [...css.matchAll(/url\("(\/fonts\/[^"]+)"\)/g)].map((m) => m[1]!);
+    expect(files.length).toBeGreaterThanOrEqual(23);
+    for (const file of files) expect(existsSync(new URL(`../public${file}`, import.meta.url)), file).toBe(true);
   });
 });
