@@ -287,9 +287,9 @@ describe("landing de servicios v2", () => {
     expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
     expect(section).toContain(`href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
     expect(section).not.toContain("designme");
-    for (const asset of [faqSection.card.avatar, "/servicios/icons/close.svg"]) {
-      expect(existsSync(new URL(`../public${asset}`, import.meta.url))).toBe(true);
-    }
+    // La tarjeta de contacto va sin avatar.
+    expect(section).not.toContain("s-faq-card-avatar");
+    expect(existsSync(new URL("../public/servicios/icons/close.svg", import.meta.url))).toBe(true);
   });
 
   it("renders the final CTA with the WhatsApp button and every nav anchor has its section", async () => {

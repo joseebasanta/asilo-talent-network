@@ -221,8 +221,6 @@ export const faqSection = {
     title: "¿No encuentras tu respuesta?",
     body: "Lo hablamos en una llamada.",
     emailLabel: "O escríbenos →",
-    // TODO: reemplazar con la foto de quien atiende las llamadas.
-    avatar: "/placeholders/faq-contact.webp",
   },
 };
 
