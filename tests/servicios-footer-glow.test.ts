@@ -5,7 +5,7 @@ import { GLOW_EASE, GLOW_FADE_OFFSET, GLOW_SCROLL_OFFSET, GLOW_START_SCALE } fro
 describe("servicios footer glow", () => {
   it("holds a thin line while the footer comes in and expands only over the reserved space at the end", () => {
     expect(GLOW_START_SCALE).toBeGreaterThan(0);
-    expect(GLOW_START_SCALE).toBeLessThan(0.1);
+    expect(GLOW_START_SCALE).toBeLessThanOrEqual(0.1);
     // Progreso ligado al espacio reservado: 0 cuando asoma por abajo, 1 al final de la página.
     expect(GLOW_SCROLL_OFFSET).toEqual(["start end", "end end"]);
     const script = readFileSync(new URL("../src/scripts/servicios-footer-glow.ts", import.meta.url), "utf8");

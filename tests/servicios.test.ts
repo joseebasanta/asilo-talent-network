@@ -378,7 +378,14 @@ describe("landing de servicios v2", () => {
     expect(section).toContain('<span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>');
     expect(section).not.toContain("<img");
     expect(section).toContain('aria-label="Redes sociales"');
-    expect(footerSocialLinks.map((l) => l.icon)).toEqual(["instagram", "x", "linkedin"]);
+    expect(footerSocialLinks.map((l) => l.icon)).toEqual(["instagram", "tiktok", "x", "linkedin", "web"]);
+    expect(footerSocialLinks.map((l) => l.href)).toEqual([
+      "https://www.instagram.com/asilodigitalcom",
+      "https://www.tiktok.com/@asilodigital",
+      "https://x.com/asilodigital",
+      "https://www.linkedin.com/company/asilodigital/home/",
+      "https://www.asilodigital.com/",
+    ]);
     for (const link of footerSocialLinks) {
       expect(section).toContain(`href="${link.href}" target="_blank" rel="noopener noreferrer" aria-label="Asilo Digital en ${link.label}"`);
       expect(section).toContain(`<span class="s-icon" style="--icon: url(/servicios/icons/${link.icon}.svg)"></span>`);

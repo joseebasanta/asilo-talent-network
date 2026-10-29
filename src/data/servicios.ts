@@ -272,10 +272,14 @@ export interface FooterLink {
 
 // Footer (Figma: Asilo Services, nodo 91:7543). Mismo orden de redes que en Figma; los íconos están en
 // /public/servicios/icons con el nombre de `icon`.
-export const footerSocialLinks: (FooterLink & { icon: "instagram" | "x" | "linkedin" | "youtube" })[] = [
-  { label: "Instagram", href: "https://www.instagram.com/asilodigitalcom/", icon: "instagram" },
+// Los íconos de TikTok y de la web son provisionales hasta tener los definitivos.
+export const footerSocialLinks: (FooterLink & { icon: "instagram" | "tiktok" | "x" | "linkedin" | "web" | "youtube" })[] = [
+  { label: "Instagram", href: "https://www.instagram.com/asilodigitalcom", icon: "instagram" },
+  { label: "TikTok", href: "https://www.tiktok.com/@asilodigital", icon: "tiktok" },
   { label: "X", href: "https://x.com/asilodigital", icon: "x" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/asilodigital/", icon: "linkedin" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/asilodigital/home/", icon: "linkedin" },
+  // El sitio principal (blog); el aria-label queda "Asilo Digital en asilodigital.com".
+  { label: "asilodigital.com", href: "https://www.asilodigital.com/", icon: "web" },
   // TODO: agregar YouTube cuando tengamos el link del canal (el ícono ya está en /servicios/icons/youtube.svg):
   // { label: "YouTube", href: "https://www.youtube.com/@…", icon: "youtube" },
 ];
