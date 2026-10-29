@@ -229,6 +229,10 @@ describe("landing de servicios v2", () => {
     expect(section.match(/aria-current="true"/g)).toHaveLength(1);
     expect(section).toContain('aria-label="Testimonio anterior"');
     expect(section).toContain('aria-label="Siguiente testimonio"');
+    // Flechas blancas con el ícono en grey-950 (máscara sobre el SVG del ícono).
+    expect(section).toContain('<span class="s-carousel-arrow-icon" style="--icon: url(/servicios/icons/arrow-forward.svg)"></span>');
+    const arrowCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(arrowCss).toMatch(/\.s-carousel-arrow \{[^}]*background: var\(--color-white\); color: var\(--color-grey-950\);/);
     expect(section).toContain(`“${testimonials[0].quote}”`);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-testimonial \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);

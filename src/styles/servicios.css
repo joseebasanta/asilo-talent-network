@@ -560,12 +560,20 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-carousel-dot[aria-current="true"]::before { background: var(--color-white); }
 .s-carousel-dot:focus-visible { outline-color: var(--color-white); outline-offset: 0; }
 .s-carousel-arrows { display: flex; gap: 16px; }
+/* Botón blanco sólido con el ícono en grey-950, de 50×50 como antes. */
 .s-carousel-arrow {
-  display: grid; place-items: center; padding: 12px;
-  border: 1px solid var(--color-white); border-radius: 2px;
-  background: transparent; cursor: pointer; transition: background-color 160ms ease;
+  display: grid; place-items: center; padding: 13px;
+  border: 0; border-radius: 2px;
+  background: var(--color-white); color: var(--color-grey-950);
+  cursor: pointer; transition: background-color 160ms ease;
 }
-.s-carousel-arrow:hover { background: var(--color-grey-800); }
+.s-carousel-arrow:hover { background: var(--color-grey-200); }
+/* El SVG del ícono es blanco: se usa como máscara y toma el color del botón (currentColor). */
+.s-carousel-arrow-icon {
+  display: block; width: 24px; height: 24px; background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
 .s-carousel-arrow:focus-visible { outline-color: var(--color-white); }
 
 @media (min-width: 768px) {
