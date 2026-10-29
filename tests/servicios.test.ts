@@ -233,6 +233,12 @@ describe("landing de servicios v2", () => {
     // Flechas blancas con el ícono en grey-950 (máscara sobre el SVG del ícono).
     expect(section).toContain('<span class="s-carousel-arrow-icon" style="--icon: url(/servicios/icons/arrow-forward.svg)"></span>');
     const arrowCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    // Giro 3D al cambiar de testimonio: perspectiva en el contenedor y transición con Motion.
+    expect(arrowCss).toContain(".s-carousel-slides { perspective: 1200px; }");
+    const motionScript = readFileSync(new URL("../src/scripts/servicios-carousel-motion.ts", import.meta.url), "utf8");
+    expect(motionScript).toContain('from "motion"');
+    expect(motionScript).toContain("rotateY: [0, 14 * direction]");
+    expect(motionScript).not.toContain("dataset.transition");
     expect(arrowCss).toMatch(/\.s-carousel-arrow \{[^}]*background: var\(--color-white\); color: var\(--color-grey-950\);/);
     expect(section).toContain(`“${testimonials[0].quote}”`);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
