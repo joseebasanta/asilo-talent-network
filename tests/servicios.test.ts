@@ -396,8 +396,11 @@ describe("landing de servicios v2", () => {
     expect(heights).toEqual([55, 69, 81, 92, 100, 92, 81, 69, 55]);
     expect(section.indexOf("s-footer-glow")).toBeGreaterThan(section.indexOf("s-footer-credits"));
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-footer-glow \{\s*position: sticky; bottom: 0;/);
-    expect(css).toMatch(/\.s-footer-glow-bars \{[^}]*filter: blur\(10px\); transform-origin: 50% 100%;/);
+    // Ancla sticky de alto 0 al final del footer, después del espacio reservado para el arco completo.
+    expect(section.indexOf("data-footer-glow-space")).toBeLessThan(section.indexOf("data-footer-glow>"));
+    expect(css).toMatch(/\.s-footer-glow \{\s*position: sticky; bottom: 0; height: 0;/);
+    expect(css).toContain(".s-footer-glow-space { height: var(--footer-glow-h); margin-top: 48px; }");
+    expect(css).toMatch(/\.s-footer-glow-bars \{[^}]*filter: blur\(10px\); transform-origin: 50% calc\(100% - 16px\);/);
     // Colores de la referencia y la franja azul con el azul de marca.
     for (const color of ["#e516d1", "#fb2a57", "#fabf1a", "#d7e0e3", "var(--color-blue-500) 80%"]) expect(css).toContain(color);
     expect(css).toContain("--footer-glow-end: var(--color-blue-500);");

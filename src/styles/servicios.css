@@ -810,8 +810,10 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 }
 
 /* Footer (Figma 91:7543): logo y redes arriba, línea del color del texto y créditos centrados abajo. */
-.s-footer { padding: 64px var(--page-gutter) 0; border-top: 1px solid var(--border-strong); overflow: clip; }
-.s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; }
+.s-footer { padding: 0 var(--page-gutter); border-top: 1px solid var(--border-strong); overflow: clip; }
+/* El espacio superior va en el contenido y no en el footer: así el brillo sticky puede pegarse al borde de la
+   pantalla desde que asoma el primer píxel del footer. */
+.s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; padding-top: 64px; }
 .s-footer-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
 .s-footer-social { display: flex; margin-right: -6px; } /* el último ícono queda al ras del margen, como en Figma */
@@ -829,27 +831,31 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 /* Brillo escalonado al pie (ver servicios-footer-glow.ts): nueve columnas con el mismo degradado, la central
    un poco más ancha, desenfocadas para que los escalones y las franjas se fundan. Crece desde abajo con el
    scroll; este es su estado final, el que se ve sin JS o con movimiento reducido. */
-/* sticky: mientras el footer entra, el brillo queda pegado al borde inferior de la pantalla (como en la
-   referencia) y al final de la página vuelve a su lugar. Va detrás del contenido del footer. */
-.s-footer { isolation: isolate; }
+/* Como en la referencia: desde que asoma el footer el brillo es una línea fina pegada al borde inferior de
+   la pantalla; se mantiene así mientras sube el contenido y se expande en el último tramo, mientras entra
+   el espacio reservado (.s-footer-glow-space). El brillo es un ancla sticky de alto 0 al final del footer,
+   con las columnas colgando hacia arriba; el footer las recorta para que no pasen al CTA. Va detrás del
+   contenido del footer. */
+.s-footer { isolation: isolate; --footer-glow-h: clamp(160px, 18vw, 260px); }
 .s-footer-inner { position: relative; z-index: 1; }
+.s-footer-glow-space { height: var(--footer-glow-h); margin-top: 48px; }
 .s-footer-glow {
-  position: sticky; bottom: 0; height: clamp(160px, 18vw, 260px);
-  margin: 48px calc(-1 * var(--page-gutter)) 0; pointer-events: none;
+  position: sticky; bottom: 0; height: 0;
+  margin-inline: calc(-1 * var(--page-gutter)); pointer-events: none;
 }
 /* Más ancho y más bajo que el footer: el desenfoque no deja bordes claros a los lados ni abajo. */
 .s-footer-glow-bars {
-  position: absolute; left: -24px; right: -24px; bottom: -16px; height: calc(85% + 16px);
+  position: absolute; left: -24px; right: -24px; bottom: -16px; height: calc(var(--footer-glow-h) * 0.85 + 16px);
   display: flex; align-items: flex-end;
-  filter: blur(10px); transform-origin: 50% 100%;
+  /* Escala desde el borde visible (16px sobre el fondo de las columnas): la línea fina queda a la vista. */
+  filter: blur(10px); transform-origin: 50% calc(100% - 16px);
 }
 .s-footer-glow-bar { flex: 1; height: calc(var(--h) * 1%); background: var(--footer-glow); }
 .s-footer-glow-bar:nth-child(5) { flex-grow: 1.15; }
 
 @media (min-width: 768px) {
-  .s-footer { padding-top: 80px; }
-  .s-footer-inner { gap: 80px; }
-  .s-footer-glow { margin-top: 64px; }
+  .s-footer-inner { gap: 80px; padding-top: 80px; }
+  .s-footer-glow-space { margin-top: 64px; }
 }
 
 .s-skip {
