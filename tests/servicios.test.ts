@@ -235,6 +235,9 @@ describe("landing de servicios v2", () => {
     expect(css).toContain('.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }');
     expect(css).toContain('.s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }');
     expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-services-tab:not\(\[aria-selected="true"\]\):hover/);
+    // Hover fino: línea de 1px y un asomo de azul de 6% del alto de la pestaña.
+    expect(css).toMatch(/\.s-services-tab::after \{\s*height: 1px;/);
+    expect(css).toContain('.s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.06); opacity: 0.5; }');
     // Tarjeta sobre --surface-card (grey-1000 en oscuro) con todos sus trazos en --border-subtle (grey-800).
     expect(css).toMatch(/\.s-services-card \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
     expect(css).not.toMatch(/\.s-services-tabs? \{[^}]*grey-550/);

@@ -517,7 +517,7 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 }
 .s-services-tab:last-child { border-bottom: 0; }
 /* Relleno azul que sube desde la línea inferior al seleccionar y baja hasta ella al soltar (como el video
-   de referencia); la línea de 2px se ilumina con el hover. */
+   de referencia); la línea de 1px se ilumina con el hover. */
 .s-services-tab::before,
 .s-services-tab::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: -1;
@@ -529,7 +529,7 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 400ms ease;
 }
 .s-services-tab::after {
-  height: 2px; background: var(--fg-strong); opacity: 0;
+  height: 1px; background: var(--fg-strong); opacity: 0;
   transition: opacity 200ms ease;
 }
 /* La flecha conserva el color fuerte aunque la etiqueta esté apagada; sobre el azul va siempre en blanco. */
@@ -546,12 +546,12 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 @media (hover: hover) {
   .s-services-tab:not([aria-selected="true"]):hover { color: var(--fg-strong); }
   .s-services-tab:not([aria-selected="true"]):hover::after { opacity: 1; }
-  .s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.12); opacity: 0.5; }
+  .s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.06); opacity: 0.5; }
   .s-services-tab:not([aria-selected="true"]):hover .s-services-tab-arrow { transform: translateX(4px); opacity: 1; }
 }
 .s-services-tab:not([aria-selected="true"]):focus-visible { color: var(--fg-strong); }
 .s-services-tab:not([aria-selected="true"]):focus-visible::after { opacity: 1; }
-.s-services-tab:not([aria-selected="true"]):focus-visible::before { transform: scaleY(0.12); opacity: 0.5; }
+.s-services-tab:not([aria-selected="true"]):focus-visible::before { transform: scaleY(0.06); opacity: 0.5; }
 .s-services-tab:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
 @media (prefers-reduced-motion: reduce) {
   .s-services-tab::before, .s-services-tab-arrow { transition: opacity 200ms ease; }
