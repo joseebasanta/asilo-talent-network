@@ -275,6 +275,10 @@ describe("landing de servicios v2", () => {
       expect(existsSync(new URL(`../public${logo.src}`, import.meta.url))).toBe(true);
     }
     expect(hero).not.toMatch(/webflow|relume/i);
+
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain("animation: s-logos-scroll 80s linear infinite");
+    expect(css).toContain("mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent)");
   });
 
   it("draws the hero background behind the content without extra libraries or third-party copy", async () => {

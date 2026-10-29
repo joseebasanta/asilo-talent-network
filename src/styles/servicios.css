@@ -281,8 +281,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-logos {
   display: flex; justify-content: center; overflow: hidden;
   margin: 64px calc(-1 * var(--page-gutter)) 0; padding-block: 16px;
+  /* Desvanecido ancho en los dos bordes: los logos entran y salen sin corte. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
 }
-.s-logos-track { display: flex; flex: none; animation: s-logos-scroll 40s linear infinite; }
+/* 80s por vuelta: unos 33px por segundo con seis logos. */
+.s-logos-track { display: flex; flex: none; animation: s-logos-scroll 80s linear infinite; }
 .s-logos:hover .s-logos-track { animation-play-state: paused; }
 .s-logos-set { display: flex; flex: none; }
 /* Margen en vez de gap para que cada copia mida lo mismo y el bucle no salte. */
