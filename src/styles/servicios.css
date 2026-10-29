@@ -211,21 +211,33 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Hero (Figma 91:7203): bloque de 724px bajo el nav con el contenido centrado en 768px. */
 .s-hero {
   position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: center;
+  /* El halo del texto se extiende más allá del contenido; en móvil no debe crear scroll horizontal. */
+  overflow-x: clip;
   padding: 96px var(--page-gutter) 16px;
 }
 .s-hero-inner {
   display: flex; flex-direction: column; align-items: center; gap: 32px;
   width: 100%; max-width: 768px; margin-inline: auto; text-align: center;
 }
-.s-hero-text { display: flex; flex-direction: column; gap: 24px; }
+.s-hero-text { position: relative; display: flex; flex-direction: column; gap: 24px; }
+/* Halo oscuro detrás del título y la bajada para separarlos de la grilla de píxeles; se desvanece hacia afuera. */
+.s-hero-text::before {
+  content: ""; position: absolute; inset: -48px -64px; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-background) 85%, transparent), transparent);
+}
 /* Title/H1 en desktop; en pantallas chicas baja a Title/H4 para que no se parta en muchas líneas. */
 .s-hero-title {
   font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking);
   color: var(--color-white); text-wrap: balance;
 }
+/* Sombra difusa del color de fondo alrededor de cada letra para que no se mezclen con los píxeles. */
+.s-hero-title { text-shadow: 0 0 32px var(--color-background), 0 0 12px var(--color-background); }
 /* Una frase por línea en todos los tamaños; en móvil cada frase se equilibra sola. */
 .s-hero-title-line { display: block; }
-.s-hero-lead { color: var(--color-grey-300); text-wrap: pretty; }
+.s-hero-lead {
+  color: var(--color-grey-300); text-wrap: pretty;
+  text-shadow: 0 0 16px var(--color-background), 0 0 6px var(--color-background);
+}
 .s-hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
 
 /* Fondo del hero (adaptado de "pixel-perfect-hero"): queda detrás del contenido gracias a isolation + z-index -1. */

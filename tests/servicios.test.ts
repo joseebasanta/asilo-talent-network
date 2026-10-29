@@ -305,5 +305,9 @@ describe("landing de servicios v2", () => {
     expect(css).not.toContain("s-glass-shimmer");
     expect(css).not.toContain("background-clip: text");
     expect(css).toContain(".s-hero-actions, .s-hero .s-logos { animation: none; }");
+    // Halo y sombra del color de fondo para separar el texto de la grilla.
+    expect(css).toMatch(/\.s-hero-text::before \{[^}]*radial-gradient/);
+    expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--color-background), 0 0 12px var(--color-background); }");
+    expect(css).toMatch(/\.s-hero-lead \{[^}]*text-shadow: 0 0 16px var\(--color-background\)/);
   });
 });
