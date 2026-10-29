@@ -326,7 +326,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   display: flex; flex-direction: column; align-items: center; gap: 16px;
   width: 100%; max-width: 768px; margin-inline: auto; text-align: center;
 }
-.s-section-tagline { color: var(--color-grey-300); }
+/* Tagline una escala por debajo de Figma (Subheading XS en vez de SM) y un tono más oscuro (grey-400). */
+.s-section-tagline { color: var(--color-grey-400); }
 .s-section-head-text { display: flex; flex-direction: column; gap: 24px; }
 /* Title/H2 en desktop; Title/H4 en móvil, igual que el hero. */
 .s-section-title {

@@ -265,7 +265,9 @@ describe("landing de servicios v2", () => {
     const section = html.slice(start, html.indexOf("</section>", start));
 
     expect(section).toContain('id="preguntas"');
-    expect(section).toContain(`<p class="s-section-tagline s-subheading-sm">${faqSection.tagline}</p>`);
+    expect(section).toContain(`<p class="s-section-tagline s-subheading-xs">${faqSection.tagline}</p>`);
+    expect(html.match(/class="s-section-tagline s-subheading-xs"/g)).toHaveLength(4);
+    expect(html).not.toContain("s-section-tagline s-subheading-sm");
     expect(section).toContain(`id="preguntas-title">${faqSection.title}</h2>`);
     expect(section.match(/<details class="s-faq-item"/g)).toHaveLength(faqItems.length);
     expect(section.match(/<details class="s-faq-item" name="faq" open>/g)).toHaveLength(1);
