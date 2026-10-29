@@ -848,11 +848,16 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   margin-inline: calc(-1 * var(--page-gutter)); pointer-events: none;
 }
 /* Más ancho y más bajo que el footer: el desenfoque no deja bordes claros a los lados ni abajo. */
+/* El desenfoque va en este contenedor y la escala en el de adentro: así la línea fina inicial también queda
+   desenfocada (suave) y no se aplasta junto con las columnas. */
 .s-footer-glow-bars {
   position: absolute; left: -24px; right: -24px; bottom: -16px; height: calc(var(--footer-glow-h) * 0.85 + 16px);
-  display: flex; align-items: flex-end;
-  /* Escala desde el borde visible (16px sobre el fondo de las columnas): la línea fina queda a la vista. */
-  filter: blur(10px); transform-origin: 50% calc(100% - 16px);
+  filter: blur(10px);
+}
+/* Escala desde el borde visible (16px sobre el fondo de las columnas): la línea fina queda a la vista. */
+.s-footer-glow-rise {
+  display: flex; align-items: flex-end; height: 100%;
+  transform-origin: 50% calc(100% - 16px);
 }
 .s-footer-glow-bar { flex: 1; height: calc(var(--h) * 1%); background: var(--footer-glow); }
 .s-footer-glow-bar:nth-child(5) { flex-grow: 1.15; }

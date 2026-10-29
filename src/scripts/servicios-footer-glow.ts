@@ -6,15 +6,26 @@
 
 import { animate, scroll } from "motion";
 
-// Alto de la línea fina mientras el footer entra.
-export const GLOW_START_SCALE = 0.04;
+// Alto de la línea mientras el footer entra (10 %; con el desenfoque se ve como una franja suave).
+export const GLOW_START_SCALE = 0.1;
 // 0 cuando el espacio reservado asoma por abajo (antes, la línea se queda fina); 1 al final de la página.
 export const GLOW_SCROLL_OFFSET = ["start end", "end end"] as const;
+// La línea aparece con un fundido durante los primeros 200px del footer, en vez de saltar a la vista.
+export const GLOW_FADE_OFFSET = ["start end", "200px end"] as const;
+// La expansión arranca y termina suave (ease-in-out) en vez de ir a ritmo constante.
+export const GLOW_EASE = [0.65, 0, 0.35, 1] as const;
 
 export function initFooterGlow(glow: HTMLElement): () => void {
-  const bars = glow.querySelector<HTMLElement>("[data-footer-glow-bars]");
-  const space = glow.parentElement?.querySelector<HTMLElement>("[data-footer-glow-space]");
-  if (!bars || !space || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return () => {};
-  const rise = animate(bars, { transform: [`scaleY(${GLOW_START_SCALE})`, "scaleY(1)"] }, { ease: "linear" });
-  return scroll(rise, { target: space, offset: [...GLOW_SCROLL_OFFSET] });
+  const rise = glow.querySelector<HTMLElement>("[data-footer-glow-rise]");
+  const footer = glow.closest("footer");
+  const space = footer?.querySelector<HTMLElement>("[data-footer-glow-space]");
+  if (!rise || !footer || !space || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return () => {};
+  const grow = animate(rise, { transform: [`scaleY(${GLOW_START_SCALE})`, "scaleY(1)"] }, { ease: [...GLOW_EASE] });
+  const fade = animate(glow, { opacity: [0, 1] }, { ease: "linear" });
+  const stopGrow = scroll(grow, { target: space, offset: [...GLOW_SCROLL_OFFSET] });
+  const stopFade = scroll(fade, { target: footer, offset: [...GLOW_FADE_OFFSET] });
+  return () => {
+    stopGrow();
+    stopFade();
+  };
 }

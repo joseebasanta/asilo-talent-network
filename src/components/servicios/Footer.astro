@@ -43,8 +43,10 @@ const glowBars = [55, 69, 81, 92, 100, 92, 81, 69, 55];
   </div>
   <div class="s-footer-glow-space" data-footer-glow-space></div>
   <div class="s-footer-glow" aria-hidden="true" data-footer-glow>
-    <div class="s-footer-glow-bars" data-footer-glow-bars>
-      {glowBars.map((h) => <span class="s-footer-glow-bar" style={`--h: ${h}`} />)}
+    <div class="s-footer-glow-bars">
+      <div class="s-footer-glow-rise" data-footer-glow-rise>
+        {glowBars.map((h) => <span class="s-footer-glow-bar" style={`--h: ${h}`} />)}
+      </div>
     </div>
   </div>
 </footer>
