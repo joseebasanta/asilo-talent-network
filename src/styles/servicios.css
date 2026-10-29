@@ -817,7 +817,7 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 /* En móvil las redes van debajo de la frase (cinco íconos no caben junto al logo); desde 768px, a la derecha. */
 .s-footer-top { display: flex; flex-direction: column; align-items: flex-start; gap: 32px; }
 /* Logo con la frase debajo (Title/H5); las redes quedan alineadas con el logo. */
-.s-footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+.s-footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .s-footer-tagline { color: var(--fg-strong); text-wrap: balance; }
 .s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
 .s-footer-social { display: flex; margin-left: -6px; } /* en móvil el primer ícono queda al ras del margen */
