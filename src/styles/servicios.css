@@ -88,6 +88,7 @@
   --color-black: #000000; /* Foundations/Black */
   --color-white: #ffffff; /* Foundations/White */
   --color-grey-1000: #121212; /* Agregado fuera de Figma: fondo de la tarjeta de servicios. */
+  --color-grey-975: #121212; /* Agregado fuera de Figma: fondo de la sección FAQ (mismo valor que grey-1000). */
   --color-grey-950: #171717;
   --color-grey-900: #1c1c1c;
   --color-grey-800: #262626;
@@ -595,7 +596,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 
 /* FAQ (Figma 91:7493): título y tarjeta de contacto a la izquierda (500px), preguntas a la derecha (700px).
    En móvil la tarjeta pasa debajo de las preguntas, para quien no encontró su respuesta. */
-.s-faq { padding: 64px var(--page-gutter); }
+.s-faq { padding: 64px var(--page-gutter); background: var(--color-grey-975); }
 .s-faq-inner {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px;
   grid-template-areas: "head" "list" "card";

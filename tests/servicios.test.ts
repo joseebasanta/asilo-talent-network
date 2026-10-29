@@ -91,9 +91,10 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("--color-grey-550: #707070;");
     expect(css).toContain("--color-blue-500: #0066ff;");
     expect(css).toContain("--color-blue: var(--color-blue-500);");
-    // Fondo, blanco, negro, 13 grises (12 de Figma + grey-1000) y 11 azules.
-    expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(27);
+    // Fondo, blanco, negro, 14 grises (12 de Figma + grey-1000 y grey-975) y 11 azules.
+    expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(28);
     expect(css).toContain("--color-grey-1000: #121212;");
+    expect(css).toContain("--color-grey-975: #121212;");
     expect(css).toContain("background: var(--color-background);");
     expect(await render()).toMatch(/<meta\b[^>]*name="theme-color"[^>]*content="#0f0f0f"/);
   });
@@ -274,6 +275,8 @@ describe("landing de servicios v2", () => {
     expect(section.match(/<div class="s-faq-answer-wrap">/g)).toHaveLength(faqItems.length);
     const faqCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(faqCss).toMatch(/\.s-faq-item \{\s*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
+    // Fondo de toda la sección en grey-975.
+    expect(faqCss).toContain(".s-faq { padding: 64px var(--page-gutter); background: var(--color-grey-975); }");
     // Hover y pregunta abierta en grey-950; tarjeta de contacto igual que las preguntas.
     expect(faqCss).toMatch(/@media \(hover: hover\) \{\s*\.s-faq-item:hover \{ background: var\(--color-grey-950\); \}/);
     expect(faqCss).toContain(".s-faq-item[open]:not([data-closing]) { background: var(--color-grey-950); }");
