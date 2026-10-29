@@ -279,6 +279,7 @@ describe("landing de servicios v2", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain("animation: s-logos-scroll 80s linear infinite");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent)");
+    expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");
   });
 
   it("draws the hero background behind the content without extra libraries or third-party copy", async () => {

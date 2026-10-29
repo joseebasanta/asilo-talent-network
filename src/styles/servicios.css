@@ -304,6 +304,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-logos { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; }
   .s-hero-title { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }
 }
+@media (min-width: 1024px) {
+  /* Foco al centro: los costados quedan vacíos y los logos aparecen poco a poco hacia el medio. */
+  .s-logos {
+    -webkit-mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%);
+    mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%);
+  }
+}
 
 /* Encabezado de sección: tagline, título y bajada centrados en 768px (Figma 91:7757). */
 .s-section-head {
