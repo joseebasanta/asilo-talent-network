@@ -118,7 +118,9 @@ describe("landing de servicios v2", () => {
     expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Nuestro trabajo", "Contacto"]);
     for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
     expect(CTA_LABEL).toBe("Contáctanos");
-    expect(nav).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    // Botón del nav una escala menor que el del hero: sm (32px, Label SM) frente a lg (48px).
+    expect(nav).toContain(`<a class="s-btn s-btn--sm s-btn--primary s-label-sm" href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    expect(css).toContain(".s-btn--sm { min-height: 32px; padding: 0 16px; }");
     expect(CTA_HREF).toMatch(/^https:\/\/wa\.me\/584126310981\?text=/);
     expect(existsSync(new URL("../public/logo-asilo-digital-white.svg", import.meta.url))).toBe(true);
   });

@@ -177,6 +177,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-btn--secondary:hover { background: var(--color-grey-200); }
 /* El contorno por defecto toma el texto negro y no se vería sobre el fondo oscuro. */
 .s-btn--secondary:focus-visible { outline-color: var(--color-white); }
+/* Tamaños: sm 32px (nav), base 40px, lg 48px (hero y CTA final). */
+.s-btn--sm { min-height: 32px; padding: 0 16px; }
 .s-btn--lg { padding: 12px 24px; }
 
 /* Nav (Figma 91:7190, ajustado a 72px de alto): logo | enlaces centrados | botón, línea inferior grey-700. */
