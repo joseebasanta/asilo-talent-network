@@ -354,6 +354,16 @@ describe("landing de servicios v2", () => {
     expect(section).toContain(finalCta.subtitle);
     expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${CTA_LABEL}</a>`);
     for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
+
+    // Fondo decorativo: degradado hacia el azul de marca con una grilla de cuadritos, detrás del contenido.
+    expect(section).toContain('<div class="s-cta-bg" aria-hidden="true"></div>');
+    expect(section.indexOf("s-cta-bg")).toBeLessThan(section.indexOf("s-cta-inner"));
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-cta-bg \{[^}]*z-index: -1; background: var\(--cta-gradient\);/);
+    expect(css).toMatch(/\.s-cta-bg::before \{[^}]*mask: var\(--s-cta-dots\) center \/ 48px 48px repeat;/);
+    // Los dos temas definen su degradado y el color de los cuadritos.
+    expect(css.match(/--cta-gradient: linear-gradient\(to bottom, var\(--surface-section\) 0%/g)).toHaveLength(2);
+    expect(css.match(/--cta-dot: /g)).toHaveLength(2);
   });
 
   it("renders the footer after main with the logo, social links and copyright", async () => {

@@ -151,6 +151,10 @@
     0 12px 24px -10px rgb(0 0 0 / 1),
     0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 90%, transparent),
     0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 35%, transparent);
+  /* Fondo del CTA final: degradado del fondo del FAQ (la sección de arriba) al azul de marca, más fuerte bajo el botón,
+     y una grilla de cuadritos encima. */
+  --cta-gradient: linear-gradient(to bottom, var(--surface-section) 0%, var(--color-blue-950) 35%, var(--color-blue-900) 70%, var(--color-blue-800) 100%);
+  --cta-dot: rgb(255 255 255 / 0.28);
 
   margin: 0;
   background: var(--surface-page);
@@ -195,6 +199,8 @@ html[data-theme="light"] body.servicios {
     0 12px 24px -10px rgb(0 0 0 / 0.22),
     0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 55%, transparent),
     0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 20%, transparent);
+  --cta-gradient: linear-gradient(to bottom, var(--surface-section) 0%, var(--color-blue-50) 45%, var(--color-blue-100) 100%);
+  --cta-dot: rgb(23 23 23 / 0.45);
 }
 
 html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behavior: smooth; }
@@ -750,7 +756,16 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 }
 
 /* CTA final (Figma 91:7534): bloque centrado de 768px con título, bajada y el botón de WhatsApp. */
-.s-cta { padding: 64px var(--page-gutter); }
+.s-cta { position: relative; isolation: isolate; overflow: hidden; padding: 64px var(--page-gutter); }
+/* Degradado de abajo hacia arriba (ver --cta-gradient) con cuadritos de 3px cada 48px, centrados. Los
+   cuadritos son una máscara SVG pintada con --cta-dot, así cambian con el tema. */
+.s-cta-bg { position: absolute; inset: 0; z-index: -1; background: var(--cta-gradient); pointer-events: none; }
+.s-cta-bg::before {
+  content: ""; position: absolute; inset: 0; background: var(--cta-dot);
+  --s-cta-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect x='22.5' y='22.5' width='3' height='3'/%3E%3C/svg%3E");
+  -webkit-mask: var(--s-cta-dots) center / 48px 48px repeat;
+  mask: var(--s-cta-dots) center / 48px 48px repeat;
+}
 .s-cta-inner {
   display: flex; flex-direction: column; align-items: center; gap: 32px;
   max-width: 768px; margin-inline: auto; text-align: center;
