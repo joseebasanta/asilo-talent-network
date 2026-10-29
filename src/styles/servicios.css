@@ -546,12 +546,12 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 @media (hover: hover) {
   .s-services-tab:not([aria-selected="true"]):hover { color: var(--fg-strong); }
   .s-services-tab:not([aria-selected="true"]):hover::after { opacity: 1; }
-  .s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.06); opacity: 0.5; }
+  .s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.1); opacity: 0.5; }
   .s-services-tab:not([aria-selected="true"]):hover .s-services-tab-arrow { transform: translateX(4px); opacity: 1; }
 }
 .s-services-tab:not([aria-selected="true"]):focus-visible { color: var(--fg-strong); }
 .s-services-tab:not([aria-selected="true"]):focus-visible::after { opacity: 1; }
-.s-services-tab:not([aria-selected="true"]):focus-visible::before { transform: scaleY(0.06); opacity: 0.5; }
+.s-services-tab:not([aria-selected="true"]):focus-visible::before { transform: scaleY(0.1); opacity: 0.5; }
 .s-services-tab:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
 @media (prefers-reduced-motion: reduce) {
   .s-services-tab::before, .s-services-tab-arrow { transition: opacity 200ms ease; }
