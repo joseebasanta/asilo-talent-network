@@ -7,17 +7,10 @@ import { CTA_HREF, CTA_LABEL, clientLogos, hero } from "../../data/servicios";
 const copies = [0, 1, 2, 3];
 ---
 <section class="s-hero" id="inicio" aria-labelledby="hero-title">
-  <!-- Fondo: partículas en canvas y líneas que se dibujan al cargar (adaptado de "hero-minimalism"). -->
+  <!-- Fondo: grilla de píxeles que aparece en onda desde el centro, con viñeta (adaptado de "pixel-perfect-hero"). -->
   <div class="s-hero-bg" aria-hidden="true">
-    <canvas class="s-hero-particles" data-hero-particles></canvas>
-    <div class="s-hero-lines">
-      <span class="s-hline"></span>
-      <span class="s-hline"></span>
-      <span class="s-hline"></span>
-      <span class="s-vline"></span>
-      <span class="s-vline"></span>
-      <span class="s-vline"></span>
-    </div>
+    <canvas class="s-hero-pixels" data-hero-pixels></canvas>
+    <div class="s-hero-vignette"></div>
   </div>
   <div class="s-hero-inner">
     <div class="s-hero-text">
@@ -49,7 +42,7 @@ const copies = [0, 1, 2, 3];
 </section>
 
 <script>
-  import { initParticles } from "../../scripts/servicios-particles";
+  import { initPixels } from "../../scripts/servicios-pixels";
 
-  document.querySelectorAll<HTMLCanvasElement>("[data-hero-particles]").forEach(initParticles);
+  document.querySelectorAll<HTMLCanvasElement>("[data-hero-pixels]").forEach(initPixels);
 </script>

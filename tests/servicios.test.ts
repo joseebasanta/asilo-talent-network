@@ -286,20 +286,22 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");
   });
 
-  it("draws the hero background behind the content without extra libraries or third-party copy", async () => {
+  it("draws the pixel background, glass title and entrance behind the hero without third-party copy", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-hero"');
     const hero = html.slice(start, html.indexOf("</section>", start));
 
     expect(hero).toContain('<div class="s-hero-bg" aria-hidden="true">');
-    expect(hero).toContain("data-hero-particles");
-    expect(hero.match(/class="s-hline"/g)).toHaveLength(3);
-    expect(hero.match(/class="s-vline"/g)).toHaveLength(3);
+    expect(hero).toContain("data-hero-pixels");
+    expect(hero).toContain('<div class="s-hero-vignette"></div>');
     expect(hero.indexOf("s-hero-bg")).toBeLessThan(hero.indexOf("s-hero-inner"));
-    expect(html).not.toMatch(/dali ?agents|hubot/i);
+    expect(hero).not.toContain("s-hline");
+    expect(html).not.toMatch(/silent precision|explore design|github\.com"/i);
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-bg \{[^}]*z-index: -1/);
-    expect(css).toMatch(/prefers-reduced-motion: reduce\) \{\s*\.s-hero-lines > span \{ animation: none; transform: none; \}/);
+    expect(css).toContain("--pixel-accent: var(--color-blue-500);");
+    expect(css).toContain("animation: s-glass-shimmer 8s linear infinite;");
+    expect(css).toContain(".s-hero-actions, .s-hero .s-logos, .s-hero-title { animation: none; }");
   });
 });

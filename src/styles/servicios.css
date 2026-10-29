@@ -228,53 +228,50 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-hero-lead { color: var(--color-grey-300); text-wrap: pretty; }
 .s-hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
 
-/* Fondo del hero (adaptado de "hero-minimalism"): queda detrás del contenido gracias a isolation + z-index -1. */
-.s-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.s-hero-particles { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; opacity: 0.6; }
-.s-hero-lines > span {
-  position: absolute; background: var(--color-grey-800); opacity: 0.75; will-change: transform, opacity;
+/* Fondo del hero (adaptado de "pixel-perfect-hero"): queda detrás del contenido gracias a isolation + z-index -1. */
+.s-hero-bg {
+  position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  /* El original ocupaba toda la pantalla; aquí la grilla se apaga al final del hero para no cortarse en seco. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent);
 }
-/* Tres líneas horizontales al 20, 50 y 80% que se abren desde el centro, y tres verticales que bajan. */
-.s-hline {
-  left: 0; right: 0; height: 1px;
-  transform: scaleX(0); transform-origin: 50% 50%;
-  animation: s-draw-x 800ms cubic-bezier(.22, .61, .36, 1) forwards;
+/* 4 de cada 5 píxeles en gris y 1 en azul; servicios-pixels.ts lee estos colores. */
+.s-hero-pixels {
+  --pixel-muted: var(--color-grey-400);
+  --pixel-accent: var(--color-blue-500);
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 }
-.s-vline {
-  top: 0; bottom: 0; width: 1px;
-  transform: scaleY(0); transform-origin: 50% 0%;
-  animation: s-draw-y 900ms cubic-bezier(.22, .61, .36, 1) forwards;
+/* Viñeta: oscurece los bordes para que la grilla se concentre detrás del texto. */
+.s-hero-vignette {
+  position: absolute; inset: 0; opacity: 0.8;
+  background: radial-gradient(circle at center, transparent 0%, var(--color-background) 100%);
 }
-.s-hline:nth-child(1) { top: 20%; animation-delay: 150ms; }
-.s-hline:nth-child(2) { top: 50%; animation-delay: 280ms; }
-.s-hline:nth-child(3) { top: 80%; animation-delay: 410ms; }
-.s-vline:nth-child(4) { left: 20%; animation-delay: 520ms; }
-.s-vline:nth-child(5) { left: 50%; animation-delay: 640ms; }
-.s-vline:nth-child(6) { left: 80%; animation-delay: 760ms; }
-/* Brillo que recorre cada línea mientras se dibuja. */
-.s-hero-lines > span::after {
-  content: ""; position: absolute; inset: 0; opacity: 0;
-  background: linear-gradient(90deg, transparent, rgb(250 250 250 / 0.25), transparent);
-  animation: s-shimmer 900ms ease-out forwards; animation-delay: inherit;
+
+/* Entrada: los botones y la franja de logos suben y aparecen al cargar. */
+@keyframes s-rise {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: none; }
 }
-@keyframes s-draw-x {
-  0% { transform: scaleX(0); opacity: 0; }
-  60% { opacity: 0.9; }
-  100% { transform: scaleX(1); opacity: 0.75; }
+.s-hero-actions { animation: s-rise 1000ms cubic-bezier(0.4, 0, 0.2, 1) 450ms both; }
+.s-hero .s-logos { animation: s-rise 1000ms cubic-bezier(0.4, 0, 0.2, 1) 600ms both; }
+
+/* Título de vidrio: degradado blanco transparente con contorno y un brillo que lo recorre cada 8s. */
+.s-hero-title {
+  color: transparent;
+  background: linear-gradient(135deg, rgb(255 255 255 / 1) 0%, rgb(255 255 255 / 0.4) 25%, rgb(255 255 255 / 0.1) 45%, rgb(255 255 255 / 0.9) 55%, rgb(255 255 255 / 0.2) 75%, rgb(255 255 255 / 1) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.3);
+  filter: drop-shadow(0 15px 35px rgb(0 0 0 / 0.4)) drop-shadow(0 5px 10px rgb(0 0 0 / 0.2));
+  animation: s-glass-shimmer 8s linear infinite;
 }
-@keyframes s-draw-y {
-  0% { transform: scaleY(0); opacity: 0; }
-  60% { opacity: 0.9; }
-  100% { transform: scaleY(1); opacity: 0.75; }
+@keyframes s-glass-shimmer {
+  from { background-position: 200% center; }
+  to { background-position: 0% center; }
 }
-@keyframes s-shimmer {
-  0% { opacity: 0; }
-  30% { opacity: 0.25; }
-  100% { opacity: 0; }
-}
+
 @media (prefers-reduced-motion: reduce) {
-  .s-hero-lines > span { animation: none; transform: none; }
-  .s-hero-lines > span::after { display: none; }
+  .s-hero-actions, .s-hero .s-logos, .s-hero-title { animation: none; }
 }
 
 /* Franja de logos (Figma 91:7568): espacios de 200×56 cada 24px que se desplazan sin fin, de borde a borde. */
