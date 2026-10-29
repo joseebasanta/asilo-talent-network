@@ -104,6 +104,8 @@ describe("landing de servicios v2", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain("--nav-height: 72px;");
     expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: calc\(var\(--nav-height\) - 1px\)/);
+    // El nav usa el mismo contenedor de 1280px que las secciones, para alinearse con las tarjetas.
+    expect(css).toMatch(/\.s-nav-inner \{[^}]*max-width: calc\(1280px \+ 2 \* var\(--page-gutter\)\); margin-inline: auto;/);
     // Nav de vidrio: translúcido con desenfoque, y el hero sube por debajo para que se vea la grilla.
     expect(css).toMatch(/\.s-nav \{[^}]*backdrop-filter: blur\(16px\)/);
     expect(css).not.toContain("data-scrolled");

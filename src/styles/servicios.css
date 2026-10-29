@@ -198,6 +198,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
   /* 71px + 1px de línea inferior = 72px (en Figma eran 80px; se bajó 8px). */
   min-height: calc(var(--nav-height) - 1px); padding-inline: var(--page-gutter);
+  /* Mismo contenedor de 1280px que las secciones: el logo y el botón se alinean con las tarjetas. */
+  max-width: calc(1280px + 2 * var(--page-gutter)); margin-inline: auto;
 }
 .s-nav-logo { display: inline-flex; align-items: center; justify-self: start; min-height: 44px; }
 .s-nav-logo img { width: 151px; height: auto; }
