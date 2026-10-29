@@ -534,8 +534,6 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   border: 1px solid var(--color-grey-800); border-radius: 2px;
 }
 .s-testimonial[hidden] { display: flex; visibility: hidden; opacity: 0; }
-/* Perspectiva para el giro 3D al cambiar de testimonio (servicios-carousel-motion.ts). */
-.s-carousel-slides { perspective: 1200px; }
 /* Hueco de logo de 48px de alto, como en Figma; el logo se ajusta dentro sin deformarse. */
 /* .servicios delante para ganarle a `.servicios img { height: auto }`. */
 .servicios .s-testimonial-logo {
