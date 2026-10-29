@@ -406,17 +406,52 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-services-tabs { display: grid; grid-auto-rows: 1fr; border-bottom: 1px solid var(--color-grey-550); }
 .s-services-tab {
-  display: flex; align-items: center;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 16px 20px; border: 0; border-bottom: 1px solid var(--color-grey-550);
   background: transparent; color: var(--color-grey-400); text-align: left; cursor: pointer;
   font: var(--text-title-h6); letter-spacing: var(--text-title-h6-tracking);
-  transition: color 160ms ease, background-color 160ms ease;
+  transition: color 300ms ease;
 }
 .s-services-tab:last-child { border-bottom: 0; }
-.s-services-tab:hover { color: var(--color-white); }
-/* Figma no muestra un estado activo: la pestaña abierta va en blanco con un fondo un tono más claro. */
-.s-services-tab[aria-selected="true"] { color: var(--color-white); background: var(--color-grey-800); }
-.s-services-tab:focus-visible { outline-offset: -4px; }
+/* Relleno azul que sube desde la línea inferior al seleccionar y baja hasta ella al soltar (como el video
+   de referencia); la línea de 2px se ilumina con el hover. */
+.s-services-tab::before,
+.s-services-tab::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: -1;
+  transform-origin: 50% 100%;
+}
+.s-services-tab::before {
+  top: 0; background: var(--color-blue-500);
+  transform: scaleY(0); opacity: 0;
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 400ms ease;
+}
+.s-services-tab::after {
+  height: 2px; background: var(--color-white); opacity: 0;
+  transition: opacity 200ms ease;
+}
+.s-services-tab-arrow {
+  flex: none; opacity: 0.5;
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 300ms ease;
+}
+.s-services-tab[aria-selected="true"] { color: var(--color-white); }
+.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }
+.s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }
+/* Hover (solo con mouse) y foco con teclado anticipan la selección: se ilumina la línea, asoma el azul
+   y la flecha se adelanta. El contenido solo cambia al hacer clic. */
+@media (hover: hover) {
+  .s-services-tab:not([aria-selected="true"]):hover { color: var(--color-white); }
+  .s-services-tab:not([aria-selected="true"]):hover::after { opacity: 1; }
+  .s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.12); opacity: 0.5; }
+  .s-services-tab:not([aria-selected="true"]):hover .s-services-tab-arrow { transform: translateX(4px); opacity: 1; }
+}
+.s-services-tab:not([aria-selected="true"]):focus-visible { color: var(--color-white); }
+.s-services-tab:not([aria-selected="true"]):focus-visible::after { opacity: 1; }
+.s-services-tab:not([aria-selected="true"]):focus-visible::before { transform: scaleY(0.12); opacity: 0.5; }
+.s-services-tab:focus-visible { outline-color: var(--color-white); outline-offset: -4px; }
+@media (prefers-reduced-motion: reduce) {
+  .s-services-tab::before, .s-services-tab-arrow { transition: opacity 200ms ease; }
+}
 /* Todos los paneles ocupan la misma celda: la tarjeta toma el alto del más largo y no salta al cambiar. */
 .s-services-panels { display: grid; }
 .s-services-panel {

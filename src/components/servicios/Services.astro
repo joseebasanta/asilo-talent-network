@@ -25,7 +25,8 @@ import SectionHead from "./SectionHead.astro";
               aria-selected={i === 0 ? "true" : "false"}
               tabindex={i === 0 ? 0 : -1}
             >
-              {tab.label}
+              <span>{tab.label}</span>
+              <img class="s-services-tab-arrow" src="/servicios/icons/arrow-forward.svg" alt="" width="24" height="24" />
             </button>
           ))
         }

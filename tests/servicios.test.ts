@@ -185,10 +185,17 @@ describe("landing de servicios v2", () => {
     expect(section.match(/role="tabpanel"/g)).toHaveLength(4);
     expect(section.match(/aria-selected="true"/g)).toHaveLength(1);
     expect(section.match(/ hidden[ >]/g)).toHaveLength(3);
+    // Cada pestaña lleva una flecha; la seleccionada se llena de azul desde abajo y la flecha gira a ↗.
+    expect(section.match(/class="s-services-tab-arrow" src="\/servicios\/icons\/arrow-forward.svg" alt=""/g)).toHaveLength(4);
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-services-tab::before \{[^}]*background: var\(--color-blue-500\);[^}]*transform: scaleY\(0\)/);
+    expect(css).toContain('.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }');
+    expect(css).toContain('.s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }');
+    expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-services-tab:not\(\[aria-selected="true"\]\):hover/);
 
     for (const tab of serviceTabs) {
       expect(section).toContain(`id="servicio-tab-${tab.id}" aria-controls="servicio-${tab.id}"`);
-      expect(section).toContain(`>${tab.label}</button>`);
+      expect(section).toContain(`<span>${tab.label}</span>`);
       expect(section).toContain(`<h3 class="s-services-panel-title">${tab.title}</h3>`);
       for (const item of tab.items) expect(section).toContain(`<li>${item}</li>`);
     }
