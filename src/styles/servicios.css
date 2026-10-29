@@ -159,7 +159,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-docs-paragraph { font: var(--text-docs-paragraph); letter-spacing: var(--text-docs-paragraph-tracking); }
 
 /* Layout: margen lateral de página (64px en desktop, como en Figma). */
-.servicios { --page-gutter: 16px; }
+.servicios { --page-gutter: 16px; --nav-height: 72px; }
 @media (min-width: 768px) { .servicios { --page-gutter: 24px; } }
 @media (min-width: 1280px) { .servicios { --page-gutter: 64px; } }
 
@@ -182,13 +182,27 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Nav (Figma 91:7190, ajustado a 72px de alto): logo | enlaces centrados | botón, línea inferior grey-700. */
 .s-nav {
   position: sticky; top: 0; z-index: 50;
-  background: var(--color-background);
+  /* Arriba de todo: translúcido sin desenfoque, para que la grilla de píxeles del hero se vea nítida detrás
+     (cualquier desenfoque borra píxeles de 1-2px). */
+  background: color-mix(in srgb, var(--color-background) 50%, transparent);
   border-bottom: 1px solid var(--color-grey-700);
+  transition: background-color 240ms ease, backdrop-filter 240ms ease, -webkit-backdrop-filter 240ms ease;
+}
+/* Al hacer scroll (Nav.astro marca data-scrolled): vidrio esmerilado, así el texto que pasa detrás no
+   compite con los links. */
+.s-nav[data-scrolled] {
+  background: color-mix(in srgb, var(--color-background) 60%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+}
+/* Sin desenfoque disponible, el nav con scroll vuelve a ser casi opaco para que se lea bien. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .s-nav[data-scrolled] { background: color-mix(in srgb, var(--color-background) 92%, transparent); }
 }
 .s-nav-inner {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
   /* 71px + 1px de línea inferior = 72px (en Figma eran 80px; se bajó 8px). */
-  min-height: 71px; padding-inline: var(--page-gutter);
+  min-height: calc(var(--nav-height) - 1px); padding-inline: var(--page-gutter);
 }
 .s-nav-logo { display: inline-flex; align-items: center; justify-self: start; min-height: 44px; }
 .s-nav-logo img { width: 151px; height: auto; }
@@ -213,7 +227,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: center;
   /* El halo del texto se extiende más allá del contenido; en móvil no debe crear scroll horizontal. */
   overflow-x: clip;
-  padding: 96px var(--page-gutter) 16px;
+  /* El hero sube por debajo del nav (que es de vidrio) y suma ese alto a su padding: el contenido no se mueve. */
+  margin-top: calc(-1 * var(--nav-height));
+  padding: calc(96px + var(--nav-height)) var(--page-gutter) 16px;
 }
 .s-hero-inner {
   display: flex; flex-direction: column; align-items: center; gap: 32px;
@@ -293,7 +309,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 
 @media (min-width: 768px) {
-  .s-hero { min-height: 724px; padding-block: 120px; }
+  .s-hero { min-height: calc(724px + var(--nav-height)); padding-block: calc(120px + var(--nav-height)) 120px; }
   /* Como en Figma: la franja queda 8px sobre el borde inferior del hero, sin mover el contenido centrado. */
   .s-logos { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; }
   .s-hero-title { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }

@@ -102,7 +102,12 @@ describe("landing de servicios v2", () => {
 
     // 71px + 1px de línea inferior = 72px de alto.
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: 71px/);
+    expect(css).toContain("--nav-height: 72px;");
+    expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: calc\(var\(--nav-height\) - 1px\)/);
+    // Nav de vidrio: translúcido con desenfoque, y el hero sube por debajo para que se vea la grilla.
+    expect(css).toMatch(/\.s-nav \{[^}]*background: color-mix\(in srgb, var\(--color-background\) 50%, transparent\)/);
+    expect(css).toMatch(/\.s-nav\[data-scrolled\] \{[^}]*backdrop-filter: blur\(16px\)/);
+    expect(css).toContain("margin-top: calc(-1 * var(--nav-height));");
     const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
 
     expect(nav).toContain('src="/logo-asilo-digital-white.svg"');
