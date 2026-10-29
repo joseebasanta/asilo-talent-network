@@ -18,6 +18,7 @@
     "astro": "^7.2.10",
     "gsap": "^3.15.0",
     "mixpanel-browser": "^2.83.0",
+    "motion": "^14.7.1",
     "node-appwrite": "^29.0.0",
     "sharp": "^0.35.4",
     "zod": "^4.5.4"
