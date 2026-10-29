@@ -158,6 +158,15 @@
   /* Sombra difusa detrás del texto del CTA, del tono del degradado a esa altura: tapa los cuadritos que
      tocan las letras para que no se mezclen con ellas. */
   --cta-text-halo: var(--color-blue-950);
+  /* Brillo del footer: colores tomados de la referencia (magenta → naranja → amarillo → blanco) y la franja
+     azul con el azul de marca. Las posiciones son las medidas en la columna central. */
+  --footer-glow-deep: var(--color-blue-800);
+  --footer-glow-end: #21152d;
+  --footer-glow: linear-gradient(to bottom,
+    transparent 3%, #bf22b6 16%, #e516d1 20%, #f713c3 23%, #f8198f 26%, #fb2a57 30%,
+    #f96917 36%, #fb9a08 39%, #fabf1a 43%, #f7d038 46%, #e2e0bf 56%, #d7e0e3 59%,
+    #96bbe1 66%, #518acb 72%, var(--color-blue-500) 80%, var(--color-blue-600) 86%,
+    var(--footer-glow-deep) 92%, var(--footer-glow-end) 100%);
 
   margin: 0;
   background: var(--surface-page);
@@ -205,6 +214,9 @@ html[data-theme="light"] body.servicios {
   --cta-gradient: linear-gradient(to bottom, var(--surface-section) 0%, var(--color-blue-50) 45%, var(--color-blue-100) 100%);
   --cta-dot: rgb(23 23 23 / 0.45);
   --cta-text-halo: var(--color-blue-50);
+  /* Sobre fondo claro el brillo termina en azul y no en casi negro. */
+  --footer-glow-deep: var(--color-blue-600);
+  --footer-glow-end: var(--color-blue-500);
 }
 
 html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behavior: smooth; }
@@ -798,7 +810,7 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 }
 
 /* Footer (Figma 91:7543): logo y redes arriba, línea del color del texto y créditos centrados abajo. */
-.s-footer { padding: 64px var(--page-gutter); border-top: 1px solid var(--border-strong); }
+.s-footer { padding: 64px var(--page-gutter) 0; border-top: 1px solid var(--border-strong); overflow: clip; }
 .s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; }
 .s-footer-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
@@ -814,9 +826,30 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 .s-footer-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
 .s-footer-legal a { text-decoration: underline; text-underline-offset: 3px; }
 
+/* Brillo escalonado al pie (ver servicios-footer-glow.ts): nueve columnas con el mismo degradado, la central
+   un poco más ancha, desenfocadas para que los escalones y las franjas se fundan. Crece desde abajo con el
+   scroll; este es su estado final, el que se ve sin JS o con movimiento reducido. */
+/* sticky: mientras el footer entra, el brillo queda pegado al borde inferior de la pantalla (como en la
+   referencia) y al final de la página vuelve a su lugar. Va detrás del contenido del footer. */
+.s-footer { isolation: isolate; }
+.s-footer-inner { position: relative; z-index: 1; }
+.s-footer-glow {
+  position: sticky; bottom: 0; height: clamp(160px, 18vw, 260px);
+  margin: 48px calc(-1 * var(--page-gutter)) 0; pointer-events: none;
+}
+/* Más ancho y más bajo que el footer: el desenfoque no deja bordes claros a los lados ni abajo. */
+.s-footer-glow-bars {
+  position: absolute; left: -24px; right: -24px; bottom: -16px; height: calc(85% + 16px);
+  display: flex; align-items: flex-end;
+  filter: blur(10px); transform-origin: 50% 100%;
+}
+.s-footer-glow-bar { flex: 1; height: calc(var(--h) * 1%); background: var(--footer-glow); }
+.s-footer-glow-bar:nth-child(5) { flex-grow: 1.15; }
+
 @media (min-width: 768px) {
-  .s-footer { padding-block: 80px; }
+  .s-footer { padding-top: 80px; }
   .s-footer-inner { gap: 80px; }
+  .s-footer-glow { margin-top: 64px; }
 }
 
 .s-skip {

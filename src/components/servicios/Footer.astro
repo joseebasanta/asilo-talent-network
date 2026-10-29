@@ -1,5 +1,8 @@
 ---
 import { footer, footerLegalLinks, footerSocialLinks } from "../../data/servicios";
+
+// Alto de cada columna del brillo (% del más alto): arco escalonado y simétrico, medido de la referencia.
+const glowBars = [55, 69, 81, 92, 100, 92, 81, 69, 55];
 ---
 
 <footer class="s-footer">
@@ -35,4 +38,15 @@ import { footer, footerLegalLinks, footerSocialLinks } from "../../data/servicio
       }
     </div>
   </div>
+  <div class="s-footer-glow" aria-hidden="true" data-footer-glow>
+    <div class="s-footer-glow-bars" data-footer-glow-bars>
+      {glowBars.map((h) => <span class="s-footer-glow-bar" style={`--h: ${h}`} />)}
+    </div>
+  </div>
 </footer>
+
+<script>
+  import { initFooterGlow } from "../../scripts/servicios-footer-glow";
+
+  document.querySelectorAll<HTMLElement>("[data-footer-glow]").forEach((glow) => initFooterGlow(glow));
+</script>
