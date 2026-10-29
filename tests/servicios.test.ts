@@ -99,6 +99,10 @@ describe("landing de servicios v2", () => {
 
   it("renders the nav with logo, centered section links and the WhatsApp CTA", async () => {
     const html = await render();
+
+    // 71px + 1px de línea inferior = 72px de alto.
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: 71px/);
     const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
 
     expect(nav).toContain('src="/logo-asilo-digital-white.svg"');
