@@ -400,7 +400,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   max-width: 1280px; margin-inline: auto;
 }
 .s-services-card {
-  display: flex; flex-direction: column;
+  position: relative; display: flex; flex-direction: column;
   background: var(--color-grey-950);
   border: 1px solid var(--color-grey-550); border-radius: 2px; overflow: hidden;
 }
@@ -467,6 +467,35 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-services-panel-body { color: var(--color-grey-300); text-wrap: pretty; }
 .s-services-list { display: flex; flex-direction: column; gap: 10px; padding-left: 24px; list-style: disc; color: var(--color-grey-300); }
 .s-services-panel:focus-visible { outline-color: var(--color-white); outline-offset: -4px; }
+
+/* Haz de luz del borde (adaptado de "border-beam", colorVariant "colorful", 3,1s por vuelta): un degradado
+   cónico gira alrededor de la tarjeta y una máscara horizontal lo deja ver solo en el lado derecho. */
+@property --s-beam-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.s-services-beam {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit;
+  -webkit-mask-image: linear-gradient(90deg, transparent 55%, #000 85%);
+  mask-image: linear-gradient(90deg, transparent 55%, #000 85%);
+  animation: s-beam-hue 6s linear infinite;
+}
+.s-services-beam-ring {
+  position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+  background: conic-gradient(from var(--s-beam-angle), transparent 0deg, #ff5ec4 20deg, #7b61ff 45deg, var(--color-blue-500) 70deg, #22d3ee 90deg, transparent 110deg);
+  /* Solo el anillo del borde: el área del contenido se recorta. */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: s-beam-spin 3.1s linear infinite;
+}
+/* Halo: el mismo anillo más grueso y desenfocado, que se derrama hacia adentro de la tarjeta. */
+.s-services-beam-glow { position: absolute; inset: 0; filter: blur(14px); opacity: 0.8; }
+.s-services-beam-ring--wide { padding: 4px; }
+@keyframes s-beam-spin { to { --s-beam-angle: 360deg; } }
+@keyframes s-beam-hue { to { filter: hue-rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  /* Quieto, con el brillo centrado en el borde derecho. */
+  .s-services-beam { animation: none; }
+  .s-services-beam-ring { animation: none; --s-beam-angle: 35deg; }
+}
 
 @media (min-width: 768px) {
   .s-services { padding-block: 80px; }

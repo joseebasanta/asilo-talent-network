@@ -192,6 +192,13 @@ describe("landing de servicios v2", () => {
     expect(css).toContain('.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }');
     expect(css).toContain('.s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }');
     expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-services-tab:not\(\[aria-selected="true"\]\):hover/);
+    // Haz de luz del borde visible solo a la derecha, sin React ni el paquete border-beam.
+    expect(section).toContain('<div class="s-services-beam" aria-hidden="true">');
+    expect(css).toContain("@property --s-beam-angle");
+    expect(css).toContain("mask-image: linear-gradient(90deg, transparent 55%, #000 85%);");
+    expect(css).toContain("animation: s-beam-spin 3.1s linear infinite;");
+    const pkg = readFileSync(new URL("../package.json", import.meta.url), "utf8");
+    expect(pkg).not.toContain("border-beam");
 
     for (const tab of serviceTabs) {
       expect(section).toContain(`id="servicio-tab-${tab.id}" aria-controls="servicio-${tab.id}"`);
