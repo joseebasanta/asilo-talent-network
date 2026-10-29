@@ -348,13 +348,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-project { display: flex; flex-direction: column; gap: 24px; }
 .s-project-image {
   width: 100%; border-radius: 2px; background: var(--color-grey-900);
-  /* En reposo ya se ve un poco elevada: borde de luz de 1px, sombra corta de contacto, sombra amplia de
-     profundidad y un halo azul muy tenue (sobre el fondo casi negro, solo el negro no se nota). */
+  /* En reposo, levemente elevada: borde de luz de 1px y un resplandor gris claro pegado a la tarjeta
+     (pocos píxeles alrededor y apenas desplazado hacia abajo). Sobre el fondo casi negro, una sombra
+     negra no se ve; una clara sí. */
   box-shadow:
     0 0 0 1px rgb(255 255 255 / 0.1),
-    0 4px 8px rgb(0 0 0 / 0.8),
-    0 24px 48px -12px rgb(0 0 0 / 1),
-    0 28px 64px -20px color-mix(in srgb, var(--color-blue-500) 55%, transparent);
+    0 2px 6px color-mix(in srgb, var(--color-grey-200) 10%, transparent),
+    0 6px 16px -6px color-mix(in srgb, var(--color-grey-200) 16%, transparent);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /* Hover (solo con mouse, para que no quede pegado en pantallas táctiles): sube 8px, el borde se aclara

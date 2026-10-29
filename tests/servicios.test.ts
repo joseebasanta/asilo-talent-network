@@ -159,8 +159,9 @@ describe("landing de servicios v2", () => {
     expect(css).toMatch(/\.s-project-image \{[^}]*box-shadow:\s*0 0 0 1px rgb\(255 255 255 \/ 0\.1\)/);
     expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-project:hover \.s-project-image \{\s*transform: translateY\(-8px\);/);
     expect(css).toContain("0 36px 80px -20px color-mix(in srgb, var(--color-blue-500) 75%, transparent);");
-    // En reposo ya se ve elevada: sombra de contacto y halo azul al 55% (el hover sube a 75%).
-    expect(css).toContain("0 28px 64px -20px color-mix(in srgb, var(--color-blue-500) 55%, transparent);");
+    // En reposo, resplandor gris claro pegado a la tarjeta (sin el halo azul lejano); el azul queda para el hover.
+    expect(css).toContain("0 6px 16px -6px color-mix(in srgb, var(--color-grey-200) 16%, transparent);");
+    expect(css).not.toContain("0 28px 64px -20px");
 
     for (const project of projects) {
       expect(section).toContain(`>${project.name}</h3>`);
