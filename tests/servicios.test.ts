@@ -239,7 +239,8 @@ describe("landing de servicios v2", () => {
     const motionScript = readFileSync(new URL("../src/scripts/servicios-carousel-motion.ts", import.meta.url), "utf8");
     expect(motionScript).toContain('import { animate, stagger } from "motion";');
     expect(motionScript).toContain('filter: ["blur(10px)", "blur(0px)"]');
-    expect(motionScript).toContain("delay: stagger(0.08, { startDelay: 0.18 })");
+    expect(motionScript).toContain("delay: stagger(0.12, { startDelay: 0.3 })");
+    expect(motionScript).toContain("{ duration: 0.9, ease: easeEnter, delay: 0.15 }");
     expect(motionScript).not.toContain("rotateY");
     expect(arrowCss).toMatch(/\.s-carousel-arrow \{[^}]*background: var\(--color-white\); color: var\(--color-grey-950\);/);
     expect(section).toContain(`“${testimonials[0].quote}”`);
