@@ -182,22 +182,15 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Nav (Figma 91:7190, ajustado a 72px de alto): logo | enlaces centrados | botón, línea inferior grey-700. */
 .s-nav {
   position: sticky; top: 0; z-index: 50;
-  /* Arriba de todo: translúcido sin desenfoque, para que la grilla de píxeles del hero se vea nítida detrás
-     (cualquier desenfoque borra píxeles de 1-2px). */
-  background: color-mix(in srgb, var(--color-background) 50%, transparent);
-  border-bottom: 1px solid var(--color-grey-700);
-  transition: background-color 240ms ease, backdrop-filter 240ms ease, -webkit-backdrop-filter 240ms ease;
-}
-/* Al hacer scroll (Nav.astro marca data-scrolled): vidrio esmerilado, así el texto que pasa detrás no
-   compite con los links. */
-.s-nav[data-scrolled] {
+  /* Vidrio esmerilado siempre: la grilla del hero y luego el contenido se ven difusos detrás. */
   background: color-mix(in srgb, var(--color-background) 60%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid var(--color-grey-700);
 }
-/* Sin desenfoque disponible, el nav con scroll vuelve a ser casi opaco para que se lea bien. */
+/* Sin desenfoque disponible, el nav vuelve a ser casi opaco para que se lea bien. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .s-nav[data-scrolled] { background: color-mix(in srgb, var(--color-background) 92%, transparent); }
+  .s-nav { background: color-mix(in srgb, var(--color-background) 92%, transparent); }
 }
 .s-nav-inner {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;

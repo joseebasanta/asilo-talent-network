@@ -105,8 +105,8 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("--nav-height: 72px;");
     expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: calc\(var\(--nav-height\) - 1px\)/);
     // Nav de vidrio: translúcido con desenfoque, y el hero sube por debajo para que se vea la grilla.
-    expect(css).toMatch(/\.s-nav \{[^}]*background: color-mix\(in srgb, var\(--color-background\) 50%, transparent\)/);
-    expect(css).toMatch(/\.s-nav\[data-scrolled\] \{[^}]*backdrop-filter: blur\(16px\)/);
+    expect(css).toMatch(/\.s-nav \{[^}]*backdrop-filter: blur\(16px\)/);
+    expect(css).not.toContain("data-scrolled");
     expect(css).toContain("margin-top: calc(-1 * var(--nav-height));");
     const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
 

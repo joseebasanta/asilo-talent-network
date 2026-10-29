@@ -17,13 +17,3 @@ import { CTA_HREF, CTA_LABEL, navLinks } from "../../data/servicios";
     </div>
   </div>
 </header>
-
-<script>
-  // Marca el nav apenas hay scroll, para pasar de translúcido a vidrio esmerilado (ver .s-nav[data-scrolled]).
-  const nav = document.querySelector<HTMLElement>(".s-nav");
-  if (nav) {
-    const update = () => nav.toggleAttribute("data-scrolled", window.scrollY > 0);
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-  }
-</script>
