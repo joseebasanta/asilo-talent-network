@@ -286,7 +286,7 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");
   });
 
-  it("draws the pixel background, glass title and entrance behind the hero without third-party copy", async () => {
+  it("draws the pixel background and entrance behind a solid white hero title without third-party copy", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-hero"');
     const hero = html.slice(start, html.indexOf("</section>", start));
@@ -301,7 +301,9 @@ describe("landing de servicios v2", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-bg \{[^}]*z-index: -1/);
     expect(css).toContain("--pixel-accent: var(--color-blue-500);");
-    expect(css).toContain("animation: s-glass-shimmer 8s linear infinite;");
-    expect(css).toContain(".s-hero-actions, .s-hero .s-logos, .s-hero-title { animation: none; }");
+    // El título va en blanco sólido, sin el efecto de vidrio del componente original.
+    expect(css).not.toContain("s-glass-shimmer");
+    expect(css).not.toContain("background-clip: text");
+    expect(css).toContain(".s-hero-actions, .s-hero .s-logos { animation: none; }");
   });
 });

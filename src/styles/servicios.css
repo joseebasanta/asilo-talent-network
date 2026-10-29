@@ -255,23 +255,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-hero-actions { animation: s-rise 1000ms cubic-bezier(0.4, 0, 0.2, 1) 450ms both; }
 .s-hero .s-logos { animation: s-rise 1000ms cubic-bezier(0.4, 0, 0.2, 1) 600ms both; }
 
-/* Título de vidrio: degradado blanco transparente con contorno y un brillo que lo recorre cada 8s. */
-.s-hero-title {
-  color: transparent;
-  background: linear-gradient(135deg, rgb(255 255 255 / 1) 0%, rgb(255 255 255 / 0.4) 25%, rgb(255 255 255 / 0.1) 45%, rgb(255 255 255 / 0.9) 55%, rgb(255 255 255 / 0.2) 75%, rgb(255 255 255 / 1) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.3);
-  filter: drop-shadow(0 15px 35px rgb(0 0 0 / 0.4)) drop-shadow(0 5px 10px rgb(0 0 0 / 0.2));
-  animation: s-glass-shimmer 8s linear infinite;
-}
-@keyframes s-glass-shimmer {
-  from { background-position: 200% center; }
-  to { background-position: 0% center; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .s-hero-actions, .s-hero .s-logos, .s-hero-title { animation: none; }
+  .s-hero-actions, .s-hero .s-logos { animation: none; }
 }
 
 /* Franja de logos (Figma 91:7568): espacios de 200×56 cada 24px que se desplazan sin fin, de borde a borde. */
