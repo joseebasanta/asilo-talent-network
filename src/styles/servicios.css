@@ -302,7 +302,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 
 @media (min-width: 768px) {
-  .s-hero { min-height: calc(724px + var(--nav-height)); padding-block: calc(120px + var(--nav-height)) 120px; }
+  /* 16px más arriba que en Figma (104/136 en vez de 120/120) para que el bloque se vea más centrado. */
+  .s-hero { min-height: calc(724px + var(--nav-height)); padding-block: calc(104px + var(--nav-height)) 136px; }
   /* Como en Figma: la franja queda 8px sobre el borde inferior del hero, sin mover el contenido centrado. */
   .s-logos { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; }
   .s-hero-title { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }

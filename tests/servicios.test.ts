@@ -108,6 +108,8 @@ describe("landing de servicios v2", () => {
     expect(css).toMatch(/\.s-nav \{[^}]*backdrop-filter: blur\(16px\)/);
     expect(css).not.toContain("data-scrolled");
     expect(css).toContain("margin-top: calc(-1 * var(--nav-height));");
+    // Contenido del hero 16px más arriba que en Figma, sin cambiar el alto del hero.
+    expect(css).toContain("padding-block: calc(104px + var(--nav-height)) 136px;");
     const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
 
     expect(nav).toContain('src="/logo-asilo-digital-white.svg"');
