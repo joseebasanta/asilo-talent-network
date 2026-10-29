@@ -360,7 +360,10 @@ describe("landing de servicios v2", () => {
     expect(section.indexOf("s-cta-bg")).toBeLessThan(section.indexOf("s-cta-inner"));
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-cta-bg \{[^}]*z-index: -1; background: var\(--cta-gradient\);/);
-    expect(css).toMatch(/\.s-cta-bg::before \{[^}]*mask: var\(--s-cta-dots\) center \/ 48px 48px repeat;/);
+    expect(css).toMatch(/\.s-cta-bg::before \{[^}]*mask: var\(--s-cta-dots\) center \/ 48px 48px repeat, var\(--s-cta-fade\);\s*mask-composite: intersect;/);
+    // Detrás del texto los cuadritos se apagan y el texto lleva sombra del tono del degradado.
+    expect(css).toContain("--s-cta-fade: radial-gradient(ellipse 36% 28% at 50% 38%, transparent 70%, #000 100%);");
+    expect(css).toMatch(/\.s-cta-lead \{ text-shadow: 0 0 16px var\(--cta-text-halo\)/);
     // Los dos temas definen su degradado y el color de los cuadritos.
     expect(css.match(/--cta-gradient: linear-gradient\(to bottom, var\(--surface-section\) 0%/g)).toHaveLength(2);
     expect(css.match(/--cta-dot: /g)).toHaveLength(2);
