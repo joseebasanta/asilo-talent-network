@@ -527,7 +527,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   grid-area: 1 / 1;
   display: flex; flex-direction: column; gap: 24px;
   margin: 0; padding: 24px;
-  border: 1px solid var(--color-grey-550); border-radius: 2px;
+  /* Mismo tratamiento que la tarjeta de servicios: fondo grey-1000 y borde grey-800. */
+  background: var(--color-grey-1000);
+  border: 1px solid var(--color-grey-800); border-radius: 2px;
   transition: opacity 240ms ease;
 }
 .s-testimonial[hidden] { display: flex; visibility: hidden; opacity: 0; }

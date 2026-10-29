@@ -230,6 +230,8 @@ describe("landing de servicios v2", () => {
     expect(section).toContain('aria-label="Testimonio anterior"');
     expect(section).toContain('aria-label="Siguiente testimonio"');
     expect(section).toContain(`“${testimonials[0].quote}”`);
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-testimonial \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
     expect(section).toContain(testimonials[0].name);
     expect(section).toContain(testimonials[0].role);
 
