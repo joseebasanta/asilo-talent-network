@@ -362,11 +362,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 @media (hover: hover) {
   .s-project:hover .s-project-image {
     transform: translateY(-8px);
+    /* Contenida en los huecos: el halo llega ~24px hacia abajo (el título está a 32px con la elevación) y
+       ~14px a los lados (las tarjetas vecinas están a 32px). */
     box-shadow:
       0 0 0 1px rgb(255 255 255 / 0.18),
-      0 6px 12px rgb(0 0 0 / 0.8),
-      0 32px 64px -16px rgb(0 0 0 / 1),
-      0 36px 80px -20px color-mix(in srgb, var(--color-blue-500) 75%, transparent);
+      0 4px 8px rgb(0 0 0 / 0.8),
+      0 12px 24px -10px rgb(0 0 0 / 1),
+      0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 55%, transparent);
   }
 }
 @media (prefers-reduced-motion: reduce) {
