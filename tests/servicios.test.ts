@@ -272,6 +272,10 @@ describe("landing de servicios v2", () => {
     expect(section.match(/<div class="s-faq-answer-wrap">/g)).toHaveLength(faqItems.length);
     const faqCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(faqCss).toMatch(/\.s-faq-item \{\s*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
+    // Hover y pregunta abierta en grey-950; tarjeta de contacto igual que las preguntas.
+    expect(faqCss).toMatch(/@media \(hover: hover\) \{\s*\.s-faq-item:hover \{ background: var\(--color-grey-950\); \}/);
+    expect(faqCss).toContain(".s-faq-item[open]:not([data-closing]) { background: var(--color-grey-950); }");
+    expect(faqCss).toMatch(/\.s-faq-card \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
     for (const item of faqItems) {
       expect(section).toContain(`<span>${item.question}</span>`);
       expect(section).toContain(item.answer);

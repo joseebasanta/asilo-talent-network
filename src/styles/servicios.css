@@ -605,7 +605,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-faq-item {
   background: var(--color-grey-1000);
   border: 1px solid var(--color-grey-800); border-radius: 2px;
+  transition: background-color 200ms ease;
 }
+/* Hover (solo con mouse) y pregunta abierta en grey-950; mientras se cierra vuelve a grey-1000. */
+@media (hover: hover) {
+  .s-faq-item:hover { background: var(--color-grey-950); }
+}
+.s-faq-item[open]:not([data-closing]) { background: var(--color-grey-950); }
 .s-faq-question {
   display: flex; align-items: center; gap: 24px;
   padding: 20px 24px; color: var(--color-white); cursor: pointer; list-style: none;
@@ -626,8 +632,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   grid-area: card; align-self: start;
   display: flex; flex-direction: column; align-items: flex-start; gap: 20px;
   width: 100%; max-width: 410px; padding: 20px;
-  background: var(--color-grey-900);
-  border: 1px solid var(--color-grey-550); border-radius: 2px;
+  background: var(--color-grey-1000);
+  border: 1px solid var(--color-grey-800); border-radius: 2px;
 }
 .s-faq-card-avatar { width: 40px; height: 40px; border-radius: 2px; object-fit: cover; }
 .s-faq-card-text { display: flex; flex-direction: column; gap: 8px; }
