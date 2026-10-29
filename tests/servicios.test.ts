@@ -268,7 +268,10 @@ describe("landing de servicios v2", () => {
     expect(section).toContain(`<p class="s-section-tagline s-subheading-sm">${faqSection.tagline}</p>`);
     expect(section).toContain(`id="preguntas-title">${faqSection.title}</h2>`);
     expect(section.match(/<details class="s-faq-item"/g)).toHaveLength(faqItems.length);
-    expect(section.match(/<details class="s-faq-item" open>/g)).toHaveLength(1);
+    expect(section.match(/<details class="s-faq-item" name="faq" open>/g)).toHaveLength(1);
+    expect(section.match(/<div class="s-faq-answer-wrap">/g)).toHaveLength(faqItems.length);
+    const faqCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(faqCss).toMatch(/\.s-faq-item \{\s*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
     for (const item of faqItems) {
       expect(section).toContain(`<span>${item.question}</span>`);
       expect(section).toContain(item.answer);

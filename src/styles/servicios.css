@@ -603,8 +603,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-faq-head { grid-area: head; }
 .s-faq-list { grid-area: list; display: flex; flex-direction: column; gap: 16px; }
 .s-faq-item {
-  background: var(--color-grey-900);
-  border: 1px solid var(--color-grey-550); border-radius: 2px;
+  background: var(--color-grey-1000);
+  border: 1px solid var(--color-grey-800); border-radius: 2px;
 }
 .s-faq-question {
   display: flex; align-items: center; gap: 24px;
@@ -614,16 +614,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-faq-question > span { flex: 1; }
 .s-faq-question:focus-visible { outline-color: var(--color-white); outline-offset: -4px; }
 /* La X de Figma marca la pregunta abierta; cerrada gira 45° y queda como un +. */
-.s-faq-icon { flex: none; transform: rotate(45deg); transition: transform 200ms ease; }
-.s-faq-item[open] .s-faq-icon { transform: none; }
+.s-faq-icon { flex: none; transform: rotate(45deg); transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); }
+/* data-closing: mientras la respuesta se cierra la pregunta sigue [open], pero el ícono ya gira a +. */
+.s-faq-item[open]:not([data-closing]) .s-faq-icon { transform: none; }
+/* servicios-faq.ts anima el alto de este contenedor al abrir y cerrar. */
+.s-faq-answer-wrap { overflow: hidden; }
 .s-faq-answer { padding: 0 24px 24px; color: var(--color-grey-300); text-wrap: pretty; }
-/* Abre y cierra con altura animada donde el navegador lo soporta; en los demás cambia sin animación. */
-.s-faq-item::details-content {
-  block-size: 0; overflow: hidden;
-  transition: block-size 240ms ease, content-visibility 240ms allow-discrete;
-}
-.s-faq-item[open]::details-content { block-size: auto; }
-html:has(body.servicios) { interpolate-size: allow-keywords; }
 
 /* Tarjeta de contacto: en Figma es una captura de referencia (409×249); aquí va construida con los tokens. */
 .s-faq-card {
@@ -652,7 +648,7 @@ html:has(body.servicios) { interpolate-size: allow-keywords; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .s-faq-icon, .s-faq-item::details-content { transition: none; }
+  .s-faq-icon { transition: none; }
 }
 
 /* CTA final (Figma 91:7534): bloque centrado de 768px con título, bajada y el botón de WhatsApp. */
