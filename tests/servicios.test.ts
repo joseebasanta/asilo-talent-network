@@ -128,7 +128,7 @@ describe("landing de servicios v2", () => {
     expect(head.indexOf('name="theme-color"')).toBeLessThan(head.indexOf("asilo-theme"));
   });
 
-  it("renders the nav with logo, centered section links and the WhatsApp CTA", async () => {
+  it("renders the nav with logo, centered section links and the contact form CTA", async () => {
     const html = await render();
 
     // 71px + 1px de línea inferior = 72px de alto.
@@ -162,7 +162,10 @@ describe("landing de servicios v2", () => {
     // Botón del nav una escala menor que el del hero: sm (32px, Label SM) frente a lg (48px).
     expect(nav).toContain(`<a class="s-btn s-btn--sm s-btn--primary s-label-sm" href="${CTA_HREF}">${CTA_LABEL}</a>`);
     expect(css).toContain(".s-btn--sm { min-height: 32px; padding: 0 16px; }");
-    expect(CTA_HREF).toMatch(/^https:\/\/wa\.me\/584126310981\?text=/);
+    // Todos los "Contáctanos" llevan al formulario de contacto en Notion.
+    expect(CTA_HREF).toBe("https://shorthaired-raft-3f2.notion.site/c78219767f6a48deb87242f4c99989a6");
+    expect(html.match(new RegExp(`href="${CTA_HREF}"`, "g"))).toHaveLength(4);
+    expect(html).not.toContain("wa.me");
     expect(existsSync(new URL("../public/logo-asilo-digital-white.svg", import.meta.url))).toBe(true);
   });
 
@@ -344,7 +347,7 @@ describe("landing de servicios v2", () => {
     expect(existsSync(new URL("../public/servicios/icons/close.svg", import.meta.url))).toBe(true);
   });
 
-  it("renders the final CTA with the WhatsApp button and every nav anchor has its section", async () => {
+  it("renders the final CTA with the contact form button and every nav anchor has its section", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-cta"');
     const section = html.slice(start, html.indexOf("</section>", start));

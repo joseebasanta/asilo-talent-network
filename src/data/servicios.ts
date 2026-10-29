@@ -10,11 +10,9 @@ export const seo = {
 
 export const CTA_LABEL = "Contáctanos";
 
-// El CTA principal abre WhatsApp con un mensaje prellenado (mismo número que la v1).
-export const WHATSAPP_NUMBER = "584126310981";
-export const CTA_HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Hola, Asilo Digital. Quiero conversar sobre mi app.",
-)}`;
+// El CTA principal lleva al formulario de contacto en Notion: el equipo revisa cada lead y luego confirma
+// cómo contactarlo.
+export const CTA_HREF = "https://shorthaired-raft-3f2.notion.site/c78219767f6a48deb87242f4c99989a6";
 
 export interface NavLink {
   label: string;
@@ -258,7 +256,7 @@ export const faqItems: FaqItem[] = [
   },
 ];
 
-// CTA final (Figma: Asilo Services, nodo 91:7534). El botón usa CTA_LABEL y CTA_HREF (WhatsApp).
+// CTA final (Figma: Asilo Services, nodo 91:7534). El botón usa CTA_LABEL y CTA_HREF (formulario).
 export const finalCta = {
   title: "Cuéntanos qué estás construyendo",
   subtitle:

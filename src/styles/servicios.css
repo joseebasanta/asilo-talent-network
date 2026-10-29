@@ -771,7 +771,7 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   .s-faq-icon { transition: none; }
 }
 
-/* CTA final (Figma 91:7534): bloque centrado de 768px con título, bajada y el botón de WhatsApp. */
+/* CTA final (Figma 91:7534): bloque centrado de 768px con título, bajada y el botón al formulario. */
 .s-cta { position: relative; isolation: isolate; overflow: hidden; padding: 64px var(--page-gutter); }
 /* Degradado de abajo hacia arriba (ver --cta-gradient) con cuadritos de 3px cada 48px, centrados. Los
    cuadritos son una máscara SVG pintada con --cta-dot, así cambian con el tema. */
