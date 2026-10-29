@@ -26,15 +26,23 @@ const { card } = faqSection;
     <div class="s-faq-list">
       {
         faqItems.map((item, i) => (
-          <details class="s-faq-item" open={i === 0}>
+          <details class="s-faq-item" name="faq" open={i === 0}>
             <summary class="s-faq-question s-label-lg">
               <span>{item.question}</span>
               <img class="s-faq-icon" src="/servicios/icons/close.svg" alt="" width="24" height="24" />
             </summary>
-            <p class="s-faq-answer s-paragraph-md">{item.answer}</p>
+            <div class="s-faq-answer-wrap">
+              <p class="s-faq-answer s-paragraph-md">{item.answer}</p>
+            </div>
           </details>
         ))
       }
     </div>
   </div>
 </section>
+
+<script>
+  import { initFaq } from "../../scripts/servicios-faq";
+
+  document.querySelectorAll<HTMLElement>(".s-faq-list").forEach((list) => initFaq(list));
+</script>
