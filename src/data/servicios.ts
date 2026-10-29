@@ -285,5 +285,7 @@ export const footerSocialLinks: (FooterLink & { icon: "instagram" | "x" | "linke
 export const footerLegalLinks: FooterLink[] = [];
 
 export const footer = {
+  // Frase bajo el logo (Title/H5).
+  tagline: "Hecho para avanzar.",
   copyright: `© ${new Date().getFullYear()} Asilo Digital. Todos los derechos reservados`,
 };

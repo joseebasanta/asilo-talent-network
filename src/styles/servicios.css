@@ -814,18 +814,22 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 /* El espacio superior va en el contenido y no en el footer: así el brillo sticky puede pegarse al borde de la
    pantalla desde que asoma el primer píxel del footer. */
 .s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; padding-top: 64px; }
-.s-footer-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+.s-footer-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; }
+/* Logo con la frase debajo (Title/H5); las redes quedan alineadas con el logo. */
+.s-footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+.s-footer-tagline { color: var(--fg-strong); text-wrap: balance; }
 .s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
 .s-footer-social { display: flex; margin-right: -6px; } /* el último ícono queda al ras del margen, como en Figma */
 /* Ícono de 24px con 6px de aire por lado: 12px entre íconos, como en Figma, y un área de toque de 36px. */
 .s-footer-social a { display: grid; place-items: center; padding: 6px; border-radius: 2px; color: var(--fg-strong); transition: opacity 160ms ease; }
 .s-footer-social a:hover { opacity: 0.7; }
 .s-footer-credits {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px;
-  padding-top: 32px; border-top: 1px solid var(--fg-strong);
-  color: var(--fg-strong); text-align: center;
+  /* Alineados a la izquierda, 8px más cerca de la línea (grey-800 en oscuro) y en el gris de los párrafos. */
+  display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 24px;
+  padding-top: 24px; border-top: 1px solid var(--border-subtle);
+  color: var(--fg-body); text-align: left;
 }
-.s-footer-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
+.s-footer-legal { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 24px; }
 .s-footer-legal a { text-decoration: underline; text-underline-offset: 3px; }
 
 /* Brillo escalonado al pie (ver servicios-footer-glow.ts): nueve columnas con el mismo degradado, la central

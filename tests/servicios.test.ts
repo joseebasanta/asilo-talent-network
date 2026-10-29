@@ -385,6 +385,11 @@ describe("landing de servicios v2", () => {
       expect(existsSync(new URL(`../public/servicios/icons/${link.icon}.svg`, import.meta.url))).toBe(true);
     }
     expect(section).toContain(`<p>${footer.copyright}</p>`);
+    // Frase en Title/H5 bajo el logo; créditos a la izquierda, en gris de párrafo, con línea grey-800 a 24px.
+    expect(section).toContain(`<p class="s-footer-tagline s-title-h5">${footer.tagline}</p>`);
+    expect(section.indexOf("s-footer-logo")).toBeLessThan(section.indexOf("s-footer-tagline"));
+    const footerCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(footerCss).toMatch(/\.s-footer-credits \{[^}]*justify-content: flex-start;[^}]*padding-top: 24px; border-top: 1px solid var\(--border-subtle\);\s*color: var\(--fg-body\); text-align: left;/);
     expect(footer.copyright).toMatch(/^© \d{4} Asilo Digital\. Todos los derechos reservados$/);
     // Sin páginas legales todavía: no se publican links vacíos.
     expect(footerLegalLinks).toHaveLength(0);
