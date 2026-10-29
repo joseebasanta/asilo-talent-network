@@ -91,8 +91,9 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("--color-grey-550: #707070;");
     expect(css).toContain("--color-blue-500: #0066ff;");
     expect(css).toContain("--color-blue: var(--color-blue-500);");
-    // Fondo, blanco, negro, 12 grises y 11 azules.
-    expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(26);
+    // Fondo, blanco, negro, 13 grises (12 de Figma + grey-1000) y 11 azules.
+    expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(27);
+    expect(css).toContain("--color-grey-1000: #121212;");
     expect(css).toContain("background: var(--color-background);");
     expect(await render()).toMatch(/<meta\b[^>]*name="theme-color"[^>]*content="#0f0f0f"/);
   });
@@ -192,6 +193,9 @@ describe("landing de servicios v2", () => {
     expect(css).toContain('.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }');
     expect(css).toContain('.s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }');
     expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-services-tab:not\(\[aria-selected="true"\]\):hover/);
+    // Tarjeta sobre grey-1000 con todos sus trazos en grey-800.
+    expect(css).toMatch(/\.s-services-card \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
+    expect(css).not.toMatch(/\.s-services-tabs? \{[^}]*grey-550/);
     // Haz de luz del borde visible solo a la derecha, sin React ni el paquete border-beam.
     expect(section).toContain('<div class="s-services-beam" aria-hidden="true">');
     expect(css).toContain("@property --s-beam-angle");

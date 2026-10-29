@@ -87,6 +87,7 @@
   --color-background: #0f0f0f; /* Background/Background */
   --color-black: #000000; /* Foundations/Black */
   --color-white: #ffffff; /* Foundations/White */
+  --color-grey-1000: #121212; /* Agregado fuera de Figma: fondo de la tarjeta de servicios. */
   --color-grey-950: #171717;
   --color-grey-900: #1c1c1c;
   --color-grey-800: #262626;
@@ -401,14 +402,14 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-services-card {
   position: relative; display: flex; flex-direction: column;
-  background: var(--color-grey-950);
-  border: 1px solid var(--color-grey-550); border-radius: 2px; overflow: hidden;
+  background: var(--color-grey-1000);
+  border: 1px solid var(--color-grey-800); border-radius: 2px; overflow: hidden;
 }
-.s-services-tabs { display: grid; grid-auto-rows: 1fr; border-bottom: 1px solid var(--color-grey-550); }
+.s-services-tabs { display: grid; grid-auto-rows: 1fr; border-bottom: 1px solid var(--color-grey-800); }
 .s-services-tab {
   position: relative; isolation: isolate; overflow: hidden;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 16px 20px; border: 0; border-bottom: 1px solid var(--color-grey-550);
+  padding: 16px 20px; border: 0; border-bottom: 1px solid var(--color-grey-800);
   background: transparent; color: var(--color-grey-400); text-align: left; cursor: pointer;
   font: var(--text-title-h6); letter-spacing: var(--text-title-h6-tracking);
   transition: color 300ms ease;
@@ -506,7 +507,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 @media (min-width: 1024px) {
   .s-services-card { flex-direction: row; }
-  .s-services-tabs { flex: 3 1 0; max-width: 480px; border-bottom: 0; border-right: 1px solid var(--color-grey-550); }
+  .s-services-tabs { flex: 3 1 0; max-width: 480px; border-bottom: 0; border-right: 1px solid var(--color-grey-800); }
   .s-services-panels { flex: 5 1 0; }
   /* Centrado vertical como en Figma; en móvil y tablet arranca arriba para no dejar un hueco sobre el texto. */
   .s-services-panel { justify-content: center; padding: 64px; }
