@@ -153,6 +153,12 @@ describe("landing de servicios v2", () => {
     expect(section.match(/<li class="s-project">/g)).toHaveLength(6);
     expect(section.match(/<h3\b/g)).toHaveLength(6);
 
+    // Sombra con borde de luz y hover que eleva la foto con un halo azul (solo con mouse).
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-project-image \{[^}]*box-shadow: 0 0 0 1px rgb\(255 255 255 \/ 0\.08\)/);
+    expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-project:hover \.s-project-image \{\s*transform: translateY\(-6px\);/);
+    expect(css).toContain("color-mix(in srgb, var(--color-blue-500) 55%, transparent)");
+
     for (const project of projects) {
       expect(section).toContain(`>${project.name}</h3>`);
       expect(section).toContain(`src="${project.image.src}"`);

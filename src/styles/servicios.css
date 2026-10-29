@@ -345,7 +345,27 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-projects-grid { display: grid; grid-template-columns: 1fr; gap: 48px 32px; }
 .s-project { display: flex; flex-direction: column; gap: 24px; }
-.s-project-image { width: 100%; border-radius: 2px; background: var(--color-grey-900); }
+.s-project-image {
+  width: 100%; border-radius: 2px; background: var(--color-grey-900);
+  /* En reposo: borde de luz de 1px y sombra suave. */
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 12px 32px -12px rgb(0 0 0 / 0.9);
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* Hover (solo con mouse, para que no quede pegado en pantallas táctiles): sube 6px, el borde se aclara
+   y aparece un halo azul de marca debajo. */
+@media (hover: hover) {
+  .s-project:hover .s-project-image {
+    transform: translateY(-6px);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.16),
+      0 24px 56px -20px color-mix(in srgb, var(--color-blue-500) 55%, transparent),
+      0 24px 48px -16px rgb(0 0 0 / 0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s-project-image { transition: box-shadow 300ms ease; }
+  .s-project:hover .s-project-image { transform: none; }
+}
 .s-project-body { display: flex; flex-direction: column; gap: 16px; }
 .s-project-text { display: flex; flex-direction: column; gap: 8px; }
 .s-project-name { color: var(--color-white); }
