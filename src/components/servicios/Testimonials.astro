@@ -71,6 +71,9 @@ const total = testimonials.length;
 
 <script>
   import { initCarousel } from "../../scripts/servicios-carousel";
+  import { animateSwap } from "../../scripts/servicios-carousel-motion";
 
-  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach(initCarousel);
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((root) =>
+    initCarousel(root, { onChange: (from, to, direction) => animateSwap(root, from, to, direction) }),
+  );
 </script>
