@@ -267,12 +267,30 @@ describe("landing de servicios v2", () => {
     expect(hero).toContain('<div class="s-logos">');
     expect(hero.match(/<ul class="s-logos-set"/g)).toHaveLength(4);
     expect(hero.match(/aria-label="Clientes"/g)).toHaveLength(1);
-    expect(hero.match(/aria-hidden="true"/g)).toHaveLength(3);
+    const strip = hero.slice(hero.indexOf('<div class="s-logos">'));
+    expect(strip.match(/aria-hidden="true"/g)).toHaveLength(3);
     expect(hero.match(/<li class="s-logos-item">/g)).toHaveLength(clientLogos.length * 4);
     for (const logo of clientLogos) {
       expect(hero).toContain(`alt="${logo.alt}"`);
       expect(existsSync(new URL(`../public${logo.src}`, import.meta.url))).toBe(true);
     }
     expect(hero).not.toMatch(/webflow|relume/i);
+  });
+
+  it("draws the hero background behind the content without extra libraries or third-party copy", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-hero"');
+    const hero = html.slice(start, html.indexOf("</section>", start));
+
+    expect(hero).toContain('<div class="s-hero-bg" aria-hidden="true">');
+    expect(hero).toContain("data-hero-particles");
+    expect(hero.match(/class="s-hline"/g)).toHaveLength(3);
+    expect(hero.match(/class="s-vline"/g)).toHaveLength(3);
+    expect(hero.indexOf("s-hero-bg")).toBeLessThan(hero.indexOf("s-hero-inner"));
+    expect(html).not.toMatch(/dali ?agents|hubot/i);
+
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-hero-bg \{[^}]*z-index: -1/);
+    expect(css).toMatch(/prefers-reduced-motion: reduce\) \{\s*\.s-hero-lines > span \{ animation: none; transform: none; \}/);
   });
 });
