@@ -28,7 +28,7 @@ const { card } = faqSection;
           <details class="s-faq-item" name="faq" open={i === 0}>
             <summary class="s-faq-question s-label-lg">
               <span>{item.question}</span>
-              <img class="s-faq-icon" src="/servicios/icons/close.svg" alt="" width="24" height="24" />
+              <span class="s-icon s-faq-icon" style="--icon: url(/servicios/icons/close.svg)"></span>
             </summary>
             <div class="s-faq-answer-wrap">
               <p class="s-faq-answer s-paragraph-md">{item.answer}</p>

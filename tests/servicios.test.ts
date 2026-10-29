@@ -95,8 +95,37 @@ describe("landing de servicios v2", () => {
     expect(css.match(/^  --color-(?:background|black|white|grey-\d+|blue-\d+): #[0-9a-f]{6};/gm)).toHaveLength(28);
     expect(css).toContain("--color-grey-1000: #121212;");
     expect(css).toContain("--color-grey-975: #121212;");
-    expect(css).toContain("background: var(--color-background);");
+    expect(css).toContain("background: var(--surface-page);");
     expect(await render()).toMatch(/<meta\b[^>]*name="theme-color"[^>]*content="#0f0f0f"/);
+  });
+
+  it("maps semantic theme tokens to the dark scale and redefines them for light mode", async () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    // Modo oscuro (por defecto): los mismos valores que la v2 tenía antes del modo claro.
+    expect(css).toContain("--surface-page: var(--color-background);");
+    expect(css).toContain("--surface-card: var(--color-grey-1000);");
+    expect(css).toContain("--fg-strong: var(--color-white);");
+    expect(css).toContain("--border-subtle: var(--color-grey-800);");
+    const light = css.slice(css.indexOf('html[data-theme="light"] body.servicios {'));
+    expect(light.length).toBeLessThan(css.length);
+    const lightBlock = light.slice(0, light.indexOf("\n}"));
+    expect(lightBlock).toContain("--surface-page: var(--color-grey-50);");
+    expect(lightBlock).toContain("--surface-card: var(--color-white);");
+    expect(lightBlock).toContain("--fg-strong: var(--color-grey-950);");
+    expect(lightBlock).toContain("--fg-muted: var(--color-grey-550);");
+    expect(css).toContain('html[data-theme="light"]:has(body.servicios) { color-scheme: light; background: #f7f7f7; }');
+    // Fuera de los bloques de tokens, los componentes no usan blancos ni grises directos (solo botones de marca,
+    // el relleno azul de la pestaña y el gris de la grilla del hero).
+    const components = css.slice(css.indexOf("/* Botones */"));
+    const direct = components.match(/var\(--color-(?:white|grey-\d+|background)\)/g) ?? [];
+    expect(direct.length).toBeLessThanOrEqual(6);
+
+    // Script inline en <head> que aplica el tema guardado antes de pintar.
+    const html = await render();
+    const head = html.slice(0, html.indexOf("</head>"));
+    expect(head).toContain('localStorage.getItem("asilo-theme") === "light"');
+    expect(head).toContain('document.documentElement.dataset.theme = "light"');
+    expect(head.indexOf('name="theme-color"')).toBeLessThan(head.indexOf("asilo-theme"));
   });
 
   it("renders the nav with logo, centered section links and the WhatsApp CTA", async () => {
@@ -116,8 +145,16 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("padding-block: calc(104px + var(--nav-height)) 136px;");
     const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
 
-    expect(nav).toContain('src="/logo-asilo-digital-white.svg"');
+    // Logo como máscara: toma el color del texto en los dos temas.
+    expect(nav).toContain('<span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>');
     expect(nav).toContain('aria-label="Asilo Digital, ir al inicio"');
+    // Botón de tema antes del CTA, con etiqueta en español y los íconos de sol y luna.
+    const toggle = nav.indexOf('<button class="s-theme-toggle" type="button" aria-label="Cambiar a modo claro" data-theme-toggle>');
+    expect(toggle).toBeGreaterThan(nav.indexOf('class="s-nav-actions"'));
+    expect(toggle).toBeLessThan(nav.indexOf("s-btn--primary"));
+    expect(nav).toContain("s-theme-icon--sun");
+    expect(nav).toContain("s-theme-icon--moon");
+    expect(css).toMatch(/\.s-theme-toggle \{[^}]*width: 32px; height: 32px;/);
     expect(nav).toContain('aria-label="Navegación principal"');
     expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Nuestro trabajo", "Contacto"]);
     for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
@@ -157,8 +194,9 @@ describe("landing de servicios v2", () => {
 
     // Sombra con borde de luz y hover que eleva la foto con un halo azul (solo con mouse).
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-project-image \{[^}]*box-shadow:\s*0 0 0 1px rgb\(255 255 255 \/ 0\.1\)/);
-    expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-project:hover \.s-project-image \{\s*transform: translateY\(-8px\);/);
+    expect(css).toMatch(/\.s-project-image \{[^}]*box-shadow: var\(--shadow-media-rest\);/);
+    expect(css).toMatch(/--shadow-media-rest:\s*0 0 0 1px rgb\(255 255 255 \/ 0\.1\)/);
+    expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-project:hover \.s-project-image \{\s*transform: translateY\(-8px\);\s*box-shadow: var\(--shadow-media-hover\);/);
     expect(css).toContain("0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 90%, transparent),");
     expect(css).toContain("0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 35%, transparent);");
     expect(css).not.toContain("0 36px 80px -20px");
@@ -191,14 +229,14 @@ describe("landing de servicios v2", () => {
     expect(section.match(/aria-selected="true"/g)).toHaveLength(1);
     expect(section.match(/ hidden[ >]/g)).toHaveLength(3);
     // Cada pestaña lleva una flecha; la seleccionada se llena de azul desde abajo y la flecha gira a ↗.
-    expect(section.match(/class="s-services-tab-arrow" src="\/servicios\/icons\/arrow-forward.svg" alt=""/g)).toHaveLength(4);
+    expect(section.match(/<span class="s-icon s-services-tab-arrow" style="--icon: url\(\/servicios\/icons\/arrow-forward.svg\)"><\/span>/g)).toHaveLength(4);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-services-tab::before \{[^}]*background: var\(--color-blue-500\);[^}]*transform: scaleY\(0\)/);
     expect(css).toContain('.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }');
     expect(css).toContain('.s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }');
     expect(css).toMatch(/@media \(hover: hover\) \{\s*\.s-services-tab:not\(\[aria-selected="true"\]\):hover/);
-    // Tarjeta sobre grey-1000 con todos sus trazos en grey-800.
-    expect(css).toMatch(/\.s-services-card \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
+    // Tarjeta sobre --surface-card (grey-1000 en oscuro) con todos sus trazos en --border-subtle (grey-800).
+    expect(css).toMatch(/\.s-services-card \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
     expect(css).not.toMatch(/\.s-services-tabs? \{[^}]*grey-550/);
     // Haz de luz del borde visible solo a la derecha, sin React ni el paquete border-beam.
     expect(section).toContain('<div class="s-services-beam" aria-hidden="true">');
@@ -233,8 +271,8 @@ describe("landing de servicios v2", () => {
     expect(section.match(/aria-current="true"/g)).toHaveLength(1);
     expect(section).toContain('aria-label="Testimonio anterior"');
     expect(section).toContain('aria-label="Siguiente testimonio"');
-    // Flechas blancas con el ícono en grey-950 (máscara sobre el SVG del ícono).
-    expect(section).toContain('<span class="s-carousel-arrow-icon" style="--icon: url(/servicios/icons/arrow-forward.svg)"></span>');
+    // Flechas invertidas (blancas con el ícono grey-950 en oscuro); el ícono es una máscara sobre el SVG.
+    expect(section).toContain('<span class="s-icon" style="--icon: url(/servicios/icons/arrow-forward.svg)"></span>');
     const arrowCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     // Transición cinemática con cascada (Motion): desenfoque y escala en la tarjeta, y logo, cita y autor
     // que entran escalonados.
@@ -244,10 +282,12 @@ describe("landing de servicios v2", () => {
     expect(motionScript).toContain("delay: stagger(0.12, { startDelay: 0.3 })");
     expect(motionScript).toContain("{ duration: 0.9, ease: easeEnter, delay: 0.15 }");
     expect(motionScript).not.toContain("rotateY");
-    expect(arrowCss).toMatch(/\.s-carousel-arrow \{[^}]*background: var\(--color-white\); color: var\(--color-grey-950\);/);
+    expect(arrowCss).toMatch(/\.s-carousel-arrow \{[^}]*background: var\(--inverse-bg\); color: var\(--inverse-fg\);/);
+    expect(arrowCss).toContain("--inverse-bg: var(--color-white);");
+    expect(arrowCss).toContain("--inverse-fg: var(--color-grey-950);");
     expect(section).toContain(`“${testimonials[0].quote}”`);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-testimonial \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
+    expect(css).toMatch(/\.s-testimonial \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
     expect(section).toContain(testimonials[0].name);
     expect(section).toContain(testimonials[0].role);
 
@@ -274,13 +314,17 @@ describe("landing de servicios v2", () => {
     expect(section.match(/<details class="s-faq-item" name="faq" open>/g)).toHaveLength(1);
     expect(section.match(/<div class="s-faq-answer-wrap">/g)).toHaveLength(faqItems.length);
     const faqCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(faqCss).toMatch(/\.s-faq-item \{\s*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
-    // Fondo de toda la sección en grey-975.
-    expect(faqCss).toContain(".s-faq { padding: 64px var(--page-gutter); background: var(--color-grey-975); }");
-    // Hover y pregunta abierta en grey-950; tarjeta de contacto igual que las preguntas.
-    expect(faqCss).toMatch(/@media \(hover: hover\) \{\s*\.s-faq-item:hover \{ background: var\(--color-grey-950\); \}/);
-    expect(faqCss).toContain(".s-faq-item[open]:not([data-closing]) { background: var(--color-grey-950); }");
-    expect(faqCss).toMatch(/\.s-faq-card \{[^}]*background: var\(--color-grey-1000\);\s*border: 1px solid var\(--color-grey-800\)/);
+    expect(faqCss).toMatch(/\.s-faq-item \{\s*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
+    // Fondo de toda la sección en --surface-section (grey-975 en oscuro).
+    expect(faqCss).toContain(".s-faq { padding: 64px var(--page-gutter); background: var(--surface-section); }");
+    expect(faqCss).toContain("--surface-section: var(--color-grey-975);");
+    // Hover y pregunta abierta en --surface-card-hover (grey-950 en oscuro); tarjeta de contacto igual que las preguntas.
+    expect(faqCss).toMatch(/@media \(hover: hover\) \{\s*\.s-faq-item:hover \{ background: var\(--surface-card-hover\); \}/);
+    expect(faqCss).toContain(".s-faq-item[open]:not([data-closing]) { background: var(--surface-card-hover); }");
+    expect(faqCss).toContain("--surface-card-hover: var(--color-grey-950);");
+    expect(faqCss).toMatch(/\.s-faq-card \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
+    // La X es una máscara: toma el color del texto en los dos temas.
+    expect(section.match(/<span class="s-icon s-faq-icon" style="--icon: url\(\/servicios\/icons\/close.svg\)"><\/span>/g)).toHaveLength(faqItems.length);
     for (const item of faqItems) {
       expect(section).toContain(`<span>${item.question}</span>`);
       expect(section).toContain(item.answer);
@@ -315,11 +359,13 @@ describe("landing de servicios v2", () => {
     const section = html.slice(start, html.indexOf("</footer>", start));
 
     expect(start).toBeGreaterThan(html.indexOf("</main>"));
-    expect(section).toContain('src="/logo-asilo-digital-white.svg"');
+    expect(section).toContain('<span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>');
+    expect(section).not.toContain("<img");
     expect(section).toContain('aria-label="Redes sociales"');
     expect(footerSocialLinks.map((l) => l.icon)).toEqual(["instagram", "x", "linkedin"]);
     for (const link of footerSocialLinks) {
       expect(section).toContain(`href="${link.href}" target="_blank" rel="noopener noreferrer" aria-label="Asilo Digital en ${link.label}"`);
+      expect(section).toContain(`<span class="s-icon" style="--icon: url(/servicios/icons/${link.icon}.svg)"></span>`);
       expect(existsSync(new URL(`../public/servicios/icons/${link.icon}.svg`, import.meta.url))).toBe(true);
     }
     expect(section).toContain(`<p>${footer.copyright}</p>`);
@@ -373,7 +419,9 @@ describe("landing de servicios v2", () => {
     expect(css).toContain(".s-hero-actions, .s-hero .s-logos { animation: none; }");
     // Halo y sombra del color de fondo para separar el texto de la grilla.
     expect(css).toMatch(/\.s-hero-text::before \{[^}]*radial-gradient/);
-    expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--color-background), 0 0 12px var(--color-background); }");
-    expect(css).toMatch(/\.s-hero-lead \{[^}]*text-shadow: 0 0 16px var\(--color-background\)/);
+    expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }");
+    expect(css).toMatch(/\.s-hero-lead \{[^}]*text-shadow: 0 0 16px var\(--surface-page\)/);
+    // En claro, la grilla usa un gris más suave.
+    expect(css).toContain('html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); }');
   });
 });

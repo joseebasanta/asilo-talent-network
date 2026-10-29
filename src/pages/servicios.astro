@@ -26,6 +26,15 @@ const canonical = `${siteUrl}/servicios`;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0f0f0f" />
+    <!-- Aplica el tema guardado antes del primer pintado para que no parpadee (ver servicios-theme.ts). -->
+    <script is:inline>
+      try {
+        if (localStorage.getItem("asilo-theme") === "light") {
+          document.documentElement.dataset.theme = "light";
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "#f7f7f7");
+        }
+      } catch {}
+    </script>
     <SeoHead
       title={seo.title}
       description={seo.description}

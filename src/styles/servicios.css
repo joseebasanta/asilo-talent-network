@@ -115,9 +115,46 @@
   --color-blue-50: #e5f0ff;
   --color-blue: var(--color-blue-500); /* blue/500 - default */
 
+  /* Tokens de tema: el rol de cada color. Estos son los del modo oscuro (por defecto);
+     html[data-theme="light"] los redefine más abajo. Los componentes usan estos y no la escala directa. */
+  --surface-page: var(--color-background);
+  --surface-section: var(--color-grey-975);
+  --surface-card: var(--color-grey-1000);
+  --surface-card-hover: var(--color-grey-950);
+  --surface-media: var(--color-grey-900);
+  --fg-strong: var(--color-white);
+  --fg-body: var(--color-grey-300);
+  --fg-muted: var(--color-grey-400);
+  --border-subtle: var(--color-grey-800);
+  --border-strong: var(--color-grey-700);
+  --border-tag: var(--color-grey-550);
+  /* Botones invertidos respecto de la página (flechas del carrusel). */
+  --inverse-bg: var(--color-white);
+  --inverse-bg-hover: var(--color-grey-200);
+  --inverse-fg: var(--color-grey-950);
+  --dot: var(--color-grey-600);
+  --dot-hover: var(--color-grey-400);
+  /* Logos de clientes en un solo color: blanco sobre oscuro. */
+  --logo-filter: brightness(0) invert(1);
+  /* Sombras de las imágenes de proyectos. En reposo, levemente elevada: borde de luz de 1px y un resplandor
+     gris claro pegado a la tarjeta (sobre el fondo casi negro, una sombra negra no se ve; una clara sí).
+     En hover, contenida en los huecos: el halo llega ~24px hacia abajo (el título está a 32px con la
+     elevación) y ~14px a los lados (las tarjetas vecinas están a 32px); un halo azul ceñido alrededor de la
+     foto lo hace más visible sin agrandarlo. */
+  --shadow-media-rest:
+    0 0 0 1px rgb(255 255 255 / 0.1),
+    0 2px 6px color-mix(in srgb, var(--color-grey-200) 10%, transparent),
+    0 6px 16px -6px color-mix(in srgb, var(--color-grey-200) 16%, transparent);
+  --shadow-media-hover:
+    0 0 0 1px rgb(255 255 255 / 0.18),
+    0 4px 8px rgb(0 0 0 / 0.8),
+    0 12px 24px -10px rgb(0 0 0 / 1),
+    0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 90%, transparent),
+    0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 35%, transparent);
+
   margin: 0;
-  background: var(--color-background);
-  color: var(--color-white);
+  background: var(--surface-page);
+  color: var(--fg-strong);
   font: var(--text-paragraph-md);
   letter-spacing: var(--text-paragraph-md-tracking);
   /* Figma usa la variante ss11 de Geist sin ligaduras en todos los textos. */
@@ -126,7 +163,45 @@
   text-rendering: optimizeLegibility;
 }
 
+/* Modo claro: mismos roles con la escala invertida. Página grey-50 y tarjetas blancas, para que se separen
+   del fondo como grey-1000 sobre #0f0f0f en el modo oscuro. */
+html[data-theme="light"] body.servicios {
+  --surface-page: var(--color-grey-50);
+  --surface-section: var(--color-grey-100);
+  --surface-card: var(--color-white);
+  --surface-card-hover: var(--color-grey-100);
+  --surface-media: var(--color-grey-200);
+  --fg-strong: var(--color-grey-950);
+  --fg-body: var(--color-grey-600);
+  /* grey-550 y no grey-500: los taglines son texto chico y necesitan 4,5:1 sobre grey-50. */
+  --fg-muted: var(--color-grey-550);
+  --border-subtle: var(--color-grey-200);
+  --border-strong: var(--color-grey-300);
+  --border-tag: var(--color-grey-300);
+  --inverse-bg: var(--color-grey-950);
+  --inverse-bg-hover: var(--color-grey-800);
+  --inverse-fg: var(--color-white);
+  --dot: var(--color-grey-300);
+  --dot-hover: var(--color-grey-500);
+  --logo-filter: brightness(0);
+  /* Sobre fondo claro la elevación vuelve a ser una sombra gris suave; el halo azul se mantiene, más tenue. */
+  --shadow-media-rest:
+    0 0 0 1px rgb(0 0 0 / 0.06),
+    0 1px 3px rgb(0 0 0 / 0.06),
+    0 6px 16px -6px rgb(0 0 0 / 0.12);
+  --shadow-media-hover:
+    0 0 0 1px rgb(0 0 0 / 0.08),
+    0 4px 8px rgb(0 0 0 / 0.06),
+    0 12px 24px -10px rgb(0 0 0 / 0.22),
+    0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 55%, transparent),
+    0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 20%, transparent);
+}
+
 html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behavior: smooth; }
+html[data-theme="light"]:has(body.servicios) { color-scheme: light; background: #f7f7f7; }
+
+/* Cambio de tema: servicios-theme.ts usa una View Transition; el fundido es corto. */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; }
 
 .servicios *, .servicios *::before, .servicios *::after { box-sizing: border-box; }
 .servicios img { display: block; max-width: 100%; height: auto; }
@@ -135,6 +210,14 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 :where(.servicios a) { color: inherit; }
 
 .servicios :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+/* Íconos y logo de un solo color: el SVG (blanco) se usa como máscara y toma el color del texto
+   (currentColor), así cambian con el tema sin duplicar archivos. */
+.s-icon {
+  display: block; flex: none; width: 24px; height: 24px; background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
 
 /* Estilos de texto: una clase por estilo de Figma. */
 .s-title-h1 { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }
@@ -177,8 +260,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Borde por dentro (box-shadow) para que mida lo mismo que el primario, como en Figma. */
 .s-btn--secondary { background: var(--color-white); color: var(--color-black); box-shadow: inset 0 0 0 1px var(--color-black); }
 .s-btn--secondary:hover { background: var(--color-grey-200); }
-/* El contorno por defecto toma el texto negro y no se vería sobre el fondo oscuro. */
-.s-btn--secondary:focus-visible { outline-color: var(--color-white); }
+/* El contorno por defecto toma el texto negro del botón; se usa el del texto de la página, que contrasta con el fondo. */
+.s-btn--secondary:focus-visible { outline-color: var(--fg-strong); }
 /* Tamaños: sm 32px (nav), base 40px, lg 48px (hero y CTA final). */
 .s-btn--sm { min-height: 32px; padding: 0 16px; }
 .s-btn--lg { padding: 12px 24px; }
@@ -187,14 +270,14 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-nav {
   position: sticky; top: 0; z-index: 50;
   /* Vidrio esmerilado siempre: la grilla del hero y luego el contenido se ven difusos detrás. */
-  background: color-mix(in srgb, var(--color-background) 60%, transparent);
+  background: color-mix(in srgb, var(--surface-page) 60%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   backdrop-filter: blur(16px) saturate(140%);
-  border-bottom: 1px solid var(--color-grey-700);
+  border-bottom: 1px solid var(--border-strong);
 }
 /* Sin desenfoque disponible, el nav vuelve a ser casi opaco para que se lea bien. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .s-nav { background: color-mix(in srgb, var(--color-background) 92%, transparent); }
+  .s-nav { background: color-mix(in srgb, var(--surface-page) 92%, transparent); }
 }
 .s-nav-inner {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
@@ -204,16 +287,39 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   max-width: calc(1280px + 2 * var(--page-gutter)); margin-inline: auto;
 }
 .s-nav-logo { display: inline-flex; align-items: center; justify-self: start; min-height: 44px; }
-.s-nav-logo img { width: 151px; height: auto; }
+.s-nav-logo .s-icon, .s-footer-logo .s-icon { width: 151px; height: 22px; color: var(--fg-strong); }
 .s-nav-menu { display: none; }
 .s-nav-links { display: flex; gap: 32px; }
 .s-nav-links a {
   display: inline-flex; align-items: center; min-height: 44px;
-  color: var(--color-white); text-decoration: none;
+  color: var(--fg-strong); text-decoration: none;
   transition: color 160ms ease;
 }
-.s-nav-links a:hover { color: var(--color-grey-300); }
-.s-nav-actions { display: flex; justify-content: flex-end; }
+.s-nav-links a:hover { color: var(--fg-body); }
+.s-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+
+/* Botón de tema: cuadrado de 32px como el botón chico; el sol (pasar a claro) y la luna (pasar a oscuro)
+   ocupan la misma celda y se cruzan girando. */
+.s-theme-toggle {
+  position: relative; display: grid; place-items: center; flex: none;
+  width: 32px; height: 32px; padding: 0;
+  border: 1px solid var(--border-strong); border-radius: 2px;
+  background: transparent; color: var(--fg-strong); cursor: pointer;
+  transition: background-color 160ms ease;
+}
+/* Área de toque de 44px sin agrandar el botón. */
+.s-theme-toggle::after { content: ""; position: absolute; inset: -6px; }
+.s-theme-toggle:hover { background: var(--surface-card-hover); }
+.s-theme-icon {
+  grid-area: 1 / 1; width: 16px; height: 16px;
+  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
+}
+.s-theme-icon--moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+html[data-theme="light"] .s-theme-icon--sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+html[data-theme="light"] .s-theme-icon--moon { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .s-theme-icon { transition: none; }
+}
 
 @media (min-width: 768px) {
   /* Columnas laterales iguales para que los enlaces queden en el centro exacto de la página. */
@@ -238,20 +344,20 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Halo oscuro detrás del título y la bajada para separarlos de la grilla de píxeles; se desvanece hacia afuera. */
 .s-hero-text::before {
   content: ""; position: absolute; inset: -48px -64px; z-index: -1; pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-background) 85%, transparent), transparent);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--surface-page) 85%, transparent), transparent);
 }
 /* Title/H1 en desktop; en pantallas chicas baja a Title/H4 para que no se parta en muchas líneas. */
 .s-hero-title {
   font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking);
-  color: var(--color-white); text-wrap: balance;
+  color: var(--fg-strong); text-wrap: balance;
 }
 /* Sombra difusa del color de fondo alrededor de cada letra para que no se mezclen con los píxeles. */
-.s-hero-title { text-shadow: 0 0 32px var(--color-background), 0 0 12px var(--color-background); }
+.s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }
 /* Una frase por línea en todos los tamaños; en móvil cada frase se equilibra sola. */
 .s-hero-title-line { display: block; }
 .s-hero-lead {
-  color: var(--color-grey-300); text-wrap: pretty;
-  text-shadow: 0 0 16px var(--color-background), 0 0 6px var(--color-background);
+  color: var(--fg-body); text-wrap: pretty;
+  text-shadow: 0 0 16px var(--surface-page), 0 0 6px var(--surface-page);
 }
 .s-hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
 
@@ -268,10 +374,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   --pixel-accent: var(--color-blue-500);
   position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 }
+/* En claro, grey-300: el gris medio sobre fondo claro se veía más fuerte que en oscuro. */
+html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); }
 /* Viñeta: oscurece los bordes para que la grilla se concentre detrás del texto. */
 .s-hero-vignette {
   position: absolute; inset: 0; opacity: 0.8;
-  background: radial-gradient(circle at center, transparent 0%, var(--color-background) 100%);
+  background: radial-gradient(circle at center, transparent 0%, var(--surface-page) 100%);
 }
 
 /* Entrada: los botones y la franja de logos suben y aparecen al cargar. */
@@ -300,8 +408,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-logos-set { display: flex; flex: none; }
 /* Margen en vez de gap para que cada copia mida lo mismo y el bucle no salte. */
 .s-logos-item { display: grid; place-items: center; width: 200px; height: 56px; margin-right: 24px; }
-/* Los logos van en blanco sobre el fondo oscuro, sea cual sea su color original. */
-.s-logos-item img { width: auto; height: 32px; max-width: 100%; filter: brightness(0) invert(1); }
+/* Los logos van en un solo color (blanco en oscuro, negro en claro), sea cual sea su color original. */
+.s-logos-item img { width: auto; height: 32px; max-width: 100%; filter: var(--logo-filter); }
 @keyframes s-logos-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   .s-logos-track { animation: none; }
@@ -328,14 +436,14 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   width: 100%; max-width: 768px; margin-inline: auto; text-align: center;
 }
 /* Tagline una escala por debajo de Figma (Subheading XS en vez de SM) y un tono más oscuro (grey-400). */
-.s-section-tagline { color: var(--color-grey-400); }
+.s-section-tagline { color: var(--fg-muted); }
 .s-section-head-text { display: flex; flex-direction: column; gap: 24px; }
 /* Title/H2 en desktop; Title/H4 en móvil, igual que el hero. */
 .s-section-title {
   font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking);
-  color: var(--color-white); text-wrap: balance;
+  color: var(--fg-strong); text-wrap: balance;
 }
-.s-section-lead { color: var(--color-grey-300); text-wrap: pretty; }
+.s-section-lead { color: var(--fg-body); text-wrap: pretty; }
 .s-section-title-line { display: block; }
 /* Variante alineada a la izquierda (Testimonios). */
 .s-section-head--start { align-items: flex-start; max-width: none; margin-inline: 0; text-align: left; }
@@ -349,14 +457,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-projects-grid { display: grid; grid-template-columns: 1fr; gap: 48px 32px; }
 .s-project { display: flex; flex-direction: column; gap: 24px; }
 .s-project-image {
-  width: 100%; border-radius: 2px; background: var(--color-grey-900);
-  /* En reposo, levemente elevada: borde de luz de 1px y un resplandor gris claro pegado a la tarjeta
-     (pocos píxeles alrededor y apenas desplazado hacia abajo). Sobre el fondo casi negro, una sombra
-     negra no se ve; una clara sí. */
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 0.1),
-    0 2px 6px color-mix(in srgb, var(--color-grey-200) 10%, transparent),
-    0 6px 16px -6px color-mix(in srgb, var(--color-grey-200) 16%, transparent);
+  width: 100%; border-radius: 2px; background: var(--surface-media);
+  /* Sombras según el tema: ver --shadow-media-rest y --shadow-media-hover. */
+  box-shadow: var(--shadow-media-rest);
   transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /* Hover (solo con mouse, para que no quede pegado en pantallas táctiles): sube 8px, el borde se aclara
@@ -364,15 +467,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 @media (hover: hover) {
   .s-project:hover .s-project-image {
     transform: translateY(-8px);
-    /* Contenida en los huecos: el halo llega ~24px hacia abajo (el título está a 32px con la elevación) y
-       ~14px a los lados (las tarjetas vecinas están a 32px). Un halo azul ceñido alrededor de la foto lo
-       hace más visible sin agrandarlo. */
-    box-shadow:
-      0 0 0 1px rgb(255 255 255 / 0.18),
-      0 4px 8px rgb(0 0 0 / 0.8),
-      0 12px 24px -10px rgb(0 0 0 / 1),
-      0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 90%, transparent),
-      0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 35%, transparent);
+    box-shadow: var(--shadow-media-hover);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -381,12 +476,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-project-body { display: flex; flex-direction: column; gap: 16px; }
 .s-project-text { display: flex; flex-direction: column; gap: 8px; }
-.s-project-name { color: var(--color-white); }
-.s-project-description { color: var(--color-grey-300); }
+.s-project-name { color: var(--fg-strong); }
+.s-project-description { color: var(--fg-body); }
 .s-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .s-tag {
-  padding: 4px 8px; border: 1px solid var(--color-grey-550); border-radius: 2px;
-  color: var(--color-grey-300); white-space: nowrap;
+  padding: 4px 8px; border: 1px solid var(--border-tag); border-radius: 2px;
+  color: var(--fg-body); white-space: nowrap;
 }
 
 @media (min-width: 768px) {
@@ -408,15 +503,15 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-services-card {
   position: relative; display: flex; flex-direction: column;
-  background: var(--color-grey-1000);
-  border: 1px solid var(--color-grey-800); border-radius: 2px; overflow: hidden;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle); border-radius: 2px; overflow: hidden;
 }
-.s-services-tabs { display: grid; grid-auto-rows: 1fr; border-bottom: 1px solid var(--color-grey-800); }
+.s-services-tabs { display: grid; grid-auto-rows: 1fr; border-bottom: 1px solid var(--border-subtle); }
 .s-services-tab {
   position: relative; isolation: isolate; overflow: hidden;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 16px 20px; border: 0; border-bottom: 1px solid var(--color-grey-800);
-  background: transparent; color: var(--color-grey-400); text-align: left; cursor: pointer;
+  padding: 16px 20px; border: 0; border-bottom: 1px solid var(--border-subtle);
+  background: transparent; color: var(--fg-muted); text-align: left; cursor: pointer;
   font: var(--text-title-h6); letter-spacing: var(--text-title-h6-tracking);
   transition: color 300ms ease;
 }
@@ -434,28 +529,30 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 400ms ease;
 }
 .s-services-tab::after {
-  height: 2px; background: var(--color-white); opacity: 0;
+  height: 2px; background: var(--fg-strong); opacity: 0;
   transition: opacity 200ms ease;
 }
+/* La flecha conserva el color fuerte aunque la etiqueta esté apagada; sobre el azul va siempre en blanco. */
 .s-services-tab-arrow {
-  flex: none; opacity: 0.5;
+  color: var(--fg-strong); opacity: 0.5;
   transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 300ms ease;
 }
-.s-services-tab[aria-selected="true"] { color: var(--color-white); }
+/* Sobre el relleno azul el texto va en blanco en los dos temas. */
+.s-services-tab[aria-selected="true"], .s-services-tab[aria-selected="true"] .s-services-tab-arrow { color: var(--color-white); }
 .s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }
 .s-services-tab[aria-selected="true"] .s-services-tab-arrow { transform: rotate(-45deg); opacity: 1; }
 /* Hover (solo con mouse) y foco con teclado anticipan la selección: se ilumina la línea, asoma el azul
    y la flecha se adelanta. El contenido solo cambia al hacer clic. */
 @media (hover: hover) {
-  .s-services-tab:not([aria-selected="true"]):hover { color: var(--color-white); }
+  .s-services-tab:not([aria-selected="true"]):hover { color: var(--fg-strong); }
   .s-services-tab:not([aria-selected="true"]):hover::after { opacity: 1; }
   .s-services-tab:not([aria-selected="true"]):hover::before { transform: scaleY(0.12); opacity: 0.5; }
   .s-services-tab:not([aria-selected="true"]):hover .s-services-tab-arrow { transform: translateX(4px); opacity: 1; }
 }
-.s-services-tab:not([aria-selected="true"]):focus-visible { color: var(--color-white); }
+.s-services-tab:not([aria-selected="true"]):focus-visible { color: var(--fg-strong); }
 .s-services-tab:not([aria-selected="true"]):focus-visible::after { opacity: 1; }
 .s-services-tab:not([aria-selected="true"]):focus-visible::before { transform: scaleY(0.12); opacity: 0.5; }
-.s-services-tab:focus-visible { outline-color: var(--color-white); outline-offset: -4px; }
+.s-services-tab:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
 @media (prefers-reduced-motion: reduce) {
   .s-services-tab::before, .s-services-tab-arrow { transition: opacity 200ms ease; }
 }
@@ -469,11 +566,11 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-services-panel[hidden] { display: flex; visibility: hidden; }
 .s-services-panel-title {
   font: var(--text-title-h5); letter-spacing: var(--text-title-h5-tracking);
-  color: var(--color-white); text-wrap: balance;
+  color: var(--fg-strong); text-wrap: balance;
 }
-.s-services-panel-body { color: var(--color-grey-300); text-wrap: pretty; }
-.s-services-list { display: flex; flex-direction: column; gap: 10px; padding-left: 24px; list-style: disc; color: var(--color-grey-300); }
-.s-services-panel:focus-visible { outline-color: var(--color-white); outline-offset: -4px; }
+.s-services-panel-body { color: var(--fg-body); text-wrap: pretty; }
+.s-services-list { display: flex; flex-direction: column; gap: 10px; padding-left: 24px; list-style: disc; color: var(--fg-body); }
+.s-services-panel:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
 
 /* Haz de luz del borde (adaptado de "border-beam", colorVariant "colorful", 3,1s por vuelta): un degradado
    cónico gira alrededor de la tarjeta y una máscara horizontal lo deja ver solo en el lado derecho. */
@@ -513,7 +610,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 @media (min-width: 1024px) {
   .s-services-card { flex-direction: row; }
-  .s-services-tabs { flex: 3 1 0; max-width: 480px; border-bottom: 0; border-right: 1px solid var(--color-grey-800); }
+  .s-services-tabs { flex: 3 1 0; max-width: 480px; border-bottom: 0; border-right: 1px solid var(--border-subtle); }
   .s-services-panels { flex: 5 1 0; }
   /* Centrado vertical como en Figma; en móvil y tablet arranca arriba para no dejar un hueco sobre el texto. */
   .s-services-panel { justify-content: center; padding: 64px; }
@@ -533,9 +630,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   grid-area: 1 / 1;
   display: flex; flex-direction: column; gap: 24px;
   margin: 0; padding: 24px;
-  /* Mismo tratamiento que la tarjeta de servicios: fondo grey-1000 y borde grey-800. */
-  background: var(--color-grey-1000);
-  border: 1px solid var(--color-grey-800); border-radius: 2px;
+  /* Mismo tratamiento que la tarjeta de servicios. */
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle); border-radius: 2px;
 }
 .s-testimonial[hidden] { display: flex; visibility: hidden; opacity: 0; }
 /* Hueco de logo de 48px de alto, como en Figma; el logo se ajusta dentro sin deformarse. */
@@ -544,12 +641,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   align-self: flex-start; width: auto; max-width: 160px; height: 48px;
   object-fit: contain; object-position: left center; margin-bottom: 24px;
 }
-.s-testimonial-quote { margin: 0; color: var(--color-white); }
+.s-testimonial-quote { margin: 0; color: var(--fg-strong); }
 .s-testimonial-author { display: flex; align-items: center; gap: 20px; }
 .s-testimonial-avatar { flex: none; width: 56px; height: 56px; border-radius: 50%; }
 .s-testimonial-meta { display: flex; flex-direction: column; min-width: 0; }
-.s-testimonial-name { color: var(--color-white); }
-.s-testimonial-role { color: var(--color-grey-300); }
+.s-testimonial-name { color: var(--fg-strong); }
+.s-testimonial-role { color: var(--fg-body); }
 .s-carousel-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .s-carousel-dots { display: flex; margin-left: -4px; } /* el primer punto queda al ras, como en Figma */
 /* Botones de 16×24 para que los puntos de 8px queden a 16px de distancia, como en Figma. */
@@ -559,27 +656,21 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 .s-carousel-dot::before {
   content: ""; width: 8px; height: 8px; border-radius: 50%;
-  background: var(--color-grey-600); transition: background-color 160ms ease;
+  background: var(--dot); transition: background-color 160ms ease;
 }
-.s-carousel-dot:hover::before { background: var(--color-grey-400); }
-.s-carousel-dot[aria-current="true"]::before { background: var(--color-white); }
-.s-carousel-dot:focus-visible { outline-color: var(--color-white); outline-offset: 0; }
+.s-carousel-dot:hover::before { background: var(--dot-hover); }
+.s-carousel-dot[aria-current="true"]::before { background: var(--fg-strong); }
+.s-carousel-dot:focus-visible { outline-color: var(--fg-strong); outline-offset: 0; }
 .s-carousel-arrows { display: flex; gap: 16px; }
-/* Botón blanco sólido con el ícono en grey-950, de 50×50 como antes. */
+/* Botón sólido invertido (blanco con ícono grey-950 en oscuro), de 50×50 como antes. */
 .s-carousel-arrow {
   display: grid; place-items: center; padding: 13px;
   border: 0; border-radius: 2px;
-  background: var(--color-white); color: var(--color-grey-950);
+  background: var(--inverse-bg); color: var(--inverse-fg);
   cursor: pointer; transition: background-color 160ms ease;
 }
-.s-carousel-arrow:hover { background: var(--color-grey-200); }
-/* El SVG del ícono es blanco: se usa como máscara y toma el color del botón (currentColor). */
-.s-carousel-arrow-icon {
-  display: block; width: 24px; height: 24px; background: currentColor;
-  -webkit-mask: var(--icon) center / contain no-repeat;
-  mask: var(--icon) center / contain no-repeat;
-}
-.s-carousel-arrow:focus-visible { outline-color: var(--color-white); }
+.s-carousel-arrow:hover { background: var(--inverse-bg-hover); }
+.s-carousel-arrow:focus-visible { outline-color: var(--fg-strong); }
 
 @media (min-width: 768px) {
   .s-testimonials { padding-block: 80px; }
@@ -596,7 +687,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 
 /* FAQ (Figma 91:7493): título y tarjeta de contacto a la izquierda (500px), preguntas a la derecha (700px).
    En móvil la tarjeta pasa debajo de las preguntas, para quien no encontró su respuesta. */
-.s-faq { padding: 64px var(--page-gutter); background: var(--color-grey-975); }
+.s-faq { padding: 64px var(--page-gutter); background: var(--surface-section); }
 .s-faq-inner {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px;
   grid-template-areas: "head" "list" "card";
@@ -605,43 +696,43 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-faq-head { grid-area: head; }
 .s-faq-list { grid-area: list; display: flex; flex-direction: column; gap: 16px; }
 .s-faq-item {
-  background: var(--color-grey-1000);
-  border: 1px solid var(--color-grey-800); border-radius: 2px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle); border-radius: 2px;
   transition: background-color 200ms ease;
 }
-/* Hover (solo con mouse) y pregunta abierta en grey-950; mientras se cierra vuelve a grey-1000. */
+/* Hover (solo con mouse) y pregunta abierta un tono más arriba; mientras se cierra vuelve al de reposo. */
 @media (hover: hover) {
-  .s-faq-item:hover { background: var(--color-grey-950); }
+  .s-faq-item:hover { background: var(--surface-card-hover); }
 }
-.s-faq-item[open]:not([data-closing]) { background: var(--color-grey-950); }
+.s-faq-item[open]:not([data-closing]) { background: var(--surface-card-hover); }
 .s-faq-question {
   display: flex; align-items: center; gap: 24px;
-  padding: 20px 24px; color: var(--color-white); cursor: pointer; list-style: none;
+  padding: 20px 24px; color: var(--fg-strong); cursor: pointer; list-style: none;
 }
 .s-faq-question::-webkit-details-marker { display: none; }
-.s-faq-question > span { flex: 1; }
-.s-faq-question:focus-visible { outline-color: var(--color-white); outline-offset: -4px; }
+.s-faq-question > span:not(.s-icon) { flex: 1; }
+.s-faq-question:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
 /* La X de Figma marca la pregunta abierta; cerrada gira 45° y queda como un +. */
-.s-faq-icon { flex: none; transform: rotate(45deg); transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); }
+.s-faq-icon { transform: rotate(45deg); transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); }
 /* data-closing: mientras la respuesta se cierra la pregunta sigue [open], pero el ícono ya gira a +. */
 .s-faq-item[open]:not([data-closing]) .s-faq-icon { transform: none; }
 /* servicios-faq.ts anima el alto de este contenedor al abrir y cerrar. */
 .s-faq-answer-wrap { overflow: hidden; }
-.s-faq-answer { padding: 0 24px 24px; color: var(--color-grey-300); text-wrap: pretty; }
+.s-faq-answer { padding: 0 24px 24px; color: var(--fg-body); text-wrap: pretty; }
 
 /* Tarjeta de contacto: en Figma es una captura de referencia (409×249); aquí va construida con los tokens. */
 .s-faq-card {
   grid-area: card; align-self: start;
   display: flex; flex-direction: column; align-items: flex-start; gap: 20px;
   width: 100%; max-width: 410px; padding: 20px;
-  background: var(--color-grey-1000);
-  border: 1px solid var(--color-grey-800); border-radius: 2px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle); border-radius: 2px;
 }
 .s-faq-card-text { display: flex; flex-direction: column; gap: 8px; }
-.s-faq-card-title { color: var(--color-white); }
-.s-faq-card-body, .s-faq-card-email { color: var(--color-grey-400); }
-.s-faq-card-email a { color: var(--color-white); text-underline-offset: 3px; }
-.s-faq-card-email a:hover { color: var(--color-grey-300); }
+.s-faq-card-title { color: var(--fg-strong); }
+.s-faq-card-body, .s-faq-card-email { color: var(--fg-muted); }
+.s-faq-card-email a { color: var(--fg-strong); text-underline-offset: 3px; }
+.s-faq-card-email a:hover { color: var(--fg-body); }
 
 @media (min-width: 768px) {
   .s-faq { padding-block: 80px; }
@@ -665,7 +756,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   max-width: 768px; margin-inline: auto; text-align: center;
 }
 .s-cta-text { display: flex; flex-direction: column; gap: 24px; }
-.s-cta-lead { color: var(--color-white); text-wrap: pretty; }
+.s-cta-lead { color: var(--fg-strong); text-wrap: pretty; }
 
 @media (min-width: 768px) {
   .s-cta { padding-block: 80px; }
@@ -674,20 +765,19 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-cta { padding-block: 112px; }
 }
 
-/* Footer (Figma 91:7543): logo y redes arriba, línea blanca y créditos centrados abajo. */
-.s-footer { padding: 64px var(--page-gutter); border-top: 1px solid var(--color-grey-700); }
+/* Footer (Figma 91:7543): logo y redes arriba, línea del color del texto y créditos centrados abajo. */
+.s-footer { padding: 64px var(--page-gutter); border-top: 1px solid var(--border-strong); }
 .s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; }
 .s-footer-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
 .s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
-.s-footer-logo img { width: 151px; height: auto; }
 .s-footer-social { display: flex; margin-right: -6px; } /* el último ícono queda al ras del margen, como en Figma */
 /* Ícono de 24px con 6px de aire por lado: 12px entre íconos, como en Figma, y un área de toque de 36px. */
-.s-footer-social a { display: grid; place-items: center; padding: 6px; border-radius: 2px; transition: opacity 160ms ease; }
+.s-footer-social a { display: grid; place-items: center; padding: 6px; border-radius: 2px; color: var(--fg-strong); transition: opacity 160ms ease; }
 .s-footer-social a:hover { opacity: 0.7; }
 .s-footer-credits {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px;
-  padding-top: 32px; border-top: 1px solid var(--color-white);
-  color: var(--color-white); text-align: center;
+  padding-top: 32px; border-top: 1px solid var(--fg-strong);
+  color: var(--fg-strong); text-align: center;
 }
 .s-footer-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
 .s-footer-legal a { text-decoration: underline; text-underline-offset: 3px; }
@@ -700,7 +790,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-skip {
   position: absolute; left: 16px; top: -100px; z-index: 100;
   padding: 8px 12px; border-radius: 6px;
-  background: var(--color-white); color: var(--color-background);
+  background: var(--fg-strong); color: var(--surface-page);
   font-size: 14px; text-decoration: none;
 }
 .s-skip:focus { top: 12px; }

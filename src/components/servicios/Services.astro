@@ -26,7 +26,7 @@ import SectionHead from "./SectionHead.astro";
               tabindex={i === 0 ? 0 : -1}
             >
               <span>{tab.label}</span>
-              <img class="s-services-tab-arrow" src="/servicios/icons/arrow-forward.svg" alt="" width="24" height="24" />
+              <span class="s-icon s-services-tab-arrow" style="--icon: url(/servicios/icons/arrow-forward.svg)"></span>
             </button>
           ))
         }

@@ -1,7 +1,10 @@
 // Fondo de píxeles del hero (adaptado de "pixel-perfect-hero"): una grilla de píxeles diminutos que
 // aparecen en onda desde el centro y luego titilan. Se dibuja en un <canvas> del tamaño del hero; solo
 // anima mientras el hero está a la vista. Con prefers-reduced-motion se dibuja una vez, quieta.
-// Los colores salen de las variables CSS --pixel-muted y --pixel-accent del canvas (4 de 5 son muted).
+// Los colores salen de las variables CSS --pixel-muted y --pixel-accent del canvas (4 de 5 son muted)
+// y se vuelven a leer cuando cambia el tema.
+
+import { THEME_CHANGE_EVENT } from "./servicios-theme";
 
 export interface Pixel {
   x: number;
@@ -83,15 +86,29 @@ export function buildGrid(width: number, height: number, colors: string[], rand 
   return pixels;
 }
 
+const uniqueColors = (colors: string[]) => colors.filter((c, i) => colors.indexOf(c) === i);
+
+// Pinta cada grupo con el color nuevo que ocupa su lugar, sin rehacer la grilla ni reiniciar la animación.
+export function recolorGroups(groups: Pixel[][], colors: string[]): void {
+  const palette = uniqueColors(colors);
+  groups.forEach((group, i) => {
+    const color = palette[i] ?? palette[0];
+    for (const p of group) p.color = color;
+  });
+}
+
 export function initPixels(canvas: HTMLCanvasElement): void {
   const host = canvas.parentElement;
   const ctx = canvas.getContext("2d");
   if (!host || !ctx) return;
 
-  const style = getComputedStyle(canvas);
-  const muted = style.getPropertyValue("--pixel-muted").trim() || "#a3a3a3";
-  const accent = style.getPropertyValue("--pixel-accent").trim() || "#0066ff";
-  const colors = [muted, muted, muted, muted, accent];
+  const readColors = () => {
+    const style = getComputedStyle(canvas);
+    const muted = style.getPropertyValue("--pixel-muted").trim() || "#a3a3a3";
+    const accent = style.getPropertyValue("--pixel-accent").trim() || "#0066ff";
+    return [muted, muted, muted, muted, accent];
+  };
+  let colors = readColors();
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const frameInterval = 1000 / 60;
@@ -117,9 +134,7 @@ export function initPixels(canvas: HTMLCanvasElement): void {
     canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const pixels = buildGrid(width, height, colors);
-    groups = colors
-      .filter((c, i) => colors.indexOf(c) === i)
-      .map((c) => pixels.filter((p) => p.color === c));
+    groups = uniqueColors(colors).map((c) => pixels.filter((p) => p.color === c));
   };
 
   const drawStatic = () => {
@@ -163,4 +178,9 @@ export function initPixels(canvas: HTMLCanvasElement): void {
     sync();
   }).observe(host);
   reduceMotion.addEventListener("change", sync);
+  document.addEventListener(THEME_CHANGE_EVENT, () => {
+    colors = readColors();
+    recolorGroups(groups, colors);
+    if (reduceMotion.matches) drawStatic();
+  });
 }

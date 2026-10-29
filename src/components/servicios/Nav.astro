@@ -5,7 +5,7 @@ import { CTA_HREF, CTA_LABEL, navLinks } from "../../data/servicios";
 <header class="s-nav">
   <div class="s-nav-inner">
     <a class="s-nav-logo" href="#contenido" aria-label="Asilo Digital, ir al inicio">
-      <img src="/logo-asilo-digital-white.svg" alt="" width="151" height="22" />
+      <span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>
     </a>
     <nav class="s-nav-menu" aria-label="Navegación principal">
       <ul class="s-nav-links">
@@ -13,7 +13,22 @@ import { CTA_HREF, CTA_LABEL, navLinks } from "../../data/servicios";
       </ul>
     </nav>
     <div class="s-nav-actions">
+      <button class="s-theme-toggle" type="button" aria-label="Cambiar a modo claro" data-theme-toggle>
+        <svg class="s-theme-icon s-theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        </svg>
+        <svg class="s-theme-icon s-theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+        </svg>
+      </button>
       <a class="s-btn s-btn--sm s-btn--primary s-label-sm" href={CTA_HREF}>{CTA_LABEL}</a>
     </div>
   </div>
 </header>
+
+<script>
+  import { initThemeToggle } from "../../scripts/servicios-theme";
+
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((button) => initThemeToggle(button));
+</script>
