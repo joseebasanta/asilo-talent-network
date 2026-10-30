@@ -249,6 +249,11 @@ describe("landing de servicios v2", () => {
     expect(css).toContain("@property --s-beam-angle");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 55%, #000 85%);");
     expect(css).toContain("animation: s-beam-spin 3.1s linear infinite;");
+    // Azul de marca y blanco, sin rotar el tono (antes pasaba por verde y amarillo).
+    expect(css).toContain("var(--color-blue-500) 38deg");
+    expect(css).toContain("var(--beam-highlight) 70deg");
+    expect(css).toContain("--beam-highlight: var(--color-white);");
+    expect(css).not.toContain("hue-rotate");
     const pkg = readFileSync(new URL("../package.json", import.meta.url), "utf8");
     expect(pkg).not.toContain("border-beam");
 
@@ -418,8 +423,9 @@ describe("landing de servicios v2", () => {
     expect(css).toMatch(/\.s-footer-glow \{\s*position: sticky; bottom: 0; height: 0;/);
     expect(css).toContain(".s-footer-glow-space { height: var(--footer-glow-h); margin-top: 48px; }");
     expect(css).toMatch(/\.s-footer-glow-bars \{[^}]*filter: blur\(10px\);/);
-    // Colores de la referencia y la franja azul con el azul de marca.
-    for (const color of ["#e516d1", "#fb2a57", "#fabf1a", "#d7e0e3", "var(--color-blue-500) 80%"]) expect(css).toContain(color);
+    // Azul de marca como base y la gama periwinkle / lavanda / blanco azulado de la referencia.
+    for (const color of ["#6f7ad9", "#9aa8f2", "#e4ecff", "var(--color-blue-500) 80%", "--footer-glow-deep: #2b3190;"]) expect(css).toContain(color);
+    expect(css).not.toContain("#e516d1");
     expect(css).toContain("--footer-glow-end: var(--color-blue-500);");
   });
 

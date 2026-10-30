@@ -158,15 +158,16 @@
   /* Sombra difusa detrás del texto del CTA, del tono del degradado a esa altura: tapa los cuadritos que
      tocan las letras para que no se mezclen con ellas. */
   --cta-text-halo: var(--color-blue-950);
-  /* Brillo del footer: colores tomados de la referencia (magenta → naranja → amarillo → blanco) y la franja
-     azul con el azul de marca. Las posiciones son las medidas en la columna central. */
-  --footer-glow-deep: var(--color-blue-800);
-  --footer-glow-end: #21152d;
+  /* Destello del haz de la tarjeta de servicios: blanco sobre oscuro. */
+  --beam-highlight: var(--color-white);
+  /* Brillo del footer: el azul de marca es la base y hacia arriba recorre la gama de la referencia (periwinkle,
+     lavanda y un blanco azulado), con un índigo profundo al pie. Las posiciones siguen las de la primera versión. */
+  --footer-glow-deep: #2b3190;
+  --footer-glow-end: #191c4d;
   --footer-glow: linear-gradient(to bottom,
-    transparent 3%, #bf22b6 16%, #e516d1 20%, #f713c3 23%, #f8198f 26%, #fb2a57 30%,
-    #f96917 36%, #fb9a08 39%, #fabf1a 43%, #f7d038 46%, #e2e0bf 56%, #d7e0e3 59%,
-    #96bbe1 66%, #518acb 72%, var(--color-blue-500) 80%, var(--color-blue-600) 86%,
-    var(--footer-glow-deep) 92%, var(--footer-glow-end) 100%);
+    transparent 3%, #5f68d0 16%, #6f7ad9 21%, #8592ea 27%, #9aa8f2 33%, #b4c2fa 40%,
+    #cfdcff 47%, #e4ecff 53%, #b9cdff 59%, #7fa8ff 65%, #3d84ff 72%, var(--color-blue-500) 80%,
+    var(--color-blue-600) 86%, var(--footer-glow-deep) 92%, var(--footer-glow-end) 100%);
 
   margin: 0;
   background: var(--surface-page);
@@ -214,6 +215,8 @@ html[data-theme="light"] body.servicios {
   --cta-gradient: linear-gradient(to bottom, var(--surface-section) 0%, var(--color-blue-50) 45%, var(--color-blue-100) 100%);
   --cta-dot: rgb(23 23 23 / 0.45);
   --cta-text-halo: var(--color-blue-50);
+  /* Sobre la tarjeta blanca, el blanco no se vería: el destello pasa a un azul claro. */
+  --beam-highlight: var(--color-blue-200);
   /* Sobre fondo claro el brillo termina en azul y no en casi negro. */
   --footer-glow-deep: var(--color-blue-600);
   --footer-glow-end: var(--color-blue-500);
@@ -594,18 +597,18 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 .s-services-list { display: flex; flex-direction: column; gap: 10px; padding-left: 24px; list-style: disc; color: var(--fg-body); }
 .s-services-panel:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
 
-/* Haz de luz del borde (adaptado de "border-beam", colorVariant "colorful", 3,1s por vuelta): un degradado
-   cónico gira alrededor de la tarjeta y una máscara horizontal lo deja ver solo en el lado derecho. */
+/* Haz de luz del borde (adaptado de "border-beam", 3,1s por vuelta): un degradado cónico gira alrededor de
+   la tarjeta y una máscara horizontal lo deja ver solo en el lado derecho. Colores de marca: azules con un
+   destello blanco en el centro y un toque índigo en la cola, sin rotar el tono. */
 @property --s-beam-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 .s-services-beam {
   position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit;
   -webkit-mask-image: linear-gradient(90deg, transparent 55%, #000 85%);
   mask-image: linear-gradient(90deg, transparent 55%, #000 85%);
-  animation: s-beam-hue 6s linear infinite;
 }
 .s-services-beam-ring {
   position: absolute; inset: 0; border-radius: inherit; padding: 1px;
-  background: conic-gradient(from var(--s-beam-angle), transparent 0deg, #ff5ec4 20deg, #7b61ff 45deg, var(--color-blue-500) 70deg, #22d3ee 90deg, transparent 110deg);
+  background: conic-gradient(from var(--s-beam-angle), transparent 0deg, var(--color-blue-700) 15deg, var(--color-blue-500) 38deg, var(--color-blue-300) 56deg, var(--beam-highlight) 70deg, var(--color-blue-200) 82deg, #7c8cff 96deg, transparent 112deg);
   /* Solo el anillo del borde: el área del contenido se recorta. */
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -616,10 +619,8 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 .s-services-beam-glow { position: absolute; inset: 0; filter: blur(14px); opacity: 0.8; }
 .s-services-beam-ring--wide { padding: 4px; }
 @keyframes s-beam-spin { to { --s-beam-angle: 360deg; } }
-@keyframes s-beam-hue { to { filter: hue-rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   /* Quieto, con el brillo centrado en el borde derecho. */
-  .s-services-beam { animation: none; }
   .s-services-beam-ring { animation: none; --s-beam-angle: 35deg; }
 }
 
