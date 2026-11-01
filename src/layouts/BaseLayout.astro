@@ -1,0 +1,55 @@
+---
+/**
+ * Shared shell for the account screens: head, theme, header and footer.
+ * `private` pages (login, panel, profiles) are kept out of search indexes.
+ */
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/motion.css";
+import "../styles/accounts.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SeoHead from "../components/SeoHead.astro";
+import ThemeInit from "../components/ThemeInit.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  /** Keep the page out of search indexes. */
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const SITE = "https://builders.asilodigital.com";
+const {
+  title,
+  description = "La comunidad de builders de Venezuela: developers, diseñadores y emprendedores que construyen con IA juntos.",
+  canonical = new URL(Astro.url.pathname, SITE).toString(),
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "no-store");
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#0f1011" />
+    <ThemeInit />
+    <SeoHead title={title} description={description} canonical={canonical} noindex={noindex} jsonLd={jsonLd} />
+    <link rel="icon" href="/favicon.svg?v=20260911" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <SiteHeader />
+    <main id="contenido" class="acc-main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

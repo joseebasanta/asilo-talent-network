@@ -1,0 +1,14 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+---
+<MemberLayout title="Moderación de anuncios | Asilo Builders" description="Reportes pendientes de anuncios.">
+  <section class="panel" aria-labelledby="mod-title" data-moderation>
+    <div class="panel-inner narrow" data-body hidden>
+      <p class="wizard-eyebrow">Equipo de Asilo</p>
+      <h1 id="mod-title" class="wizard-title">Moderación de anuncios</h1>
+      <p class="mock-note" role="note">Vista simulada del equipo de Asilo. Cuando exista el backend, solo la verán las cuentas del equipo.</p>
+      <ul class="report-list" data-list></ul>
+    </div>
+  </section>
+  <script>import "../../scripts/moderation-page.ts";</script>
+</MemberLayout>

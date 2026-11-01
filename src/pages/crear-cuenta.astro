@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GoogleButton from "../components/accounts/GoogleButton.astro";
+---
+<BaseLayout title="Crear cuenta | Asilo Builders" description="Crea tu cuenta en Asilo Builders para registrar tus proyectos y conocer a otros builders." noindex>
+  <section class="auth" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <h1 id="auth-title" class="auth-title">Crea tu cuenta</h1>
+      <p class="auth-lead">Una cuenta para entrar a la comunidad y registrar uno o varios proyectos.</p>
+      <GoogleButton />
+      <p class="auth-divider"><span>o con tu correo</span></p>
+      <form class="auth-form" data-auth-form="signup" novalidate>
+        <label class="field" data-field="name">
+          <span class="field-label">Nombre y apellido</span>
+          <input class="field-input" name="name" type="text" autocomplete="name" maxlength="150" required />
+          <p class="field-error" data-error hidden></p>
+        </label>
+        <label class="field" data-field="email">
+          <span class="field-label">Correo</span>
+          <input class="field-input" name="email" type="email" autocomplete="email" maxlength="254" required />
+          <p class="field-error" data-error hidden></p>
+        </label>
+        <label class="field" data-field="password">
+          <span class="field-label">Contraseña</span>
+          <input class="field-input" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="pw-hint" />
+          <span class="field-hint" id="pw-hint">Mínimo 8 caracteres.</span>
+          <p class="field-error" data-error hidden></p>
+        </label>
+        <div class="field" data-field="human">
+          <label class="captcha">
+            <input type="checkbox" name="human" />
+            <span>No soy un robot</span>
+            <small>Verificación simulada</small>
+          </label>
+          <p class="field-error" data-error hidden></p>
+        </div>
+        <p class="field-error form-error" data-form-error role="alert" hidden></p>
+        <button class="button button-primary auth-submit" type="submit">Crear cuenta</button>
+        <p class="auth-legal">Al crear tu cuenta aceptas los términos de la comunidad y el tratamiento de tus datos para operar Asilo Builders.</p>
+      </form>
+      <p class="auth-switch">¿Ya tienes cuenta? <a data-switch="/entrar" href="/entrar">Entrar</a></p>
+    </div>
+  </section>
+  <script>import "../scripts/auth-pages.ts";</script>
+</BaseLayout>

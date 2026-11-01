@@ -1,0 +1,109 @@
+---
+import MemberLayout from "../layouts/MemberLayout.astro";
+import AuthGate from "../components/accounts/AuthGate.astro";
+import { ACCOUNT_ROLES, PROMO_BLOG } from "../lib/accounts/types";
+const contactFields = [
+  { key: "phone", label: "Teléfono o WhatsApp", type: "tel", placeholder: "+58 412 1234567" },
+  { key: "contactEmail", label: "Correo de contacto", type: "email", placeholder: "Distinto del correo de tu cuenta" },
+  { key: "linkedin", label: "LinkedIn", type: "url", placeholder: "https://www.linkedin.com/in/tu-perfil" },
+  { key: "x", label: "X", type: "url", placeholder: "https://x.com/tuusuario" },
+] as const;
+---
+<MemberLayout title="Perfil | Asilo Builders" description="Tu perfil de Asilo Builders.">
+  <section class="panel" aria-labelledby="perfil-title" data-profile>
+    <div class="panel-inner narrow">
+      <AuthGate title="Entra para ver tu perfil" />
+      <div data-profile-body hidden>
+        <p class="wizard-eyebrow">Cuenta</p>
+        <h1 id="perfil-title" class="wizard-title">Tu perfil</h1>
+
+        <form class="settings-block" data-form="personal" novalidate>
+          <h2 class="aside-title">Datos personales</h2>
+          <div class="photo-row">
+            <span data-photo></span>
+            <label class="button button-secondary">Cambiar foto<input class="logo-upload-input" type="file" name="photo" accept="image/png,image/jpeg,image/webp" /></label>
+          </div>
+          <div class="form-grid">
+            <label class="field" data-field="name"><span class="field-label">Nombre y apellido</span><input class="field-input" name="name" maxlength="150" /><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="role"><span class="field-label">Rol</span>
+              <select class="field-input" name="role">{ACCOUNT_ROLES.map((r) => <option value={r.value}>{r.label}</option>)}</select><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="city"><span class="field-label">Ciudad</span><input class="field-input" name="city" maxlength="100" /><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="country"><span class="field-label">País</span><input class="field-input" name="country" maxlength="100" /><p class="field-error" data-error hidden></p></label>
+          </div>
+          <label class="field" data-field="bio"><span class="field-label">Bio corta</span><textarea class="field-input field-area" name="bio" rows="3" maxlength="280"></textarea><p class="field-error" data-error hidden></p></label>
+          <label class="check"><input type="checkbox" name="inWhatsappGroup" /> Ya estoy en el grupo de WhatsApp</label>
+          <p class="field-error form-error" data-form-error role="alert" hidden></p>
+          <p class="auth-note" data-saved hidden role="status">Cambios guardados.</p>
+          <button class="button button-primary" type="submit">Guardar perfil</button>
+        </form>
+
+        <form class="settings-block" data-form="contacts" novalidate>
+          <h2 class="aside-title">Datos de contacto</h2>
+          <p class="field-hint">Cada dato es opcional. Elige si lo ven las personas con cuenta o si queda oculto. El correo con el que creaste la cuenta nunca se muestra.</p>
+          {contactFields.map((f) => (
+            <div class="contact-row">
+              <label class="field"><span class="field-label">{f.label}</span><input class="field-input" name={f.key} type={f.type} placeholder={f.placeholder} maxlength="300" /></label>
+              <label class="field"><span class="field-label">Visibilidad</span>
+                <select class="field-input" name={`${f.key}-visibility`}><option value="registrados">Visible para registrados</option><option value="oculto">Oculto</option></select></label>
+            </div>
+          ))}
+          <p class="auth-note" data-saved hidden role="status">Cambios guardados.</p>
+          <button class="button button-primary" type="submit">Guardar contacto</button>
+        </form>
+
+        <section class="settings-block promo" id="promociones" aria-labelledby="promo-title" data-promotions>
+          <div class="promo-head">
+            <div>
+              <p class="wizard-eyebrow">Promociones</p>
+              <h2 class="promo-title" id="promo-title">{PROMO_BLOG.name}</h2>
+            </div>
+            <p class="promo-price"><strong>${PROMO_BLOG.priceUsd}</strong><span>USD · pago único</span></p>
+          </div>
+          <p class="promo-lead">Una nota sobre tu proyecto en el blog de Asilo Digital, con alcance a más de {PROMO_BLOG.subscribers.toLocaleString("es-VE")} suscriptores.</p>
+          <ul class="promo-list">
+            <li>La redacta el equipo editorial de Asilo Digital.</li>
+            <li>Se publica en el blog de Asilo Digital.</li>
+            <li>Llega a más de {PROMO_BLOG.subscribers.toLocaleString("es-VE")} suscriptores.</li>
+          </ul>
+
+          <form class="promo-form" data-promo-form novalidate>
+            <div class="field" data-field="project"><label class="field-label" for="promo-project">Proyecto</label>
+              <select class="field-input" id="promo-project" name="project"></select><p class="field-error" data-error hidden></p></div>
+            <div class="field" data-field="brief"><label class="field-label-row" for="promo-brief"><span class="field-label">¿Qué quieres destacar?</span><span class="field-count" data-promo-count>0/{PROMO_BLOG.briefMax}</span></label>
+              <textarea class="field-input field-area" id="promo-brief" name="brief" rows="4" maxlength={PROMO_BLOG.briefMax} placeholder="Tu historia, un hito reciente, lo que te hace diferente…"></textarea><p class="field-error" data-error hidden></p></div>
+            <div class="field" data-field="terms"><label class="check"><input type="checkbox" name="terms" /> Entiendo que la nota la redacta el equipo editorial de Asilo Digital y que su costo es de ${PROMO_BLOG.priceUsd} USD.</label><p class="field-error" data-error hidden></p></div>
+            <p class="field-error form-error" data-form-error role="alert" hidden></p>
+            <button class="button button-primary" type="submit">Continuar al pago · ${PROMO_BLOG.priceUsd}</button>
+          </form>
+          <div class="promo-empty" data-promo-empty hidden>
+            <p><strong>Para solicitar una nota necesitas un proyecto publicado.</strong></p>
+            <a class="button button-primary" href="/onboarding?origen=proyecto">Registrar proyecto</a>
+          </div>
+
+          <div class="promo-checkout" data-promo-checkout hidden aria-live="polite"></div>
+
+          <h3 class="aside-title promo-orders-title" data-promo-orders-title hidden>Tus solicitudes</h3>
+          <ul class="promo-orders" data-promo-orders></ul>
+        </section>
+
+        <form class="settings-block" data-form="access" novalidate>
+          <h2 class="aside-title">Acceso</h2>
+          <p class="field-hint" data-access-summary></p>
+          <label class="field" data-field="current" data-current-wrap><span class="field-label">Contraseña actual</span><input class="field-input" name="current" type="password" autocomplete="current-password" /><p class="field-error" data-error hidden></p></label>
+          <label class="field" data-field="next"><span class="field-label" data-next-label>Contraseña nueva</span><input class="field-input" name="next" type="password" autocomplete="new-password" minlength="8" /><p class="field-error" data-error hidden></p></label>
+          <p class="auth-note" data-saved hidden role="status">Contraseña actualizada.</p>
+          <button class="button button-secondary" type="submit" data-access-submit>Guardar contraseña</button>
+        </form>
+
+        <section class="settings-block danger" aria-labelledby="danger-title">
+          <h2 class="aside-title" id="danger-title">Eliminar cuenta</h2>
+          <p class="field-hint">Se borra tu perfil y sales de tus proyectos. Los proyectos sin otros fundadores se eliminan.</p>
+          <label class="check"><input type="checkbox" data-confirm-delete /> Entiendo que no se puede deshacer</label>
+          <button class="button button-secondary" type="button" data-delete disabled>Eliminar mi cuenta</button>
+        </section>
+      </div>
+    </div>
+  </section>
+  <script>import "../scripts/profile-page.ts";
+    import "../scripts/promotions-section.ts";</script>
+</MemberLayout>

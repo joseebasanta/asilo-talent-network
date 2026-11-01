@@ -1,0 +1,22 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+const id = Astro.params.id ?? "";
+---
+<MemberLayout title="Anuncio | Asilo Builders" description="Anuncio de un proyecto de la comunidad de Asilo Builders.">
+  <section class="panel" aria-labelledby="post-title" data-post-detail data-id={id}>
+    <div class="panel-inner narrow" data-body hidden>
+      <a class="back-link" href="/anuncios">← Volver a anuncios</a>
+      <h1 id="post-title" class="sr-only">Anuncio</h1>
+      <div data-post></div>
+      <h2 class="aside-title comments-title">Comentarios</h2>
+      <ul class="comment-list" data-comments></ul>
+      <form class="composer" data-comment-form novalidate>
+        <label class="field" data-field="text"><span class="field-label">Escribe un comentario</span>
+          <textarea class="field-input field-area" name="text" rows="2"></textarea><p class="field-error" data-error hidden></p></label>
+        <p class="field-error form-error" data-form-error role="alert" hidden></p>
+        <div class="composer-actions"><button class="button button-primary" type="submit">Comentar</button></div>
+      </form>
+    </div>
+  </section>
+  <script>import "../../scripts/post-detail.ts";</script>
+</MemberLayout>

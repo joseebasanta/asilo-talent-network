@@ -1,0 +1,59 @@
+---
+import MemberLayout from "../layouts/MemberLayout.astro";
+import { POST_MAX } from "../lib/accounts/types";
+---
+<MemberLayout title="Anuncios de la comunidad | Asilo Builders" description="Los anuncios de los proyectos de la comunidad de Asilo Builders.">
+  <section class="panel" aria-labelledby="feed-title" data-feed hidden>
+    <div class="panel-inner narrow">
+      <header class="panel-head">
+        <div>
+          <h1 id="feed-title" class="wizard-title">Anuncios</h1>
+        </div>
+      </header>
+
+      <form class="composer composer--social" data-composer novalidate aria-label="Publicar un anuncio">
+        <div class="composer-row">
+          <span class="composer-avatar" data-composer-avatar aria-hidden="true"></span>
+          <div class="composer-main">
+            <label class="sr-only" for="composer-text">¿Qué quiere contar tu proyecto?</label>
+            <textarea id="composer-text" class="composer-text" name="text" rows="2" maxlength={POST_MAX} placeholder="¿Qué quiere contar tu proyecto?" aria-describedby="composer-hint"></textarea>
+            <p class="composer-hint" id="composer-hint">Una ronda, una vacante, la búsqueda de un socio o una novedad. Si incluyes una web, mostramos su vista previa.</p>
+            <div data-link-preview aria-live="polite"></div>
+            <div class="composer-image" data-image-preview></div>
+            <p class="field-error form-error" data-form-error role="alert" hidden></p>
+            <div class="composer-bar">
+              <div class="composer-tools">
+                <label class="icon-button" title="Añadir imagen">
+                  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="4.5" width="18" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6" /><circle cx="9" cy="10" r="1.6" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="m4 17 5-4.5 3.5 3L16 12l4 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <span class="sr-only">Añadir imagen</span>
+                  <input class="logo-upload-input" type="file" name="image" accept="image/png,image/jpeg,image/webp" />
+                </label>
+                <label class="project-pill" data-project-pick title="Proyecto relacionado">
+                  <span class="sr-only">Proyecto relacionado</span>
+                  <select name="project"></select>
+                </label>
+                <span class="project-pill project-pill--static" data-project-static hidden></span>
+              </div>
+              <div class="composer-send">
+                <span class="char-count" data-count aria-live="off" hidden></span>
+                <button class="send-button" type="submit" disabled>Publicar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="composer cannot-post" data-cannot-post hidden>
+        <p><strong>Para publicar necesitas un proyecto publicado.</strong></p>
+        <p class="field-hint">Puedes ver los anuncios, reaccionar y comentar. Registra tu proyecto para publicar en su nombre.</p>
+        <a class="button button-primary" href="/onboarding?origen=proyecto">Registrar proyecto</a>
+      </div>
+
+      <div class="feed-list" data-list aria-live="polite"></div>
+      <div class="empty" data-empty hidden><p>Todavía no hay anuncios.</p></div>
+      <div data-sentinel aria-hidden="true"></div>
+      <button class="button button-secondary feed-more" type="button" data-more hidden>Cargar más anuncios</button>
+      <p class="field-hint feed-end" data-end hidden>Llegaste al final de los anuncios.</p>
+    </div>
+  </section>
+  <script>import "../scripts/feed.ts";</script>
+</MemberLayout>

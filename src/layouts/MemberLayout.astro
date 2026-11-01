@@ -1,0 +1,16 @@
+---
+/** Shell for the signed-in area: the public header plus the member navigation. */
+import BaseLayout from "./BaseLayout.astro";
+import MemberNav from "../components/accounts/MemberNav.astro";
+
+interface Props { title: string; description?: string }
+const { title, description } = Astro.props;
+---
+<BaseLayout title={title} description={description} noindex>
+  <div class="member-shell">
+    <MemberNav />
+    <div class="member-content">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { seedState } from "../../lib/accounts/seed";
+
+/**
+ * Public project page. Frontend-only stage: the body is drawn in the browser
+ * from the mock store; the server only knows the seeded demo projects, which is
+ * enough for their title and description. The real backend renders it all here.
+ */
+const slug = Astro.params.slug ?? "";
+const seeded = seedState().projects.find((p) => p.slug === slug && p.status === "published");
+const title = seeded ? `${seeded.name} | Asilo Builders` : "Proyecto | Asilo Builders";
+const description = seeded?.short ?? "Proyecto de la comunidad de builders de Venezuela.";
+const jsonLd = seeded
+  ? { "@context": "https://schema.org", "@type": "Organization", name: seeded.name, description: seeded.short, url: seeded.website }
+  : undefined;
+---
+<BaseLayout title={title} description={description} jsonLd={jsonLd} noindex={!seeded}>
+  <section class="project-page" aria-labelledby="project-title" data-project-page data-slug={slug}>
+    <div class="project-inner" data-body>
+      <p class="auth-lead">Cargando proyecto…</p>
+    </div>
+  </section>
+  <script>import "../../scripts/project-page.ts";</script>
+</BaseLayout>

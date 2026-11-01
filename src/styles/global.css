@@ -238,6 +238,12 @@ h1 {
 .asilo-digital-link:hover, .asilo-digital-link:focus-visible {
   color: var(--pure); text-decoration: underline; text-underline-offset: 3px;
 }
+/* Session-aware variants (the hint is set on <html> before first paint by ThemeInit). */
+:root:not([data-auth="in"]) .account-in, :root[data-auth="in"] .account-out { display: none !important; }
+.hero-note { margin-top: 1.25rem; color: var(--blue-700); font-size: .9375rem; line-height: 1.5; text-align: center; }
+.hero-note a { color: var(--pure); text-underline-offset: 3px; white-space: nowrap; }
+.hero-note .account-out::after { content: " "; }
+.cta-actions .actions { margin-top: 0; justify-content: center; }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 2rem; }
 .button { padding: .75rem 1.125rem; border: 1px solid transparent; border-radius: 8px; font-size: 1rem; line-height: 1.5; font-weight: 400; }
 .button-primary { background: var(--pure); color: var(--void); }

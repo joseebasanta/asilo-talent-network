@@ -9,6 +9,13 @@
       if (stored === "light" || stored === "dark") theme = stored;
     } catch (e) {}
     document.documentElement.dataset.theme = theme;
+    // Session hint so the header never flashes the wrong buttons (mock store).
+    var auth = "out";
+    try {
+      var raw = localStorage.getItem("asilo.mock.accounts.v1");
+      if (raw && JSON.parse(raw).sessionAccountId) auth = "in";
+    } catch (e) {}
+    document.documentElement.dataset.auth = auth;
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta && theme === "light") meta.setAttribute("content", "#f5f5f7");
   })();

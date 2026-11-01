@@ -1,0 +1,15 @@
+---
+interface Props { title?: string; lead?: string }
+const {
+  title = "Crea tu cuenta para continuar",
+  lead = "Con una cuenta de un clic puedes conocer a los founders y registrar tus proyectos.",
+} = Astro.props;
+---
+<div class="gate" data-gate hidden>
+  <h1 class="auth-title">{title}</h1>
+  <p class="auth-lead">{lead}</p>
+  <div class="gate-actions">
+    <a class="button button-primary" data-gate-signup href="/crear-cuenta">Crear cuenta</a>
+    <a class="button button-secondary" data-gate-signin href="/entrar">Entrar</a>
+  </div>
+</div>

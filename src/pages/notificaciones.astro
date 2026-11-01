@@ -1,0 +1,14 @@
+---
+import MemberLayout from "../layouts/MemberLayout.astro";
+---
+<MemberLayout title="Notificaciones | Asilo Builders" description="Reacciones y comentarios en tus publicaciones.">
+  <section class="panel" aria-labelledby="notif-title" data-notifications>
+    <div class="panel-inner narrow" data-body hidden>
+      <p class="wizard-eyebrow">Comunidad</p>
+      <h1 id="notif-title" class="wizard-title">Notificaciones</h1>
+      <ul class="notice-list" data-list></ul>
+      <p><a class="back-link" href="/anuncios">← Volver a anuncios</a></p>
+    </div>
+  </section>
+  <script>import "../scripts/notifications-page.ts";</script>
+</MemberLayout>

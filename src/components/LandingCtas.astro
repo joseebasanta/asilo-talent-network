@@ -1,0 +1,21 @@
+---
+/**
+ * Landing calls to action. They follow the account flow: a visitor is invited
+ * to create an account or register a project; a signed-in person is taken to
+ * the member area. Both variants are rendered and CSS shows the right one from
+ * the session hint on <html>, so there is no flash.
+ */
+const arrow = "M4.8 13.1H13.2V14.5H4.8V13.1ZM4.8 0.5H13.2V1.9H4.8V0.5ZM13.2 1.9H14.6V3.3H13.2V1.9ZM3.4 1.9H4.8V3.3H3.4V1.9ZM3.4 11.7H4.8V13.1H3.4V11.7ZM13.2 11.7H14.6V13.1H13.2V11.7ZM2 3.3H3.4V11.7H2V3.3ZM14.6 3.3H16V11.7H14.6V3.3ZM5.5 8.2H6.9V9.6H5.5V8.2ZM6.9 9.6H11.1V11H6.9V9.6ZM11.1 8.2H12.5V9.6H11.1V8.2ZM6.2 4.7H7.6V6.1H6.2V4.7ZM10.4 4.7H11.8V6.1H10.4V4.7Z";
+---
+<div class="actions">
+  <a class="button button-primary account-out" href="/crear-cuenta">
+    Únete a la comunidad
+    <svg class="pixel-icon" viewBox="0 0 17 17" fill="none" aria-hidden="true"><path d={arrow} fill="currentColor" /></svg>
+  </a>
+  <a class="button button-secondary account-out" href="/onboarding?origen=proyecto">Registra tu proyecto</a>
+  <a class="button button-primary account-in" href="/anuncios">
+    Ir a Anuncios
+    <svg class="pixel-icon" viewBox="0 0 17 17" fill="none" aria-hidden="true"><path d={arrow} fill="currentColor" /></svg>
+  </a>
+  <a class="button button-secondary account-in" href="/onboarding?origen=proyecto">Registrar proyecto</a>
+</div>

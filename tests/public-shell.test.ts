@@ -26,7 +26,7 @@ describe("public shell", () => {
   it("preserves the live navigation and institutional sections", async () => {
     const html = await renderShell();
 
-    for (const label of ["Proyectos", "Recursos", "Registrarme"]) {
+    for (const label of ["Proyectos", "Recursos", "Entrar", "Crear cuenta", "Registra tu proyecto"]) {
       expect(html).toContain(label);
     }
     // The "¿Qué hacemos?" and "¿Qué es Asilo Builders?" sections were removed from the design.
@@ -53,8 +53,8 @@ describe("public shell", () => {
 
     expect(html).toMatch(/<img\b[^>]*class=["']brand-mark["'][^>]*src=["']\/logo-mark\.png["']/);
     expect(html).toMatch(/<span class=["']brand-name["']>Builders<\/span>/);
-    // Header "Registrarme" (desktop) + mobile menu "Registrarme" + two in-page CTAs.
-    expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(4);
+    // Header "Registra tu proyecto" (desktop + mobile) and the signed-out and signed-in primary CTAs, twice (hero and closing).
+    expect((html.match(new RegExp(pixelArrowPath, "g")) ?? []).length).toBe(6);
     expect(html).not.toContain("↗");
   });
 
@@ -99,8 +99,8 @@ describe("Proyectos directory (slice 1b-b)", () => {
     expect(html).toContain("Directorio de Builders");
     expect(html).toContain("Por Carlos Mendoza");
     expect((html.match(/<a\b[^>]*class=["']prj-item["'][^>]*href="#"/g) ?? []).length).toBe(placeholderProjects.length);
-    expect(html).toContain("AGREGA TU PROYECTO");
-    expect(html).toContain("¿Eres parte de la comunidad y quieres sumarte al directorio?");
+    expect(html).toContain("Registra tu proyecto");
+    expect(html).toContain("¿Tienes un proyecto? Regístralo con tu cuenta y tendrá su propia página en el directorio.");
   });
 
   it("keeps project links local while using the Asilo Digital brand link", async () => {
@@ -153,5 +153,24 @@ describe("CTA heading", () => {
 
     expect(text).not.toMatch(/\bUnete\b/i);
     expect(text).toMatch(/Únete a la comunidad/);
+  });
+});
+
+describe("landing calls to action", () => {
+  it("sends visitors into the account flow and members to their area", async () => {
+    const html = await renderShell();
+    expect(html).toContain('class="button button-primary account-out" href="/crear-cuenta"');
+    expect(html).toContain('class="button button-secondary account-out" href="/onboarding?origen=proyecto"');
+    expect(html).toContain('class="button button-primary account-in" href="/anuncios"');
+    expect(html).toContain('class="button button-secondary account-in" href="/onboarding?origen=proyecto"');
+    // The old community dialog and sheet modal are no longer opened from the landing.
+    expect(html).not.toContain('href="#unete"');
+    expect(html).not.toContain("data-open-modal");
+  });
+
+  it("keeps the hero reassurance and the directory CTA pointing at onboarding", async () => {
+    const html = await renderShell();
+    expect(html).toContain("Es gratis. Entra con Google o con tu correo.");
+    expect(html).toMatch(/<a class="prj-cta" href="\/onboarding\?origen=proyecto">Registra tu proyecto<\/a>/);
   });
 });

@@ -1,0 +1,37 @@
+---
+import MemberLayout from "../layouts/MemberLayout.astro";
+import AuthGate from "../components/accounts/AuthGate.astro";
+---
+<MemberLayout title="Mis proyectos | Asilo Builders" description="Administra tus proyectos en Asilo Builders.">
+  <section class="panel" aria-labelledby="panel-title" data-my-projects>
+    <div class="panel-inner">
+      <AuthGate title="Entra para ver tus proyectos" lead="Tu panel reúne los proyectos que registraste y los que compartes con tus cofundadores." />
+      <div class="panel-layout" data-panel hidden>
+        <div class="panel-main">
+          <header class="panel-head">
+            <div>
+              <p class="wizard-eyebrow">Mis proyectos</p>
+              <h1 id="panel-title" class="wizard-title" data-greeting>Hola</h1>
+            </div>
+            <a class="button button-primary" href="/onboarding?origen=proyecto">Registrar proyecto</a>
+          </header>
+          <div class="tabs" role="tablist" aria-label="Estado de los proyectos">
+            <button class="tab" role="tab" type="button" data-tab="published" aria-selected="true">Publicados <span data-count="published"></span></button>
+            <button class="tab" role="tab" type="button" data-tab="draft" aria-selected="false">Borradores <span data-count="draft"></span></button>
+            <button class="tab" role="tab" type="button" data-tab="archived" aria-selected="false">Archivados <span data-count="archived"></span></button>
+          </div>
+          <div data-list role="tabpanel" aria-live="polite"></div>
+        </div>
+        <aside class="panel-aside" aria-label="Tu perfil">
+          <div class="aside-card" data-profile-card></div>
+          <div class="aside-card" data-whatsapp-card hidden>
+            <h2 class="aside-title">Grupo de WhatsApp</h2>
+            <p class="field-hint">Ahí compartimos oportunidades y nos ayudamos entre builders.</p>
+            <a class="button button-secondary" data-whatsapp-link target="_blank" rel="noopener noreferrer">Unirme al grupo</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+  <script>import "../scripts/my-projects.ts";</script>
+</MemberLayout>

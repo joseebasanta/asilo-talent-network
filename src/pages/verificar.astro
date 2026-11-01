@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Verifica tu correo | Asilo Builders" description="Escribe el código que enviamos a tu correo." noindex>
+  <section class="auth" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <h1 id="auth-title" class="auth-title">Verifica tu correo</h1>
+      <p class="auth-lead">Enviamos un código de 6 dígitos a <strong data-pending-email>tu correo</strong>.</p>
+      <p class="mock-note" role="note">Modo de prueba: el código es <code>123456</code>.</p>
+      <form class="auth-form" data-auth-form="verify" novalidate>
+        <label class="field" data-field="code">
+          <span class="field-label">Código</span>
+          <input class="field-input code-input" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required />
+          <p class="field-error" data-error hidden></p>
+        </label>
+        <p class="field-error form-error" data-form-error role="alert" hidden></p>
+        <button class="button button-primary auth-submit" type="submit">Verificar</button>
+      </form>
+      <p class="auth-switch">¿No te llegó? <button class="link-button" type="button" data-resend>Reenviar código</button></p>
+      <p class="auth-note" data-resent hidden role="status">Te enviamos un código nuevo.</p>
+    </div>
+  </section>
+  <script>import "../scripts/auth-pages.ts";</script>
+</BaseLayout>

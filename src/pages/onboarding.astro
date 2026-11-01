@@ -1,0 +1,177 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ACCOUNT_ROLES, PROJECT_ROLES, SECTORS, STAGES } from "../lib/accounts/types";
+---
+<BaseLayout title="Registra tu proyecto | Asilo Builders" description="Completa tu perfil y registra tu proyecto en Asilo Builders." noindex>
+  <section class="wizard" aria-labelledby="wizard-title" data-wizard>
+    <div class="wizard-inner">
+      <!-- Visitors see the gate instead of the flow -->
+      <div class="gate" data-gate hidden>
+        <h1 class="auth-title">Crea tu cuenta para registrar tu proyecto</h1>
+        <p class="auth-lead">Tu cuenta guarda tus proyectos y te deja editarlos cuando quieras.</p>
+        <div class="gate-actions">
+          <a class="button button-primary" data-gate-signup href="/crear-cuenta">Crear cuenta</a>
+          <a class="button button-secondary" data-gate-signin href="/entrar">Entrar</a>
+        </div>
+      </div>
+
+      <div data-flow hidden>
+        <p class="wizard-eyebrow" data-eyebrow></p>
+        <ol class="stepper" data-stepper aria-label="Pasos del registro del proyecto" hidden>
+          <li data-s="info"><span>1</span> Información</li>
+          <li data-s="details"><span>2</span> Detalles</li>
+          <li data-s="founders"><span>3</span> Fundadores</li>
+          <li data-s="review"><span>4</span> Revisión</li>
+        </ol>
+
+        <!-- 1. Tu perfil -->
+        <form class="step" data-step="profile" novalidate hidden>
+          <h1 id="wizard-title" class="wizard-title">Cuéntanos quién eres</h1>
+          <p class="wizard-lead">Esto reemplaza el formulario de ingreso a la comunidad. Lo que venga de Google ya está llenado.</p>
+          <div class="form-grid">
+            <label class="field" data-field="name"><span class="field-label">Nombre y apellido</span>
+              <input class="field-input" name="name" autocomplete="name" maxlength="150" /><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="role"><span class="field-label">Rol</span>
+              <select class="field-input" name="role"><option value="">Elige tu rol</option>
+                {ACCOUNT_ROLES.map((r) => <option value={r.value}>{r.label}</option>)}</select><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="city"><span class="field-label">Ciudad</span>
+              <input class="field-input" name="city" autocomplete="address-level2" placeholder="Ej: Caracas" maxlength="100" /><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="country"><span class="field-label">País</span>
+              <input class="field-input" name="country" autocomplete="country-name" placeholder="Venezuela o donde vivas hoy" maxlength="100" /><p class="field-error" data-error hidden></p></label>
+          </div>
+          <label class="field" data-field="bio"><span class="field-label-row"><span class="field-label">Bio corta (opcional)</span><span class="field-count" data-count="bio">0/280</span></span>
+            <textarea class="field-input field-area" name="bio" rows="3" maxlength="280" placeholder="¿Qué construyes o te gustaría construir?"></textarea><p class="field-error" data-error hidden></p></label>
+          <fieldset class="field radio-group" data-field="inWhatsappGroup">
+            <legend class="field-label">¿Ya estás en el grupo de WhatsApp de la comunidad?</legend>
+            <label class="radio"><input type="radio" name="inWhatsappGroup" value="yes" /> Sí</label>
+            <label class="radio"><input type="radio" name="inWhatsappGroup" value="no" /> Aún no</label>
+          </fieldset>
+          <p class="field-hint">Los datos de contacto (teléfono, LinkedIn, X) los agregas después en tu perfil y tú eliges quién los ve.</p>
+          <p class="field-error form-error" data-form-error role="alert" hidden></p>
+          <div class="step-actions"><button class="button button-primary" type="submit">Continuar</button></div>
+        </form>
+
+        <!-- 2. ¿Tienes un proyecto? -->
+        <section class="step" data-step="ask" hidden>
+          <h1 class="wizard-title">¿Tienes un proyecto?</h1>
+          <p class="wizard-lead">Puedes registrarlo ahora o entrar a la comunidad y hacerlo luego desde tu panel.</p>
+          <div class="ask-options">
+            <button class="ask-option" type="button" data-ask="yes"><strong>Sí, registrarlo</strong><span>Te guiamos en cuatro pasos.</span></button>
+            <button class="ask-option" type="button" data-ask="no"><strong>Aún no</strong><span>Entra a tu panel como miembro de la comunidad.</span></button>
+          </div>
+        </section>
+
+        <!-- 3. Información -->
+        <form class="step" data-step="info" novalidate hidden>
+          <h1 class="wizard-title">Información del proyecto</h1>
+          <label class="field" data-field="website"><span class="field-label">Web o enlace principal</span>
+            <span class="input-with-button">
+              <input class="field-input" name="website" type="text" inputmode="url" placeholder="tuproyecto.com" maxlength="500" />
+              <button class="button button-secondary autofill" type="button" data-autofill>Autocompletar</button>
+            </span>
+            <span class="field-hint">Leemos tu web para llenar los datos. Si no se puede, los escribes tú.</span>
+            <p class="field-error" data-error hidden></p></label>
+          <p class="field-hint warn" data-autofill-note role="status" hidden></p>
+          <label class="field" data-field="name"><span class="field-label">Nombre del proyecto</span>
+            <input class="field-input" name="name" maxlength="120" /><p class="field-error" data-error hidden></p></label>
+          <label class="field" data-field="short"><span class="field-label-row"><span class="field-label">Descripción corta</span><span class="field-count" data-count="short">0/140</span></span>
+            <input class="field-input" name="short" maxlength="140" placeholder="Una frase que explique qué haces" /><p class="field-error" data-error hidden></p></label>
+          <label class="field" data-field="long"><span class="field-label">Descripción larga (opcional)</span>
+            <textarea class="field-input field-area" name="long" rows="4" maxlength="3000"></textarea></label>
+          <div class="field" data-field="logo"><span class="field-label">Logo (cuadrado, PNG, JPG o WebP, máx. 1 MB)</span>
+            <label class="logo-upload logo-upload--wizard">
+              <span class="logo-preview" data-logo-preview aria-hidden="true">+</span>
+              <span class="logo-upload-text" data-logo-text>Sube el logo de tu proyecto</span>
+              <input class="logo-upload-input" type="file" name="logo" accept="image/png,image/jpeg,image/webp" />
+            </label>
+            <p class="field-error" data-error hidden></p></div>
+          <p class="field-error form-error" data-form-error role="alert" hidden></p>
+          <div class="step-actions"><button class="button button-secondary" type="button" data-back>Anterior</button><button class="button button-primary" type="submit">Siguiente</button></div>
+        </form>
+
+        <!-- 4. Detalles -->
+        <form class="step" data-step="details" novalidate hidden>
+          <h1 class="wizard-title">Detalles</h1>
+          <div class="form-grid">
+            <label class="field" data-field="sector"><span class="field-label">Sector</span>
+              <select class="field-input" name="sector"><option value="">Elige el sector</option>{SECTORS.map((s) => <option value={s}>{s}</option>)}</select><p class="field-error" data-error hidden></p></label>
+            <label class="field" data-field="stage"><span class="field-label">Etapa</span>
+              <select class="field-input" name="stage"><option value="">Elige la etapa</option>{STAGES.map((s) => <option value={s}>{s}</option>)}</select><p class="field-error" data-error hidden></p></label>
+          </div>
+          <label class="check"><input type="checkbox" name="seekingInvestment" /> Estamos buscando inversión</label>
+          <label class="field" data-field="city"><span class="field-label">Ciudad base (opcional)</span>
+            <input class="field-input" name="city" maxlength="100" /></label>
+          <fieldset class="field socials"><legend class="field-label">Redes sociales (opcional)</legend>
+            <div class="form-grid">
+              <input class="field-input" name="instagram" placeholder="Instagram" aria-label="Instagram" maxlength="200" />
+              <input class="field-input" name="tiktok" placeholder="TikTok" aria-label="TikTok" maxlength="200" />
+              <input class="field-input" name="x" placeholder="X" aria-label="X" maxlength="200" />
+              <input class="field-input" name="linkedin" placeholder="LinkedIn" aria-label="LinkedIn" maxlength="200" />
+            </div></fieldset>
+          <p class="field-error form-error" data-form-error role="alert" hidden></p>
+          <div class="step-actions"><button class="button button-secondary" type="button" data-back>Anterior</button><button class="button button-primary" type="submit">Siguiente</button></div>
+        </form>
+
+        <!-- 5. Fundadores -->
+        <form class="step" data-step="founders" novalidate hidden>
+          <h1 class="wizard-title">Fundadores</h1>
+          <p class="wizard-lead">Tú apareces como fundador. Invita a tus cofundadores por correo, o salta este paso.</p>
+          <label class="field" data-field="myRole"><span class="field-label">Tu rol en el proyecto</span>
+            <select class="field-input" name="myRole">{PROJECT_ROLES.map((r) => <option value={r.value}>{r.label}</option>)}</select></label>
+          <ul class="founder-list" data-founder-list></ul>
+          <div class="invite-row" data-field="inviteEmail">
+            <label class="field"><span class="field-label">Invitar por correo</span>
+              <input class="field-input" name="inviteEmail" type="email" placeholder="cofundador@correo.com" maxlength="254" /></label>
+            <label class="field"><span class="field-label">Rol</span>
+              <select class="field-input" name="inviteRole">{PROJECT_ROLES.filter((r) => r.value !== "equipo" || true).map((r) => <option value={r.value} selected={r.value === "cofounder"}>{r.label}</option>)}</select></label>
+            <button class="button button-secondary" type="button" data-invite>Invitar</button>
+          </div>
+          <p class="field-error" data-error hidden></p>
+          <p class="field-error form-error" data-form-error role="alert" hidden></p>
+          <div class="step-actions"><button class="button button-secondary" type="button" data-back>Anterior</button><button class="button button-primary" type="submit">Siguiente</button></div>
+        </form>
+
+        <!-- 6. Revisión -->
+        <section class="step" data-step="review" hidden>
+          <h1 class="wizard-title">Revisión y publicación</h1>
+          <p class="wizard-lead">Así se verá tu proyecto en el directorio y en su página.</p>
+          <div data-review></div>
+          <p class="field-error form-error" data-form-error role="alert" hidden></p>
+          <div class="step-actions">
+            <button class="button button-secondary" type="button" data-back>Anterior</button>
+            <button class="button button-secondary" type="button" data-save="draft">Guardar borrador</button>
+            <button class="button button-primary" type="button" data-save="published" data-publish-label>Publicar</button>
+          </div>
+        </section>
+
+        <!-- 7. Confirmación -->
+        <section class="step" data-step="done" hidden>
+          <h1 class="wizard-title" data-done-title>¡Listo!</h1>
+          <p class="wizard-lead" data-done-lead></p>
+          <div data-done-card></div>
+          <div class="done-box" data-whatsapp hidden>
+            <p><strong>Únete al grupo de WhatsApp</strong></p>
+            <p class="field-hint">Ahí compartimos oportunidades y nos ayudamos entre builders.</p>
+            <a class="button button-secondary" data-whatsapp-link target="_blank" rel="noopener noreferrer">Abrir el grupo</a>
+          </div>
+          <div class="step-actions">
+            <a class="button button-primary" href="/mis-proyectos">Ir a Mis proyectos</a>
+            <button class="button button-secondary" type="button" data-another>Agregar otro proyecto</button>
+          </div>
+        </section>
+
+        <!-- Miembro sin proyecto -->
+        <section class="step" data-step="member" hidden>
+          <h1 class="wizard-title">Ya eres parte de la comunidad</h1>
+          <p class="wizard-lead">Cuando tengas un proyecto, lo registras desde tu panel.</p>
+          <div class="done-box" data-whatsapp-member hidden>
+            <p><strong>Únete al grupo de WhatsApp</strong></p>
+            <a class="button button-secondary" data-whatsapp-link target="_blank" rel="noopener noreferrer">Abrir el grupo</a>
+          </div>
+          <div class="step-actions"><a class="button button-primary" href="/mis-proyectos">Ir a mi panel</a></div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <script>import "../scripts/onboarding.ts";</script>
+</BaseLayout>

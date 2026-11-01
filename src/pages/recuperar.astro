@@ -1,0 +1,23 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout title="Recuperar contraseña | Asilo Builders" description="Recupera el acceso a tu cuenta de Asilo Builders." noindex>
+  <section class="auth" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <h1 id="auth-title" class="auth-title">Recupera tu contraseña</h1>
+      <p class="auth-lead">Escribe tu correo y te enviaremos un enlace para crear una contraseña nueva.</p>
+      <form class="auth-form" data-auth-form="recover" novalidate>
+        <label class="field" data-field="email">
+          <span class="field-label">Correo</span>
+          <input class="field-input" name="email" type="email" autocomplete="email" maxlength="254" required />
+          <p class="field-error" data-error hidden></p>
+        </label>
+        <p class="field-error form-error" data-form-error role="alert" hidden></p>
+        <button class="button button-primary auth-submit" type="submit">Enviar enlace</button>
+      </form>
+      <p class="auth-note" data-recover-sent hidden role="status">Si ese correo tiene una cuenta, te enviamos el enlace. Revisa también la carpeta de spam.</p>
+      <p class="auth-switch"><a href="/entrar">Volver a entrar</a></p>
+    </div>
+  </section>
+  <script>import "../scripts/auth-pages.ts";</script>
+</BaseLayout>

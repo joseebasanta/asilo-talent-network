@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AuthGate from "../../components/accounts/AuthGate.astro";
+const id = Astro.params.id ?? "";
+---
+<BaseLayout title="Perfil de founder | Asilo Builders" description="Perfil de un founder de Asilo Builders." noindex>
+  <section class="panel" aria-labelledby="founder-title" data-founder-profile data-id={id}>
+    <div class="panel-inner narrow">
+      <AuthGate title="Entra para ver este perfil" lead="Los perfiles y datos de contacto de los founders son para personas con cuenta en Builders. Crearla toma un clic con Google." />
+      <div data-body hidden></div>
+    </div>
+  </section>
+  <script>import "../../scripts/founder-profile.ts";</script>
+</BaseLayout>

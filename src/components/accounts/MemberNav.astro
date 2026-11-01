@@ -1,0 +1,25 @@
+---
+/**
+ * Navigation for the signed-in area. The public header stays about the site;
+ * this second level is about the person's own space, so the two never mix.
+ */
+const path = Astro.url?.pathname ?? "/";
+const is = (base: string) => path === base || path.startsWith(`${base}/`);
+const items = [
+  { label: "Anuncios", href: "/anuncios", current: is("/anuncios") },
+  { label: "Mis proyectos", href: "/mis-proyectos", current: is("/mis-proyectos") },
+  { label: "Perfil", href: "/perfil", current: is("/perfil") },
+];
+---
+<nav class="member-nav" aria-label="Mi cuenta">
+  <p class="member-nav-title">Comunidad</p>
+  <ul>
+    {items.map((item) => (
+      <li>
+        <a href={item.href} aria-current={item.current ? "page" : undefined}>
+          <span>{item.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

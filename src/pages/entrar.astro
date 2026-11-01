@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GoogleButton from "../components/accounts/GoogleButton.astro";
+---
+<BaseLayout title="Entrar | Asilo Builders" description="Entra a tu cuenta de Asilo Builders." noindex>
+  <section class="auth" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <h1 id="auth-title" class="auth-title">Entrar</h1>
+      <p class="auth-lead">Vuelve a tu panel y a tus proyectos.</p>
+      <GoogleButton />
+      <p class="auth-divider"><span>o con tu correo</span></p>
+      <form class="auth-form" data-auth-form="signin" novalidate>
+        <label class="field" data-field="email">
+          <span class="field-label">Correo</span>
+          <input class="field-input" name="email" type="email" autocomplete="email" maxlength="254" required />
+          <p class="field-error" data-error hidden></p>
+        </label>
+        <div class="field" data-field="password">
+          <label class="field-label" for="signin-password">Contraseña</label>
+          <input class="field-input" id="signin-password" name="password" type="password" autocomplete="current-password" required />
+          <p class="field-error" data-error hidden></p>
+          <a class="field-link field-link--end" href="/recuperar">Olvidé mi contraseña</a>
+        </div>
+        <p class="field-error form-error" data-form-error role="alert" hidden></p>
+        <button class="button button-primary auth-submit" type="submit">Entrar</button>
+      </form>
+      <p class="auth-switch">¿Aún no tienes cuenta? <a data-switch="/crear-cuenta" href="/crear-cuenta">Crear cuenta</a></p>
+    </div>
+  </section>
+  <script>import "../scripts/auth-pages.ts";</script>
+</BaseLayout>
