@@ -3,12 +3,10 @@ import { serviceTabs, servicesSection } from "../../data/servicios";
 import SectionHead from "./SectionHead.astro";
 ---
 
-<section class="s-services" id="servicios" aria-labelledby="servicios-title">
+<section class="s-services s-services--v3" id="servicios" aria-labelledby="servicios-title">
   <div class="s-services-inner">
     <SectionHead
-      tagline={servicesSection.tagline}
       title={servicesSection.titleLines}
-      subtitle={servicesSection.subtitle}
       titleId="servicios-title"
     />
 
@@ -47,6 +45,7 @@ import SectionHead from "./SectionHead.astro";
               <ul class="s-services-list s-paragraph-md">
                 {tab.items.map((item) => <li>{item}</li>)}
               </ul>
+              {tab.price && <p class="s-services-price s-label-lg">{tab.price}</p>}
             </div>
           ))
         }

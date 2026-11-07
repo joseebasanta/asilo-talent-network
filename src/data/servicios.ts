@@ -1,11 +1,13 @@
 // Contenido de la landing de servicios de Asilo Digital, versión 2 (/servicios).
 // La v1 quedó guardada en la rama landing-page-v1-2026-10-28 y en el tag servicios-v1-2026-10-28.
-// Cada sección que llegue desde Figma agrega aquí su copy, links y rutas de imágenes.
+// La v2 (copy "Todas las apps se ven igual") quedó en la rama servicios-v2 y en el tag servicios-v2-2026-11-06.
+// Esta es la v3: copy y secciones del Figma "Asilo Core" (nodo 8951:3082). Cada sección agrega aquí su copy,
+// links y rutas de imágenes.
 
 export const seo = {
-  title: "Asilo Digital — Diseño de producto que se entiende",
+  title: "Asilo Digital — Diseño UX/UI con buen gusto y coherencia",
   description:
-    "Estudio de diseño de producto nacido como comunidad tech en LatAm. Diagnosticamos tu UX, rediseñamos tu app con identidad propia y la llevamos a producción.",
+    "Diseño UX/UI para equipos que quieren productos de primer nivel: auditamos tu UX, rediseñamos tu app, creamos tu design system y prototipamos con código antes de desarrollar.",
 };
 
 export const CTA_LABEL = "Contáctanos";
@@ -22,18 +24,54 @@ export interface NavLink {
 // Nav (Figma: Asilo Services, nodo 91:7190). Las anclas apuntan a secciones que se van sumando.
 export const navLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios" },
+  { label: "Cómo trabajamos", href: "#como-trabajamos" },
   { label: "Nuestro trabajo", href: "#trabajo" },
   { label: "Contacto", href: "#contacto" },
 ];
 
-// Hero (Figma: Asilo Services, nodo 91:7203).
+// Hero (Figma: Asilo Core, nodo 8951:3083).
 export const hero = {
   // Una frase por línea, como en Figma.
-  titleLines: ["Todas las apps se ven igual.", "La tuya no debería."],
-  subtitle:
-    "Las apps ya se pueden generar en minutos, y todas terminan viéndose igual. Nosotros les damos lo que no se automatiza: taste, estilo y cuidado al detalle.",
-  secondaryCta: { label: "Ver servicios", href: "#servicios" },
+  titleLines: ["La IA hace pantallas.", "Nosotros les ponemos el gusto."],
+  // Un párrafo por línea, como en Figma.
+  subtitleLines: [
+    "Ofrecemos soluciones de Diseño UX/UI para reducir fricciones y construir software que tus usuarios amen.",
+    "La IA construye rápido, nosotros le damos gusto y coherencia.",
+  ],
+  secondaryCta: { label: "Ver proyectos", href: "#trabajo" },
 };
+
+// El problema (Figma: Asilo Core, "Dolores"): tres tarjetas, cada una lleva al servicio que la resuelve.
+export const problemSection = {
+  tagline: "El problema",
+  titleLines: ["Tu app crece, pero no", "crece con tu marca."],
+  subtitle:
+    "Cada mes se suman funciones, pantallas y usuarios. Pero sin una base de diseño ese crecimiento pierde gusto y coherencia, y se ve cada vez más como todas las demás. Tus usuarios, que usan las mejores apps del mundo todos los días, lo notan.",
+};
+
+export interface InfoCard {
+  title: string;
+  body: string;
+  link?: { label: string; href: string };
+}
+
+export const problemCards: InfoCard[] = [
+  {
+    title: "Todas se ven igual",
+    body: "Lovable, las plantillas y la IA parten de los mismos patrones por defecto. Se hace rápido, pero crea deuda de UX y no refleja lo que busca tu marca.",
+    link: { label: "Diseño y rediseño →", href: "#servicios" },
+  },
+  {
+    title: "Cada versión se parece menos a la anterior",
+    body: "Cada función nueva se resuelve por separado: un prompt, un desarrollador, un apuro. Sin un sistema que guarde las decisiones, el producto pierde coherencia con cada entrega.",
+    link: { label: "Design System →", href: "#servicios" },
+  },
+  {
+    title: "Funciona, pero no se ve bien",
+    body: "Tus usuarios no te comparan con la competencia local, sino con las mejores apps que usan. Una interfaz descuidada se lee como un negocio descuidado.",
+    link: { label: "UX Audit →", href: "#servicios" },
+  },
+];
 
 // Franja de logos al pie del hero (Figma: Asilo Services, nodo 91:7568). Se muestran en blanco.
 // TODO: reemplazar con logos reales de clientes (con permiso), en SVG. Los de Figma son de marcas
@@ -52,10 +90,9 @@ export interface Project {
 
 // Proyectos (Figma: Asilo Services, nodo 91:7755). Imágenes exportadas de Figma a 2× (811×568).
 export const projectsSection = {
-  tagline: "Proyectos",
-  title: "Diferénciate de otras apps acelerado con AI",
+  titleLines: ["Productos que se diferencian", "por su calidad."],
   subtitle:
-    "Un equipo que traduce la tecnología a tu contexto y la convierte en productos que se ven, se sienten y funcionan mejor.",
+    "Diseñamos e implementamos productos para empresas locales e internacionales, con el mismo estándar: buen gusto, usabilidad y coherencia para crecer.",
 };
 
 // TODO: reemplazar las descripciones de relleno con una línea real por proyecto.
@@ -106,74 +143,80 @@ export interface ServiceTab {
   title: string;
   body: string;
   items: string[];
+  // Precio de referencia (opcional): se muestra al pie del panel.
+  price?: string;
 }
 
-// Servicios (Figma: Asilo Services, nodo 91:7299). Websites sale del panel de Figma; el copy de las
-// otras pestañas sale de la capa de texto "Servicios (ES)" del mismo archivo.
+// Servicios (Figma: Asilo Core, "Servicios"). El título lleva una segunda línea más liviana.
 export const servicesSection = {
-  tagline: "Servicios",
-  titleLines: ["Que funcione es lo mínimo.", "Que se sienta bien es lo nuestro."],
-  subtitle:
-    "Auditamos, diseñamos, construimos e implementamos productos digitales que no se ven como todos los demás.",
+  titleLines: ["Nuestros servicios", "Diseño de productos digitales UX/UI"],
 };
 
+// TODO: en Figma solo está armado el panel de UX Audit. El copy de "Diseño y rediseño" sale de la v2
+// (pestaña Product Design) y el de "Design System" es provisional: confirmarlos con el equipo, y agregar sus precios.
 export const serviceTabs: ServiceTab[] = [
   {
-    id: "websites",
-    label: "Websites",
-    title: "Sitios que se sienten como una marca, no como una plantilla.",
-    body: "Diseñamos y construimos en un solo equipo, sin traspasos ni versiones que pierden detalle en el camino. El sitio sale a producción viéndose exactamente como se diseñó, con tipografía, ritmo y movimiento pensados a mano.",
+    id: "ux-audit",
+    label: "UX Audit",
+    title: "Descubre qué está frenando a tus usuarios.",
+    body: "Para equipos que saben que algo no funciona, pero no saben qué arreglar primero. Revisamos tu producto con heurísticas de UX/UI, flujos y performance, y te entregamos los hallazgos por severidad con una hoja de ruta clara. Aproximadamente un mes.",
     items: [
-      "Landing pages y marketing websites",
-      "Identidad visual aplicada a web",
-      "Arquitectura de contenido y CMS",
-      "Estructura lista para SEO",
-      "Rendimiento y QA",
+      "Evaluación heurística de UX/UI",
+      "Flujos clave y arquitectura de información",
+      "Revisión visual y de marca",
+      "Hallazgos por severidad y hoja de ruta",
+      "Presentación en vivo con tu equipo",
     ],
+    price: "Desde USD 500",
   },
   {
-    id: "product-design",
-    label: "Product Design",
+    id: "diseno-rediseno",
+    label: "Diseño y rediseño",
     title: "Interfaces que se ven y se sienten hechas por alguien a quien le importa.",
     body: "Diseñamos tu producto desde el MVP hasta su versión escalada, con criterio visual en cada decisión. Trabajamos junto a tu equipo de desarrollo y entregamos interfaces listas para construir: lo que lanzamos es lo que tus usuarios ven.",
     items: [
       "Diseño UI y UX",
       "MVP y prototipos",
-      "Sistemas de diseño y librerías de componentes",
       "Flujos de usuario y wireframes",
       "Diseño mobile y responsive",
       "Pruebas de usabilidad e iteración",
     ],
   },
   {
-    id: "ux-audit",
-    label: "UX Audit",
-    title: "Tu app no convierte y no sabes por qué.",
-    body: "Revisamos tu producto con ojo de diseñador: dónde se pierde la gente, qué se siente genérico y qué detalles frenan la confianza. Te entregamos un diagnóstico claro y un plan priorizado por impacto, no un PDF de 80 páginas.",
+    id: "design-system",
+    label: "Design System",
+    title: "Un sistema que guarde tus decisiones de diseño.",
+    body: "Ordenamos las decisiones de tu producto en componentes, estilos y reglas que tu equipo puede reutilizar, para que cada pantalla nueva mantenga la coherencia de la anterior.",
     items: [
-      "Auditoría heurística de UX y UI",
-      "Análisis de flujos y puntos de fricción",
-      "Revisión de onboarding y conversión",
-      "Evaluación de consistencia visual (taste audit)",
-      "Benchmark de competidores",
-      "Plan de mejoras priorizado",
-    ],
-  },
-  {
-    id: "implementaciones",
-    label: "Implementaciones",
-    title: "Tecnología que se integra a tu operación sin que tengas que entenderla.",
-    body: "Llevamos la idea al despliegue: automatizaciones, integraciones con IA y herramientas internas ajustadas al contexto venezolano. Dejamos capacidades dentro de tu equipo para que todo siga funcionando cuando terminamos.",
-    items: [
-      "Flujos automatizados",
-      "Integraciones con IA",
-      "Sistemas internos y herramientas colaborativas",
-      "APIs, autenticación e integraciones",
-      "Formación y transferencia al equipo",
-      "Acompañamiento continuo",
+      "Auditoría de la interfaz existente",
+      "Tokens de color, tipografía y espaciado",
+      "Librería de componentes",
+      "Documentación de uso",
+      "Traspaso al equipo de desarrollo",
     ],
   },
 ];
+
+// Cómo trabajamos (Figma: Asilo Core): tres pasos en tarjetas.
+export const processSection = {
+  titleLines: ["Nos adelantamos al código."],
+  subtitle:
+    "No entregamos pantallas estáticas. Creamos prototipos altamente funcionales, integrados con código, para que valides tu producto antes de desarrollar y tu equipo implemente más fácil y más rápido.",
+};
+
+export const processCards: InfoCard[] = [
+  { title: "01 · Diagnosticamos", body: "Entendemos tu producto, tus usuarios y lo que necesitas lograr." },
+  { title: "02 · Diseñamos y prototipamos con código", body: "Validas la experiencia funcionando, antes de invertir en desarrollo." },
+  { title: "03 · Implementamos o acompañamos", body: "El desarrollo arranca con todo definido y avanza más rápido." },
+];
+
+// Con quién trabajamos (Figma: Asilo Core): cierre antes de los testimonios, con botón al formulario.
+export const audienceSection = {
+  titleLines: ["Trabajamos con quienes quieren", "hacer las cosas distinto."],
+  subtitle:
+    "Si para ti basta con que funcione, probablemente no somos tu equipo. Si quieres un producto de primer nivel, del que tus usuarios hablen bien, hablemos.",
+  ctaLabel: "Hablemos",
+};
 
 export interface Testimonial {
   quote: string;
@@ -210,39 +253,34 @@ export interface FaqItem {
   answer: string;
 }
 
-// FAQ (Figma: Asilo Services, nodo 91:7493).
+// FAQ (Figma: Asilo Core). Ya no lleva la tarjeta de contacto.
 export const faqSection = {
   tagline: "¿Aún tienes dudas?",
-  title: "Lee las FAQs",
-  // En Figma esta tarjeta es una captura de referencia de otra agencia; aquí va con el copy de Asilo.
-  card: {
-    title: "¿No encuentras tu respuesta?",
-    body: "Lo hablamos en una llamada.",
-    emailLabel: "O escríbenos →",
-  },
+  titleLines: ["Preguntas", "frecuentes"],
 };
 
+// TODO: en Figma solo está la respuesta de la primera pregunta. Las demás salen de la v2; la del prototipo
+// funcional y la de precios son provisionales hasta que el equipo las confirme.
 export const faqItems: FaqItem[] = [
   {
     question: "¿Necesito saber de tecnología para trabajar con ustedes?",
     answer:
-      "No. Acompañamos desde cero a quienes tienen un negocio y necesitan un equipo de confianza. Nosotros traducimos la tecnología a tu idioma, tú nos cuentas qué quieres lograr.",
+      "No. Tú nos cuentas qué quieres lograr y nosotros lo convertimos en un producto. Te acompañamos en cada decisión.",
   },
   {
-    question: "¿Con qué tipo de organizaciones trabajan?",
+    question: "¿Con qué tipo de empresas trabajan?",
     answer:
       "Con empresas, instituciones, startups y creadores que quieren adoptar tecnología con claridad. Desde un emprendimiento que está arrancando hasta una organización que necesita digitalizar sus procesos.",
   },
   {
     question: "¿Cómo es el trabajo día a día con ustedes?",
-    // TODO: en Figma dice "Respuesta por definir por servicio"; mientras tanto va la respuesta de la v1.
     answer:
       "Con un canal de comunicación compartido y revisiones periódicas. Ves el avance desde el primer día y no esperas a una gran entrega final para opinar.",
   },
   {
-    question: "¿Pueden ayudarme a crear un producto desde cero?",
+    question: "¿Qué es un prototipo funcional?",
     answer:
-      "Sí, y es donde más disfrutamos trabajar. No necesitas saber de tecnología para empezar: te ayudamos a definir el alcance, trazar los flujos de usuario, diseñar la experiencia, construir el producto o el sitio y acompañar el lanzamiento. Según lo que necesites, podemos ser tu equipo completo de ejecución o integrarnos con tu equipo actual de producto.",
+      "Es una versión de tu producto que ya funciona: tiene interacción real y está integrada con código. Así validas la experiencia antes de desarrollar y tu equipo implementa más fácil y más rápido.",
   },
   {
     question: "¿Qué tan rápido pueden empezar?",
@@ -250,17 +288,16 @@ export const faqItems: FaqItem[] = [
       "Normalmente en pocos días. Si necesitas arrancar esta semana, cuéntanoslo en la primera conversación y organizamos el equipo alrededor de tu fecha.",
   },
   {
-    question: "¿Cuánto cuesta trabajar con Asilo Digital?",
+    question: "¿Cuánto cuesta trabajar con Asilo Labs?",
     answer:
-      "Depende del alcance y del tipo de acompañamiento. Una evaluación UX inicial parte desde 600$; un sitio web desde 800$; y los productos o plataformas a medida se cotizan por fases. Si necesitas diseño, desarrollo o posicionamiento SEO de forma continua, ofrecemos planes mensuales ajustados a tu necesidad. Después de conocer tu contexto te enviamos una propuesta clara, con alcance, tiempos y costos, sin sorpresas.",
+      "Depende del alcance. Un UX Audit parte desde USD 500; los proyectos de diseño y rediseño y de design system se cotizan según lo que necesites. Después de conocer tu contexto te enviamos una propuesta clara, con alcance, tiempos y costos, sin sorpresas.",
   },
 ];
 
-// CTA final (Figma: Asilo Services, nodo 91:7534). El botón usa CTA_LABEL y CTA_HREF (formulario).
+// CTA final (Figma: Asilo Core). El botón lleva al formulario (CTA_HREF).
 export const finalCta = {
-  title: "Cuéntanos qué estás construyendo",
-  subtitle:
-    "Te ayudamos a definir el alcance, el equipo, los tiempos y los próximos pasos adecuados para tu proyecto.",
+  title: "Empecemos hoy.",
+  ctaLabel: "Audita mi producto",
 };
 
 export interface FooterLink {
@@ -288,6 +325,6 @@ export const footerLegalLinks: FooterLink[] = [];
 
 export const footer = {
   // Frase bajo el logo (Title/H5).
-  tagline: "Hecho para avanzar.",
-  copyright: `© ${new Date().getFullYear()} Asilo Digital. Todos los derechos reservados`,
+  tagline: "Buen gusto y coherencia.",
+  copyright: `© ${new Date().getFullYear()} Asilo Labs. Todos los derechos reservados`,
 };

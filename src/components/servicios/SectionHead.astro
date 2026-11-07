@@ -1,9 +1,9 @@
 ---
-// Encabezado de sección (Figma 91:7757): tagline, título h2 y bajada, centrados en 768px.
+// Encabezado de sección (Figma 91:7757): tagline (opcional), título h2 y bajada, centrados en 768px.
 // `title` acepta varias líneas para respetar los saltos de Figma. Con `align="start"` va alineado a la
 // izquierda y sin ancho máximo, como en Testimonios.
 interface Props {
-  tagline: string;
+  tagline?: string;
   title: string | string[];
   subtitle?: string;
   titleId: string;
@@ -15,7 +15,7 @@ const lines = Array.isArray(title) ? title : null;
 ---
 
 <header class:list={["s-section-head", { "s-section-head--start": align === "start" }]}>
-  <p class="s-section-tagline s-subheading-xs">{tagline}</p>
+  {tagline && <p class="s-section-tagline s-subheading-xs">{tagline}</p>}
   <div class="s-section-head-text">
     {
       lines ? (

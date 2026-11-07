@@ -1,0 +1,27 @@
+---
+// "Cómo trabajamos" (Figma: Asilo Core): título centrado y tres pasos en tarjetas.
+import { processCards, processSection } from "../../data/servicios";
+import SectionHead from "./SectionHead.astro";
+---
+
+<section class="s-process" id="como-trabajamos" aria-labelledby="como-trabajamos-title">
+  <div class="s-process-inner">
+    <SectionHead
+      title={processSection.titleLines}
+      subtitle={processSection.subtitle}
+      titleId="como-trabajamos-title"
+    />
+    <ol class="s-cards">
+      {
+        processCards.map((card) => (
+          <li class="s-card">
+            <div class="s-card-text">
+              <h3 class="s-card-title s-title-h5">{card.title}</h3>
+              <p class="s-card-body s-paragraph-sm">{card.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

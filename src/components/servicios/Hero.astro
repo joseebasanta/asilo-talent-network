@@ -1,5 +1,5 @@
 ---
-// Hero de la landing de servicios v2 (Figma: Asilo Services, nodo 91:7203).
+// Hero de la landing de servicios v3 (Figma: Asilo Core, nodo 8951:3083).
 import { CTA_HREF, CTA_LABEL, clientLogos, hero } from "../../data/servicios";
 
 // La franja se repite cuatro veces y se desplaza la mitad de su ancho en bucle: así no queda un hueco
@@ -17,7 +17,9 @@ const copies = [0, 1, 2, 3];
       <h1 class="s-hero-title" id="hero-title">
         {hero.titleLines.map((line, i) => <span class="s-hero-title-line">{i > 0 && " "}{line}</span>)}
       </h1>
-      <p class="s-hero-lead s-paragraph-lg">{hero.subtitle}</p>
+      <p class="s-hero-lead s-paragraph-lg">
+        {hero.subtitleLines.map((line) => <span class="s-hero-lead-line">{line}</span>)}
+      </p>
     </div>
     <div class="s-hero-actions">
       <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{CTA_LABEL}</a>

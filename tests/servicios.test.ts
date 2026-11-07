@@ -15,6 +15,11 @@ import {
   footerSocialLinks,
   hero,
   navLinks,
+  audienceSection,
+  problemCards,
+  problemSection,
+  processCards,
+  processSection,
   projects,
   projectsSection,
   serviceTabs,
@@ -31,9 +36,9 @@ async function render() {
   return container.renderToString(ServiciosPage);
 }
 
-// La v2 se construye sección por sección; cada sección nueva agrega aquí sus tests.
-// Los tests de la v1 quedaron en la rama landing-page-v1-2026-10-28.
-describe("landing de servicios v2", () => {
+// La v3 sigue el Figma "Asilo Core". Los tests de la v1 quedaron en la rama landing-page-v1-2026-10-28 y los de
+// la v2 en servicios-v2 (tag servicios-v2-2026-11-06).
+describe("landing de servicios v3", () => {
   it("renders the base page in Spanish with a main landmark and a skip link", async () => {
     const html = await render();
 
@@ -156,7 +161,7 @@ describe("landing de servicios v2", () => {
     expect(nav).toContain("s-theme-icon--moon");
     expect(css).toMatch(/\.s-theme-toggle \{[^}]*width: 32px; height: 32px;/);
     expect(nav).toContain('aria-label="Navegación principal"');
-    expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Nuestro trabajo", "Contacto"]);
+    expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Cómo trabajamos", "Nuestro trabajo", "Contacto"]);
     for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
     expect(CTA_LABEL).toBe("Contáctanos");
     // Botón del nav una escala menor que el del hero: sm (32px, Label SM) frente a lg (48px).
@@ -178,9 +183,10 @@ describe("landing de servicios v2", () => {
     const title = section.slice(titleStart, section.indexOf("</h1>")).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     expect(title).toBe(hero.titleLines.join(" "));
     expect(section.match(/class="s-hero-title-line"/g)).toHaveLength(2);
-    expect(section).toContain(hero.subtitle);
+    for (const line of hero.subtitleLines) expect(section).toContain(`<span class="s-hero-lead-line">${line}</span>`);
     expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
-    expect(section).toContain('href="#servicios">Ver servicios</a>');
+    expect(section).toContain(`href="${hero.secondaryCta.href}">${hero.secondaryCta.label}</a>`);
+    expect(hero.secondaryCta).toEqual({ label: "Ver proyectos", href: "#trabajo" });
   });
 
   it("renders the projects section with six cards, their images and service tags", async () => {
@@ -190,7 +196,8 @@ describe("landing de servicios v2", () => {
 
     expect(section).toContain('id="trabajo"');
     expect(navLinks.map((l) => l.href)).toContain("#trabajo");
-    expect(section).toContain(`<h2 class="s-section-title" id="proyectos-title">${projectsSection.title}</h2>`);
+    expect(section.match(/class="s-section-title-line"/g)).toHaveLength(projectsSection.titleLines.length);
+    for (const line of projectsSection.titleLines) expect(section).toContain(line);
     expect(section).toContain(projectsSection.subtitle);
     expect(section.match(/<li class="s-project">/g)).toHaveLength(6);
     expect(section.match(/<h3\b/g)).toHaveLength(6);
@@ -218,21 +225,22 @@ describe("landing de servicios v2", () => {
 
   it("renders the services section as tabs with the first one open", async () => {
     const html = await render();
-    const start = html.indexOf('<section class="s-services"');
+    const start = html.indexOf('<section class="s-services ');
     const section = html.slice(start, html.indexOf("</section>", start));
 
     expect(section).toContain('id="servicios"');
     expect(navLinks.map((l) => l.href)).toContain("#servicios");
-    expect(hero.secondaryCta.href).toBe("#servicios");
     expect(section.match(/class="s-section-title-line"/g)).toHaveLength(servicesSection.titleLines.length);
-    expect(section).toContain(servicesSection.subtitle);
+    expect(serviceTabs.map((t) => t.label)).toEqual(["UX Audit", "Diseño y rediseño", "Design System"]);
+    // El precio de referencia del UX Audit va al pie de su panel.
+    expect(section).toContain('<p class="s-services-price s-label-lg">Desde USD 500</p>');
     expect(section).toContain('role="tablist" aria-label="Servicios" aria-orientation="vertical"');
-    expect(section.match(/role="tab"/g)).toHaveLength(4);
-    expect(section.match(/role="tabpanel"/g)).toHaveLength(4);
+    expect(section.match(/role="tab"/g)).toHaveLength(3);
+    expect(section.match(/role="tabpanel"/g)).toHaveLength(3);
     expect(section.match(/aria-selected="true"/g)).toHaveLength(1);
-    expect(section.match(/ hidden[ >]/g)).toHaveLength(3);
+    expect(section.match(/ hidden[ >]/g)).toHaveLength(2);
     // Cada pestaña lleva una flecha; la seleccionada se llena de azul desde abajo y la flecha gira a ↗.
-    expect(section.match(/<span class="s-icon s-services-tab-arrow" style="--icon: url\(\/servicios\/icons\/arrow-forward.svg\)"><\/span>/g)).toHaveLength(4);
+    expect(section.match(/<span class="s-icon s-services-tab-arrow" style="--icon: url\(\/servicios\/icons\/arrow-forward.svg\)"><\/span>/g)).toHaveLength(3);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-services-tab::before \{[^}]*background: var\(--color-blue-500\);[^}]*transform: scaleY\(0\)/);
     expect(css).toContain('.s-services-tab[aria-selected="true"]::before { transform: scaleY(1); opacity: 1; }');
@@ -311,16 +319,17 @@ describe("landing de servicios v2", () => {
     }
   });
 
-  it("renders the FAQ as native accordions with the first one open and the contact card", async () => {
+  it("renders the FAQ as native accordions with the first one open and no contact card", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-faq"');
     const section = html.slice(start, html.indexOf("</section>", start));
 
     expect(section).toContain('id="preguntas"');
     expect(section).toContain(`<p class="s-section-tagline s-subheading-xs">${faqSection.tagline}</p>`);
-    expect(html.match(/class="s-section-tagline s-subheading-xs"/g)).toHaveLength(4);
+    expect(html.match(/class="s-section-tagline s-subheading-xs"/g)).toHaveLength(3);
     expect(html).not.toContain("s-section-tagline s-subheading-sm");
-    expect(section).toContain(`id="preguntas-title">${faqSection.title}</h2>`);
+    expect(section.match(/class="s-section-title-line"/g)).toHaveLength(faqSection.titleLines.length);
+    for (const line of faqSection.titleLines) expect(section).toContain(line);
     expect(section.match(/<details class="s-faq-item"/g)).toHaveLength(faqItems.length);
     expect(section.match(/<details class="s-faq-item" name="faq" open>/g)).toHaveLength(1);
     expect(section.match(/<div class="s-faq-answer-wrap">/g)).toHaveLength(faqItems.length);
@@ -333,7 +342,6 @@ describe("landing de servicios v2", () => {
     expect(faqCss).toMatch(/@media \(hover: hover\) \{\s*\.s-faq-item:hover \{ background: var\(--surface-card-hover\); \}/);
     expect(faqCss).toContain(".s-faq-item[open]:not([data-closing]) { background: var(--surface-card-hover); }");
     expect(faqCss).toContain("--surface-card-hover: var(--color-grey-950);");
-    expect(faqCss).toMatch(/\.s-faq-card \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
     // La X es una máscara: toma el color del texto en los dos temas.
     expect(section.match(/<span class="s-icon s-faq-icon" style="--icon: url\(\/servicios\/icons\/close.svg\)"><\/span>/g)).toHaveLength(faqItems.length);
     for (const item of faqItems) {
@@ -341,14 +349,10 @@ describe("landing de servicios v2", () => {
       expect(section).toContain(item.answer);
     }
     expect(section).not.toContain("Respuesta por definir");
-    expect(section).not.toContain("Asilo Labs");
 
-    expect(section).toContain(`<h3 class="s-faq-card-title s-title-h6" id="faq-card-title">${faqSection.card.title}</h3>`);
-    expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
-    expect(section).toContain(`href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>`);
-    expect(section).not.toContain("designme");
-    // La tarjeta de contacto va sin avatar.
-    expect(section).not.toContain("s-faq-card-avatar");
+    // En Figma la sección ya no lleva la tarjeta de contacto.
+    expect(section).not.toContain("s-faq-card");
+    expect(section).not.toContain(`mailto:${CONTACT_EMAIL}`);
     expect(existsSync(new URL("../public/servicios/icons/close.svg", import.meta.url))).toBe(true);
   });
 
@@ -359,8 +363,8 @@ describe("landing de servicios v2", () => {
 
     expect(section).toContain('id="contacto"');
     expect(section).toContain(`<h2 class="s-section-title" id="contacto-title">${finalCta.title}</h2>`);
-    expect(section).toContain(finalCta.subtitle);
-    expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${CTA_LABEL}</a>`);
+    expect(finalCta.ctaLabel).toBe("Audita mi producto");
+    expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${finalCta.ctaLabel}</a>`);
     for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
 
     // Fondo decorativo: degradado hacia el azul de marca con una grilla de cuadritos, detrás del contenido.
@@ -407,7 +411,7 @@ describe("landing de servicios v2", () => {
     // Logo y frase a 16px.
     expect(footerCss).toContain(".s-footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }");
     expect(footerCss).toMatch(/\.s-footer-credits \{[^}]*justify-content: flex-start;[^}]*padding-top: 24px; border-top: 1px solid var\(--border-subtle\);\s*color: var\(--fg-body\); text-align: left;/);
-    expect(footer.copyright).toMatch(/^© \d{4} Asilo Digital\. Todos los derechos reservados$/);
+    expect(footer.copyright).toMatch(/^© \d{4} Asilo Labs\. Todos los derechos reservados$/);
     // Sin páginas legales todavía: no se publican links vacíos.
     expect(footerLegalLinks).toHaveLength(0);
     expect(section).not.toContain('href="#"');
@@ -427,6 +431,41 @@ describe("landing de servicios v2", () => {
     for (const color of ["#6f7ad9", "#9aa8f2", "#e4ecff", "var(--color-blue-500) 80%", "--footer-glow-deep: #2b3190;"]) expect(css).toContain(color);
     expect(css).not.toContain("#e516d1");
     expect(css).toContain("--footer-glow-end: var(--color-blue-500);");
+  });
+
+  it("renders the problem, process and audience sections between the hero, services and projects", async () => {
+    const html = await render();
+    const order = ["inicio", "problema", "servicios", "como-trabajamos", "trabajo", "con-quien-trabajamos", "testimonios", "preguntas", "contacto"];
+    const positions = order.map((id) => html.indexOf(`id="${id}"`));
+    expect(positions.every((p) => p >= 0)).toBe(true);
+    expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+
+    const slice = (cls: string) => {
+      const start = html.indexOf(`<section class="${cls}"`);
+      return html.slice(start, html.indexOf("</section>", start));
+    };
+    const problem = slice("s-problem");
+    expect(problem).toContain(`<p class="s-section-tagline s-subheading-xs">${problemSection.tagline}</p>`);
+    expect(problem).toContain(problemSection.subtitle);
+    expect(problem.match(/<li class="s-card">/g)).toHaveLength(3);
+    for (const card of problemCards) {
+      expect(problem).toContain(`<h3 class="s-card-title s-title-h5">${card.title}</h3>`);
+      expect(problem).toContain(card.body);
+      expect(problem).toContain(`href="${card.link!.href}">${card.link!.label}`.replace(/\s+$/, ""));
+    }
+    expect(problemCards.map((c) => c.link!.label)).toEqual(["Diseño y rediseño →", "Design System →", "UX Audit →"]);
+
+    const process = slice("s-process");
+    expect(process).toContain(processSection.subtitle);
+    expect(process.match(/<li class="s-card">/g)).toHaveLength(3);
+    expect(processCards.map((c) => c.title)).toEqual(["01 · Diagnosticamos", "02 · Diseñamos y prototipamos con código", "03 · Implementamos o acompañamos"]);
+    for (const card of processCards) expect(process).toContain(card.body);
+    expect(process).not.toContain("s-card-link");
+
+    const audience = slice("s-audience");
+    expect(audience).toContain(audienceSection.subtitle);
+    expect(audience).toContain(`href="${CTA_HREF}">${audienceSection.ctaLabel}</a>`);
+    expect(audienceSection.ctaLabel).toBe("Hablemos");
   });
 
   it("renders the client logo strip inside the hero with a single announced copy", async () => {

@@ -1,11 +1,14 @@
 ---
-// Landing de servicios v2. Se construye sección por sección desde Figma:
+// Landing de servicios v3. Se construye sección por sección desde Figma:
 // cada sección nueva es un componente en src/components/servicios/ montado dentro de <main>.
 import "../styles/fonts.css";
 import "../styles/servicios.css";
 import SeoHead from "../components/SeoHead.astro";
 import Nav from "../components/servicios/Nav.astro";
 import Hero from "../components/servicios/Hero.astro";
+import Problem from "../components/servicios/Problem.astro";
+import Process from "../components/servicios/Process.astro";
+import Audience from "../components/servicios/Audience.astro";
 import Projects from "../components/servicios/Projects.astro";
 import Services from "../components/servicios/Services.astro";
 import Testimonials from "../components/servicios/Testimonials.astro";
@@ -51,8 +54,11 @@ const canonical = `${siteUrl}/servicios`;
     <Nav />
     <main id="contenido">
       <Hero />
-      <Projects />
+      <Problem />
       <Services />
+      <Process />
+      <Projects />
+      <Audience />
       <Testimonials />
       <Faq />
       <FinalCta />

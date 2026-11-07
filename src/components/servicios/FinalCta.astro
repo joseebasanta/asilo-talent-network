@@ -1,5 +1,5 @@
 ---
-import { CTA_HREF, CTA_LABEL, finalCta } from "../../data/servicios";
+import { CTA_HREF, finalCta } from "../../data/servicios";
 ---
 
 <section class="s-cta" id="contacto" aria-labelledby="contacto-title">
@@ -7,8 +7,7 @@ import { CTA_HREF, CTA_LABEL, finalCta } from "../../data/servicios";
   <div class="s-cta-inner">
     <div class="s-cta-text">
       <h2 class="s-section-title" id="contacto-title">{finalCta.title}</h2>
-      <p class="s-cta-lead s-label-lg">{finalCta.subtitle}</p>
     </div>
-    <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{CTA_LABEL}</a>
+    <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{finalCta.ctaLabel}</a>
   </div>
 </section>

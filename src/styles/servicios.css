@@ -363,7 +363,7 @@ html[data-theme="light"] .s-theme-icon--moon { opacity: 1; transform: none; }
 }
 .s-hero-inner {
   display: flex; flex-direction: column; align-items: center; gap: 32px;
-  width: 100%; max-width: 768px; margin-inline: auto; text-align: center;
+  width: 100%; max-width: 1064px; margin-inline: auto; text-align: center;
 }
 .s-hero-text { position: relative; display: flex; flex-direction: column; gap: 24px; }
 /* Halo oscuro detrás del título y la bajada para separarlos de la grilla de píxeles; se desvanece hacia afuera. */
@@ -380,6 +380,9 @@ html[data-theme="light"] .s-theme-icon--moon { opacity: 1; transform: none; }
 .s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }
 /* Una frase por línea en todos los tamaños; en móvil cada frase se equilibra sola. */
 .s-hero-title-line { display: block; }
+/* v3: la bajada son dos frases, una por línea en desktop (Figma: texto de 860px); en móvil fluyen juntas. */
+.s-hero-lead { max-width: 860px; margin-inline: auto; }
+.s-hero-lead-line { display: inline; }
 .s-hero-lead {
   color: var(--fg-body); text-wrap: pretty;
   text-shadow: 0 0 16px var(--surface-page), 0 0 6px var(--surface-page);
@@ -445,7 +448,9 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   .s-hero { min-height: calc(724px + var(--nav-height)); padding-block: calc(104px + var(--nav-height)) 136px; }
   /* Como en Figma: la franja queda 8px sobre el borde inferior del hero, sin mover el contenido centrado. */
   .s-logos { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; }
-  .s-hero-title { font: var(--text-title-h1); letter-spacing: var(--text-title-h1-tracking); }
+  /* v3: el título de Figma mide 60px (un paso sobre Title/H1). */
+  .s-hero-title { font: var(--text-title-h1); font-size: 3.75rem; letter-spacing: var(--text-title-h1-tracking); }
+  .s-hero-lead-line { display: block; }
 }
 @media (min-width: 1024px) {
   /* Foco al centro: los costados quedan vacíos y los logos aparecen poco a poco hacia el medio. */
@@ -640,6 +645,35 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   .s-services-panel-title { font: var(--text-title-h3); letter-spacing: var(--text-title-h3-tracking); }
 }
 
+/* v3 — El problema, Cómo trabajamos y Con quién trabajamos (Figma: Asilo Core). Mismo contenedor de 1280px que
+   las demás secciones; las tarjetas son planas, como las de servicios. */
+.s-problem, .s-process, .s-audience { padding: 64px var(--page-gutter); }
+.s-problem-inner, .s-process-inner { display: flex; flex-direction: column; gap: 48px; max-width: 1280px; margin-inline: auto; }
+.s-audience-inner { display: flex; flex-direction: column; align-items: center; gap: 32px; max-width: 1280px; margin-inline: auto; }
+.s-cards { display: grid; grid-template-columns: 1fr; gap: 24px; }
+.s-card {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 20px;
+  padding: 28px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle); border-radius: 2px;
+}
+.s-card-text { display: flex; flex-direction: column; gap: 6px; }
+.s-card-title { color: var(--fg-strong); text-wrap: balance; }
+.s-card-body { color: var(--fg-body); text-wrap: pretty; }
+.s-card-link { color: var(--fg-strong); text-decoration: none; }
+.s-card-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Título de Servicios: la segunda línea es más liviana (Figma: 36px Regular). */
+.s-services--v3 .s-section-title-line + .s-section-title-line { font-weight: 400; font-size: 1.5rem; }
+.s-services-price { margin-top: auto; padding-top: 8px; color: var(--fg-strong); }
+@media (min-width: 768px) {
+  .s-problem, .s-process, .s-audience { padding-block: 80px; }
+  .s-services--v3 .s-section-title-line + .s-section-title-line { font-size: 2.25rem; }
+}
+@media (min-width: 1024px) {
+  .s-problem, .s-process, .s-audience { padding-block: 96px; }
+  .s-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 /* Testimonios (Figma 91:7386): título a la izquierda y carrusel a la derecha, columnas iguales con 80px entre ellas. */
 .s-testimonials { padding: 64px var(--page-gutter); }
 .s-testimonials-inner {
@@ -708,12 +742,11 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   .s-testimonial { transition: none; }
 }
 
-/* FAQ (Figma 91:7493): título y tarjeta de contacto a la izquierda (500px), preguntas a la derecha (700px).
-   En móvil la tarjeta pasa debajo de las preguntas, para quien no encontró su respuesta. */
+/* FAQ (Figma: Asilo Core): título a la izquierda (500px), preguntas a la derecha (700px). */
 .s-faq { padding: 64px var(--page-gutter); background: var(--surface-section); }
 .s-faq-inner {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px;
-  grid-template-areas: "head" "list" "card";
+  grid-template-areas: "head" "list";
   max-width: 1280px; margin-inline: auto;
 }
 .s-faq-head { grid-area: head; }
@@ -743,20 +776,6 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 .s-faq-answer-wrap { overflow: hidden; }
 .s-faq-answer { padding: 0 24px 24px; color: var(--fg-body); text-wrap: pretty; }
 
-/* Tarjeta de contacto: en Figma es una captura de referencia (409×249); aquí va construida con los tokens. */
-.s-faq-card {
-  grid-area: card; align-self: start;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 20px;
-  width: 100%; max-width: 410px; padding: 20px;
-  background: var(--surface-card);
-  border: 1px solid var(--border-subtle); border-radius: 2px;
-}
-.s-faq-card-text { display: flex; flex-direction: column; gap: 8px; }
-.s-faq-card-title { color: var(--fg-strong); }
-.s-faq-card-body, .s-faq-card-email { color: var(--fg-muted); }
-.s-faq-card-email a { color: var(--fg-strong); text-underline-offset: 3px; }
-.s-faq-card-email a:hover { color: var(--fg-body); }
-
 @media (min-width: 768px) {
   .s-faq { padding-block: 80px; }
 }
@@ -764,8 +783,8 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   .s-faq { padding-block: 112px; }
   .s-faq-inner {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    grid-template-rows: auto 1fr; gap: 32px 80px;
-    grid-template-areas: "head list" "card list";
+    grid-template-rows: auto; gap: 32px 80px;
+    grid-template-areas: "head list";
   }
 }
 @media (prefers-reduced-motion: reduce) {
