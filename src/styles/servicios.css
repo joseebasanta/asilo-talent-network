@@ -116,7 +116,7 @@
   --color-blue: var(--color-blue-500); /* blue/500 - default */
 
   /* Tokens de tema: el rol de cada color. Estos son los del modo oscuro (por defecto);
-     html[data-theme="light"] los redefine más abajo. Los componentes usan estos y no la escala directa. */
+     Solo hay modo oscuro. Los componentes usan estos y no la escala directa. */
   --surface-page: var(--color-background);
   --surface-section: var(--color-grey-975);
   --surface-card: var(--color-grey-1000);
@@ -180,53 +180,7 @@
   text-rendering: optimizeLegibility;
 }
 
-/* Modo claro: mismos roles con la escala invertida. Página grey-50 y tarjetas blancas, para que se separen
-   del fondo como grey-1000 sobre #0f0f0f en el modo oscuro. */
-html[data-theme="light"] body.servicios {
-  --surface-page: var(--color-grey-50);
-  --surface-section: var(--color-grey-100);
-  --surface-card: var(--color-white);
-  --surface-card-hover: var(--color-grey-100);
-  --surface-media: var(--color-grey-200);
-  --fg-strong: var(--color-grey-950);
-  --fg-body: var(--color-grey-600);
-  /* grey-550 y no grey-500: los taglines son texto chico y necesitan 4,5:1 sobre grey-50. */
-  --fg-muted: var(--color-grey-550);
-  --border-subtle: var(--color-grey-200);
-  --border-strong: var(--color-grey-300);
-  --border-tag: var(--color-grey-300);
-  --inverse-bg: var(--color-grey-950);
-  --inverse-bg-hover: var(--color-grey-800);
-  --inverse-fg: var(--color-white);
-  --dot: var(--color-grey-300);
-  --dot-hover: var(--color-grey-500);
-  --logo-filter: brightness(0);
-  /* Sobre fondo claro la elevación vuelve a ser una sombra gris suave; el halo azul se mantiene, más tenue. */
-  --shadow-media-rest:
-    0 0 0 1px rgb(0 0 0 / 0.06),
-    0 1px 3px rgb(0 0 0 / 0.06),
-    0 6px 16px -6px rgb(0 0 0 / 0.12);
-  --shadow-media-hover:
-    0 0 0 1px rgb(0 0 0 / 0.08),
-    0 4px 8px rgb(0 0 0 / 0.06),
-    0 12px 24px -10px rgb(0 0 0 / 0.22),
-    0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 55%, transparent),
-    0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 20%, transparent);
-  --cta-gradient: linear-gradient(to bottom, var(--surface-section) 0%, var(--color-blue-50) 45%, var(--color-blue-100) 100%);
-  --cta-dot: rgb(23 23 23 / 0.45);
-  --cta-text-halo: var(--color-blue-50);
-  /* Sobre la tarjeta blanca, el blanco no se vería: el destello pasa a un azul claro. */
-  --beam-highlight: var(--color-blue-200);
-  /* Sobre fondo claro el brillo termina en azul y no en casi negro. */
-  --footer-glow-deep: var(--color-blue-600);
-  --footer-glow-end: var(--color-blue-500);
-}
-
 html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behavior: smooth; }
-html[data-theme="light"]:has(body.servicios) { color-scheme: light; background: #f7f7f7; }
-
-/* Cambio de tema: servicios-theme.ts usa una View Transition; el fundido es corto. */
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; }
 
 .servicios *, .servicios *::before, .servicios *::after { box-sizing: border-box; }
 .servicios img { display: block; max-width: 100%; height: auto; }
@@ -323,29 +277,6 @@ html[data-theme="light"]:has(body.servicios) { color-scheme: light; background: 
 .s-nav-links a:hover { color: var(--fg-body); }
 .s-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 
-/* Botón de tema: cuadrado de 32px como el botón chico; el sol (pasar a claro) y la luna (pasar a oscuro)
-   ocupan la misma celda y se cruzan girando. */
-.s-theme-toggle {
-  position: relative; display: grid; place-items: center; flex: none;
-  width: 32px; height: 32px; padding: 0;
-  border: 1px solid var(--border-strong); border-radius: 2px;
-  background: transparent; color: var(--fg-strong); cursor: pointer;
-  transition: background-color 160ms ease;
-}
-/* Área de toque de 44px sin agrandar el botón. */
-.s-theme-toggle::after { content: ""; position: absolute; inset: -6px; }
-.s-theme-toggle:hover { background: var(--surface-card-hover); }
-.s-theme-icon {
-  grid-area: 1 / 1; width: 16px; height: 16px;
-  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
-}
-.s-theme-icon--moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
-html[data-theme="light"] .s-theme-icon--sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
-html[data-theme="light"] .s-theme-icon--moon { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .s-theme-icon { transition: none; }
-}
-
 @media (min-width: 768px) {
   /* Columnas laterales iguales para que los enlaces queden en el centro exacto de la página. */
   .s-nav-inner { grid-template-columns: 1fr auto 1fr; }
@@ -402,8 +333,6 @@ html[data-theme="light"] .s-theme-icon--moon { opacity: 1; transform: none; }
   --pixel-accent: var(--color-blue-500);
   position: absolute; inset: 0; display: block; width: 100%; height: 100%;
 }
-/* En claro, grey-300: el gris medio sobre fondo claro se veía más fuerte que en oscuro. */
-html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); }
 /* Viñeta: oscurece los bordes para que la grilla se concentre detrás del texto. */
 .s-hero-vignette {
   position: absolute; inset: 0; opacity: 0.8;
@@ -657,6 +586,36 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
   background: var(--surface-card);
   border: 1px solid var(--border-subtle); border-radius: 2px;
 }
+/* Tarjeta con decorador (adaptada de "features-2"): texto centrado y un cuadrado de 144px con grilla difuminada
+   que sostiene el ícono. */
+.s-card--feature { align-items: center; gap: 24px; text-align: center; }
+.s-card--feature .s-card-text { align-items: center; }
+.s-card-decorator {
+  position: relative; width: 144px; height: 144px; flex: none; color: var(--fg-strong);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 70%, transparent 100%);
+}
+.s-card-decorator-grid {
+  position: absolute; inset: 0; opacity: 0.1;
+  background-image: linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.s-card-decorator-icon {
+  position: absolute; inset: 0; margin: auto; width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-page); border-top: 1px solid var(--border-subtle); border-left: 1px solid var(--border-subtle);
+}
+/* Pasos de "Cómo trabajamos" (adaptado de "how-it-works-09"): círculo numerado, línea que los une en escritorio y
+   flecha entre pasos en móvil. */
+.s-steps { position: relative; display: grid; grid-template-columns: 1fr; gap: 32px; list-style: none; margin: 0; padding: 0; }
+.s-step { position: relative; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
+.s-step .s-card-text { align-items: center; max-width: 320px; }
+.s-step-number {
+  position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px;
+  border: 1px solid var(--border-subtle); border-radius: 50%; background: var(--surface-page);
+  color: var(--fg-body); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.s-step-arrow { display: flex; margin-top: 8px; color: var(--fg-body); opacity: 0.4; }
 .s-card-text { display: flex; flex-direction: column; gap: 6px; }
 .s-card-title { color: var(--fg-strong); text-wrap: balance; }
 .s-card-body { color: var(--fg-body); text-wrap: pretty; }
@@ -672,6 +631,11 @@ html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); 
 @media (min-width: 1024px) {
   .s-problem, .s-process, .s-audience { padding-block: 96px; }
   .s-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) {
+  .s-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  .s-steps::before { content: ""; position: absolute; inset-inline: 0; top: 24px; height: 1px; background: var(--border-subtle); }
+  .s-step-arrow { display: none; }
 }
 
 /* Testimonios (Figma 91:7386): título a la izquierda y carrusel a la derecha, columnas iguales con 80px entre ellas. */

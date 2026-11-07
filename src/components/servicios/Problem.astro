@@ -2,6 +2,13 @@
 // "El problema" (Figma: Asilo Core, "Dolores"): título centrado y tres tarjetas; cada una lleva al servicio que la resuelve.
 import { problemCards, problemSection } from "../../data/servicios";
 import SectionHead from "./SectionHead.astro";
+
+// Íconos de Lucide (ISC), en línea para que tomen el color del texto.
+const icons: Record<string, string> = {
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  branch: '<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+  "eye-off": '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+};
 ---
 
 <section class="s-problem" id="problema" aria-labelledby="problema-title">
@@ -15,7 +22,15 @@ import SectionHead from "./SectionHead.astro";
     <ul class="s-cards">
       {
         problemCards.map((card) => (
-          <li class="s-card">
+          <li class="s-card s-card--feature">
+            {card.icon && (
+              <div class="s-card-decorator" aria-hidden="true">
+                <div class="s-card-decorator-grid" />
+                <div class="s-card-decorator-icon">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={icons[card.icon]} />
+                </div>
+              </div>
+            )}
             <div class="s-card-text">
               <h3 class="s-card-title s-title-h5">{card.title}</h3>
               <p class="s-card-body s-paragraph-sm">{card.body}</p>

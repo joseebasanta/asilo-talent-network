@@ -1,7 +1,16 @@
 ---
-// "Cómo trabajamos" (Figma: Asilo Core): título centrado y tres pasos en tarjetas.
+// "Cómo trabajamos" (Figma: Asilo Core): título centrado y tres pasos con círculo numerado unidos por una línea
+// (adaptado de "how-it-works-09"). En móvil los pasos se apilan con una flecha entre ellos.
 import { processCards, processSection } from "../../data/servicios";
 import SectionHead from "./SectionHead.astro";
+
+// Los títulos vienen como "01 · Diagnosticamos": el número va en el círculo y el resto es el título.
+const steps = processCards.map((card) => {
+  const [n, ...rest] = card.title.split(" · ");
+  return { n, title: rest.join(" · "), body: card.body };
+});
+const arrow =
+  '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 ---
 
 <section class="s-process" id="como-trabajamos" aria-labelledby="como-trabajamos-title">
@@ -11,14 +20,16 @@ import SectionHead from "./SectionHead.astro";
       subtitle={processSection.subtitle}
       titleId="como-trabajamos-title"
     />
-    <ol class="s-cards">
+    <ol class="s-steps">
       {
-        processCards.map((card) => (
-          <li class="s-card">
+        steps.map((step, i) => (
+          <li class="s-step">
+            <span class="s-step-number" aria-hidden="true">{step.n}</span>
             <div class="s-card-text">
-              <h3 class="s-card-title s-title-h5">{card.title}</h3>
-              <p class="s-card-body s-paragraph-sm">{card.body}</p>
+              <h3 class="s-card-title s-title-h5">{step.title}</h3>
+              <p class="s-card-body s-paragraph-sm">{step.body}</p>
             </div>
+            {i < steps.length - 1 && <span class="s-step-arrow" aria-hidden="true" set:html={arrow} />}
           </li>
         ))
       }

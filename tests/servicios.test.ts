@@ -104,33 +104,18 @@ describe("landing de servicios v3", () => {
     expect(await render()).toMatch(/<meta\b[^>]*name="theme-color"[^>]*content="#0f0f0f"/);
   });
 
-  it("maps semantic theme tokens to the dark scale and redefines them for light mode", async () => {
+  it("maps semantic tokens to the dark scale and ships no light mode or theme toggle", async () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    // Modo oscuro (por defecto): los mismos valores que la v2 tenía antes del modo claro.
     expect(css).toContain("--surface-page: var(--color-background);");
     expect(css).toContain("--surface-card: var(--color-grey-1000);");
     expect(css).toContain("--fg-strong: var(--color-white);");
     expect(css).toContain("--border-subtle: var(--color-grey-800);");
-    const light = css.slice(css.indexOf('html[data-theme="light"] body.servicios {'));
-    expect(light.length).toBeLessThan(css.length);
-    const lightBlock = light.slice(0, light.indexOf("\n}"));
-    expect(lightBlock).toContain("--surface-page: var(--color-grey-50);");
-    expect(lightBlock).toContain("--surface-card: var(--color-white);");
-    expect(lightBlock).toContain("--fg-strong: var(--color-grey-950);");
-    expect(lightBlock).toContain("--fg-muted: var(--color-grey-550);");
-    expect(css).toContain('html[data-theme="light"]:has(body.servicios) { color-scheme: light; background: #f7f7f7; }');
-    // Fuera de los bloques de tokens, los componentes no usan blancos ni grises directos (solo botones de marca,
-    // el relleno azul de la pestaña y el gris de la grilla del hero).
-    const components = css.slice(css.indexOf("/* Botones */"));
-    const direct = components.match(/var\(--color-(?:white|grey-\d+|background)\)/g) ?? [];
-    expect(direct.length).toBeLessThanOrEqual(6);
-
-    // Script inline en <head> que aplica el tema guardado antes de pintar.
+    expect(css).not.toContain("data-theme");
+    expect(css).not.toContain("s-theme-toggle");
     const html = await render();
-    const head = html.slice(0, html.indexOf("</head>"));
-    expect(head).toContain('localStorage.getItem("asilo-theme") === "light"');
-    expect(head).toContain('document.documentElement.dataset.theme = "light"');
-    expect(head.indexOf('name="theme-color"')).toBeLessThan(head.indexOf("asilo-theme"));
+    expect(html).not.toContain("data-theme-toggle");
+    expect(html).not.toContain("asilo-theme");
+    expect(existsSync(new URL("../src/scripts/servicios-theme.ts", import.meta.url))).toBe(false);
   });
 
   it("renders the nav with logo, centered section links and the contact form CTA", async () => {
@@ -153,13 +138,6 @@ describe("landing de servicios v3", () => {
     // Logo como máscara: toma el color del texto en los dos temas.
     expect(nav).toContain('<span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>');
     expect(nav).toContain('aria-label="Asilo Digital, ir al inicio"');
-    // Botón de tema antes del CTA, con etiqueta en español y los íconos de sol y luna.
-    const toggle = nav.indexOf('<button class="s-theme-toggle" type="button" aria-label="Cambiar a modo claro" data-theme-toggle>');
-    expect(toggle).toBeGreaterThan(nav.indexOf('class="s-nav-actions"'));
-    expect(toggle).toBeLessThan(nav.indexOf("s-btn--primary"));
-    expect(nav).toContain("s-theme-icon--sun");
-    expect(nav).toContain("s-theme-icon--moon");
-    expect(css).toMatch(/\.s-theme-toggle \{[^}]*width: 32px; height: 32px;/);
     expect(nav).toContain('aria-label="Navegación principal"');
     expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Cómo trabajamos", "Nuestro trabajo", "Contacto"]);
     for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
@@ -376,9 +354,9 @@ describe("landing de servicios v3", () => {
     // Detrás del texto los cuadritos se apagan y el texto lleva sombra del tono del degradado.
     expect(css).toContain("--s-cta-fade: radial-gradient(ellipse 36% 28% at 50% 38%, transparent 70%, #000 100%);");
     expect(css).toMatch(/\.s-cta-lead \{ text-shadow: 0 0 16px var\(--cta-text-halo\)/);
-    // Los dos temas definen su degradado y el color de los cuadritos.
-    expect(css.match(/--cta-gradient: linear-gradient\(to bottom, var\(--surface-section\) 0%/g)).toHaveLength(2);
-    expect(css.match(/--cta-dot: /g)).toHaveLength(2);
+    // El degradado y el color de los cuadritos.
+    expect(css.match(/--cta-gradient: linear-gradient\(to bottom, var\(--surface-section\) 0%/g)).toHaveLength(1);
+    expect(css.match(/--cta-dot: /g)).toHaveLength(1);
   });
 
   it("renders the footer after main with the logo, social links and copyright", async () => {
@@ -430,7 +408,6 @@ describe("landing de servicios v3", () => {
     // Azul de marca como base y la gama periwinkle / lavanda / blanco azulado de la referencia.
     for (const color of ["#6f7ad9", "#9aa8f2", "#e4ecff", "var(--color-blue-500) 80%", "--footer-glow-deep: #2b3190;"]) expect(css).toContain(color);
     expect(css).not.toContain("#e516d1");
-    expect(css).toContain("--footer-glow-end: var(--color-blue-500);");
   });
 
   it("renders the problem, process and audience sections between the hero, services and projects", async () => {
@@ -447,7 +424,9 @@ describe("landing de servicios v3", () => {
     const problem = slice("s-problem");
     expect(problem).toContain(`<p class="s-section-tagline s-subheading-xs">${problemSection.tagline}</p>`);
     expect(problem).toContain(problemSection.subtitle);
-    expect(problem.match(/<li class="s-card">/g)).toHaveLength(3);
+    expect(problem.match(/<li class="s-card s-card--feature">/g)).toHaveLength(3);
+    expect(problem.match(/class="s-card-decorator"/g)).toHaveLength(3);
+    expect(problemCards.map((c) => c.icon)).toEqual(["copy", "branch", "eye-off"]);
     for (const card of problemCards) {
       expect(problem).toContain(`<h3 class="s-card-title s-title-h5">${card.title}</h3>`);
       expect(problem).toContain(card.body);
@@ -457,7 +436,11 @@ describe("landing de servicios v3", () => {
 
     const process = slice("s-process");
     expect(process).toContain(processSection.subtitle);
-    expect(process.match(/<li class="s-card">/g)).toHaveLength(3);
+    expect(process.match(/<li class="s-step">/g)).toHaveLength(3);
+    expect(process.match(/class="s-step-number"/g)).toHaveLength(3);
+    expect(process.match(/class="s-step-arrow"/g)).toHaveLength(2);
+    for (const n of ["01", "02", "03"]) expect(process).toContain(`>${n}</span>`);
+    expect(process).toContain('<h3 class="s-card-title s-title-h5">Diagnosticamos</h3>');
     expect(processCards.map((c) => c.title)).toEqual(["01 · Diagnosticamos", "02 · Diseñamos y prototipamos con código", "03 · Implementamos o acompañamos"]);
     for (const card of processCards) expect(process).toContain(card.body);
     expect(process).not.toContain("s-card-link");
@@ -514,7 +497,5 @@ describe("landing de servicios v3", () => {
     expect(css).toMatch(/\.s-hero-text::before \{[^}]*radial-gradient/);
     expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }");
     expect(css).toMatch(/\.s-hero-lead \{[^}]*text-shadow: 0 0 16px var\(--surface-page\)/);
-    // En claro, la grilla usa un gris más suave.
-    expect(css).toContain('html[data-theme="light"] .s-hero-pixels { --pixel-muted: var(--color-grey-300); }');
   });
 });

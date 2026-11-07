@@ -1,10 +1,7 @@
 // Fondo de píxeles del hero (adaptado de "pixel-perfect-hero"): una grilla de píxeles diminutos que
 // aparecen en onda desde el centro y luego titilan. Se dibuja en un <canvas> del tamaño del hero; solo
 // anima mientras el hero está a la vista. Con prefers-reduced-motion se dibuja una vez, quieta.
-// Los colores salen de las variables CSS --pixel-muted y --pixel-accent del canvas (4 de 5 son muted)
-// y se vuelven a leer cuando cambia el tema.
-
-import { THEME_CHANGE_EVENT } from "./servicios-theme";
+// Los colores salen de las variables CSS --pixel-muted y --pixel-accent del canvas (4 de 5 son muted).
 
 export interface Pixel {
   x: number;
@@ -178,9 +175,4 @@ export function initPixels(canvas: HTMLCanvasElement): void {
     sync();
   }).observe(host);
   reduceMotion.addEventListener("change", sync);
-  document.addEventListener(THEME_CHANGE_EVENT, () => {
-    colors = readColors();
-    recolorGroups(groups, colors);
-    if (reduceMotion.matches) drawStatic();
-  });
 }

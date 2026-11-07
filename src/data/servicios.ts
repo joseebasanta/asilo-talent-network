@@ -50,6 +50,8 @@ export const problemSection = {
 };
 
 export interface InfoCard {
+  // Ícono del decorador de la tarjeta (solo "El problema").
+  icon?: "copy" | "branch" | "eye-off";
   title: string;
   body: string;
   link?: { label: string; href: string };
@@ -57,16 +59,19 @@ export interface InfoCard {
 
 export const problemCards: InfoCard[] = [
   {
+    icon: "copy",
     title: "Todas se ven igual",
     body: "Lovable, las plantillas y la IA parten de los mismos patrones por defecto. Se hace rápido, pero crea deuda de UX y no refleja lo que busca tu marca.",
     link: { label: "Diseño y rediseño →", href: "#servicios" },
   },
   {
+    icon: "branch",
     title: "Cada versión se parece menos a la anterior",
     body: "Cada función nueva se resuelve por separado: un prompt, un desarrollador, un apuro. Sin un sistema que guarde las decisiones, el producto pierde coherencia con cada entrega.",
     link: { label: "Design System →", href: "#servicios" },
   },
   {
+    icon: "eye-off",
     title: "Funciona, pero no se ve bien",
     body: "Tus usuarios no te comparan con la competencia local, sino con las mejores apps que usan. Una interfaz descuidada se lee como un negocio descuidado.",
     link: { label: "UX Audit →", href: "#servicios" },
