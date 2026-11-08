@@ -4,18 +4,14 @@ import { describe, expect, it } from "vitest";
 import ServiciosPage from "../src/pages/servicios.astro";
 import {
   clientLogos,
-  CONTACT_EMAIL,
   CTA_HREF,
   CTA_LABEL,
-  faqItems,
-  faqSection,
   finalCta,
   footer,
   footerLegalLinks,
   footerSocialLinks,
   hero,
   navLinks,
-  audienceSection,
   problemCards,
   problemSection,
   processCards,
@@ -63,13 +59,14 @@ describe("landing de servicios v3", () => {
     expect(html).not.toContain("landing.css");
   });
 
-  it("declares PP Frama, PP Frama Text and Geist with files that exist", () => {
+  it("declares Switzer (the Figma font), PP Frama and Geist with files that exist", () => {
     const css = readFileSync(new URL("../src/styles/fonts.css", import.meta.url), "utf8");
-    for (const family of ["PP Frama", "PP Frama Text", "Geist Sans", "Geist Mono"]) {
+    for (const family of ["Switzer", "PP Frama", "PP Frama Text", "Geist Sans", "Geist Mono"]) {
       expect(css).toContain(`font-family: "${family}";`);
     }
     const files = [...css.matchAll(/url\("(\/fonts\/[^"]+)"\)/g)].map((m) => m[1]!);
-    expect(files.length).toBeGreaterThanOrEqual(23);
+    expect(files.length).toBeGreaterThanOrEqual(24);
+    expect(files).toContain("/fonts/switzer-variable.woff2");
     for (const file of files) expect(existsSync(new URL(`../public${file}`, import.meta.url)), file).toBe(true);
   });
 
@@ -118,41 +115,60 @@ describe("landing de servicios v3", () => {
     expect(existsSync(new URL("../src/scripts/servicios-theme.ts", import.meta.url))).toBe(false);
   });
 
-  it("renders the nav with logo, centered section links and the contact form CTA", async () => {
+  it("renders the nav with the logo and the section links only, as in Figma", async () => {
     const html = await render();
 
-    // 71px + 1px de línea inferior = 72px de alto.
+    // 72px de alto, sin línea inferior.
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain("--nav-height: 72px;");
-    expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: calc\(var\(--nav-height\) - 1px\)/);
-    // El nav usa el mismo contenedor de 1280px que las secciones, para alinearse con las tarjetas.
-    expect(css).toMatch(/\.s-nav-inner \{[^}]*max-width: calc\(1280px \+ 2 \* var\(--page-gutter\)\); margin-inline: auto;/);
-    // Nav de vidrio: translúcido con desenfoque, y el hero sube por debajo para que se vea la grilla.
-    expect(css).toMatch(/\.s-nav \{[^}]*backdrop-filter: blur\(16px\)/);
+    expect(css).toMatch(/\.s-nav-inner \{[^}]*min-height: var\(--nav-height\)/);
+    // El nav usa el mismo contenedor de 1312px (1440 menos 64px por lado, como en Figma) que las secciones.
+    expect(css).toMatch(/\.s-nav-inner \{[^}]*max-width: calc\(1312px \+ 2 \* var\(--page-gutter\)\); margin-inline: auto;/);
+    // Figma: el nav no lleva fondo ni línea; solo una capa de vidrio (velo + desenfoque) que se desvanece hacia abajo.
+    expect(css).toMatch(/\.s-nav::before \{[^}]*background: linear-gradient\(to bottom, color-mix\(in srgb, var\(--surface-page\) 94%, transparent\) 60%, transparent\);\s*-webkit-backdrop-filter: blur\(12px\); backdrop-filter: blur\(12px\);/);
+    expect(css).not.toMatch(/\.s-nav \{[^}]*background:/);
+    // En móvil los enlaces van en un menú burger (botón de 44×44 y panel bajo el nav); sin JS el panel queda visible.
+    expect(css).toMatch(/\.s-menu-js \.s-nav-toggle \{[^}]*width: 44px; height: 44px;/);
+    expect(css).toContain(".s-menu-js .s-nav:not([data-open]) .s-nav-menu { display: none; }");
+    expect(css).not.toContain("--nav-height: 112px");
+    // Áreas táctiles de 24px: puntos del carrusel en móvil y logo del footer.
+    expect(css).toMatch(/@media \(max-width: 767px\), \(pointer: coarse\) \{\s*\.s-carousel-dot \{ width: 24px; \}/);
+    expect(css).toContain(".s-footer-logo { padding-block: 3px; margin-block: -3px; }");
+    expect(css).not.toMatch(/\.s-nav \{[^}]*border-bottom/);
+    // Links a la derecha (Switzer Medium 14px, grey-300); el nav lleva el wordmark "Asilo Labs".
+    expect(css).toMatch(/\.s-wordmark \{[^}]*font-size: 1\.3333rem; font-weight: 600;[^}]*letter-spacing: -0\.05em;/);
+    expect(css).toMatch(/\.s-wordmark-pill \{[^}]*background: var\(--color-blue-500\);/);
+    expect(css).toMatch(/\.s-nav-links a \{[^}]*font-size: 0\.875rem; font-weight: 500;/);
+    expect(css).not.toContain("grid-template-columns: 1fr auto 1fr");
     expect(css).not.toContain("data-scrolled");
     expect(css).toContain("margin-top: calc(-1 * var(--nav-height));");
-    // Contenido del hero 16px más arriba que en Figma, sin cambiar el alto del hero.
-    expect(css).toContain("padding-block: calc(104px + var(--nav-height)) 136px;");
-    const nav = html.slice(html.indexOf('<header class="s-nav">'), html.indexOf("</header>"));
+    // Hero de 730px contando el nav, con el título a 252px y los logos a 640px, como en Figma.
+    expect(css).toContain(".s-hero { min-height: 730px; justify-content: flex-start; padding-block: 252px 120px; }");
+    const nav = html.slice(html.indexOf('<header class="s-nav" data-nav>'), html.indexOf("</header>"));
 
-    // Logo como máscara: toma el color del texto en los dos temas.
-    expect(nav).toContain('<span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>');
-    expect(nav).toContain('aria-label="Asilo Digital, ir al inicio"');
+    // Wordmark "Asilo Labs" de Figma: texto con "Labs" sobre un rectángulo azul (decorativo; el enlace lleva aria-label).
+    expect(nav).toContain('<span class="s-wordmark" aria-hidden="true">Asilo <span class="s-wordmark-pill">Labs</span></span>');
+    expect(nav).toContain('aria-label="Asilo Labs, ir al inicio"');
+    expect(nav).not.toContain("logo-asilo-digital-white.svg");
     expect(nav).toContain('aria-label="Navegación principal"');
-    expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Cómo trabajamos", "Nuestro trabajo", "Contacto"]);
+    // Botón burger accesible: nombre, estado y panel que controla.
+    expect(nav).toContain('<button class="s-nav-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menú" data-nav-toggle>');
+    expect(nav).toContain('id="menu-principal"');
+    expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Cómo trabajamos", "Proyectos", "Contacto"]);
     for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
+    // Figma: el nav no lleva botón, solo el logo y los links.
+    expect(nav).not.toContain("s-btn");
+    expect(nav).not.toContain("s-nav-actions");
+    // El "Contáctanos" del cierre lleva al formulario de contacto en Notion.
     expect(CTA_LABEL).toBe("Contáctanos");
-    // Botón del nav una escala menor que el del hero: sm (32px, Label SM) frente a lg (48px).
-    expect(nav).toContain(`<a class="s-btn s-btn--sm s-btn--primary s-label-sm" href="${CTA_HREF}">${CTA_LABEL}</a>`);
-    expect(css).toContain(".s-btn--sm { min-height: 32px; padding: 0 16px; }");
-    // Todos los "Contáctanos" llevan al formulario de contacto en Notion.
     expect(CTA_HREF).toBe("https://shorthaired-raft-3f2.notion.site/c78219767f6a48deb87242f4c99989a6");
+    // El cierre y el botón "Me interesa" de cada servicio (3) llevan al formulario: 4 en total.
     expect(html.match(new RegExp(`href="${CTA_HREF}"`, "g"))).toHaveLength(4);
     expect(html).not.toContain("wa.me");
     expect(existsSync(new URL("../public/logo-asilo-digital-white.svg", import.meta.url))).toBe(true);
   });
 
-  it("renders the hero with a single h1, the subtitle and both CTAs", async () => {
+  it("renders the hero with a single h1 and the subtitle, without buttons as in Figma", async () => {
     const html = await render();
     const section = html.slice(html.indexOf('<section class="s-hero"'), html.indexOf("</section>"));
 
@@ -161,13 +177,17 @@ describe("landing de servicios v3", () => {
     const title = section.slice(titleStart, section.indexOf("</h1>")).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     expect(title).toBe(hero.titleLines.join(" "));
     expect(section.match(/class="s-hero-title-line"/g)).toHaveLength(2);
+    // Figma: "La IA hace pantallas," / "nosotros les ponemos el gusto" y el punto final en un peso mayor.
+    expect(hero.titleLines).toEqual(["La IA hace pantallas,", "nosotros les ponemos el gusto."]);
+    expect(section).toContain('<span class="s-hero-title-dot">.</span>');
+    const heroCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(heroCss).toMatch(/\.s-hero-title-line \{ font-weight: 400; \}\s*\.s-hero-title-line \+ \.s-hero-title-line \{ font-weight: 500; \}\s*\.s-hero-title-dot \{ font-weight: 600; \}/);
     for (const line of hero.subtitleLines) expect(section).toContain(`<span class="s-hero-lead-line">${line}</span>`);
-    expect(section).toContain(`href="${CTA_HREF}">${CTA_LABEL}</a>`);
-    expect(section).toContain(`href="${hero.secondaryCta.href}">${hero.secondaryCta.label}</a>`);
-    expect(hero.secondaryCta).toEqual({ label: "Ver proyectos", href: "#trabajo" });
+    expect(section).not.toContain("s-btn");
+    expect(section).not.toContain("s-hero-actions");
   });
 
-  it("renders the projects section with six cards, their images and service tags", async () => {
+  it("renders the projects section with three cards, their images and service tags", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-projects"');
     const section = html.slice(start, html.indexOf("</section>", start));
@@ -177,8 +197,9 @@ describe("landing de servicios v3", () => {
     expect(section.match(/class="s-section-title-line"/g)).toHaveLength(projectsSection.titleLines.length);
     for (const line of projectsSection.titleLines) expect(section).toContain(line);
     expect(section).toContain(projectsSection.subtitle);
-    expect(section.match(/<li class="s-project">/g)).toHaveLength(6);
-    expect(section.match(/<h3\b/g)).toHaveLength(6);
+    expect(projectsSection.subtitle).toBe("Cosas que hemos diseñado en los últimos años, y lo que queremos traer a Venezuela.");
+    expect(section.match(/<li class="s-project" data-reveal/g)).toHaveLength(3);
+    expect(section.match(/<h3\b/g)).toHaveLength(3);
 
     // Sombra con borde de luz y hover que eleva la foto con un halo azul (solo con mouse).
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
@@ -191,6 +212,13 @@ describe("landing de servicios v3", () => {
     // En reposo, resplandor gris claro pegado a la tarjeta (sin el halo azul lejano); el azul queda para el hover.
     expect(css).toContain("0 6px 16px -6px color-mix(in srgb, var(--color-grey-200) 16%, transparent);");
     expect(css).not.toContain("0 28px 64px -20px");
+
+    // Productos: Intellivia, Tillín y Empléate, con las etiquetas que da el equipo.
+    expect(projects.map((p) => [p.name, p.tags])).toEqual([
+      ["Intellivia", ["Landing page", "Legal Tech"]],
+      ["Tillín", ["App Design", "Servicios"]],
+      ["Empléate", ["Design System", "Empleo/RRHH"]],
+    ]);
 
     for (const project of projects) {
       expect(section).toContain(`>${project.name}</h3>`);
@@ -209,13 +237,27 @@ describe("landing de servicios v3", () => {
     expect(section).toContain('id="servicios"');
     expect(navLinks.map((l) => l.href)).toContain("#servicios");
     expect(section.match(/class="s-section-title-line"/g)).toHaveLength(servicesSection.titleLines.length);
-    expect(serviceTabs.map((t) => t.label)).toEqual(["UX Audit", "Diseño y rediseño", "Design System"]);
+    expect(serviceTabs.map((t) => t.label)).toEqual(["UX Audit", "Diseño UX/UI", "Design System"]);
     // El precio de referencia del UX Audit va al pie de su panel.
     expect(section).toContain('<p class="s-services-price s-label-lg">Desde USD 500</p>');
+    // Diseño UX/UI parte de USD 600 y Design System de USD 800; cada panel lleva su precio.
+    expect(serviceTabs.map((t) => t.price)).toEqual(["Desde USD 500", "Desde USD 600", "Desde USD 800"]);
+    expect(section).toContain('class="s-services-price s-label-lg">Desde USD 600<');
+    expect(section).toContain('class="s-services-price s-label-lg">Desde USD 800<');
+    // Solo Diseño UX/UI aclara debajo del precio que depende del requerimiento.
+    expect(serviceTabs.filter((t) => t.priceNote).map((t) => t.id)).toEqual(["diseno-rediseno"]);
+    expect(section.match(/class="s-services-price-note s-paragraph-sm"/g)).toHaveLength(1);
+    expect(section).toContain('<p class="s-services-price-note s-paragraph-sm">o dependiendo del requerimiento.</p>');
+    // Cada servicio tiene su botón "Me interesa" hacia el formulario, con el nombre del servicio en el aria-label.
+    expect(section.match(/class="s-services-cta s-btn s-btn--primary s-label-md"/g)).toHaveLength(serviceTabs.length);
+    for (const tab of serviceTabs) expect(section).toContain(`href="${CTA_HREF}" aria-label="Me interesa: ${tab.label}">Me interesa</a>`);
     expect(section).toContain('role="tablist" aria-label="Servicios" aria-orientation="vertical"');
     expect(section.match(/role="tab"/g)).toHaveLength(3);
     expect(section.match(/role="tabpanel"/g)).toHaveLength(3);
     expect(section.match(/aria-selected="true"/g)).toHaveLength(1);
+    // Por debajo de 1024px solo el panel activo ocupa lugar (sin espacio sobrante bajo los paneles cortos).
+    const panelCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(panelCss).toMatch(/@media \(max-width: 1023px\) \{\s*\.s-services-panel\[hidden\] \{ display: none; \}/);
     expect(section.match(/ hidden[ >]/g)).toHaveLength(2);
     // Cada pestaña lleva una flecha; la seleccionada se llena de azul desde abajo y la flecha gira a ↗.
     expect(section.match(/<span class="s-icon s-services-tab-arrow" style="--icon: url\(\/servicios\/icons\/arrow-forward.svg\)"><\/span>/g)).toHaveLength(3);
@@ -256,6 +298,8 @@ describe("landing de servicios v3", () => {
     const start = html.indexOf('<section class="s-testimonials"');
     const section = html.slice(start, html.indexOf("</section>", start));
     const total = testimonials.length;
+    // Son tres testimonios, con tres puntos.
+    expect(total).toBe(3);
 
     expect(section).toContain('id="testimonios"');
     expect(section).toContain('class="s-section-head s-section-head--start"');
@@ -268,8 +312,8 @@ describe("landing de servicios v3", () => {
     expect(section.match(/aria-current="true"/g)).toHaveLength(1);
     expect(section).toContain('aria-label="Testimonio anterior"');
     expect(section).toContain('aria-label="Siguiente testimonio"');
-    // Flechas invertidas (blancas con el ícono grey-950 en oscuro); el ícono es una máscara sobre el SVG.
-    expect(section).toContain('<span class="s-icon" style="--icon: url(/servicios/icons/arrow-forward.svg)"></span>');
+    // Flechas con contorno blanco de 40px y radio 6, con chevrones de 20px (Figma); el ícono es una máscara sobre el SVG.
+    expect(section).toContain('<span class="s-icon" style="--icon: url(/servicios/icons/chevron-right.svg)"></span>');
     const arrowCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     // Transición cinemática con cascada (Motion): desenfoque y escala en la tarjeta, y logo, cita y autor
     // que entran escalonados.
@@ -279,9 +323,7 @@ describe("landing de servicios v3", () => {
     expect(motionScript).toContain("delay: stagger(0.12, { startDelay: 0.3 })");
     expect(motionScript).toContain("{ duration: 0.9, ease: easeEnter, delay: 0.15 }");
     expect(motionScript).not.toContain("rotateY");
-    expect(arrowCss).toMatch(/\.s-carousel-arrow \{[^}]*background: var\(--inverse-bg\); color: var\(--inverse-fg\);/);
-    expect(arrowCss).toContain("--inverse-bg: var(--color-white);");
-    expect(arrowCss).toContain("--inverse-fg: var(--color-grey-950);");
+    expect(arrowCss).toMatch(/\.s-carousel-arrow \{\s*width: 40px; height: 40px; padding: 0; border: 1px solid var\(--fg-strong\); border-radius: 6px;\s*background: transparent; color: var\(--fg-strong\);/);
     expect(section).toContain(`“${testimonials[0].quote}”`);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-testimonial \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
@@ -289,49 +331,20 @@ describe("landing de servicios v3", () => {
     expect(section).toContain(testimonials[0].role);
 
     for (const asset of [
-      "/servicios/icons/arrow-back.svg",
-      "/servicios/icons/arrow-forward.svg",
+      "/servicios/icons/chevron-left.svg",
+      "/servicios/icons/chevron-right.svg",
       ...testimonials.flatMap((t) => [t.avatar, t.logo?.src ?? ""]).filter(Boolean),
     ]) {
       expect(existsSync(new URL(`../public${asset}`, import.meta.url))).toBe(true);
     }
   });
 
-  it("renders the FAQ as native accordions with the first one open and no contact card", async () => {
+  it("does not render the FAQ section, which is no longer in Figma", async () => {
     const html = await render();
-    const start = html.indexOf('<section class="s-faq"');
-    const section = html.slice(start, html.indexOf("</section>", start));
-
-    expect(section).toContain('id="preguntas"');
-    expect(section).toContain(`<p class="s-section-tagline s-subheading-xs">${faqSection.tagline}</p>`);
-    expect(html.match(/class="s-section-tagline s-subheading-xs"/g)).toHaveLength(3);
+    expect(html).not.toContain("s-faq");
+    expect(html).not.toContain('id="preguntas"');
+    expect(html.match(/class="s-section-tagline s-subheading-xs"/g)).toHaveLength(1);
     expect(html).not.toContain("s-section-tagline s-subheading-sm");
-    expect(section.match(/class="s-section-title-line"/g)).toHaveLength(faqSection.titleLines.length);
-    for (const line of faqSection.titleLines) expect(section).toContain(line);
-    expect(section.match(/<details class="s-faq-item"/g)).toHaveLength(faqItems.length);
-    expect(section.match(/<details class="s-faq-item" name="faq" open>/g)).toHaveLength(1);
-    expect(section.match(/<div class="s-faq-answer-wrap">/g)).toHaveLength(faqItems.length);
-    const faqCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(faqCss).toMatch(/\.s-faq-item \{\s*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
-    // Fondo de toda la sección en --surface-section (grey-975 en oscuro).
-    expect(faqCss).toContain(".s-faq { padding: 64px var(--page-gutter); background: var(--surface-section); }");
-    expect(faqCss).toContain("--surface-section: var(--color-grey-975);");
-    // Hover y pregunta abierta en --surface-card-hover (grey-950 en oscuro); tarjeta de contacto igual que las preguntas.
-    expect(faqCss).toMatch(/@media \(hover: hover\) \{\s*\.s-faq-item:hover \{ background: var\(--surface-card-hover\); \}/);
-    expect(faqCss).toContain(".s-faq-item[open]:not([data-closing]) { background: var(--surface-card-hover); }");
-    expect(faqCss).toContain("--surface-card-hover: var(--color-grey-950);");
-    // La X es una máscara: toma el color del texto en los dos temas.
-    expect(section.match(/<span class="s-icon s-faq-icon" style="--icon: url\(\/servicios\/icons\/close.svg\)"><\/span>/g)).toHaveLength(faqItems.length);
-    for (const item of faqItems) {
-      expect(section).toContain(`<span>${item.question}</span>`);
-      expect(section).toContain(item.answer);
-    }
-    expect(section).not.toContain("Respuesta por definir");
-
-    // En Figma la sección ya no lleva la tarjeta de contacto.
-    expect(section).not.toContain("s-faq-card");
-    expect(section).not.toContain(`mailto:${CONTACT_EMAIL}`);
-    expect(existsSync(new URL("../public/servicios/icons/close.svg", import.meta.url))).toBe(true);
   });
 
   it("renders the final CTA with the contact form button and every nav anchor has its section", async () => {
@@ -340,23 +353,20 @@ describe("landing de servicios v3", () => {
     const section = html.slice(start, html.indexOf("</section>", start));
 
     expect(section).toContain('id="contacto"');
-    expect(section).toContain(`<h2 class="s-section-title" id="contacto-title">${finalCta.title}</h2>`);
-    expect(finalCta.ctaLabel).toBe("Audita mi producto");
+    expect(finalCta.titleLines).toEqual(["Empecemos con tu producto hoy.", "No importa la etapa."]);
+    for (const line of finalCta.titleLines) expect(section).toContain(line);
+    expect(finalCta.ctaLabel).toBe("Contáctanos");
     expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${finalCta.ctaLabel}</a>`);
     for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
 
-    // Fondo decorativo: degradado hacia el azul de marca con una grilla de cuadritos, detrás del contenido.
-    expect(section).toContain('<div class="s-cta-bg" aria-hidden="true"></div>');
+    // Fondo decorativo: la misma grilla animada azul del hero, detrás del contenido y sobre el fondo plano de la página.
+    expect(section).toMatch(/<div class="s-cta-bg" aria-hidden="true">\s*<div class="s-grid" aria-hidden="true">/);
     expect(section.indexOf("s-cta-bg")).toBeLessThan(section.indexOf("s-cta-inner"));
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-cta-bg \{[^}]*z-index: -1; background: var\(--cta-gradient\);/);
-    expect(css).toMatch(/\.s-cta-bg::before \{[^}]*mask: var\(--s-cta-dots\) center \/ 48px 48px repeat, var\(--s-cta-fade\);\s*mask-composite: intersect;/);
-    // Detrás del texto los cuadritos se apagan y el texto lleva sombra del tono del degradado.
-    expect(css).toContain("--s-cta-fade: radial-gradient(ellipse 36% 28% at 50% 38%, transparent 70%, #000 100%);");
-    expect(css).toMatch(/\.s-cta-lead \{ text-shadow: 0 0 16px var\(--cta-text-halo\)/);
-    // El degradado y el color de los cuadritos.
-    expect(css.match(/--cta-gradient: linear-gradient\(to bottom, var\(--surface-section\) 0%/g)).toHaveLength(1);
-    expect(css.match(/--cta-dot: /g)).toHaveLength(1);
+    expect(css).toMatch(/\.s-cta-bg \{ position: absolute; inset: 0; z-index: -1; pointer-events: none; \}/);
+    // Ya no hay degradado azul, cuadritos ni sombras de texto (eran lo que lo hacía distinto al resto de la landing).
+    for (const gone of ["--cta-gradient", "--cta-dot", "--cta-text-halo", "--s-cta-dots", "--s-cta-fade"]) expect(css).not.toContain(gone);
+    expect(css).not.toMatch(/\.s-cta[^{]*\{[^}]*text-shadow/);
   });
 
   it("renders the footer after main with the logo, social links and copyright", async () => {
@@ -365,7 +375,9 @@ describe("landing de servicios v3", () => {
     const section = html.slice(start, html.indexOf("</footer>", start));
 
     expect(start).toBeGreaterThan(html.indexOf("</main>"));
-    expect(section).toContain('<span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>');
+    // El footer lleva el mismo wordmark "Asilo Labs" que el nav.
+    expect(section).toContain('<span class="s-wordmark" aria-hidden="true">Asilo <span class="s-wordmark-pill">Labs</span></span>');
+    expect(section).toContain('aria-label="Asilo Labs, volver al inicio"');
     expect(section).not.toContain("<img");
     expect(section).toContain('aria-label="Redes sociales"');
     expect(footerSocialLinks.map((l) => l.icon)).toEqual(["instagram", "tiktok", "x", "linkedin", "web"]);
@@ -394,25 +406,19 @@ describe("landing de servicios v3", () => {
     expect(footerLegalLinks).toHaveLength(0);
     expect(section).not.toContain('href="#"');
 
-    // Brillo escalonado al pie: nueve columnas simétricas, decorativas, detrás del contenido y sticky abajo.
-    expect(section).toContain('<div class="s-footer-glow" aria-hidden="true" data-footer-glow>');
-    const heights = [...section.matchAll(/class="s-footer-glow-bar" style="--h: (\d+)"/g)].map((m) => Number(m[1]));
-    expect(heights).toEqual([55, 69, 81, 92, 100, 92, 81, 69, 55]);
-    expect(section.indexOf("s-footer-glow")).toBeGreaterThan(section.indexOf("s-footer-credits"));
+    // El brillo escalonado al pie ya no existe: la página termina en el footer, con 40px de aire inferior.
+    expect(section).not.toContain("s-footer-glow");
+    expect(section).not.toContain("data-footer-glow");
+    expect(section).not.toContain("<script");
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    // Ancla sticky de alto 0 al final del footer, después del espacio reservado para el arco completo.
-    expect(section.indexOf("data-footer-glow-space")).toBeLessThan(section.indexOf("data-footer-glow>"));
-    expect(css).toMatch(/\.s-footer-glow \{\s*position: sticky; bottom: 0; height: 0;/);
-    expect(css).toContain(".s-footer-glow-space { height: var(--footer-glow-h); margin-top: 48px; }");
-    expect(css).toMatch(/\.s-footer-glow-bars \{[^}]*filter: blur\(10px\);/);
-    // Azul de marca como base y la gama periwinkle / lavanda / blanco azulado de la referencia.
-    for (const color of ["#6f7ad9", "#9aa8f2", "#e4ecff", "var(--color-blue-500) 80%", "--footer-glow-deep: #2b3190;"]) expect(css).toContain(color);
-    expect(css).not.toContain("#e516d1");
+    expect(css).not.toContain("footer-glow");
+    expect(css).toContain(".s-footer-inner { position: relative; padding-bottom: 40px; }");
+    expect(existsSync(new URL("../src/scripts/servicios-footer-glow.ts", import.meta.url))).toBe(false);
   });
 
-  it("renders the problem, process and audience sections between the hero, services and projects", async () => {
+  it("renders the problem and process sections between the hero, services and projects", async () => {
     const html = await render();
-    const order = ["inicio", "problema", "servicios", "como-trabajamos", "trabajo", "con-quien-trabajamos", "testimonios", "preguntas", "contacto"];
+    const order = ["inicio", "problema", "servicios", "como-trabajamos", "trabajo", "testimonios", "contacto"];
     const positions = order.map((id) => html.indexOf(`id="${id}"`));
     expect(positions.every((p) => p >= 0)).toBe(true);
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
@@ -422,33 +428,35 @@ describe("landing de servicios v3", () => {
       return html.slice(start, html.indexOf("</section>", start));
     };
     const problem = slice("s-problem");
-    expect(problem).toContain(`<p class="s-section-tagline s-subheading-xs">${problemSection.tagline}</p>`);
+    expect(problem).not.toContain("s-section-tagline");
+    expect(problemSection.titleLines).toEqual(["Tu app crece, pero pierde el hilo"]);
     expect(problem).toContain(problemSection.subtitle);
-    expect(problem.match(/<li class="s-card s-card--feature">/g)).toHaveLength(3);
+    expect(problem.match(/<li class="s-card s-card--feature" data-reveal/g)).toHaveLength(3);
     expect(problem.match(/class="s-card-decorator"/g)).toHaveLength(3);
     expect(problemCards.map((c) => c.icon)).toEqual(["copy", "branch", "eye-off"]);
     for (const card of problemCards) {
       expect(problem).toContain(`<h3 class="s-card-title s-title-h5">${card.title}</h3>`);
       expect(problem).toContain(card.body);
-      expect(problem).toContain(`href="${card.link!.href}">${card.link!.label}`.replace(/\s+$/, ""));
     }
-    expect(problemCards.map((c) => c.link!.label)).toEqual(["Diseño y rediseño →", "Design System →", "UX Audit →"]);
+    // Sin enlaces en las tarjetas.
+    expect(problem).not.toContain("s-card-link");
+    expect(problem).not.toContain("<a ");
 
     const process = slice("s-process");
     expect(process).toContain(processSection.subtitle);
-    expect(process.match(/<li class="s-step">/g)).toHaveLength(3);
+    expect(process.match(/<li class="s-step"/g)).toHaveLength(3);
     expect(process.match(/class="s-step-number"/g)).toHaveLength(3);
     expect(process.match(/class="s-step-arrow"/g)).toHaveLength(2);
+    // En móvil los pasos van apilados, así que la flecha entre ellos apunta hacia abajo (no hacia la derecha).
+    expect(process).toContain('<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>');
+    expect(process).not.toContain('<path d="M5 12h14"/>');
     for (const n of ["01", "02", "03"]) expect(process).toContain(`>${n}</span>`);
     expect(process).toContain('<h3 class="s-card-title s-title-h5">Diagnosticamos</h3>');
-    expect(processCards.map((c) => c.title)).toEqual(["01 · Diagnosticamos", "02 · Diseñamos y prototipamos con código", "03 · Implementamos o acompañamos"]);
+    expect(processCards.map((c) => c.title)).toEqual(["01 · Diagnosticamos", "02 · Diseñamos y prototipamos", "03 · Implementamos o acompañamos"]);
     for (const card of processCards) expect(process).toContain(card.body);
     expect(process).not.toContain("s-card-link");
-
-    const audience = slice("s-audience");
-    expect(audience).toContain(audienceSection.subtitle);
-    expect(audience).toContain(`href="${CTA_HREF}">${audienceSection.ctaLabel}</a>`);
-    expect(audienceSection.ctaLabel).toBe("Hablemos");
+    // Figma ya no tiene "Con quién trabajamos".
+    expect(html).not.toContain("s-audience");
   });
 
   it("renders the client logo strip inside the hero with a single announced copy", async () => {
@@ -470,32 +478,51 @@ describe("landing de servicios v3", () => {
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain("animation: s-logos-scroll 80s linear infinite");
+    // Cinco clientes reales (Figma 8990:3056); desde 1280px la franja queda quieta, centrada y sin copias.
+    expect(clientLogos.map((l) => l.alt)).toEqual(["Empléate", "Tilín", "Trazando Futuros", "CRT", "Intellivia"]);
+    for (const logo of clientLogos) expect(hero).toContain(`width="${logo.width}" height="${logo.height}"`);
+    // Empléate un 30 % más grande, Intellivia un 25 % y CRT un 15 % más chicos que la altura base de 28px.
+    expect(Object.fromEntries(clientLogos.map((l) => [l.alt, l.scale]))).toEqual({ "Empléate": 1.3, "Tilín": 1, "Trazando Futuros": 1, CRT: 0.85, Intellivia: 0.75 });
+    expect(hero).toContain("--logo-scale: 1.3");
+    expect(hero).toContain("--logo-scale: 0.75");
+    expect(hero).toContain("--logo-scale: 0.85");
+    expect(css).toContain("height: calc(28px * var(--logo-scale, 1));");
+    expect(css).toContain(".s-logos-set:not(:first-child) { display: none; }");
+    expect(css).not.toContain("opacity: 0.58");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent)");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");
   });
 
-  it("draws the pixel background and entrance behind a solid white hero title without third-party copy", async () => {
+  it("draws only the animated grid behind a solid white hero title without third-party copy", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-hero"');
     const hero = html.slice(start, html.indexOf("</section>", start));
 
     expect(hero).toContain('<div class="s-hero-bg" aria-hidden="true">');
-    expect(hero).toContain("data-hero-pixels");
-    expect(hero).toContain('<div class="s-hero-vignette"></div>');
+    // El fondo anterior (píxeles en canvas y viñeta) ya no está.
+    expect(hero).not.toContain("data-hero-pixels");
+    expect(hero).not.toContain("<canvas");
+    expect(hero).not.toContain("s-hero-vignette");
+    expect(existsSync(new URL("../src/scripts/servicios-pixels.ts", import.meta.url))).toBe(false);
     expect(hero.indexOf("s-hero-bg")).toBeLessThan(hero.indexOf("s-hero-inner"));
+    // Grilla animada azul (solo CSS), decorativa y con tres capas.
+    expect(hero.indexOf('class="s-grid"')).toBeGreaterThan(hero.indexOf("s-hero-bg"));
+    expect(hero).toMatch(/<div class="s-grid"[^>]*aria-hidden="true"[^>]*>\s*<span class="s-grid-glow"><\/span>\s*<span class="s-grid-fc"><\/span>/);
+    const gridCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(gridCss).toContain("--grid-accent: var(--color-blue-500);");
+    expect(gridCss).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-grid::before, \.s-grid::after, \.s-grid-glow \{ animation: none; \}/);
     expect(hero).not.toContain("s-hline");
     expect(html).not.toMatch(/silent precision|explore design|github\.com"/i);
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-bg \{[^}]*z-index: -1/);
-    expect(css).toContain("--pixel-accent: var(--color-blue-500);");
+    expect(css).not.toContain("--pixel-accent");
     // El título va en blanco sólido, sin el efecto de vidrio del componente original.
     expect(css).not.toContain("s-glass-shimmer");
     expect(css).not.toContain("background-clip: text");
-    expect(css).toContain(".s-hero-actions, .s-hero .s-logos { animation: none; }");
-    // Halo y sombra del color de fondo para separar el texto de la grilla.
-    expect(css).toMatch(/\.s-hero-text::before \{[^}]*radial-gradient/);
-    expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }");
-    expect(css).toMatch(/\.s-hero-lead \{[^}]*text-shadow: 0 0 16px var\(--surface-page\)/);
+    expect(css).toContain(".s-hero .s-logos { animation: none; }");
+    // Sin halo ni sombras de texto: eran para separar el título de los píxeles.
+    expect(css).not.toMatch(/\.s-hero-text::before/);
+    expect(css).not.toMatch(/\.s-hero-(title|lead) \{[^}]*text-shadow/);
   });
 });

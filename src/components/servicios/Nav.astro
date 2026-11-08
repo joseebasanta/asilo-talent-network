@@ -1,19 +1,26 @@
 ---
-// Nav de la landing de servicios v2 (Figma: Asilo Services, nodo 91:7190).
-import { CTA_HREF, CTA_LABEL, navLinks } from "../../data/servicios";
+// Nav de la landing de servicios v3 (Figma: Asilo Core, "Nav (vidrio)"): wordmark "Asilo Labs" y enlaces.
+// En móvil (< 768px) los enlaces van en un menú burger que se despliega bajo el nav (servicios-menu.ts).
+import { navLinks } from "../../data/servicios";
 ---
-<header class="s-nav">
+<header class="s-nav" data-nav>
   <div class="s-nav-inner">
-    <a class="s-nav-logo" href="#contenido" aria-label="Asilo Digital, ir al inicio">
-      <span class="s-icon" style="--icon: url(/logo-asilo-digital-white.svg)"></span>
+    <a class="s-nav-logo" href="#contenido" aria-label="Asilo Labs, ir al inicio">
+      <span class="s-wordmark" aria-hidden="true">Asilo <span class="s-wordmark-pill">Labs</span></span>
     </a>
-    <nav class="s-nav-menu" aria-label="Navegación principal">
+    <button class="s-nav-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menú" data-nav-toggle>
+      <span class="s-nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <nav class="s-nav-menu" id="menu-principal" aria-label="Navegación principal" data-nav-menu>
       <ul class="s-nav-links">
         {navLinks.map((link) => <li><a class="s-paragraph-md" href={link.href}>{link.label}</a></li>)}
       </ul>
     </nav>
-    <div class="s-nav-actions">
-      <a class="s-btn s-btn--sm s-btn--primary s-label-sm" href={CTA_HREF}>{CTA_LABEL}</a>
-    </div>
   </div>
 </header>
+
+<script>
+  import { initNavMenu } from "../../scripts/servicios-menu";
+
+  document.querySelectorAll<HTMLElement>("[data-nav]").forEach((nav) => initNavMenu(nav));
+</script>

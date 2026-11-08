@@ -1,12 +1,17 @@
 ---
 import { CTA_HREF, finalCta } from "../../data/servicios";
+import AnimatedGrid from "./AnimatedGrid.astro";
 ---
 
 <section class="s-cta" id="contacto" aria-labelledby="contacto-title">
-  <div class="s-cta-bg" aria-hidden="true"></div>
-  <div class="s-cta-inner">
+  <div class="s-cta-bg" aria-hidden="true">
+    <AnimatedGrid />
+  </div>
+  <div class="s-cta-inner" data-reveal>
     <div class="s-cta-text">
-      <h2 class="s-section-title" id="contacto-title">{finalCta.title}</h2>
+      <h2 class="s-section-title" id="contacto-title">
+        {finalCta.titleLines.map((line, i) => <span class="s-section-title-line">{i > 0 && " "}{line}</span>)}
+      </h2>
     </div>
     <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{finalCta.ctaLabel}</a>
   </div>

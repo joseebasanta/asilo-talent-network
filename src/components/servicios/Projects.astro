@@ -13,8 +13,8 @@ import SectionHead from "./SectionHead.astro";
 
     <ul class="s-projects-grid">
       {
-        projects.map((project) => (
-          <li class="s-project">
+        projects.map((project, i) => (
+          <li class="s-project" data-reveal style={`--reveal-i: ${i + 1}`}>
             <img
               class="s-project-image"
               src={project.image.src}

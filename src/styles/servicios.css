@@ -7,79 +7,79 @@
    escala tipográfica (--text-*) y escala de color (--color-*). */
 .servicios {
   /* Familias (declaradas en fonts.css). Qué rol usa cada una lo define la escala tipográfica. */
-  --font-frama: "PP Frama", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-frama-text: "PP Frama Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-sans: "Geist Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-frama: var(--font-sans); /* Figma usa Switzer también en los títulos. */
+  --font-frama-text: var(--font-sans);
+  --font-sans: "Switzer", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Escala tipográfica (Figma "Asilo Services", estilos de texto locales).
      --text-<estilo> es el shorthand de font (peso tamaño/line-height familia): tamaño en rem y
      line height como multiplicador del tamaño (1.2 = 120 % en Figma);
      --text-<estilo>-tracking va aparte porque font no lo incluye. Úsalos con las clases .s-<estilo>. */
-  /* Title/H1 Title — PP Frama 500, 56px, line height 120 %, -1% */
+  /* Title/H1 Title — Switzer 500, 56px, line height 120 %, -1% */
   --text-title-h1: 500 3.5rem/1.2 var(--font-frama);
   --text-title-h1-tracking: -0.01em;
-  /* Title/H2 Title — PP Frama 500, 48px, line height 120 %, -1% */
+  /* Title/H2 Title — Switzer 500, 48px, line height 120 %, -1% */
   --text-title-h2: 500 3rem/1.2 var(--font-frama);
   --text-title-h2-tracking: -0.01em;
-  /* Title/H3 Title — PP Frama 500, 40px, line height 120 %, -1% */
+  /* Title/H3 Title — Switzer 500, 40px, line height 120 %, -1% */
   --text-title-h3: 500 2.5rem/1.2 var(--font-frama);
   --text-title-h3-tracking: -0.01em;
-  /* Title/H4 Title — PP Frama 500, 32px, line height 130 %, -0.5% */
+  /* Title/H4 Title — Switzer 500, 32px, line height 130 %, -0.5% */
   --text-title-h4: 500 2rem/1.3 var(--font-frama);
   --text-title-h4-tracking: -0.005em;
-  /* Title/H5 Title — PP Frama 500, 24px, line height 140 %, 0% */
+  /* Title/H5 Title — Switzer 500, 24px, line height 140 %, 0% */
   --text-title-h5: 500 1.5rem/1.4 var(--font-frama);
   --text-title-h5-tracking: 0;
-  /* Title/H6 Title — PP Frama 500, 20px, line height 140 %, 0% */
+  /* Title/H6 Title — Switzer 500, 20px, line height 140 %, 0% */
   --text-title-h6: 500 1.25rem/1.4 var(--font-frama);
   --text-title-h6-tracking: 0;
-  /* Label/X Large — Geist 500, 24px, line height 150 %, -1.5% */
+  /* Label/X Large — Switzer 500, 24px, line height 150 %, -1.5% */
   --text-label-xl: 500 1.5rem/1.5 var(--font-sans);
   --text-label-xl-tracking: -0.015em;
-  /* Label/Large — Geist 500, 18px, line height 150 %, -1.33% */
+  /* Label/Large — Switzer 500, 18px, line height 150 %, -1.33% */
   --text-label-lg: 500 1.125rem/1.5 var(--font-sans);
   --text-label-lg-tracking: -0.0133em;
-  /* Label/Medium — Geist 500, 16px, line height 150 %, -1.1% */
+  /* Label/Medium — Switzer 500, 16px, line height 150 %, -1.1% */
   --text-label-md: 500 1rem/1.5 var(--font-sans);
   --text-label-md-tracking: -0.011em;
-  /* Label/Small — Geist 500, 14px, line height 150 %, -0.6% */
+  /* Label/Small — Switzer 500, 14px, line height 150 %, -0.6% */
   --text-label-sm: 500 0.875rem/1.5 var(--font-sans);
   --text-label-sm-tracking: -0.006em;
-  /* Label/X Small — Geist 500, 12px, line height 150 %, 0% */
+  /* Label/X Small — Switzer 500, 12px, line height 150 %, 0% */
   --text-label-xs: 500 0.75rem/1.5 var(--font-sans);
   --text-label-xs-tracking: 0;
-  /* Paragraph/X Large — Geist 400, 24px, line height 150 %, -1.5% */
+  /* Paragraph/X Large — Switzer 400, 24px, line height 150 %, -1.5% */
   --text-paragraph-xl: 400 1.5rem/1.5 var(--font-sans);
   --text-paragraph-xl-tracking: -0.015em;
-  /* Paragraph/Large — Geist 400, 18px, line height 150 %, -1.33% */
+  /* Paragraph/Large — Switzer 400, 18px, line height 150 %, -1.33% */
   --text-paragraph-lg: 400 1.125rem/1.5 var(--font-sans);
   --text-paragraph-lg-tracking: -0.0133em;
-  /* Paragraph/Medium — Geist 400, 16px, line height 150 %, -1.1% */
+  /* Paragraph/Medium — Switzer 400, 16px, line height 150 %, -1.1% */
   --text-paragraph-md: 400 1rem/1.5 var(--font-sans);
   --text-paragraph-md-tracking: -0.011em;
-  /* Paragraph/Small — Geist 400, 14px, line height 150 %, -0.6% */
+  /* Paragraph/Small — Switzer 400, 14px, line height 150 %, -0.6% */
   --text-paragraph-sm: 400 0.875rem/1.5 var(--font-sans);
   --text-paragraph-sm-tracking: -0.006em;
-  /* Paragraph/X Small — Geist 400, 12px, line height 150 %, 0% */
+  /* Paragraph/X Small — Switzer 400, 12px, line height 150 %, 0% */
   --text-paragraph-xs: 400 0.75rem/1.5 var(--font-sans);
   --text-paragraph-xs-tracking: 0;
-  /* Subheading/Medium — Geist 500, 16px, line height 150 %, 6%, mayúsculas */
+  /* Subheading/Medium — Switzer 500, 16px, line height 150 %, 6%, mayúsculas */
   --text-subheading-md: 500 1rem/1.5 var(--font-sans);
   --text-subheading-md-tracking: 0.06em;
-  /* Subheading/Small — Geist 500, 14px, line height 150 %, 6%, mayúsculas */
+  /* Subheading/Small — Switzer 500, 14px, line height 150 %, 6%, mayúsculas */
   --text-subheading-sm: 500 0.875rem/1.5 var(--font-sans);
   --text-subheading-sm-tracking: 0.06em;
-  /* Subheading/X Small — Geist 500, 12px, line height 150 %, 4%, mayúsculas */
+  /* Subheading/X Small — Switzer 500, 12px, line height 150 %, 4%, mayúsculas */
   --text-subheading-xs: 500 0.75rem/1.5 var(--font-sans);
   --text-subheading-xs-tracking: 0.04em;
-  /* Subheading/2X Small — Geist 500, 11px, line height 110 %, 2%, mayúsculas */
+  /* Subheading/2X Small — Switzer 500, 11px, line height 110 %, 2%, mayúsculas */
   --text-subheading-2xs: 500 0.6875rem/1.1 var(--font-sans);
   --text-subheading-2xs-tracking: 0.02em;
-  /* Docs/Label — Geist 500, 18px, line height 175 %, -1.5% */
+  /* Docs/Label — Switzer 500, 18px, line height 175 %, -1.5% */
   --text-docs-label: 500 1.125rem/1.75 var(--font-sans);
   --text-docs-label-tracking: -0.015em;
-  /* Docs/Paragraph — Geist 400, 18px, line height 175 %, -1.5% */
+  /* Docs/Paragraph — Switzer 400, 18px, line height 175 %, -1.5% */
   --text-docs-paragraph: 400 1.125rem/1.75 var(--font-sans);
   --text-docs-paragraph-tracking: -0.015em;
 
@@ -151,31 +151,15 @@
     0 12px 24px -10px rgb(0 0 0 / 1),
     0 10px 24px -10px color-mix(in srgb, var(--color-blue-500) 90%, transparent),
     0 0 16px -4px color-mix(in srgb, var(--color-blue-500) 35%, transparent);
-  /* Fondo del CTA final: degradado del fondo del FAQ (la sección de arriba) al azul de marca, más fuerte bajo el botón,
-     y una grilla de cuadritos encima. */
-  --cta-gradient: linear-gradient(to bottom, var(--surface-section) 0%, var(--color-blue-950) 35%, var(--color-blue-900) 70%, var(--color-blue-800) 100%);
-  --cta-dot: rgb(255 255 255 / 0.28);
-  /* Sombra difusa detrás del texto del CTA, del tono del degradado a esa altura: tapa los cuadritos que
-     tocan las letras para que no se mezclen con ellas. */
-  --cta-text-halo: var(--color-blue-950);
   /* Destello del haz de la tarjeta de servicios: blanco sobre oscuro. */
   --beam-highlight: var(--color-white);
-  /* Brillo del footer: el azul de marca es la base y hacia arriba recorre la gama de la referencia (periwinkle,
-     lavanda y un blanco azulado), con un índigo profundo al pie. Las posiciones siguen las de la primera versión. */
-  --footer-glow-deep: #2b3190;
-  --footer-glow-end: #191c4d;
-  --footer-glow: linear-gradient(to bottom,
-    transparent 3%, #5f68d0 16%, #6f7ad9 21%, #8592ea 27%, #9aa8f2 33%, #b4c2fa 40%,
-    #cfdcff 47%, #e4ecff 53%, #b9cdff 59%, #7fa8ff 65%, #3d84ff 72%, var(--color-blue-500) 80%,
-    var(--color-blue-600) 86%, var(--footer-glow-deep) 92%, var(--footer-glow-end) 100%);
-
   margin: 0;
   background: var(--surface-page);
   color: var(--fg-strong);
   font: var(--text-paragraph-md);
   letter-spacing: var(--text-paragraph-md-tracking);
-  /* Figma usa la variante ss11 de Geist sin ligaduras en todos los textos. */
-  font-feature-settings: "ss11" 1, "calt" 0, "liga" 0;
+  /* Sin ligaduras ni alternos contextuales en todos los textos (ss11 es una variante propia de Geist). */
+  font-feature-settings: "calt" 0, "liga" 0;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -245,41 +229,44 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-btn--sm { min-height: 32px; padding: 0 16px; }
 .s-btn--lg { padding: 12px 24px; }
 
-/* Nav (Figma 91:7190, ajustado a 72px de alto): logo | enlaces centrados | botón, línea inferior grey-700. */
-.s-nav {
-  position: sticky; top: 0; z-index: 50;
-  /* Vidrio esmerilado siempre: la grilla del hero y luego el contenido se ven difusos detrás. */
-  background: color-mix(in srgb, var(--surface-page) 60%, transparent);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
-  border-bottom: 1px solid var(--border-strong);
-}
-/* Sin desenfoque disponible, el nav vuelve a ser casi opaco para que se lea bien. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .s-nav { background: color-mix(in srgb, var(--surface-page) 92%, transparent); }
+/* Nav (Figma: Asilo Core, "Nav (vidrio)", 72px): logo a la izquierda y enlaces a la derecha, sin fondo ni línea. */
+.s-nav { position: sticky; top: 0; z-index: 50; isolation: isolate; }
+/* Vidrio: el velo y el desenfoque van en una capa propia, desvanecida hacia abajo, para que el texto que pasa por
+   detrás no choque con el logo y los enlaces ni se note un corte. */
+.s-nav::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--surface-page) 94%, transparent) 60%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 75%, transparent); mask-image: linear-gradient(to bottom, #000 75%, transparent);
 }
 .s-nav-inner {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 32px;
-  /* 71px + 1px de línea inferior = 72px (en Figma eran 80px; se bajó 8px). */
-  min-height: calc(var(--nav-height) - 1px); padding-inline: var(--page-gutter);
-  /* Mismo contenedor de 1280px que las secciones: el logo y el botón se alinean con las tarjetas. */
-  max-width: calc(1280px + 2 * var(--page-gutter)); margin-inline: auto;
+  /* 72px, como en Figma (sin línea inferior). */
+  min-height: var(--nav-height); padding-inline: var(--page-gutter);
+  /* Mismo contenedor de 1312px (1440 menos 64px por lado, como en Figma) que las secciones: el logo y los enlaces se alinean con las tarjetas. */
+  max-width: calc(1312px + 2 * var(--page-gutter)); margin-inline: auto;
 }
-.s-nav-logo { display: inline-flex; align-items: center; justify-self: start; min-height: 44px; }
-.s-nav-logo .s-icon, .s-footer-logo .s-icon { width: 151px; height: 22px; color: var(--fg-strong); }
+.s-nav-logo { display: inline-flex; align-items: center; justify-self: start; min-height: 44px; text-decoration: none; }
+/* Wordmark de Figma (nav y footer): "Asilo" y "Labs" en Switzer Semibold 21.33px (-5%), con "Labs" sobre un rectángulo azul. */
+.s-wordmark {
+  display: inline-block; font-size: 1.3333rem; font-weight: 600; line-height: 1.3125; letter-spacing: -0.05em;
+  color: var(--fg-strong); white-space: nowrap;
+}
+.s-wordmark-pill {
+  display: inline-block; margin-left: 2px; padding-inline: 2px; border-radius: 3.56px; background: var(--color-blue-500);
+  line-height: 1.04;
+}
 .s-nav-menu { display: none; }
 .s-nav-links { display: flex; gap: 32px; }
+/* Figma: Switzer Medium 14px en grey-300; el enlace se aclara a blanco al pasar el mouse. */
 .s-nav-links a {
   display: inline-flex; align-items: center; min-height: 44px;
-  color: var(--fg-strong); text-decoration: none;
+  color: var(--fg-body); text-decoration: none; font-size: 0.875rem; font-weight: 500; line-height: 1.5; letter-spacing: -0.006em;
   transition: color 160ms ease;
 }
-.s-nav-links a:hover { color: var(--fg-body); }
-.s-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.s-nav-links a:hover { color: var(--fg-strong); }
 
 @media (min-width: 768px) {
-  /* Columnas laterales iguales para que los enlaces queden en el centro exacto de la página. */
-  .s-nav-inner { grid-template-columns: 1fr auto 1fr; }
   .s-nav-menu { display: block; }
 }
 
@@ -293,62 +280,44 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   padding: calc(96px + var(--nav-height)) var(--page-gutter) 16px;
 }
 .s-hero-inner {
-  display: flex; flex-direction: column; align-items: center; gap: 32px;
-  width: 100%; max-width: 1064px; margin-inline: auto; text-align: center;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 32px;
+  width: 100%; max-width: 1312px; margin-inline: auto; text-align: left;
 }
 .s-hero-text { position: relative; display: flex; flex-direction: column; gap: 24px; }
-/* Halo oscuro detrás del título y la bajada para separarlos de la grilla de píxeles; se desvanece hacia afuera. */
-.s-hero-text::before {
-  content: ""; position: absolute; inset: -48px -64px; z-index: -1; pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--surface-page) 85%, transparent), transparent);
-}
 /* Title/H1 en desktop; en pantallas chicas baja a Title/H4 para que no se parta en muchas líneas. */
 .s-hero-title {
   font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking);
   color: var(--fg-strong); text-wrap: balance;
 }
-/* Sombra difusa del color de fondo alrededor de cada letra para que no se mezclen con los píxeles. */
-.s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }
 /* Una frase por línea en todos los tamaños; en móvil cada frase se equilibra sola. */
 .s-hero-title-line { display: block; }
 /* v3: la bajada son dos frases, una por línea en desktop (Figma: texto de 860px); en móvil fluyen juntas. */
-.s-hero-lead { max-width: 860px; margin-inline: auto; }
+.s-hero-lead { max-width: 860px; margin-inline: 0; }
 .s-hero-lead-line { display: inline; }
 .s-hero-lead {
   color: var(--fg-body); text-wrap: pretty;
-  text-shadow: 0 0 16px var(--surface-page), 0 0 6px var(--surface-page);
 }
-.s-hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+/* Figma (Switzer): la primera frase en peso 400, la segunda en 500 y el punto final en 600. */
+.s-hero-title-line { font-weight: 400; }
+.s-hero-title-line + .s-hero-title-line { font-weight: 500; }
+.s-hero-title-dot { font-weight: 600; }
 
-/* Fondo del hero (adaptado de "pixel-perfect-hero"): queda detrás del contenido gracias a isolation + z-index -1. */
+/* Fondo del hero (grilla animada, ver .s-grid más abajo): queda detrás del contenido gracias a isolation + z-index -1. */
 .s-hero-bg {
   position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
-  /* El original ocupaba toda la pantalla; aquí la grilla se apaga al final del hero para no cortarse en seco. */
+  /* La grilla se apaga al final del hero para no cortarse en seco. */
   -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
   mask-image: linear-gradient(to bottom, #000 80%, transparent);
 }
-/* 4 de cada 5 píxeles en gris y 1 en azul; servicios-pixels.ts lee estos colores. */
-.s-hero-pixels {
-  --pixel-muted: var(--color-grey-400);
-  --pixel-accent: var(--color-blue-500);
-  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
-}
-/* Viñeta: oscurece los bordes para que la grilla se concentre detrás del texto. */
-.s-hero-vignette {
-  position: absolute; inset: 0; opacity: 0.8;
-  background: radial-gradient(circle at center, transparent 0%, var(--surface-page) 100%);
-}
-
 /* Entrada: los botones y la franja de logos suben y aparecen al cargar. */
 @keyframes s-rise {
   from { opacity: 0; transform: translateY(32px); }
   to { opacity: 1; transform: none; }
 }
-.s-hero-actions { animation: s-rise 1000ms cubic-bezier(0.4, 0, 0.2, 1) 450ms both; }
 .s-hero .s-logos { animation: s-rise 1000ms cubic-bezier(0.4, 0, 0.2, 1) 600ms both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .s-hero-actions, .s-hero .s-logos { animation: none; }
+  .s-hero .s-logos { animation: none; }
 }
 
 /* Franja de logos (Figma 91:7568): espacios de 200×56 cada 24px que se desplazan sin fin, de borde a borde. */
@@ -359,26 +328,26 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
 }
-/* 80s por vuelta: unos 33px por segundo con seis logos. */
+/* 80s por vuelta. */
 .s-logos-track { display: flex; flex: none; animation: s-logos-scroll 80s linear infinite; }
 .s-logos:hover .s-logos-track { animation-play-state: paused; }
 .s-logos-set { display: flex; flex: none; }
 /* Margen en vez de gap para que cada copia mida lo mismo y el bucle no salte. */
 .s-logos-item { display: grid; place-items: center; width: 200px; height: 56px; margin-right: 24px; }
 /* Los logos van en un solo color (blanco en oscuro, negro en claro), sea cual sea su color original. */
-.s-logos-item img { width: auto; height: 32px; max-width: 100%; filter: var(--logo-filter); }
+.s-logos-item img { width: auto; height: calc(28px * var(--logo-scale, 1)); max-width: 180px; object-fit: contain; filter: var(--logo-filter); }
 @keyframes s-logos-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   .s-logos-track { animation: none; }
 }
 
 @media (min-width: 768px) {
-  /* 16px más arriba que en Figma (104/136 en vez de 120/120) para que el bloque se vea más centrado. */
-  .s-hero { min-height: calc(724px + var(--nav-height)); padding-block: calc(104px + var(--nav-height)) 136px; }
-  /* Como en Figma: la franja queda 8px sobre el borde inferior del hero, sin mover el contenido centrado. */
-  .s-logos { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; }
+  /* Figma: el hero mide 730px contando el nav; el título arranca a 252px y la franja de logos a 640px. */
+  .s-hero { min-height: 730px; justify-content: flex-start; padding-block: 252px 120px; }
+  .s-hero-text { gap: 20px; }
+  .s-logos { position: absolute; left: 0; right: 0; bottom: 18px; margin: 0; }
   /* v3: el título de Figma mide 60px (un paso sobre Title/H1). */
-  .s-hero-title { font: var(--text-title-h1); font-size: 3.75rem; letter-spacing: var(--text-title-h1-tracking); }
+  .s-hero-title { font: var(--text-title-h1); font-size: 3.75rem; line-height: 1.1167; letter-spacing: -0.02em; }
   .s-hero-lead-line { display: block; }
 }
 @media (min-width: 1024px) {
@@ -407,11 +376,11 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Variante alineada a la izquierda (Testimonios). */
 .s-section-head--start { align-items: flex-start; max-width: none; margin-inline: 0; text-align: left; }
 
-/* Proyectos (Figma 91:7755): contenedor de 1280px, 3 columnas con 32px entre tarjetas y 64px entre filas. */
+/* Proyectos (Figma 91:7755): contenedor de 1312px, 3 columnas con 32px entre tarjetas y 64px entre filas. */
 .s-projects { padding: 64px var(--page-gutter); }
 .s-projects-inner {
   display: flex; flex-direction: column; gap: 48px;
-  max-width: 1280px; margin-inline: auto;
+  max-width: 1312px; margin-inline: auto;
 }
 .s-projects-grid { display: grid; grid-template-columns: 1fr; gap: 48px 32px; }
 .s-project { display: flex; flex-direction: column; gap: 24px; }
@@ -458,7 +427,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-services { padding: 64px var(--page-gutter); }
 .s-services-inner {
   display: flex; flex-direction: column; gap: 48px;
-  max-width: 1280px; margin-inline: auto;
+  max-width: 1312px; margin-inline: auto;
 }
 .s-services-card {
   position: relative; display: flex; flex-direction: column;
@@ -523,6 +492,11 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   padding: 32px 20px;
 }
 .s-services-panel[hidden] { display: flex; visibility: hidden; }
+/* Por debajo de 1024px solo el panel activo ocupa lugar: si no, la tarjeta toma el alto del más largo y queda un
+   espacio vacío bajo los paneles cortos. En escritorio se mantiene la altura fija para que no salte. */
+@media (max-width: 1023px) {
+  .s-services-panel[hidden] { display: none; }
+}
 .s-services-panel-title {
   font: var(--text-title-h5); letter-spacing: var(--text-title-h5-tracking);
   color: var(--fg-strong); text-wrap: balance;
@@ -574,11 +548,10 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-services-panel-title { font: var(--text-title-h3); letter-spacing: var(--text-title-h3-tracking); }
 }
 
-/* v3 — El problema, Cómo trabajamos y Con quién trabajamos (Figma: Asilo Core). Mismo contenedor de 1280px que
+/* v3 — El problema, Cómo trabajamos y Con quién trabajamos (Figma: Asilo Core). Mismo contenedor de 1312px que
    las demás secciones; las tarjetas son planas, como las de servicios. */
-.s-problem, .s-process, .s-audience { padding: 64px var(--page-gutter); }
-.s-problem-inner, .s-process-inner { display: flex; flex-direction: column; gap: 48px; max-width: 1280px; margin-inline: auto; }
-.s-audience-inner { display: flex; flex-direction: column; align-items: center; gap: 32px; max-width: 1280px; margin-inline: auto; }
+.s-problem, .s-process { padding: 64px var(--page-gutter); }
+.s-problem-inner, .s-process-inner { display: flex; flex-direction: column; gap: 48px; max-width: 1312px; margin-inline: auto; }
 .s-cards { display: grid; grid-template-columns: 1fr; gap: 24px; }
 .s-card {
   display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 20px;
@@ -618,18 +591,15 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-step-arrow { display: flex; margin-top: 8px; color: var(--fg-body); opacity: 0.4; }
 .s-card-text { display: flex; flex-direction: column; gap: 6px; }
 .s-card-title { color: var(--fg-strong); text-wrap: balance; }
+/* Figma: los títulos de las tarjetas de "El problema" miden 22px. */
+.s-card--feature .s-card-title { font-size: 1.375rem; line-height: 1.4; }
 .s-card-body { color: var(--fg-body); text-wrap: pretty; }
-.s-card-link { color: var(--fg-strong); text-decoration: none; }
-.s-card-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-/* Título de Servicios: la segunda línea es más liviana (Figma: 36px Regular). */
-.s-services--v3 .s-section-title-line + .s-section-title-line { font-weight: 400; font-size: 1.5rem; }
 .s-services-price { margin-top: auto; padding-top: 8px; color: var(--fg-strong); }
 @media (min-width: 768px) {
-  .s-problem, .s-process, .s-audience { padding-block: 80px; }
-  .s-services--v3 .s-section-title-line + .s-section-title-line { font-size: 2.25rem; }
+  .s-problem, .s-process { padding-block: 80px; }
 }
 @media (min-width: 1024px) {
-  .s-problem, .s-process, .s-audience { padding-block: 96px; }
+  .s-problem, .s-process { padding-block: 96px; }
   .s-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (min-width: 768px) {
@@ -642,7 +612,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-testimonials { padding: 64px var(--page-gutter); }
 .s-testimonials-inner {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px;
-  max-width: 1280px; margin-inline: auto;
+  max-width: 1312px; margin-inline: auto;
 }
 .s-carousel { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
 /* Todas las tarjetas ocupan la misma celda: el carrusel toma el alto de la más larga y no salta. */
@@ -706,86 +676,17 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-testimonial { transition: none; }
 }
 
-/* FAQ (Figma: Asilo Core): título a la izquierda (500px), preguntas a la derecha (700px). */
-.s-faq { padding: 64px var(--page-gutter); background: var(--surface-section); }
-.s-faq-inner {
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px;
-  grid-template-areas: "head" "list";
-  max-width: 1280px; margin-inline: auto;
-}
-.s-faq-head { grid-area: head; }
-.s-faq-list { grid-area: list; display: flex; flex-direction: column; gap: 16px; }
-.s-faq-item {
-  background: var(--surface-card);
-  border: 1px solid var(--border-subtle); border-radius: 2px;
-  transition: background-color 200ms ease;
-}
-/* Hover (solo con mouse) y pregunta abierta un tono más arriba; mientras se cierra vuelve al de reposo. */
-@media (hover: hover) {
-  .s-faq-item:hover { background: var(--surface-card-hover); }
-}
-.s-faq-item[open]:not([data-closing]) { background: var(--surface-card-hover); }
-.s-faq-question {
-  display: flex; align-items: center; gap: 24px;
-  padding: 20px 24px; color: var(--fg-strong); cursor: pointer; list-style: none;
-}
-.s-faq-question::-webkit-details-marker { display: none; }
-.s-faq-question > span:not(.s-icon) { flex: 1; }
-.s-faq-question:focus-visible { outline-color: var(--fg-strong); outline-offset: -4px; }
-/* La X de Figma marca la pregunta abierta; cerrada gira 45° y queda como un +. */
-.s-faq-icon { transform: rotate(45deg); transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); }
-/* data-closing: mientras la respuesta se cierra la pregunta sigue [open], pero el ícono ya gira a +. */
-.s-faq-item[open]:not([data-closing]) .s-faq-icon { transform: none; }
-/* servicios-faq.ts anima el alto de este contenedor al abrir y cerrar. */
-.s-faq-answer-wrap { overflow: hidden; }
-.s-faq-answer { padding: 0 24px 24px; color: var(--fg-body); text-wrap: pretty; }
-
-@media (min-width: 768px) {
-  .s-faq { padding-block: 80px; }
-}
-@media (min-width: 1024px) {
-  .s-faq { padding-block: 112px; }
-  .s-faq-inner {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    grid-template-rows: auto; gap: 32px 80px;
-    grid-template-areas: "head list";
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .s-faq-icon { transition: none; }
-}
-
-/* CTA final (Figma 91:7534): bloque centrado de 768px con título, bajada y el botón al formulario. */
+/* CTA final (Figma: Asilo Core): título centrado y el botón al formulario. */
 .s-cta { position: relative; isolation: isolate; overflow: hidden; padding: 64px var(--page-gutter); }
-/* Degradado de abajo hacia arriba (ver --cta-gradient) con cuadritos de 3px cada 48px, centrados. Los
-   cuadritos son una máscara SVG pintada con --cta-dot, así cambian con el tema. */
-.s-cta-bg { position: absolute; inset: 0; z-index: -1; background: var(--cta-gradient); pointer-events: none; }
-.s-cta-bg::before {
-  content: ""; position: absolute; inset: 0; background: var(--cta-dot);
-  --s-cta-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect x='22.5' y='22.5' width='3' height='3'/%3E%3C/svg%3E");
-  /* Elipse detrás del título y la bajada: ahí los cuadritos se apagan para no cruzarse con las letras;
-     hacia los bordes vuelven a verse completos. */
-  --s-cta-fade: radial-gradient(ellipse 36% 28% at 50% 38%, transparent 70%, #000 100%);
-  -webkit-mask: var(--s-cta-dots) center / 48px 48px repeat, var(--s-cta-fade);
-  -webkit-mask-composite: source-in;
-  mask: var(--s-cta-dots) center / 48px 48px repeat, var(--s-cta-fade);
-  mask-composite: intersect;
-}
-/* En móvil el texto ocupa casi todo el ancho: la elipse también. */
-@media (max-width: 767px) {
-  .s-cta-bg::before { --s-cta-fade: radial-gradient(ellipse 80% 30% at 50% 40%, transparent 70%, #000 100%); }
-}
+/* Fondo del CTA: la misma grilla animada azul del hero (AnimatedGrid, ver .s-grid) sobre el fondo plano de la página,
+   sin degradado, cuadritos ni halos de texto, para que se vea como el resto de la landing. */
+.s-cta-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .s-cta-inner {
   display: flex; flex-direction: column; align-items: center; gap: 32px;
   max-width: 768px; margin-inline: auto; text-align: center;
 }
 .s-cta-text { display: flex; flex-direction: column; gap: 24px; }
 .s-cta-lead { color: var(--fg-strong); text-wrap: pretty; }
-/* Igual que en el hero: una sombra cercana y densa que cubre los cuadritos junto a cada letra y otra amplia
-   que los apaga alrededor. */
-.s-cta .s-section-title { text-shadow: 0 0 28px var(--cta-text-halo), 0 0 10px var(--cta-text-halo), 0 0 4px var(--cta-text-halo); }
-.s-cta-lead { text-shadow: 0 0 16px var(--cta-text-halo), 0 0 6px var(--cta-text-halo), 0 0 3px var(--cta-text-halo); }
-
 @media (min-width: 768px) {
   .s-cta { padding-block: 80px; }
 }
@@ -797,13 +698,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-footer { padding: 0 var(--page-gutter); border-top: 1px solid var(--border-strong); overflow: clip; }
 /* El espacio superior va en el contenido y no en el footer: así el brillo sticky puede pegarse al borde de la
    pantalla desde que asoma el primer píxel del footer. */
-.s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1280px; margin-inline: auto; padding-top: 64px; }
+.s-footer-inner { display: flex; flex-direction: column; gap: 64px; max-width: 1312px; margin-inline: auto; padding-top: 64px; }
 /* En móvil las redes van debajo de la frase (cinco íconos no caben junto al logo); desde 768px, a la derecha. */
 .s-footer-top { display: flex; flex-direction: column; align-items: flex-start; gap: 32px; }
 /* Logo con la frase debajo (Title/H5); las redes quedan alineadas con el logo. */
 .s-footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .s-footer-tagline { color: var(--fg-strong); text-wrap: balance; }
-.s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; }
+.s-footer-logo { display: inline-flex; align-items: center; min-height: 36px; text-decoration: none; }
 .s-footer-social { display: flex; margin-left: -6px; } /* en móvil el primer ícono queda al ras del margen */
 /* Ícono de 24px con 6px de aire por lado: 12px entre íconos, como en Figma, y un área de toque de 36px. */
 .s-footer-social a { display: grid; place-items: center; padding: 6px; border-radius: 2px; color: var(--fg-strong); transition: opacity 160ms ease; }
@@ -817,42 +718,14 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-footer-legal { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 8px 24px; }
 .s-footer-legal a { text-decoration: underline; text-underline-offset: 3px; }
 
-/* Brillo escalonado al pie (ver servicios-footer-glow.ts): nueve columnas con el mismo degradado, la central
-   un poco más ancha, desenfocadas para que los escalones y las franjas se fundan. Crece desde abajo con el
-   scroll; este es su estado final, el que se ve sin JS o con movimiento reducido. */
-/* Como en la referencia: desde que asoma el footer el brillo es una línea fina pegada al borde inferior de
-   la pantalla; se mantiene así mientras sube el contenido y se expande en el último tramo, mientras entra
-   el espacio reservado (.s-footer-glow-space). El brillo es un ancla sticky de alto 0 al final del footer,
-   con las columnas colgando hacia arriba; el footer las recorta para que no pasen al CTA. Va detrás del
-   contenido del footer. */
-.s-footer { isolation: isolate; --footer-glow-h: clamp(160px, 18vw, 260px); }
-.s-footer-inner { position: relative; z-index: 1; }
-.s-footer-glow-space { height: var(--footer-glow-h); margin-top: 48px; }
-.s-footer-glow {
-  position: sticky; bottom: 0; height: 0;
-  margin-inline: calc(-1 * var(--page-gutter)); pointer-events: none;
-}
-/* Más ancho y más bajo que el footer: el desenfoque no deja bordes claros a los lados ni abajo. */
-/* El desenfoque va en este contenedor y la escala en el de adentro: así la línea fina inicial también queda
-   desenfocada (suave) y no se aplasta junto con las columnas. */
-.s-footer-glow-bars {
-  position: absolute; left: -24px; right: -24px; bottom: -16px; height: calc(var(--footer-glow-h) * 0.85 + 16px);
-  filter: blur(10px);
-}
-/* Escala desde el borde visible (16px sobre el fondo de las columnas): la línea fina queda a la vista. */
-.s-footer-glow-rise {
-  display: flex; align-items: flex-end; height: 100%;
-  transform-origin: 50% calc(100% - 16px);
-}
-.s-footer-glow-bar { flex: 1; height: calc(var(--h) * 1%); background: var(--footer-glow); }
-.s-footer-glow-bar:nth-child(5) { flex-grow: 1.15; }
+/* El footer cierra la página: sin brillo ni espacio reservado debajo, solo los 40px de aire inferior de Figma. */
+.s-footer-inner { position: relative; padding-bottom: 40px; }
 
 @media (min-width: 768px) {
   .s-footer-top { flex-direction: row; justify-content: space-between; }
   /* El último ícono queda al ras del margen derecho, como en Figma. */
   .s-footer-social { margin-left: 0; margin-right: -6px; }
   .s-footer-inner { gap: 80px; padding-top: 80px; }
-  .s-footer-glow-space { margin-top: 64px; }
 }
 
 .s-skip {
@@ -866,3 +739,300 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 @media (prefers-reduced-motion: reduce) {
   html:has(body.servicios) { scroll-behavior: auto; }
 }
+
+/* ==========================================================================
+   Movimiento. Todo se apaga con prefers-reduced-motion (ver el bloque al final).
+   ========================================================================== */
+
+/* Entrada del hero: el nav baja y el título sube línea por línea, seguido de la bajada. */
+@keyframes s-hero-in {
+  from { opacity: 0; transform: translateY(24px); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes s-nav-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+.s-nav { animation: s-nav-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.s-hero-title-line { animation: s-hero-in 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.s-hero-title-line:nth-child(2) { animation-delay: 140ms; }
+.s-hero-lead { animation: s-hero-in 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 300ms both; }
+
+/* Revelado al hacer scroll (servicios-reveal.ts): solo se oculta cuando el script marcó <html> con .s-js. */
+[data-reveal] {
+  transition:
+    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--reveal-i, 0) * 90ms),
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--reveal-i, 0) * 90ms),
+    border-color 200ms ease, background-color 200ms ease;
+}
+.s-js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(28px); }
+
+/* Tarjetas de "El problema": el borde se aclara y la grilla del decorador se enciende al pasar el mouse. */
+.s-card-decorator-grid { transition: opacity 300ms ease; }
+.s-card-decorator-icon { transition: transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+@media (hover: hover) {
+  .s-card--feature:hover { border-color: var(--color-grey-700); }
+  .s-card--feature:hover .s-card-decorator-grid { opacity: 0.22; }
+  .s-card--feature:hover .s-card-decorator-icon { transform: scale(1.1); }
+}
+
+/* Pasos de "Cómo trabajamos": la línea se dibuja de izquierda a derecha y los círculos aparecen en orden. */
+@media (min-width: 768px) {
+  .s-steps::before { transform-origin: left center; transition: transform 1100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms; }
+  .s-js .s-steps:not(.is-in)::before { transform: scaleX(0); }
+}
+.s-step-number { transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i, 0) * 180ms + 300ms), opacity 400ms ease calc(var(--i, 0) * 180ms + 300ms); }
+.s-js .s-steps:not(.is-in) .s-step-number { transform: scale(0.4); opacity: 0; }
+/* Los pasos no se revelan por separado (la lista entera ya lo hace), así que el texto sigue a su círculo. */
+.s-step .s-card-text { transition: opacity 600ms ease calc(var(--i, 0) * 180ms + 450ms), transform 600ms ease calc(var(--i, 0) * 180ms + 450ms); }
+.s-js .s-steps:not(.is-in) .s-step .s-card-text { opacity: 0; transform: translateY(12px); }
+
+/* Panel de servicios: el contenido nuevo aparece suavemente al cambiar de pestaña. */
+@keyframes s-panel-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.s-services-panel:not([hidden]) { animation: s-panel-in 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+/* Botones: se elevan un poco al pasar el mouse y se hunden al presionar. */
+.s-btn { transition: background-color 160ms ease, transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+@media (hover: hover) {
+  .s-btn:hover { transform: translateY(-2px); }
+}
+.s-btn:active { transform: scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .s-nav, .s-hero-title-line, .s-hero-lead, .s-services-panel:not([hidden]) { animation: none; }
+  [data-reveal], .s-step-number, .s-step .s-card-text, .s-steps::before, .s-btn, .s-card-decorator-grid, .s-card-decorator-icon { transition: none; }
+  .s-btn:hover, .s-btn:active, .s-card--feature:hover .s-card-decorator-icon { transform: none; }
+}
+
+/* ==========================================================================
+   Tamaños del Figma (Asilo Core, nodo 8951:3082): todo en Switzer. Va al final para ganar sobre las reglas anteriores.
+   ========================================================================== */
+.s-problem .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead { font-size: 1rem; line-height: 1.5; }
+.s-services-tab { font-size: 1.125rem; line-height: 1.5; }
+.s-services-panel-title { font-size: 2rem; line-height: 1.3; }
+.s-services-panel-body { font-size: 0.875rem; font-weight: 400; line-height: 1.5; }
+.s-services-list { font-size: 0.875rem; line-height: 1.5; }
+.s-project-description { font-size: 0.875rem; line-height: 1.5; }
+.s-tag { font-size: 0.75rem; line-height: 1.5; }
+.s-testimonial-quote { font-size: 1.125rem; font-weight: 400; line-height: 1.5; }
+.s-cta .s-section-title { font-size: 2.625rem; line-height: 1.2; }
+.s-footer-tagline { font-size: 0.9375rem; line-height: 1.35; max-width: 280px; }
+
+/* ==========================================================================
+   Medidas del Figma v3 (Asilo Core, nodo 8951:3082): radios, bordes, colores, espaciados y alturas.
+   Va al final para ganar sobre las reglas anteriores.
+   ========================================================================== */
+/* Cada sección lleva una línea de 1px (grey-900) arriba; el footer no. */
+.s-problem, .s-services, .s-process, .s-projects, .s-testimonials, .s-cta { border-top: 1px solid var(--color-grey-900); }
+.s-footer { border-top: 0; }
+
+/* Encabezados: título y bajada a 16px (en Servicios, a 4px), bajadas con el ancho de Figma y saltos sin equilibrar. */
+.s-section-head { max-width: 776px; }
+.s-section-head-text { gap: 16px; }
+.s-services .s-section-head-text { gap: 4px; }
+.s-services .s-section-lead { line-height: 28px; }
+.s-section-lead { text-wrap: wrap; }
+.s-problem .s-section-lead { max-width: 692px; margin-inline: auto; }
+.s-process .s-section-lead { max-width: 776px; margin-inline: auto; }
+.s-projects .s-section-lead { max-width: 640px; margin-inline: auto; }
+/* En Figma, "Tu app crece…" va en peso 400 y el resto de los títulos en 500. */
+.s-problem .s-section-title { font-weight: 400; }
+
+/* Tarjetas de "El problema": radio 12, fondo grey-950, título de 34px de alto y bajada en grey-400 sin tracking. */
+.s-card { border-radius: 12px; background: var(--color-grey-950); }
+.s-card--feature .s-card-title { line-height: 34px; }
+.s-card-body { color: var(--fg-muted); letter-spacing: 0; text-wrap: wrap; }
+.s-card-title { text-wrap: wrap; }
+
+/* Cómo trabajamos: número de 12px en peso 500 y grey-400; 24px entre columnas. */
+.s-step-number { font-weight: 500; color: var(--fg-muted); }
+.s-step .s-card-title { line-height: 34px; }
+@media (min-width: 768px) {
+  .s-steps { gap: 24px; }
+}
+
+/* Servicios: radio 12, pestañas de 380px en grey-500 (Label/Large), panel de 520px con 72px a los lados. */
+.s-services-card { border-radius: 12px; }
+.s-services-tab { font: var(--text-label-lg); letter-spacing: var(--text-label-lg-tracking); color: var(--color-grey-500); }
+.s-services-tab-arrow { color: var(--color-grey-400); opacity: 0.4; }
+.s-services-panel-body { letter-spacing: -0.006em; max-width: 600px; }
+.s-services-list { gap: 8px; padding-left: 0; list-style: none; letter-spacing: 0; }
+.s-services-list li::before { content: "•\00a0\00a0"; content: "•\00a0\00a0" / ""; }
+.s-services-price { margin-top: 0; padding-top: 0; }
+/* La aclaración queda pegada al precio (8px en vez de los 20px del panel) y en grey-400. */
+/* Botón "Me interesa" de cada servicio: al formulario de contacto, alineado a la izquierda bajo el precio. */
+.s-services-cta { align-self: flex-start; margin-top: 4px; }
+.s-services-price-note { margin-top: -12px; max-width: 600px; color: var(--fg-muted); letter-spacing: 0; }
+@media (min-width: 1024px) {
+  .s-services-card { min-height: 520px; }
+  .s-services-tabs { flex: none; width: 380px; max-width: none; }
+  .s-services-panels { flex: 1 1 0; }
+  .s-services-tab { padding-inline: 32px; }
+  .s-services-panel { justify-content: flex-start; gap: 20px; padding: 46.5px 72px; }
+  .s-services-panel-title { font: var(--text-title-h4); line-height: 42px; letter-spacing: var(--text-title-h4-tracking); max-width: 560px; text-wrap: wrap; }
+}
+
+/* Proyectos: imagen con radio 12, textos a 6px, bajada en grey-400 y etiquetas de 26px con radio 6 y borde grey-700. */
+.s-project { gap: 16px; }
+.s-project-image { border-radius: 12px; }
+.s-project-text { gap: 6px; }
+.s-project-description { color: var(--fg-muted); letter-spacing: -0.006em; }
+.s-tag { padding: 3px 10px; border-color: var(--color-grey-700); border-radius: 6px; letter-spacing: 0; line-height: 18px; }
+
+/* Testimonios: tagline en grey-500; tarjeta con radio 12, 32px de aire y 40px entre bloques; logo de 24px de alto;
+   flechas con contorno de 40px; puntos de 7px. */
+.s-testimonials .s-section-tagline { color: var(--color-grey-500); }
+.s-testimonial { gap: 40px; border-radius: 12px; }
+.servicios .s-testimonial-logo { height: 24px; max-width: none; margin-bottom: 0; }
+.s-testimonial-author { gap: 14px; }
+.s-testimonial-avatar { width: 48px; height: 48px; }
+.s-testimonial-name { font-size: 0.875rem; line-height: 1.5; letter-spacing: 0; }
+.s-testimonial-role { font-size: 0.875rem; line-height: 1.5; letter-spacing: 0; color: var(--fg-muted); }
+.s-carousel { gap: 32px; }
+.s-carousel-dot { width: 15px; }
+.s-carousel-dot::before { width: 7px; height: 7px; }
+.s-carousel-arrows { gap: 8px; }
+.s-carousel-arrow {
+  width: 40px; height: 40px; padding: 0; border: 1px solid var(--fg-strong); border-radius: 6px;
+  background: transparent; color: var(--fg-strong);
+}
+.s-carousel-arrow:hover { background: rgb(255 255 255 / 0.1); }
+.s-carousel-arrow .s-icon { width: 20px; height: 20px; }
+@media (min-width: 1024px) {
+  .s-testimonials-inner { grid-template-columns: minmax(0, 1fr) 640px; gap: 64px; align-items: start; }
+  .s-testimonials .s-section-head { padding-top: 24px; }
+}
+
+/* CTA: título de 42px con 48px de alto de línea. */
+.s-cta .s-section-title { line-height: 48px; }
+
+/* Footer: tagline en grey-300, créditos en grey-500, íconos a 20px entre sí, logo sin alto mínimo. */
+.s-footer-tagline { color: var(--fg-body); }
+.s-footer-brand { gap: 14px; }
+.s-footer-logo { min-height: 0; }
+.s-footer-social { gap: 8px; }
+.s-footer-credits { color: var(--color-grey-500); }
+
+/* Títulos de sección de 48px con 58px de alto de línea (Figma). */
+@media (min-width: 768px) {
+  .s-section-title { line-height: 58px; }
+  .s-footer-social { margin-top: -6px; }
+}
+
+/* Secciones de escritorio: 96px arriba y abajo (128px en el CTA) y 56px entre encabezado y contenido. */
+@media (min-width: 1024px) {
+  .s-problem, .s-services, .s-process, .s-projects, .s-testimonials { padding-block: 96px; }
+  .s-cta { padding-block: 128px; }
+  .s-problem-inner, .s-process-inner, .s-services-inner, .s-projects-inner { gap: 56px; }
+  .s-footer-inner { gap: 48px; padding-top: 56px; }
+}
+
+/* Franja de logos (Figma): con cinco logos caben en una fila desde 1280px, así que ahí queda quieta y centrada, sin
+   copias. Por debajo no caben: sigue el desplazamiento continuo. */
+@media (min-width: 1280px) {
+  .s-logos { -webkit-mask-image: none; mask-image: none; }
+  .s-logos-track { animation: none; }
+  .s-logos-set:not(:first-child) { display: none; }
+  .s-logos-item:last-child { margin-right: 0; }
+}
+
+/* Grilla animada del hero (adaptada de "animated-grid"): dos grillas con degradados que derivan despacio y un
+   resplandor azul que pulsa. El color de línea es grey-600 (sobre el fondo casi negro grey-800 no se ve) y el
+   acento, el azul de marca (blue-500). */
+.s-grid {
+  --grid-size: 36px; --grid-major: calc(var(--grid-size) * 4);
+  --grid-line: var(--color-grey-600); --grid-accent: var(--color-blue-500); --grid-opacity: 0.7;
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 38%, transparent 80%);
+  mask-image: radial-gradient(ellipse at center, #000 38%, transparent 80%);
+}
+.s-grid::before, .s-grid::after { content: ""; position: absolute; inset: calc(-1 * var(--grid-major)); will-change: background-position; }
+.s-grid::before {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  opacity: calc(var(--grid-opacity) * 0.6);
+  animation: s-grid-drift 26s linear infinite;
+}
+.s-grid::after {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--grid-accent) 55%, var(--grid-line)) 1.2px, transparent 1.2px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--grid-accent) 55%, var(--grid-line)) 1.2px, transparent 1.2px);
+  background-size: var(--grid-major) var(--grid-major);
+  opacity: calc(var(--grid-opacity) * 0.5);
+  animation: s-grid-drift 26s linear infinite;
+}
+.s-grid-glow {
+  position: absolute; inset: 0; will-change: transform, opacity;
+  background: radial-gradient(45% 45% at 50% 42%, color-mix(in oklab, var(--grid-accent) 26%, transparent), transparent 70%);
+  animation: s-grid-pulse 9s ease-in-out infinite;
+}
+.s-grid-fc { display: none; }
+@keyframes s-grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: var(--grid-major) var(--grid-major), var(--grid-major) var(--grid-major); }
+}
+@keyframes s-grid-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s-grid::before, .s-grid::after, .s-grid-glow { animation: none; }
+}
+/* Colores forzados (Windows alto contraste): sin degradados, una grilla estática con colores del sistema. */
+@media (forced-colors: active) {
+  .s-grid::before, .s-grid::after, .s-grid-glow { display: none; }
+  .s-grid-fc {
+    display: block; position: absolute; inset: 0; forced-color-adjust: none; opacity: 0.3;
+    background-image: linear-gradient(to right, CanvasText 1px, transparent 1px), linear-gradient(to bottom, CanvasText 1px, transparent 1px);
+    background-size: var(--grid-major) var(--grid-major);
+  }
+}
+
+/* Móvil (< 768px): los enlaces van en un menú burger. El botón de 44×44 queda a la derecha del logo y el panel se
+   despliega bajo el nav, con enlaces apilados de 52px de alto. Sin JS (sin la clase s-menu-js) el botón no aparece y
+   el panel queda a la vista bajo el logo. */
+.s-nav-toggle { display: none; }
+@media (max-width: 767px) {
+  .s-menu-js .s-nav-toggle {
+    display: inline-flex; align-items: center; justify-content: center; justify-self: end;
+    width: 44px; height: 44px; margin-right: -10px; padding: 0; border: 0; border-radius: 6px;
+    background: none; color: var(--fg-strong); cursor: pointer;
+  }
+  .s-nav-toggle-bars { position: relative; display: block; width: 20px; height: 14px; }
+  .s-nav-toggle-bars span {
+    position: absolute; left: 0; width: 100%; height: 2px; border-radius: 1px; background: currentColor;
+    transition: transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 150ms ease, top 250ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .s-nav-toggle-bars span:nth-child(1) { top: 0; }
+  .s-nav-toggle-bars span:nth-child(2) { top: 6px; }
+  .s-nav-toggle-bars span:nth-child(3) { top: 12px; }
+  [data-open] .s-nav-toggle-bars span:nth-child(1) { top: 6px; transform: rotate(45deg); }
+  [data-open] .s-nav-toggle-bars span:nth-child(2) { opacity: 0; }
+  [data-open] .s-nav-toggle-bars span:nth-child(3) { top: 6px; transform: rotate(-45deg); }
+
+  .s-nav-inner { grid-template-columns: minmax(0, 1fr) auto; }
+  .s-nav-menu {
+    display: block; position: absolute; top: 100%; left: 0; right: 0;
+    padding: 4px var(--page-gutter) 12px;
+    background: var(--surface-page); border-bottom: 1px solid var(--border-subtle);
+  }
+  .s-menu-js .s-nav:not([data-open]) .s-nav-menu { display: none; }
+  .s-nav-links { flex-direction: column; gap: 0; }
+  .s-nav-links li + li { border-top: 1px solid var(--color-grey-900); }
+  .s-nav-links a { width: 100%; min-height: 52px; font-size: 1rem; }
+  /* Al saltar a una sección desde el menú, el título queda debajo del nav (72px) y no tapado. */
+  .servicios main > section[id] { scroll-margin-top: 8px; }
+}
+
+/* Áreas táctiles de al menos 24px (WCAG 2.2): puntos del carrusel de 24×24 en móvil y pantallas táctiles, y el logo
+   del footer con 3px de área extra arriba y abajo sin mover nada. */
+@media (max-width: 767px), (pointer: coarse) {
+  .s-carousel-dot { width: 24px; }
+  .s-carousel-dots { margin-left: -8px; }
+}
+.s-footer-logo { padding-block: 3px; margin-block: -3px; }

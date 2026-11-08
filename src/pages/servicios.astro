@@ -8,11 +8,9 @@ import Nav from "../components/servicios/Nav.astro";
 import Hero from "../components/servicios/Hero.astro";
 import Problem from "../components/servicios/Problem.astro";
 import Process from "../components/servicios/Process.astro";
-import Audience from "../components/servicios/Audience.astro";
 import Projects from "../components/servicios/Projects.astro";
 import Services from "../components/servicios/Services.astro";
 import Testimonials from "../components/servicios/Testimonials.astro";
-import Faq from "../components/servicios/Faq.astro";
 import FinalCta from "../components/servicios/FinalCta.astro";
 import Footer from "../components/servicios/Footer.astro";
 import { seo } from "../data/servicios";
@@ -37,8 +35,7 @@ const canonical = `${siteUrl}/servicios`;
       siteName="Asilo Digital"
     />
     <link rel="icon" href="/favicon.svg?v=20260911" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/geist-sans.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/geist-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/switzer-variable.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body class="servicios">
     <a class="s-skip" href="#contenido">Saltar al contenido</a>
@@ -49,11 +46,15 @@ const canonical = `${siteUrl}/servicios`;
       <Services />
       <Process />
       <Projects />
-      <Audience />
       <Testimonials />
-      <Faq />
       <FinalCta />
     </main>
     <Footer />
   </body>
 </html>
+
+<script>
+  import { initReveal } from "../scripts/servicios-reveal";
+
+  initReveal();
+</script>

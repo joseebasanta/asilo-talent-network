@@ -25,28 +25,23 @@ export interface NavLink {
 export const navLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios" },
   { label: "Cómo trabajamos", href: "#como-trabajamos" },
-  { label: "Nuestro trabajo", href: "#trabajo" },
+  { label: "Proyectos", href: "#trabajo" },
   { label: "Contacto", href: "#contacto" },
 ];
 
 // Hero (Figma: Asilo Core, nodo 8951:3083).
 export const hero = {
-  // Una frase por línea, como en Figma.
-  titleLines: ["La IA hace pantallas.", "Nosotros les ponemos el gusto."],
-  // Un párrafo por línea, como en Figma.
-  subtitleLines: [
-    "Ofrecemos soluciones de Diseño UX/UI para reducir fricciones y construir software que tus usuarios amen.",
-    "La IA construye rápido, nosotros le damos gusto y coherencia.",
-  ],
-  secondaryCta: { label: "Ver proyectos", href: "#trabajo" },
+  // Una frase por línea, como en Figma: la primera en peso 400, la segunda en 500 y el punto final en 600.
+  titleLines: ["La IA hace pantallas,", "nosotros les ponemos el gusto."],
+  // Una sola frase, como en Figma.
+  subtitleLines: ["Soluciones de Diseño UX/UI para diferenciarte y crecer con coherencia"],
 };
 
-// El problema (Figma: Asilo Core, "Dolores"): tres tarjetas, cada una lleva al servicio que la resuelve.
+// El problema (Figma: Asilo Core, "Dolores"): tres tarjetas, sin enlaces.
 export const problemSection = {
-  tagline: "El problema",
-  titleLines: ["Tu app crece, pero no", "crece con tu marca."],
+  titleLines: ["Tu app crece, pero pierde el hilo"],
   subtitle:
-    "Cada mes se suman funciones, pantallas y usuarios. Pero sin una base de diseño ese crecimiento pierde gusto y coherencia, y se ve cada vez más como todas las demás. Tus usuarios, que usan las mejores apps del mundo todos los días, lo notan.",
+    "Cada mes se agregan funciones y pantallas nuevas, pero sin una base de diseño, se ve cada vez más como todas las demás. Nosotros te acompañamos a diferenciarte sin perder la agilidad.",
 };
 
 export interface InfoCard {
@@ -54,37 +49,36 @@ export interface InfoCard {
   icon?: "copy" | "branch" | "eye-off";
   title: string;
   body: string;
-  link?: { label: string; href: string };
 }
 
 export const problemCards: InfoCard[] = [
   {
     icon: "copy",
     title: "Todas se ven igual",
-    body: "Lovable, las plantillas y la IA parten de los mismos patrones por defecto. Se hace rápido, pero crea deuda de UX y no refleja lo que busca tu marca.",
-    link: { label: "Diseño y rediseño →", href: "#servicios" },
+    body: "La IA parte de los mismos patrones por defecto. Se hace rápido, pero crea deuda de UX y no refleja lo que busca tu marca.",
   },
   {
     icon: "branch",
-    title: "Cada versión se parece menos a la anterior",
-    body: "Cada función nueva se resuelve por separado: un prompt, un desarrollador, un apuro. Sin un sistema que guarde las decisiones, el producto pierde coherencia con cada entrega.",
-    link: { label: "Design System →", href: "#servicios" },
+    title: "Cada versión se parece menos",
+    body: "Sin un sistema que guarde las decisiones o ponga las reglas del diseño, el producto pierde coherencia y se ve diferente con cada entrega.",
   },
   {
     icon: "eye-off",
-    title: "Funciona, pero no se ve bien",
+    title: "Funciona, pero no es suficiente",
     body: "Tus usuarios no te comparan con la competencia local, sino con las mejores apps que usan. Una interfaz descuidada se lee como un negocio descuidado.",
-    link: { label: "UX Audit →", href: "#servicios" },
   },
 ];
 
-// Franja de logos al pie del hero (Figma: Asilo Services, nodo 91:7568). Se muestran en blanco.
-// TODO: reemplazar con logos reales de clientes (con permiso), en SVG. Los de Figma son de marcas
-// que no son clientes (Webflow y Relume), así que mientras tanto van logos neutros de relleno.
-export const clientLogos = Array.from({ length: 6 }, (_, i) => ({
-  src: `/placeholders/logo-${i + 1}.svg`,
-  alt: `Cliente 0${i + 1}`,
-}));
+// Franja de logos al pie del hero (Figma: Asilo Core, nodo 8990:3056): clientes reales, exportados de Figma. Se
+// muestran en blanco (filtro de la franja), sea cual sea su color original. width y height son los de cada archivo;
+// scale ajusta el tamaño de cada uno sobre la altura base de 28px (1 = igual).
+export const clientLogos = [
+  { src: "/servicios/clientes/empleate.svg", alt: "Empléate", width: 418, height: 155, scale: 1.3 },
+  { src: "/servicios/clientes/tilin.svg", alt: "Tilín", width: 220, height: 85, scale: 1 },
+  { src: "/servicios/clientes/trazando-futuros.png", alt: "Trazando Futuros", width: 2048, height: 283, scale: 1 },
+  { src: "/servicios/clientes/crt.png", alt: "CRT", width: 180, height: 47, scale: 0.85 },
+  { src: "/servicios/clientes/intellivia.svg", alt: "Intellivia", width: 408, height: 68, scale: 0.75 },
+];
 
 export interface Project {
   name: string;
@@ -93,11 +87,12 @@ export interface Project {
   image: { src: string; alt: string };
 }
 
-// Proyectos (Figma: Asilo Services, nodo 91:7755). Imágenes exportadas de Figma a 2× (811×568).
+// Proyectos: una fila de tres, con las imágenes a 2× (811×568). Intellivia y Empléate llevan un relleno con su logo hasta
+// tener las imágenes reales. Diners Club Mall App, Mattelsa, Corona App, Olímpica y Gama ya no se muestran; sus imágenes
+// siguen en /public/servicios/proyectos.
 export const projectsSection = {
-  titleLines: ["Productos que se diferencian", "por su calidad."],
-  subtitle:
-    "Diseñamos e implementamos productos para empresas locales e internacionales, con el mismo estándar: buen gusto, usabilidad y coherencia para crecer.",
+  titleLines: ["Productos que dan ganas de usar"],
+  subtitle: "Cosas que hemos diseñado en los últimos años, y lo que queremos traer a Venezuela.",
 };
 
 // TODO: reemplazar las descripciones de relleno con una línea real por proyecto.
@@ -105,40 +100,24 @@ const PLACEHOLDER_DESCRIPTION = "Lorem ipsum dolor sit amet, consectetur adipisc
 
 export const projects: Project[] = [
   {
-    name: "Olímpica App",
+    name: "Intellivia",
     description: PLACEHOLDER_DESCRIPTION,
-    tags: ["UI/UX", "E-commerce"],
-    image: { src: "/servicios/proyectos/olimpica.webp", alt: "Olímpica App: bienvenida, supermercado y carrito de compras" },
+    tags: ["Landing page", "Legal Tech"],
+    // TODO: reemplazar por la imagen real del proyecto (hoy es un relleno con el logo).
+    image: { src: "/servicios/proyectos/intellivia.svg", alt: "Intellivia (imagen pendiente)" },
   },
   {
-    name: "Tillin",
+    name: "Tillín",
     description: PLACEHOLDER_DESCRIPTION,
-    tags: ["UI/UX", "Branding"],
-    image: { src: "/servicios/proyectos/tilin.webp", alt: "Tillin: perfil del técnico, inicio, búsqueda y pago de un servicio" },
+    tags: ["App Design", "Servicios"],
+    image: { src: "/servicios/proyectos/tilin.webp", alt: "Tillín: perfil del técnico, inicio, búsqueda de profesional y pago" },
   },
   {
-    name: "Gama",
+    name: "Empléate",
     description: PLACEHOLDER_DESCRIPTION,
-    tags: ["Web", "UI/UX", "Implementación"],
-    image: { src: "/servicios/proyectos/gama.webp", alt: "Gama: pantalla de la caja de autopago con la lista de productos" },
-  },
-  {
-    name: "Diners Club Mall App",
-    description: PLACEHOLDER_DESCRIPTION,
-    tags: ["UI/UX", "E-commerce"],
-    image: { src: "/servicios/proyectos/diners.webp", alt: "Diners Club Mall App: inicio, ficha de producto y confirmación de compra" },
-  },
-  {
-    name: "Mattelsa",
-    description: PLACEHOLDER_DESCRIPTION,
-    tags: ["UX Assessment", "Web"],
-    image: { src: "/servicios/proyectos/mattelsa.webp", alt: "Mattelsa: inicio de sesión, portada, ficha de una camiseta y bolsa de compras" },
-  },
-  {
-    name: "Corona App",
-    description: PLACEHOLDER_DESCRIPTION,
-    tags: ["UI/UX", "Implementación"],
-    image: { src: "/servicios/proyectos/corona.webp", alt: "Corona App: inicio, ingreso y catálogo de productos" },
+    tags: ["Design System", "Empleo/RRHH"],
+    // TODO: reemplazar por la imagen real del proyecto (hoy es un relleno con el logo).
+    image: { src: "/servicios/proyectos/empleate.svg", alt: "Empléate (imagen pendiente)" },
   },
 ];
 
@@ -150,20 +129,23 @@ export interface ServiceTab {
   items: string[];
   // Precio de referencia (opcional): se muestra al pie del panel.
   price?: string;
+  // Aclaración del precio (opcional): va debajo, en un tono más suave.
+  priceNote?: string;
 }
 
-// Servicios (Figma: Asilo Core, "Servicios"). El título lleva una segunda línea más liviana.
+// Servicios (Figma: Asilo Core, "Servicios").
 export const servicesSection = {
-  titleLines: ["Nuestros servicios", "Diseño de productos digitales UX/UI"],
+  titleLines: ["Nuestros servicios"],
+  subtitle: "Diseño de productos digitales UX/UI desde Venezuela, con enfoque global",
 };
 
 // TODO: en Figma solo está armado el panel de UX Audit. El copy de "Diseño y rediseño" sale de la v2
-// (pestaña Product Design) y el de "Design System" es provisional: confirmarlos con el equipo, y agregar sus precios.
+// (pestaña Product Design) y el de "Design System" es provisional: confirmarlos con el equipo.
 export const serviceTabs: ServiceTab[] = [
   {
     id: "ux-audit",
     label: "UX Audit",
-    title: "Descubre qué está frenando a tus usuarios.",
+    title: "Auditoría de UX/UI",
     body: "Para equipos que saben que algo no funciona, pero no saben qué arreglar primero. Revisamos tu producto con heurísticas de UX/UI, flujos y performance, y te entregamos los hallazgos por severidad con una hoja de ruta clara. Aproximadamente un mes.",
     items: [
       "Evaluación heurística de UX/UI",
@@ -176,7 +158,7 @@ export const serviceTabs: ServiceTab[] = [
   },
   {
     id: "diseno-rediseno",
-    label: "Diseño y rediseño",
+    label: "Diseño UX/UI",
     title: "Interfaces que se ven y se sienten hechas por alguien a quien le importa.",
     body: "Diseñamos tu producto desde el MVP hasta su versión escalada, con criterio visual en cada decisión. Trabajamos junto a tu equipo de desarrollo y entregamos interfaces listas para construir: lo que lanzamos es lo que tus usuarios ven.",
     items: [
@@ -186,6 +168,8 @@ export const serviceTabs: ServiceTab[] = [
       "Diseño mobile y responsive",
       "Pruebas de usabilidad e iteración",
     ],
+    price: "Desde USD 600",
+    priceNote: "o dependiendo del requerimiento.",
   },
   {
     id: "design-system",
@@ -199,29 +183,22 @@ export const serviceTabs: ServiceTab[] = [
       "Documentación de uso",
       "Traspaso al equipo de desarrollo",
     ],
+    price: "Desde USD 800",
   },
 ];
 
 // Cómo trabajamos (Figma: Asilo Core): tres pasos en tarjetas.
 export const processSection = {
-  titleLines: ["Nos adelantamos al código."],
+  titleLines: ["Menos margen de error", "entre el diseño y el resultado."],
   subtitle:
-    "No entregamos pantallas estáticas. Creamos prototipos altamente funcionales, integrados con código, para que valides tu producto antes de desarrollar y tu equipo implemente más fácil y más rápido.",
+    "Nos adelantamos al código y creamos prototipos altamente funcionales, para que valides tu producto antes de desarrollar y tu equipo implemente más fácil y rápido.",
 };
 
 export const processCards: InfoCard[] = [
   { title: "01 · Diagnosticamos", body: "Entendemos tu producto, tus usuarios y lo que necesitas lograr." },
-  { title: "02 · Diseñamos y prototipamos con código", body: "Validas la experiencia funcionando, antes de invertir en desarrollo." },
+  { title: "02 · Diseñamos y prototipamos", body: "Validas la experiencia funcionando, antes de invertir en desarrollo." },
   { title: "03 · Implementamos o acompañamos", body: "El desarrollo arranca con todo definido y avanza más rápido." },
 ];
-
-// Con quién trabajamos (Figma: Asilo Core): cierre antes de los testimonios, con botón al formulario.
-export const audienceSection = {
-  titleLines: ["Trabajamos con quienes quieren", "hacer las cosas distinto."],
-  subtitle:
-    "Si para ti basta con que funcione, probablemente no somos tu equipo. Si quieres un producto de primer nivel, del que tus usuarios hablen bien, hablemos.",
-  ctaLabel: "Hablemos",
-};
 
 export interface Testimonial {
   quote: string;
@@ -239,70 +216,21 @@ export const testimonialsSection = {
 };
 
 // TODO: reemplazar con testimonios reales (con permiso): cita, nombre, cargo y empresa, foto y logo.
-// Figma tiene seis puntos en el slider; el número de puntos sale de esta lista.
-export const testimonials: Testimonial[] = Array.from({ length: 6 }, (_, i) => ({
+// Son tres testimonios; el número de puntos del slider sale de esta lista (en Figma hay seis puntos).
+export const testimonials: Testimonial[] = Array.from({ length: 3 }, (_, i) => ({
   quote:
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare.",
-  name: "Nombre Apellido",
-  role: "Cargo, Empresa",
-  avatar: "/servicios/testimonios/avatar-placeholder.webp",
-  // Logos neutros de relleno (los de Figma son de una marca real que no es cliente).
-  logo: { src: `/placeholders/logo-${i + 1}.svg`, alt: `Cliente 0${i + 1}` },
+  name: i === 0 ? "Assunta Cipollone" : "Nombre Apellido",
+  role: i === 0 ? "Directora, Empléate.com" : "Cargo, Empresa",
+  avatar: "/servicios/testimonios/avatar-placeholder.svg",
+  // Logo de relleno como en Figma (cuadrado gris y "Cliente 0N"); se reemplaza por el de cada cliente.
+  logo: { src: `/placeholders/testimonial-logo-${i + 1}.svg`, alt: `Cliente 0${i + 1}` },
 }));
-
-// TODO: confirmar el correo de contacto definitivo (es el mismo de la v1).
-export const CONTACT_EMAIL = "hola@asilodigital.com";
-
-export interface FaqItem {
-  question: string;
-  answer: string;
-}
-
-// FAQ (Figma: Asilo Core). Ya no lleva la tarjeta de contacto.
-export const faqSection = {
-  tagline: "¿Aún tienes dudas?",
-  titleLines: ["Preguntas", "frecuentes"],
-};
-
-// TODO: en Figma solo está la respuesta de la primera pregunta. Las demás salen de la v2; la del prototipo
-// funcional y la de precios son provisionales hasta que el equipo las confirme.
-export const faqItems: FaqItem[] = [
-  {
-    question: "¿Necesito saber de tecnología para trabajar con ustedes?",
-    answer:
-      "No. Tú nos cuentas qué quieres lograr y nosotros lo convertimos en un producto. Te acompañamos en cada decisión.",
-  },
-  {
-    question: "¿Con qué tipo de empresas trabajan?",
-    answer:
-      "Con empresas, instituciones, startups y creadores que quieren adoptar tecnología con claridad. Desde un emprendimiento que está arrancando hasta una organización que necesita digitalizar sus procesos.",
-  },
-  {
-    question: "¿Cómo es el trabajo día a día con ustedes?",
-    answer:
-      "Con un canal de comunicación compartido y revisiones periódicas. Ves el avance desde el primer día y no esperas a una gran entrega final para opinar.",
-  },
-  {
-    question: "¿Qué es un prototipo funcional?",
-    answer:
-      "Es una versión de tu producto que ya funciona: tiene interacción real y está integrada con código. Así validas la experiencia antes de desarrollar y tu equipo implementa más fácil y más rápido.",
-  },
-  {
-    question: "¿Qué tan rápido pueden empezar?",
-    answer:
-      "Normalmente en pocos días. Si necesitas arrancar esta semana, cuéntanoslo en la primera conversación y organizamos el equipo alrededor de tu fecha.",
-  },
-  {
-    question: "¿Cuánto cuesta trabajar con Asilo Labs?",
-    answer:
-      "Depende del alcance. Un UX Audit parte desde USD 500; los proyectos de diseño y rediseño y de design system se cotizan según lo que necesites. Después de conocer tu contexto te enviamos una propuesta clara, con alcance, tiempos y costos, sin sorpresas.",
-  },
-];
 
 // CTA final (Figma: Asilo Core). El botón lleva al formulario (CTA_HREF).
 export const finalCta = {
-  title: "Empecemos hoy.",
-  ctaLabel: "Audita mi producto",
+  titleLines: ["Empecemos con tu producto hoy.", "No importa la etapa."],
+  ctaLabel: CTA_LABEL,
 };
 
 export interface FooterLink {
@@ -330,6 +258,6 @@ export const footerLegalLinks: FooterLink[] = [];
 
 export const footer = {
   // Frase bajo el logo (Title/H5).
-  tagline: "Buen gusto y coherencia.",
+  tagline: "Buen gusto y coherencia para los productos del día a día.",
   copyright: `© ${new Date().getFullYear()} Asilo Labs. Todos los derechos reservados`,
 };

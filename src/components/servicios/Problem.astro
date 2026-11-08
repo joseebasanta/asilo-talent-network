@@ -14,15 +14,14 @@ const icons: Record<string, string> = {
 <section class="s-problem" id="problema" aria-labelledby="problema-title">
   <div class="s-problem-inner">
     <SectionHead
-      tagline={problemSection.tagline}
       title={problemSection.titleLines}
       subtitle={problemSection.subtitle}
       titleId="problema-title"
     />
     <ul class="s-cards">
       {
-        problemCards.map((card) => (
-          <li class="s-card s-card--feature">
+        problemCards.map((card, i) => (
+          <li class="s-card s-card--feature" data-reveal style={`--reveal-i: ${i + 1}`}>
             {card.icon && (
               <div class="s-card-decorator" aria-hidden="true">
                 <div class="s-card-decorator-grid" />
@@ -35,11 +34,6 @@ const icons: Record<string, string> = {
               <h3 class="s-card-title s-title-h5">{card.title}</h3>
               <p class="s-card-body s-paragraph-sm">{card.body}</p>
             </div>
-            {card.link && (
-              <a class="s-card-link s-label-sm" href={card.link.href}>
-                {card.link.label}
-              </a>
-            )}
           </li>
         ))
       }

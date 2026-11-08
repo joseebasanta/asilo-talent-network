@@ -1,5 +1,5 @@
 ---
-import { serviceTabs, servicesSection } from "../../data/servicios";
+import { CTA_HREF, serviceTabs, servicesSection } from "../../data/servicios";
 import SectionHead from "./SectionHead.astro";
 ---
 
@@ -7,10 +7,11 @@ import SectionHead from "./SectionHead.astro";
   <div class="s-services-inner">
     <SectionHead
       title={servicesSection.titleLines}
+      subtitle={servicesSection.subtitle}
       titleId="servicios-title"
     />
 
-    <div class="s-services-card" data-tabs>
+    <div class="s-services-card" data-tabs data-reveal>
       <div class="s-services-tabs" role="tablist" aria-label="Servicios" aria-orientation="vertical">
         {
           serviceTabs.map((tab, i) => (
@@ -46,6 +47,8 @@ import SectionHead from "./SectionHead.astro";
                 {tab.items.map((item) => <li>{item}</li>)}
               </ul>
               {tab.price && <p class="s-services-price s-label-lg">{tab.price}</p>}
+              {tab.priceNote && <p class="s-services-price-note s-paragraph-sm">{tab.priceNote}</p>}
+              <a class="s-services-cta s-btn s-btn--primary s-label-md" href={CTA_HREF} aria-label={`Me interesa: ${tab.label}`}>Me interesa</a>
             </div>
           ))
         }

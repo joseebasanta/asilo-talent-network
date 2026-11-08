@@ -10,7 +10,7 @@ const steps = processCards.map((card) => {
   return { n, title: rest.join(" · "), body: card.body };
 });
 const arrow =
-  '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+  '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>';
 ---
 
 <section class="s-process" id="como-trabajamos" aria-labelledby="como-trabajamos-title">
@@ -20,10 +20,10 @@ const arrow =
       subtitle={processSection.subtitle}
       titleId="como-trabajamos-title"
     />
-    <ol class="s-steps">
+    <ol class="s-steps" data-reveal>
       {
         steps.map((step, i) => (
-          <li class="s-step">
+          <li class="s-step" style={`--i: ${i}`}>
             <span class="s-step-number" aria-hidden="true">{step.n}</span>
             <div class="s-card-text">
               <h3 class="s-card-title s-title-h5">{step.title}</h3>

@@ -14,7 +14,7 @@ const { tagline, title, subtitle, titleId, align = "center" } = Astro.props;
 const lines = Array.isArray(title) ? title : null;
 ---
 
-<header class:list={["s-section-head", { "s-section-head--start": align === "start" }]}>
+<header class:list={["s-section-head", { "s-section-head--start": align === "start" }]} data-reveal>
   {tagline && <p class="s-section-tagline s-subheading-xs">{tagline}</p>}
   <div class="s-section-head-text">
     {

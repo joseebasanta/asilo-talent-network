@@ -12,6 +12,16 @@
   font-display: swap;
   src: url("/fonts/ibm-plex-sans.woff2") format("woff2");
 }
+/* Switzer (Indian Type Foundry, Fontshare Free Font License): fuente de la landing de servicios (Figma: Asilo Core).
+   Variable (peso 100–900), recortada a latín; solo el .woff2 web, sin archivos de escritorio en el repo. */
+@font-face {
+  font-family: "Switzer";
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/switzer-variable.woff2") format("woff2");
+}
+
 /* Geist (SIL OFL, ver public/fonts/geist-OFL.txt): usada por la landing de servicios. */
 @font-face {
   font-family: "Geist Sans";
