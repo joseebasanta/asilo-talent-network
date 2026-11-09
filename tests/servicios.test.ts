@@ -218,7 +218,10 @@ describe("landing de servicios v3", () => {
     expect(section.match(/width="1440"\s+height="1080"/g)).toHaveLength(3);
     expect(projects[0]!.image.src).toBe("/servicios/proyectos/intellivia.webp");
     expect(projects[0]!.image.alt).not.toMatch(/pendiente/i);
-    expect(existsSync(new URL("../public/servicios/proyectos/718shots_so.png", import.meta.url))).toBe(false);
+    // Las capturas subidas en PNG se convierten a WebP; los originales no quedan publicados.
+    for (const file of ["718shots_so.png", "221shots_so.png"]) {
+      expect(existsSync(new URL(`../public/servicios/proyectos/${file}`, import.meta.url))).toBe(false);
+    }
 
     // Productos: Intellivia, Tillín y Empléate, con las etiquetas que da el equipo.
     expect(projects.map((p) => [p.name, p.tags])).toEqual([
