@@ -615,6 +615,11 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-projects .s-section-lead { max-width: 720px; margin-inline: auto; }");
   });
 
+  it("sets the footer tagline at 16px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-footer-tagline { font-size: 1rem; line-height: 1.35; max-width: 280px; }");
+  });
+
   it("sets the services description paragraph at 16px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-services-panel-body { font-size: 1rem; font-weight: 400; line-height: 1.5; }");

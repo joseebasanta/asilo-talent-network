@@ -883,7 +883,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-tag { font-size: 0.75rem; line-height: 1.5; }
 .s-testimonial-quote { font-size: 1.125rem; font-weight: 400; line-height: 1.5; }
 .s-cta .s-section-title { font-size: 2.625rem; line-height: 1.2; }
-.s-footer-tagline { font-size: 0.9375rem; line-height: 1.35; max-width: 280px; }
+.s-footer-tagline { font-size: 1rem; line-height: 1.35; max-width: 280px; }
 
 /* ==========================================================================
    Medidas del Figma v3 (Asilo Core, nodo 8951:3082): radios, bordes, colores, espaciados y alturas.
