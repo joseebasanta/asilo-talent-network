@@ -889,7 +889,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-problem .s-section-title { font-weight: 400; }
 
 /* Tarjetas de "El problema": radio 12, fondo grey-950, título de 34px de alto y bajada en grey-400 sin tracking. */
-.s-card { border-radius: 4px; background: var(--color-grey-950); }
+.s-card { border-radius: 12px; background: var(--color-grey-950); }
 .s-card--feature .s-card-title { line-height: 34px; }
 .s-card-body { color: var(--fg-muted); letter-spacing: 0; text-wrap: wrap; }
 .s-card-title { text-wrap: wrap; }
@@ -902,7 +902,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 
 /* Servicios: radio 12, pestañas de 380px en grey-500 (Label/Large), panel de 520px con 72px a los lados. */
-.s-services-card { border-radius: 4px; }
+.s-services-card { border-radius: 12px; }
 .s-services-tab { font: var(--text-label-lg); letter-spacing: var(--text-label-lg-tracking); color: var(--color-grey-500); }
 .s-services-tab-arrow { color: var(--color-grey-400); opacity: 0.4; }
 .s-services-panel-body { letter-spacing: -0.006em; max-width: 600px; }
@@ -922,17 +922,17 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-services-panel-title { font: var(--text-title-h4); line-height: 42px; letter-spacing: var(--text-title-h4-tracking); max-width: 560px; text-wrap: wrap; }
 }
 
-/* Proyectos: imagen con radio 4, textos a 6px, bajada en grey-400 y etiquetas de 26px con radio 6 y borde grey-700. */
+/* Proyectos: imagen con radio 12, textos a 6px, bajada en grey-400 y etiquetas de 26px con radio 6 y borde grey-700. */
 .s-project { gap: 16px; }
-.s-project-image { border-radius: 4px; }
+.s-project-image { border-radius: 12px; }
 .s-project-text { gap: 6px; }
 .s-project-description { color: var(--fg-muted); letter-spacing: -0.006em; }
 .s-tag { padding: 3px 10px; border-color: var(--color-grey-700); border-radius: 6px; letter-spacing: 0; line-height: 18px; }
 
-/* Testimonios: tagline en grey-500; tarjeta con radio 4, 32px de aire y 40px entre bloques; logo de 24px de alto;
-   flechas con contorno de 40px y radio 2; puntos de 7px. */
+/* Testimonios: tagline en grey-500; tarjeta con radio 12, 32px de aire y 40px entre bloques; logo de 24px de alto;
+   flechas con contorno de 40px; puntos de 7px. */
 .s-testimonials .s-section-tagline { color: var(--color-grey-500); }
-.s-testimonial { gap: 40px; border-radius: 4px; }
+.s-testimonial { gap: 40px; border-radius: 12px; }
 .servicios .s-testimonial-logo { height: 24px; max-width: none; margin-bottom: 0; }
 .s-testimonial-author { gap: 14px; }
 .s-testimonial-avatar { width: 48px; height: 48px; }
@@ -943,7 +943,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-carousel-dot::before { width: 7px; height: 7px; }
 .s-carousel-arrows { gap: 8px; }
 .s-carousel-arrow {
-  width: 40px; height: 40px; padding: 0; border: 1px solid var(--fg-strong); border-radius: 2px;
+  width: 40px; height: 40px; padding: 0; border: 1px solid var(--fg-strong); border-radius: 6px;
   background: transparent; color: var(--fg-strong);
 }
 .s-carousel-arrow:hover { background: rgb(255 255 255 / 0.1); }
