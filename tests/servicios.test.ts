@@ -323,7 +323,7 @@ describe("landing de servicios v3", () => {
     expect(motionScript).toContain("delay: stagger(0.12, { startDelay: 0.3 })");
     expect(motionScript).toContain("{ duration: 0.9, ease: easeEnter, delay: 0.15 }");
     expect(motionScript).not.toContain("rotateY");
-    expect(arrowCss).toMatch(/\.s-carousel-arrow \{\s*width: 40px; height: 40px; padding: 0; border: 1px solid var\(--fg-strong\); border-radius: 6px;\s*background: transparent; color: var\(--fg-strong\);/);
+    expect(arrowCss).toMatch(/\.s-carousel-arrow \{\s*width: 40px; height: 40px; padding: 0; border: 1px solid var\(--fg-strong\); border-radius: 2px;\s*background: transparent; color: var\(--fg-strong\);/);
     expect(section).toContain(`“${testimonials[0].quote}”`);
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-testimonial \{[^}]*background: var\(--surface-card\);\s*border: 1px solid var\(--border-subtle\)/);
@@ -553,6 +553,15 @@ describe("landing de servicios v3", () => {
     for (const section of ["s-problem", "s-services", "s-process", "s-projects", "s-testimonials", "s-cta", "s-footer"]) {
       expect(css).not.toMatch(new RegExp(`\\.${section}(,[^{]*)? \\{[^}]*border-(top|bottom):\\s*1px`));
     }
+  });
+
+  it("rounds the problem, services, project and testimonial cards with 4px and the carousel arrows with 2px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-card { border-radius: 4px; background: var(--color-grey-950); }");
+    expect(css).toContain(".s-services-card { border-radius: 4px; }");
+    expect(css).toContain(".s-project-image { border-radius: 4px; }");
+    expect(css).toContain(".s-testimonial { gap: 40px; border-radius: 4px; }");
+    expect(css).toMatch(/\.s-carousel-arrow \{[^}]*border-radius: 2px;/);
   });
 
   it("centers the hero title and subtitle", () => {
