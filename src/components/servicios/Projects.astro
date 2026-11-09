@@ -15,15 +15,32 @@ import SectionHead from "./SectionHead.astro";
       {
         projects.map((project, i) => (
           <li class="s-project" data-reveal style={`--reveal-i: ${i + 1}`}>
-            <img
-              class="s-project-image"
-              src={project.image.src}
-              alt={project.image.alt}
-              width="1440"
-              height="1080"
-              loading="lazy"
-              decoding="async"
-            />
+            <div class="s-project-media">
+              <img
+                class="s-project-image"
+                src={project.image.src}
+                alt={project.image.alt}
+                width="1440"
+                height="1080"
+                loading="lazy"
+                decoding="async"
+              />
+              {/* Decorativo: la imagen ya describe el proyecto; el video solo la anima al pasar el mouse. */}
+              {project.video && (
+                <video
+                  class="s-project-video"
+                  src={project.video}
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  disablepictureinpicture
+                  aria-hidden="true"
+                  tabindex="-1"
+                  data-project-video
+                />
+              )}
+            </div>
             <div class="s-project-body">
               <div class="s-project-text">
                 <h3 class="s-project-name s-title-h5">{project.name}</h3>

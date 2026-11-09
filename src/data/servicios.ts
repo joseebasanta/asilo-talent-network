@@ -85,6 +85,8 @@ export interface Project {
   description: string;
   tags: string[];
   image: { src: string; alt: string };
+  /** Recorrido en video (MP4, 4:3, sin audio) que se reproduce sobre la imagen al pasar el mouse. */
+  video?: string;
 }
 
 // Proyectos: una fila de tres, con las imágenes a 2× (811×568). Intellivia y Empléate llevan un relleno con su logo hasta
@@ -107,6 +109,7 @@ export const projects: Project[] = [
       src: "/servicios/proyectos/intellivia.webp",
       alt: "Intellivia: inicio del sitio del estudio jurídico, con el título “Acompañamiento legal para impulsar soluciones tecnológicas” y el Kit Legal para Startups",
     },
+    video: "/servicios/proyectos/intellivia-recorrido.mp4",
   },
   {
     name: "Tillín",

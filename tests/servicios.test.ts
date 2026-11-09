@@ -218,6 +218,22 @@ describe("landing de servicios v3", () => {
     expect(section.match(/width="1440"\s+height="1080"/g)).toHaveLength(3);
     expect(projects[0]!.image.src).toBe("/servicios/proyectos/intellivia.webp");
     expect(projects[0]!.image.alt).not.toMatch(/pendiente/i);
+    // Intellivia lleva un recorrido en video que se reproduce sobre la imagen al pasar el mouse; los demás, solo imagen.
+    expect(projects[0]!.video).toBe("/servicios/proyectos/intellivia-recorrido.mp4");
+    expect(existsSync(new URL(`../public${projects[0]!.video}`, import.meta.url))).toBe(true);
+    expect(projects.filter((p) => p.video)).toHaveLength(1);
+    expect(section.match(/<video\b/g)).toHaveLength(1);
+    const video = section.match(/<video\b[^>]*>/)![0];
+    for (const attr of ['class="s-project-video"', `src="${projects[0]!.video}"`, "muted", "loop", "playsinline", 'preload="none"', 'aria-hidden="true"', 'tabindex="-1"', "data-project-video"]) {
+      expect(video).toContain(attr);
+    }
+    expect(section.match(/<div class="s-project-media">/g)).toHaveLength(3);
+    expect(css).toContain(".s-project-video.is-playing { opacity: 1; }");
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-project-video \{ display: none; \}/);
+    expect(existsSync(new URL("../public/servicios/proyectos/intellivia_recorrido_web_4x3.mp4", import.meta.url))).toBe(false);
+    const page = readFileSync(new URL("../src/pages/servicios.astro", import.meta.url), "utf8");
+    expect(page).toContain("initProjectVideos();");
+
     // Las capturas subidas en PNG se convierten a WebP; los originales no quedan publicados.
     for (const file of ["718shots_so.png", "221shots_so.png"]) {
       expect(existsSync(new URL(`../public/servicios/proyectos/${file}`, import.meta.url))).toBe(false);
