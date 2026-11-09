@@ -218,6 +218,8 @@ describe("landing de servicios v3", () => {
     expect(section.match(/width="1440"\s+height="1080"/g)).toHaveLength(3);
     expect(projects[0]!.image.src).toBe("/servicios/proyectos/intellivia.webp");
     expect(projects[0]!.image.alt).not.toMatch(/pendiente/i);
+    expect(projects[0]!.description).toBe("Diseñando la experiencia web de Intellivia, un estudio jurídico especializado en tecnología");
+    expect(section).toContain(`<p class="s-project-description s-paragraph-md">${projects[0]!.description}</p>`);
     // Intellivia lleva un recorrido en video que se reproduce sobre la imagen al pasar el mouse; los demás, solo imagen.
     expect(projects[0]!.video).toBe("/servicios/proyectos/intellivia-hover-azul.mp4");
     expect(existsSync(new URL(`../public${projects[0]!.video}`, import.meta.url))).toBe(true);

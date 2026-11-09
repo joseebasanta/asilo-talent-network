@@ -103,7 +103,7 @@ const PLACEHOLDER_DESCRIPTION = "Lorem ipsum dolor sit amet, consectetur adipisc
 export const projects: Project[] = [
   {
     name: "Intellivia",
-    description: PLACEHOLDER_DESCRIPTION,
+    description: "Diseñando la experiencia web de Intellivia, un estudio jurídico especializado en tecnología",
     tags: ["Landing page", "Legal Tech"],
     image: {
       src: "/servicios/proyectos/intellivia.webp",
