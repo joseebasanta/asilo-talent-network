@@ -279,11 +279,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   margin-top: calc(-1 * var(--nav-height));
   padding: calc(96px + var(--nav-height)) var(--page-gutter) 16px;
 }
+/* v4: el texto del hero va centrado, sobre el resplandor de la grilla. */
 .s-hero-inner {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 32px;
-  width: 100%; max-width: 1312px; margin-inline: auto; text-align: left;
+  display: flex; flex-direction: column; align-items: center; gap: 32px;
+  width: 100%; max-width: 1312px; margin-inline: auto; text-align: center;
 }
-.s-hero-text { position: relative; display: flex; flex-direction: column; gap: 24px; }
+.s-hero-text { position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
 /* Title/H1 en desktop; en pantallas chicas baja a Title/H4 para que no se parta en muchas líneas. */
 .s-hero-title {
   font: var(--text-title-h4); letter-spacing: var(--text-title-h4-tracking);
@@ -292,7 +293,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* Una frase por línea en todos los tamaños; en móvil cada frase se equilibra sola. */
 .s-hero-title-line { display: block; }
 /* v3: la bajada son dos frases, una por línea en desktop (Figma: texto de 860px); en móvil fluyen juntas. */
-.s-hero-lead { max-width: 860px; margin-inline: 0; }
+.s-hero-lead { max-width: 860px; margin-inline: auto; }
 .s-hero-lead-line { display: inline; }
 .s-hero-lead {
   color: var(--fg-body); text-wrap: pretty;

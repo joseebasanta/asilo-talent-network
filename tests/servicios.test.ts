@@ -525,4 +525,11 @@ describe("landing de servicios v3", () => {
     expect(css).not.toMatch(/\.s-hero-text::before/);
     expect(css).not.toMatch(/\.s-hero-(title|lead) \{[^}]*text-shadow/);
   });
+
+  it("centers the hero title and subtitle", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: center;[^}]*text-align: center;/);
+    expect(css).toMatch(/\.s-hero-text \{[^}]*align-items: center;/);
+    expect(css).toContain(".s-hero-lead { max-width: 860px; margin-inline: auto; }");
+  });
 });
