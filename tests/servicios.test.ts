@@ -690,12 +690,17 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
   });
 
-  it("reveals the projects section with a slower, softer entrance that respects reduced motion", () => {
+  it("keeps the original reveal and only slows the project cards to 1s", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-projects \[data-reveal\] \{\s*transition:\s*opacity 1100ms cubic-bezier\(0\.33, 1, 0\.68, 1\) calc\(var\(--reveal-i, 0\) \* 160ms\),\s*transform 1400ms cubic-bezier\(0\.33, 1, 0\.68, 1\) calc\(var\(--reveal-i, 0\) \* 160ms\);/);
-    expect(css).toContain(".s-js .s-projects [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(40px) scale(0.98); }");
+    // Entrada original para todo: 700ms, misma curva, 28px y 90ms entre elementos.
+    expect(css).toMatch(/\[data-reveal\] \{\s*transition:\s*opacity 700ms cubic-bezier\(0\.2, 0\.7, 0\.2, 1\) calc\(var\(--reveal-i, 0\) \* 90ms\),/);
+    expect(css).toContain(".s-js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(28px); }");
+    // Las tarjetas de proyectos, con la misma curva y escalonado, tardan 1s.
+    expect(css).toMatch(/\.s-project\[data-reveal\] \{\s*transition:\s*opacity 1000ms cubic-bezier\(0\.2, 0\.7, 0\.2, 1\) calc\(var\(--reveal-i, 0\) \* 90ms\),\s*transform 1000ms cubic-bezier\(0\.2, 0\.7, 0\.2, 1\) calc\(var\(--reveal-i, 0\) \* 90ms\);/);
+    expect(css).not.toContain(".s-projects [data-reveal]");
+    expect(css).not.toContain("scale(0.98)");
     // Con movimiento reducido no hay transición (la regla más específica también se anula).
-    expect(css).toContain("  [data-reveal], .s-projects [data-reveal], .s-step-number, .s-step .s-card-text, .s-steps::before, .s-btn, .s-card-decorator-grid, .s-card-decorator-icon { transition: none; }");
+    expect(css).toContain("  [data-reveal], .s-project[data-reveal], .s-step-number, .s-step .s-card-text, .s-steps::before, .s-btn, .s-card-decorator-grid, .s-card-decorator-icon { transition: none; }");
   });
 
   it("gives the problem cards 24px of side padding so their text fits in three lines on desktop", () => {

@@ -810,13 +810,12 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
     border-color 200ms ease, background-color 200ms ease;
 }
 .s-js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(28px); }
-/* Proyectos: entrada más lenta y suave (curva que frena despacio), con un leve zoom y más espacio entre tarjetas. */
-.s-projects [data-reveal] {
+/* Tarjetas de proyectos: la misma entrada, un poco más lenta (1s en vez de 0,7s). */
+.s-project[data-reveal] {
   transition:
-    opacity 1100ms cubic-bezier(0.33, 1, 0.68, 1) calc(var(--reveal-i, 0) * 160ms),
-    transform 1400ms cubic-bezier(0.33, 1, 0.68, 1) calc(var(--reveal-i, 0) * 160ms);
+    opacity 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--reveal-i, 0) * 90ms),
+    transform 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--reveal-i, 0) * 90ms);
 }
-.s-js .s-projects [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(40px) scale(0.98); }
 
 /* Tarjetas de "El problema": el borde se aclara y la grilla del decorador se enciende al pasar el mouse. */
 .s-card-decorator-grid { transition: opacity 300ms ease; }
@@ -898,7 +897,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 
 @media (prefers-reduced-motion: reduce) {
   .s-nav, .s-hero-title-line, .s-hero-lead, .s-services-panel:not([hidden]) { animation: none; }
-  [data-reveal], .s-projects [data-reveal], .s-step-number, .s-step .s-card-text, .s-steps::before, .s-btn, .s-card-decorator-grid, .s-card-decorator-icon { transition: none; }
+  [data-reveal], .s-project[data-reveal], .s-step-number, .s-step .s-card-text, .s-steps::before, .s-btn, .s-card-decorator-grid, .s-card-decorator-icon { transition: none; }
   .s-btn:hover, .s-btn:active, .s-card--feature:hover .s-card-decorator-icon { transform: none; }
 }
 
