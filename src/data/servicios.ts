@@ -164,8 +164,8 @@ export const serviceTabs: ServiceTab[] = [
   {
     id: "diseno-rediseno",
     label: "Diseño UX/UI",
-    title: "Interfaces que se ven y se sienten hechas por alguien a quien le importa.",
-    body: "Diseñamos tu producto desde el MVP hasta su versión escalada, con criterio visual en cada decisión. Trabajamos junto a tu equipo de desarrollo y entregamos interfaces listas para construir: lo que lanzamos es lo que tus usuarios ven.",
+    title: "Interfaces hechas con criterio, atención al detalle e intención.",
+    body: "Diseñamos tu producto desde el MVP hasta su versión escalada, con criterio visual en cada decisión. Trabajamos junto a tu equipo de desarrollo y entregamos interfaces listas para construir: lo que entregamos es lo que tus usuarios verán.",
     items: [
       "Diseño UI y UX",
       "MVP y prototipos",
@@ -174,7 +174,7 @@ export const serviceTabs: ServiceTab[] = [
       "Pruebas de usabilidad e iteración",
     ],
     price: "Desde USD 600",
-    priceNote: "o dependiendo del requerimiento.",
+    priceNote: "o dependiendo del requerimiento",
   },
   {
     id: "design-system",

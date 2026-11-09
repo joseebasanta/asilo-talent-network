@@ -275,7 +275,7 @@ describe("landing de servicios v3", () => {
     // Solo Diseño UX/UI aclara debajo del precio que depende del requerimiento.
     expect(serviceTabs.filter((t) => t.priceNote).map((t) => t.id)).toEqual(["diseno-rediseno"]);
     expect(section.match(/class="s-services-price-note s-paragraph-sm"/g)).toHaveLength(1);
-    expect(section).toContain('<p class="s-services-price-note s-paragraph-sm">o dependiendo del requerimiento.</p>');
+    expect(section).toContain('<p class="s-services-price-note s-paragraph-sm">o dependiendo del requerimiento</p>');
     // Cada servicio tiene su botón "Me interesa" hacia el formulario, con el nombre del servicio en el aria-label.
     expect(section.match(/class="s-services-cta s-btn s-btn--primary s-label-md"/g)).toHaveLength(serviceTabs.length);
     for (const tab of serviceTabs) expect(section).toContain(`href="${CTA_HREF}" aria-label="Me interesa: ${tab.label}">Me interesa</a>`);
@@ -633,6 +633,27 @@ describe("landing de servicios v3", () => {
     expect(ux.price).toBe("Desde USD 500");
     expect(html).toContain(`<p class="s-services-panel-body s-label-md">${ux.body}</p>`);
     for (const item of ux.items) expect(html).toContain(`<li>${item}</li>`);
+  });
+
+  it("renders the Diseño UX/UI panel with the approved copy", async () => {
+    const html = await render();
+    const design = serviceTabs.find((t) => t.id === "diseno-rediseno")!;
+    expect(design.label).toBe("Diseño UX/UI");
+    expect(design.title).toBe("Interfaces hechas con criterio, atención al detalle e intención.");
+    expect(design.body).toBe(
+      "Diseñamos tu producto desde el MVP hasta su versión escalada, con criterio visual en cada decisión. Trabajamos junto a tu equipo de desarrollo y entregamos interfaces listas para construir: lo que entregamos es lo que tus usuarios verán.",
+    );
+    expect(design.items).toEqual([
+      "Diseño UI y UX",
+      "MVP y prototipos",
+      "Flujos de usuario y wireframes",
+      "Diseño mobile y responsive",
+      "Pruebas de usabilidad e iteración",
+    ]);
+    expect(design.price).toBe("Desde USD 600");
+    expect(design.priceNote).toBe("o dependiendo del requerimiento");
+    expect(html).toContain(`<h3 class="s-services-panel-title">${design.title}</h3>`);
+    expect(html).toContain(`<p class="s-services-panel-body s-label-md">${design.body}</p>`);
   });
 
   it("sets the bullet lists of the three services at 15px", () => {
