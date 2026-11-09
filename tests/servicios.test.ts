@@ -389,7 +389,7 @@ describe("landing de servicios v3", () => {
     expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${finalCta.ctaLabel}</a>`);
     for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
 
-    // Fondo decorativo: la misma grilla animada azul del hero, detrás del contenido y sobre el fondo plano de la página.
+    // Fondo decorativo: la grilla animada azul, detrás del contenido y sobre el fondo plano de la página.
     expect(section).toMatch(/<div class="s-cta-bg" aria-hidden="true">\s*<div class="s-grid" aria-hidden="true">/);
     expect(section.indexOf("s-cta-bg")).toBeLessThan(section.indexOf("s-cta-inner"));
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
@@ -535,37 +535,34 @@ describe("landing de servicios v3", () => {
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");
   });
 
-  it("draws only the animated grid behind a solid white hero title without third-party copy", async () => {
+  it("draws the v2 pixel background (canvas and vignette) behind a solid white hero title", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-hero"');
     const hero = html.slice(start, html.indexOf("</section>", start));
 
-    expect(hero).toContain('<div class="s-hero-bg" aria-hidden="true">');
-    // El fondo anterior (píxeles en canvas y viñeta) ya no está.
-    expect(hero).not.toContain("data-hero-pixels");
-    expect(hero).not.toContain("<canvas");
-    expect(hero).not.toContain("s-hero-vignette");
-    expect(existsSync(new URL("../src/scripts/servicios-pixels.ts", import.meta.url))).toBe(false);
+    // Fondo de píxeles de la v2: canvas animado por servicios-pixels.ts y viñeta, decorativos y detrás del contenido.
+    expect(hero).toMatch(/<div class="s-hero-bg" aria-hidden="true">\s*<canvas class="s-hero-pixels" data-hero-pixels><\/canvas>\s*<div class="s-hero-vignette"><\/div>/);
+    expect(existsSync(new URL("../src/scripts/servicios-pixels.ts", import.meta.url))).toBe(true);
     expect(hero.indexOf("s-hero-bg")).toBeLessThan(hero.indexOf("s-hero-inner"));
-    // Grilla animada azul (solo CSS), decorativa y con tres capas.
-    expect(hero.indexOf('class="s-grid"')).toBeGreaterThan(hero.indexOf("s-hero-bg"));
-    expect(hero).toMatch(/<div class="s-grid"[^>]*aria-hidden="true"[^>]*>\s*<span class="s-grid-glow"><\/span>\s*<span class="s-grid-fc"><\/span>/);
-    const gridCss = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(gridCss).toContain("--grid-accent: var(--color-blue-500);");
-    expect(gridCss).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-grid::before, \.s-grid::after, \.s-grid-glow \{ animation: none; \}/);
+    // La grilla animada azul queda solo para el CTA final.
+    expect(hero).not.toContain('class="s-grid"');
     expect(hero).not.toContain("s-hline");
     expect(html).not.toMatch(/silent precision|explore design|github\.com"/i);
+    const heroSource = readFileSync(new URL("../src/components/servicios/Hero.astro", import.meta.url), "utf8");
+    expect(heroSource).toContain('document.querySelectorAll<HTMLCanvasElement>("[data-hero-pixels]").forEach(initPixels);');
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-bg \{[^}]*z-index: -1/);
-    expect(css).not.toContain("--pixel-accent");
+    expect(css).toMatch(/\.s-hero-pixels \{\s*--pixel-muted: var\(--color-grey-400\);\s*--pixel-accent: var\(--color-blue-500\);/);
+    expect(css).toMatch(/\.s-hero-vignette \{[^}]*radial-gradient\(circle at center, transparent 0%, var\(--surface-page\) 100%\)/);
     // El título va en blanco sólido, sin el efecto de vidrio del componente original.
     expect(css).not.toContain("s-glass-shimmer");
     expect(css).not.toContain("background-clip: text");
     expect(css).toContain(".s-hero .s-logos { animation: none; }");
-    // Sin halo ni sombras de texto: eran para separar el título de los píxeles.
-    expect(css).not.toMatch(/\.s-hero-text::before/);
-    expect(css).not.toMatch(/\.s-hero-(title|lead) \{[^}]*text-shadow/);
+    // Halo y sombra del color de fondo para separar el título y la bajada de los píxeles.
+    expect(css).toMatch(/\.s-hero-text::before \{[^}]*radial-gradient\(closest-side/);
+    expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }");
+    expect(css).toContain(".s-hero-lead { text-shadow: 0 0 16px var(--surface-page), 0 0 6px var(--surface-page); }");
   });
 
   it("gives the problem section 120px of vertical padding on desktop and keeps the others at 96px", () => {

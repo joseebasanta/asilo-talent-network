@@ -1,16 +1,16 @@
 ---
 // Hero de la landing de servicios v3 (Figma: Asilo Core, nodo 8951:3083).
 import { clientLogos, hero } from "../../data/servicios";
-import AnimatedGrid from "./AnimatedGrid.astro";
 
 // La franja se repite cuatro veces y se desplaza la mitad de su ancho en bucle: así no queda un hueco
 // ni en pantallas anchas. Solo la primera copia se anuncia; las demás son decorativas.
 const copies = [0, 1, 2, 3];
 ---
 <section class="s-hero" id="inicio" aria-labelledby="hero-title">
-  <!-- Fondo: grilla animada azul con resplandor (adaptada de "animated-grid"), solo CSS. -->
+  <!-- Fondo (de la v2): grilla de píxeles que aparece en onda desde el centro, con viñeta (adaptado de "pixel-perfect-hero"). -->
   <div class="s-hero-bg" aria-hidden="true">
-    <AnimatedGrid />
+    <canvas class="s-hero-pixels" data-hero-pixels></canvas>
+    <div class="s-hero-vignette"></div>
   </div>
   <div class="s-hero-inner">
     <div class="s-hero-text">
@@ -51,3 +51,9 @@ const copies = [0, 1, 2, 3];
     </div>
   </div>
 </section>
+
+<script>
+  import { initPixels } from "../../scripts/servicios-pixels";
+
+  document.querySelectorAll<HTMLCanvasElement>("[data-hero-pixels]").forEach(initPixels);
+</script>

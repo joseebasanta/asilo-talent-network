@@ -303,13 +303,32 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-hero-title-line + .s-hero-title-line { font-weight: 500; }
 .s-hero-title-dot { font-weight: 600; }
 
-/* Fondo del hero (grilla animada, ver .s-grid más abajo): queda detrás del contenido gracias a isolation + z-index -1. */
+/* Fondo del hero (píxeles en canvas y viñeta): queda detrás del contenido gracias a isolation + z-index -1. */
 .s-hero-bg {
   position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
   /* La grilla se apaga al final del hero para no cortarse en seco. */
   -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
   mask-image: linear-gradient(to bottom, #000 80%, transparent);
 }
+/* Fondo de píxeles (servicios-pixels.ts, de la v2): 4 de cada 5 píxeles en gris y 1 en azul; el script lee estos colores. */
+.s-hero-pixels {
+  --pixel-muted: var(--color-grey-400);
+  --pixel-accent: var(--color-blue-500);
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+}
+/* Viñeta: oscurece los bordes para que la grilla se concentre detrás del texto. */
+.s-hero-vignette {
+  position: absolute; inset: 0; opacity: 0.8;
+  background: radial-gradient(circle at center, transparent 0%, var(--surface-page) 100%);
+}
+/* Halo oscuro detrás del título y la bajada para separarlos de los píxeles; se desvanece hacia afuera. */
+.s-hero-text::before {
+  content: ""; position: absolute; inset: -48px -64px; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--surface-page) 85%, transparent), transparent);
+}
+/* Sombra difusa del color de fondo alrededor de cada letra para que no se mezclen con los píxeles. */
+.s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }
+.s-hero-lead { text-shadow: 0 0 16px var(--surface-page), 0 0 6px var(--surface-page); }
 /* Entrada: los botones y la franja de logos suben y aparecen al cargar. */
 @keyframes s-rise {
   from { opacity: 0; transform: translateY(32px); }
@@ -699,7 +718,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 
 /* CTA final (Figma: Asilo Core): título centrado y el botón al formulario. */
 .s-cta { position: relative; isolation: isolate; overflow: hidden; padding: 64px var(--page-gutter); }
-/* Fondo del CTA: la misma grilla animada azul del hero (AnimatedGrid, ver .s-grid) sobre el fondo plano de la página,
+/* Fondo del CTA: la grilla animada azul (AnimatedGrid, ver .s-grid) sobre el fondo plano de la página,
    sin degradado, cuadritos ni halos de texto, para que se vea como el resto de la landing. */
 .s-cta-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .s-cta-inner {
@@ -1002,7 +1021,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-footer-inner { gap: 48px; padding-top: 56px; }
 }
 
-/* Grilla animada del hero (adaptada de "animated-grid"): dos grillas con degradados que derivan despacio y un
+/* Grilla animada del CTA final (adaptada de "animated-grid"): dos grillas con degradados que derivan despacio y un
    resplandor azul que pulsa. El color de línea es grey-600 (sobre el fondo casi negro grey-800 no se ve) y el
    acento, el azul de marca (blue-500). */
 .s-grid {
