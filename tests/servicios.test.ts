@@ -470,6 +470,10 @@ describe("landing de servicios v3", () => {
     const strip = hero.slice(hero.indexOf('<div class="s-logos">'));
     expect(strip.match(/aria-hidden="true"/g)).toHaveLength(3);
     expect(hero.match(/<li class="s-logos-item">/g)).toHaveLength(clientLogos.length * 4);
+    // Solo la primera copia lleva alt con texto; las otras tres, alt="". Todas cargan en diferido.
+    // Astro escribe alt="" como el atributo vacío `alt`, que en HTML equivale a alt="".
+    expect(strip.match(/ alt(="")?(?=[\s>])/g)).toHaveLength(clientLogos.length * 3);
+    expect(strip.match(/loading="lazy" decoding="async"/g)).toHaveLength(clientLogos.length * 4);
     for (const logo of clientLogos) {
       expect(hero).toContain(`alt="${logo.alt}"`);
       expect(existsSync(new URL(`../public${logo.src}`, import.meta.url))).toBe(true);
@@ -477,8 +481,16 @@ describe("landing de servicios v3", () => {
     expect(hero).not.toMatch(/webflow|relume/i);
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toContain("animation: s-logos-scroll 80s linear infinite");
-    // Cinco clientes reales (Figma 8990:3056); desde 1280px la franja queda quieta, centrada y sin copias.
+    // 80s por vuelta con seis logos (~33px/s); la duración escala con la cantidad de logos.
+    expect(css).toContain("animation: s-logos-scroll calc(var(--logos-count, 6) * 80s / 6) linear infinite;");
+    expect(css).toContain("@keyframes s-logos-scroll { to { transform: translateX(-50%); } }");
+    expect(strip).toContain(`<div class="s-logos-track" style="--logos-count: ${clientLogos.length}">`);
+    expect(css).toContain(".s-logos:hover .s-logos-track { animation-play-state: paused; }");
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-logos-track \{ animation: none; \}/);
+    // La pista arranca a la izquierda: centrada dejaba un hueco al final de cada vuelta.
+    expect(css).toMatch(/\.s-logos \{\s*display: flex; justify-content: flex-start; overflow: hidden;/);
+    expect(css).toContain("margin: 64px calc(-1 * var(--page-gutter)) 0;");
+    // Cinco clientes reales (Figma 8990:3056); la franja se desplaza en todos los tamaños.
     expect(clientLogos.map((l) => l.alt)).toEqual(["Empléate", "Tilín", "Trazando Futuros", "CRT", "Intellivia"]);
     for (const logo of clientLogos) expect(hero).toContain(`width="${logo.width}" height="${logo.height}"`);
     // Empléate un 30 % más grande, Intellivia un 25 % y CRT un 15 % más chicos que la altura base de 28px.
@@ -487,7 +499,7 @@ describe("landing de servicios v3", () => {
     expect(hero).toContain("--logo-scale: 0.75");
     expect(hero).toContain("--logo-scale: 0.85");
     expect(css).toContain("height: calc(28px * var(--logo-scale, 1));");
-    expect(css).toContain(".s-logos-set:not(:first-child) { display: none; }");
+    expect(css).not.toContain(".s-logos-set:not(:first-child) { display: none; }");
     expect(css).not.toContain("opacity: 0.58");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent)");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");

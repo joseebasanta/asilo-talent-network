@@ -35,7 +35,8 @@ const copies = [0, 1, 2, 3];
     </div>
   </div>
   <div class="s-logos">
-    <div class="s-logos-track">
+    <!-- --logos-count ajusta la duración de la vuelta para mantener unos 33px por segundo. -->
+    <div class="s-logos-track" style={`--logos-count: ${clientLogos.length}`}>
       {
         copies.map((copy) => (
           <ul class="s-logos-set" aria-label={copy === 0 ? "Clientes" : undefined} aria-hidden={copy === 0 ? undefined : "true"}>

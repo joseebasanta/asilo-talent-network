@@ -321,16 +321,19 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-hero .s-logos { animation: none; }
 }
 
-/* Franja de logos (Figma 91:7568): espacios de 200×56 cada 24px que se desplazan sin fin, de borde a borde. */
+/* Franja de logos (Figma 91:7568): espacios de 200×56 cada 24px que se desplazan sin fin, de borde a borde.
+   La pista arranca en el borde izquierdo (flex-start, no center): centrada, al final de cada vuelta su borde derecho
+   llegaba a la mitad de la franja y dejaba un hueco antes de reiniciar. Así cubre hasta 2 copias (2240px con 5 logos). */
 .s-logos {
-  display: flex; justify-content: center; overflow: hidden;
+  display: flex; justify-content: flex-start; overflow: hidden;
   margin: 64px calc(-1 * var(--page-gutter)) 0; padding-block: 16px;
   /* Desvanecido ancho en los dos bordes: los logos entran y salen sin corte. */
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
 }
-/* 80s por vuelta. */
-.s-logos-track { display: flex; flex: none; animation: s-logos-scroll 80s linear infinite; }
+/* 80s por vuelta con seis logos (unos 33px por segundo). La vuelta recorre 2 copias de 224px por logo, así que la
+   duración se ajusta con --logos-count (lo pone Hero.astro) para mantener esa velocidad con otra cantidad. */
+.s-logos-track { display: flex; flex: none; animation: s-logos-scroll calc(var(--logos-count, 6) * 80s / 6) linear infinite; }
 .s-logos:hover .s-logos-track { animation-play-state: paused; }
 .s-logos-set { display: flex; flex: none; }
 /* Margen en vez de gap para que cada copia mida lo mismo y el bucle no salte. */
@@ -929,15 +932,6 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-cta { padding-block: 128px; }
   .s-problem-inner, .s-process-inner, .s-services-inner, .s-projects-inner { gap: 56px; }
   .s-footer-inner { gap: 48px; padding-top: 56px; }
-}
-
-/* Franja de logos (Figma): con cinco logos caben en una fila desde 1280px, así que ahí queda quieta y centrada, sin
-   copias. Por debajo no caben: sigue el desplazamiento continuo. */
-@media (min-width: 1280px) {
-  .s-logos { -webkit-mask-image: none; mask-image: none; }
-  .s-logos-track { animation: none; }
-  .s-logos-set:not(:first-child) { display: none; }
-  .s-logos-item:last-child { margin-right: 0; }
 }
 
 /* Grilla animada del hero (adaptada de "animated-grid"): dos grillas con degradados que derivan despacio y un
