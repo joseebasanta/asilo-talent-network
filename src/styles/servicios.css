@@ -879,7 +879,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-services-panel-title { font-size: 2rem; line-height: 1.3; }
 .s-services-panel-body { font-size: 1rem; font-weight: 400; line-height: 1.5; }
 .s-services-list { font-size: 0.9375rem; line-height: 1.5; }
-.s-project-description { font-size: 0.875rem; line-height: 1.5; }
+/* Textos de las tarjetas de El problema, los pasos de Cómo trabajamos y la descripción de cada proyecto: 15px. */
+.s-card-body, .s-project-description { font-size: 0.9375rem; line-height: 1.5; }
 .s-tag { font-size: 0.75rem; line-height: 1.5; }
 .s-testimonial-quote { font-size: 1.125rem; font-weight: 400; line-height: 1.5; }
 .s-cta .s-section-title { font-size: 2.625rem; line-height: 1.2; }
