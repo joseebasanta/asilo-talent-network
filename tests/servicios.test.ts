@@ -564,6 +564,22 @@ describe("landing de servicios v3", () => {
     expect(css).toMatch(/\.s-carousel-arrow \{[^}]*border-radius: 2px;/);
   });
 
+  it("draws the process steps as 2px-radius squares with a one-time blue flash along the line", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-step-number \{[^}]*border-radius: 2px;/);
+    expect(css).not.toMatch(/\.s-step-number \{[^}]*border-radius: 50%/);
+    // El destello corre una sola vez, tras dibujarse la línea, y termina en el centro del tercer cuadrado.
+    expect(css).toContain(".s-steps.is-in::after { animation: s-steps-flash var(--flash-dur) linear var(--flash-start) both; }");
+    expect(css).toContain("--flash-end: calc(100% - (100% - 48px) / 6);");
+    expect(css).toMatch(/@keyframes s-steps-flash \{[^@]*100% \{ left: var\(--flash-end\); opacity: 0; \}/);
+    // Cada cuadrado enciende su borde cuando la luz lo cruza, en orden.
+    expect(css).toContain(".s-step:nth-child(1) { --flash-at: 0.19; }");
+    expect(css).toContain(".s-step:nth-child(3) { --flash-at: 1; }");
+    expect(css).toMatch(/\.s-steps\.is-in \.s-step-number \{\s*animation: s-step-flash 900ms/);
+    // Sin destello con movimiento reducido ni con colores forzados.
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\), \(forced-colors: active\) \{\s*\.s-steps::after \{ display: none; \}\s*\.s-steps\.is-in \.s-step-number \{ animation: none; \}/);
+  });
+
   it("centers the hero title and subtitle", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: center;[^}]*text-align: center;/);

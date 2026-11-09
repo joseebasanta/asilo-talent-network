@@ -589,7 +589,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-step .s-card-text { align-items: center; max-width: 320px; }
 .s-step-number {
   position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px;
-  border: 1px solid var(--border-subtle); border-radius: 50%; background: var(--surface-page);
+  border: 1px solid var(--border-subtle); border-radius: 2px; background: var(--surface-page);
   color: var(--fg-body); font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums;
 }
 .s-step-arrow { display: flex; margin-top: 8px; color: var(--fg-body); opacity: 0.4; }
@@ -780,10 +780,54 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-card--feature:hover .s-card-decorator-icon { transform: scale(1.1); }
 }
 
-/* Pasos de "Cómo trabajamos": la línea se dibuja de izquierda a derecha y los círculos aparecen en orden. */
+/* Pasos de "Cómo trabajamos": la línea se dibuja de izquierda a derecha y los cuadrados aparecen en orden. */
 @media (min-width: 768px) {
   .s-steps::before { transform-origin: left center; transition: transform 1100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms; }
   .s-js .s-steps:not(.is-in)::before { transform: scaleX(0); }
+}
+
+/* Destello: cuando la línea termina de dibujarse, una luz azul muy suave la recorre una vez de izquierda a derecha
+   y se apaga al llegar al centro del tercer cuadrado. Pasa por detrás de los cuadrados (que tapan la línea) y el
+   borde de cada uno se enciende en azul justo cuando la luz lo cruza. Solo en tablet y escritorio, donde está la
+   línea; con prefers-reduced-motion o colores forzados no aparece. */
+@media (min-width: 768px) {
+  .s-steps {
+    --flash-start: 1300ms; --flash-dur: 1800ms;
+    /* El centro del tercer cuadrado: 3 columnas iguales con 24px entre ellas. */
+    --flash-end: calc(100% - (100% - 48px) / 6);
+  }
+  .s-steps::after {
+    content: ""; position: absolute; top: 24px; left: 0; width: 160px; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--color-blue-500) 35%, var(--color-blue-300) 50%, var(--color-blue-500) 65%, transparent);
+    filter: drop-shadow(0 0 4px var(--color-blue-500));
+    transform: translateX(-50%); opacity: 0;
+  }
+  .s-steps.is-in::after { animation: s-steps-flash var(--flash-dur) linear var(--flash-start) both; }
+  /* Momento en que la luz cruza cada cuadrado, como fracción del recorrido (centros a 19 %, 59,5 % y 100 %). */
+  .s-step:nth-child(1) { --flash-at: 0.19; }
+  .s-step:nth-child(2) { --flash-at: 0.595; }
+  .s-step:nth-child(3) { --flash-at: 1; }
+  /* El brillo del borde llega a su punto máximo (25 % de 900ms) justo cuando la luz pasa por el cuadrado. */
+  .s-steps.is-in .s-step-number {
+    animation: s-step-flash 900ms ease-out calc(var(--flash-start) + var(--flash-dur) * var(--flash-at) - 225ms) both;
+  }
+}
+@keyframes s-steps-flash {
+  0% { left: 0; opacity: 0; }
+  10% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: var(--flash-end); opacity: 0; }
+}
+@keyframes s-step-flash {
+  0%, 100% { border-color: var(--border-subtle); box-shadow: none; }
+  25% {
+    border-color: color-mix(in oklab, var(--color-blue-400) 70%, var(--border-subtle));
+    box-shadow: 0 0 12px color-mix(in oklab, var(--color-blue-500) 35%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .s-steps::after { display: none; }
+  .s-steps.is-in .s-step-number { animation: none; }
 }
 .s-step-number { transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i, 0) * 180ms + 300ms), opacity 400ms ease calc(var(--i, 0) * 180ms + 300ms); }
 .s-js .s-steps:not(.is-in) .s-step-number { transform: scale(0.4); opacity: 0; }
@@ -850,7 +894,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-card-body { color: var(--fg-muted); letter-spacing: 0; text-wrap: wrap; }
 .s-card-title { text-wrap: wrap; }
 
-/* Cómo trabajamos: número de 12px en peso 500 y grey-400; 24px entre columnas. */
+/* Cómo trabajamos: número de 12px en peso 500 y grey-400 dentro de un cuadrado de 48px con radio 2; 24px entre columnas. */
 .s-step-number { font-weight: 500; color: var(--fg-muted); }
 .s-step .s-card-title { line-height: 34px; }
 @media (min-width: 768px) {

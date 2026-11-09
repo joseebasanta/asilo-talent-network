@@ -1,10 +1,10 @@
 ---
-// "Cómo trabajamos" (Figma: Asilo Core): título centrado y tres pasos con círculo numerado unidos por una línea
+// "Cómo trabajamos" (Figma: Asilo Core): título centrado y tres pasos con cuadrado numerado unidos por una línea
 // (adaptado de "how-it-works-09"). En móvil los pasos se apilan con una flecha entre ellos.
 import { processCards, processSection } from "../../data/servicios";
 import SectionHead from "./SectionHead.astro";
 
-// Los títulos vienen como "01 · Diagnosticamos": el número va en el círculo y el resto es el título.
+// Los títulos vienen como "01 · Diagnosticamos": el número va en el cuadrado y el resto es el título.
 const steps = processCards.map((card) => {
   const [n, ...rest] = card.title.split(" · ");
   return { n, title: rest.join(" · "), body: card.body };
