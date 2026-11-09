@@ -616,6 +616,12 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-problem .s-section-lead { max-width: 776px; margin-inline: auto; }");
   });
 
+  it("sets the service tabs one step up the label scale (Label/XL, 24px)", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-services-tab { font: var(--text-label-xl); letter-spacing: var(--text-label-xl-tracking); color: var(--color-grey-500); }");
+    expect(css).toContain("--text-label-xl: 500 1.5rem/1.5 var(--font-sans);");
+  });
+
   it("sets the footer tagline at 16px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-footer-tagline { font-size: 1rem; line-height: 1.35; max-width: 280px; }");
