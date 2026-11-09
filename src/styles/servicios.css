@@ -874,8 +874,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 /* ==========================================================================
    Tamaños del Figma (Asilo Core, nodo 8951:3082): todo en Switzer. Va al final para ganar sobre las reglas anteriores.
    ========================================================================== */
-.s-projects .s-section-lead { font-size: 1rem; line-height: 1.5; }
-.s-problem .s-section-lead, .s-process .s-section-lead { font-size: 1.125rem; line-height: 1.5; }
+.s-problem .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead { font-size: 1.125rem; line-height: 1.5; }
 .s-services-tab { font-size: 1.125rem; line-height: 1.5; }
 .s-services-panel-title { font-size: 2rem; line-height: 1.3; }
 .s-services-panel-body { font-size: 1rem; font-weight: 400; line-height: 1.5; }
@@ -901,7 +900,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-section-lead { text-wrap: wrap; }
 .s-problem .s-section-lead { max-width: 692px; margin-inline: auto; }
 .s-process .s-section-lead { max-width: 776px; margin-inline: auto; }
-.s-projects .s-section-lead { max-width: 640px; margin-inline: auto; }
+/* 720px: a 18px la bajada de Proyectos cabe en una línea (con 640px "Venezuela." quedaba sola abajo). */
+.s-projects .s-section-lead { max-width: 720px; margin-inline: auto; }
 /* En Figma, "Tu app crece…" va en peso 400 y el resto de los títulos en 500. */
 .s-problem .s-section-title { font-weight: 400; }
 
