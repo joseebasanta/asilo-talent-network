@@ -109,7 +109,7 @@ export const projects: Project[] = [
       src: "/servicios/proyectos/intellivia.webp",
       alt: "Intellivia: inicio del sitio del estudio jurídico, con el título “Acompañamiento legal para impulsar soluciones tecnológicas” y el Kit Legal para Startups",
     },
-    video: "/servicios/proyectos/intellivia-recorrido.mp4",
+    video: "/servicios/proyectos/intellivia-hover.mp4",
   },
   {
     name: "Tillín",
