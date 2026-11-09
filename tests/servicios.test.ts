@@ -546,6 +546,13 @@ describe("landing de servicios v3", () => {
     expect(css.match(/\.s-problem[^{]*\{[^}]*padding-block: 96px/g)).toBeNull();
   });
 
+  it("draws no divider lines between sections", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    for (const section of ["s-hero", "s-problem", "s-services", "s-process", "s-projects", "s-testimonials", "s-cta", "s-footer"]) {
+      expect(css).not.toMatch(new RegExp(`\\.${section}(,[^{]*)? \\{[^}]*border-(top|bottom):\\s*1px`));
+    }
+  });
+
   it("centers the hero title and subtitle", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: center;[^}]*text-align: center;/);
