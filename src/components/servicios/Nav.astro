@@ -13,7 +13,15 @@ import { navLinks } from "../../data/servicios";
     </button>
     <nav class="s-nav-menu" id="menu-principal" aria-label="Navegación principal" data-nav-menu>
       <ul class="s-nav-links">
-        {navLinks.map((link) => <li><a class="s-paragraph-md" href={link.href}>{link.label}</a></li>)}
+        {
+          navLinks.map((link) =>
+            link.cta ? (
+              <li class="s-nav-links-cta"><a class="s-nav-cta s-btn s-btn--sm s-btn--primary" href={link.href}>{link.label}</a></li>
+            ) : (
+              <li><a class="s-paragraph-md" href={link.href}>{link.label}</a></li>
+            ),
+          )
+        }
       </ul>
     </nav>
   </div>

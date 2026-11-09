@@ -265,6 +265,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   transition: color 160ms ease;
 }
 .s-nav-links a:hover { color: var(--fg-strong); }
+/* "Contacto" va como botón azul (s-btn--primary, tamaño sm de 32px), centrado con los enlaces y con texto blanco. */
+.s-nav-links { align-items: center; }
+.s-nav-links .s-nav-cta, .s-nav-links .s-nav-cta:hover { min-height: 32px; color: var(--color-white); }
 
 @media (min-width: 768px) {
   .s-nav-menu { display: block; }
@@ -1115,6 +1118,10 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-nav-links { flex-direction: column; gap: 0; }
   .s-nav-links li + li { border-top: 1px solid var(--color-grey-900); }
   .s-nav-links a { width: 100%; min-height: 52px; font-size: 1rem; }
+  /* En el menú, "Contacto" cierra la lista como botón azul de ancho completo, sin la línea divisoria de arriba. */
+  .s-nav-links { align-items: stretch; }
+  .s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }
+  .s-nav-links .s-nav-cta, .s-nav-links .s-nav-cta:hover { min-height: 48px; }
   /* Al saltar a una sección desde el menú, el título queda debajo del nav (72px) y no tapado. */
   .servicios main > section[id] { scroll-margin-top: 8px; }
 }

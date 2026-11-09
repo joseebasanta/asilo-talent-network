@@ -115,7 +115,7 @@ describe("landing de servicios v3", () => {
     expect(existsSync(new URL("../src/scripts/servicios-theme.ts", import.meta.url))).toBe(false);
   });
 
-  it("renders the nav with the logo and the section links only, as in Figma", async () => {
+  it("renders the nav with the logo, the section links and the Contacto button", async () => {
     const html = await render();
 
     // 72px de alto, sin línea inferior.
@@ -156,8 +156,8 @@ describe("landing de servicios v3", () => {
     expect(nav).toContain('id="menu-principal"');
     expect(navLinks.map((l) => l.label)).toEqual(["Servicios", "Cómo trabajamos", "Proyectos", "Contacto"]);
     for (const link of navLinks) expect(nav).toContain(`href="${link.href}">${link.label}</a>`);
-    // Figma: el nav no lleva botón, solo el logo y los links.
-    expect(nav).not.toContain("s-btn");
+    // El nav lleva el logo y los links; el único botón es "Contacto" (ver la prueba del botón del nav).
+    expect(nav.match(/class="[^"]*s-btn[ "]/g)).toHaveLength(1);
     expect(nav).not.toContain("s-nav-actions");
     // El "Contáctanos" del cierre lleva al formulario de contacto en Notion.
     expect(CTA_LABEL).toBe("Contáctanos");
@@ -676,6 +676,18 @@ describe("landing de servicios v3", () => {
     expect(ds.price).toBe("Desde USD 800");
     expect(html).toContain(`<h3 class="s-services-panel-title">${ds.title}</h3>`);
     expect(html).toContain(`<p class="s-services-panel-body s-label-md">${ds.body}</p>`);
+  });
+
+  it("shows 'Contacto' in the nav as a blue primary button that points to the contact section", async () => {
+    const html = await render();
+    const nav = html.slice(html.indexOf('<header class="s-nav"'), html.indexOf("</header>"));
+    expect(navLinks.filter((l) => l.cta).map((l) => l.label)).toEqual(["Contacto"]);
+    expect(nav).toContain('<li class="s-nav-links-cta"><a class="s-nav-cta s-btn s-btn--sm s-btn--primary" href="#contacto">Contacto</a></li>');
+    // Los demás enlaces siguen siendo texto.
+    expect(nav.match(/s-btn--primary/g)).toHaveLength(1);
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-nav-links .s-nav-cta, .s-nav-links .s-nav-cta:hover { min-height: 32px; color: var(--color-white); }");
+    expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
   });
 
   it("reveals the projects section with a slower, softer entrance that respects reduced motion", () => {

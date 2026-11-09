@@ -19,6 +19,8 @@ export const CTA_HREF = "https://shorthaired-raft-3f2.notion.site/c78219767f6a48
 export interface NavLink {
   label: string;
   href: string;
+  /** Se muestra como botón azul (llamado a la acción del nav). */
+  cta?: boolean;
 }
 
 // Nav (Figma: Asilo Services, nodo 91:7190). Las anclas apuntan a secciones que se van sumando.
@@ -26,7 +28,7 @@ export const navLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios" },
   { label: "Cómo trabajamos", href: "#como-trabajamos" },
   { label: "Proyectos", href: "#trabajo" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Contacto", href: "#contacto", cta: true },
 ];
 
 // Hero (Figma: Asilo Core, nodo 8951:3083).
