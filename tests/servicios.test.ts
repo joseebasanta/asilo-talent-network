@@ -681,6 +681,11 @@ describe("landing de servicios v3", () => {
     expect(html).toContain(`<p class="s-services-panel-body s-label-md">${ds.body}</p>`);
   });
 
+  it("gives the problem cards 24px of side padding so their text fits in three lines on desktop", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-card--feature { align-items: center; gap: 24px; padding-inline: 24px; text-align: center; }");
+  });
+
   it("sets the problem cards, process steps and project descriptions at 15px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-card-body, .s-project-description { font-size: 0.9375rem; line-height: 1.5; }");

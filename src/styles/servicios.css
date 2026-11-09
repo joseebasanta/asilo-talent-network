@@ -581,7 +581,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 /* Tarjeta con decorador (adaptada de "features-2"): texto centrado y un cuadrado de 144px con grilla difuminada
    que sostiene el ícono. */
-.s-card--feature { align-items: center; gap: 24px; text-align: center; }
+/* 24px a los lados (28px arriba y abajo): el texto de la tercera tarjeta entra en 3 líneas en escritorio. */
+.s-card--feature { align-items: center; gap: 24px; padding-inline: 24px; text-align: center; }
 .s-card--feature .s-card-text { align-items: center; }
 .s-card-decorator {
   position: relative; width: 144px; height: 144px; flex: none; color: var(--fg-strong);
