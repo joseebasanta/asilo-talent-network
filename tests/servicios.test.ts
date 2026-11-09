@@ -678,6 +678,14 @@ describe("landing de servicios v3", () => {
     expect(html).toContain(`<p class="s-services-panel-body s-label-md">${ds.body}</p>`);
   });
 
+  it("reveals the projects section with a slower, softer entrance that respects reduced motion", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-projects \[data-reveal\] \{\s*transition:\s*opacity 1100ms cubic-bezier\(0\.33, 1, 0\.68, 1\) calc\(var\(--reveal-i, 0\) \* 160ms\),\s*transform 1400ms cubic-bezier\(0\.33, 1, 0\.68, 1\) calc\(var\(--reveal-i, 0\) \* 160ms\);/);
+    expect(css).toContain(".s-js .s-projects [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(40px) scale(0.98); }");
+    // Con movimiento reducido no hay transición (la regla más específica también se anula).
+    expect(css).toContain("  [data-reveal], .s-projects [data-reveal], .s-step-number, .s-step .s-card-text, .s-steps::before, .s-btn, .s-card-decorator-grid, .s-card-decorator-icon { transition: none; }");
+  });
+
   it("gives the problem cards 24px of side padding so their text fits in three lines on desktop", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-card--feature { align-items: center; gap: 24px; padding-inline: 24px; text-align: center; }");
