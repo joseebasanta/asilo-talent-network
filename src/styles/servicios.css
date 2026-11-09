@@ -603,7 +603,7 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-problem, .s-process { padding-block: 80px; }
 }
 @media (min-width: 1024px) {
-  .s-problem, .s-process { padding-block: 96px; }
+  .s-process { padding-block: 96px; }
   .s-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (min-width: 768px) {
@@ -926,9 +926,11 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-footer-social { margin-top: -6px; }
 }
 
-/* Secciones de escritorio: 96px arriba y abajo (128px en el CTA) y 56px entre encabezado y contenido. */
+/* Secciones de escritorio: 96px arriba y abajo (120px en El problema, 128px en el CTA) y 56px entre encabezado y
+   contenido. */
 @media (min-width: 1024px) {
-  .s-problem, .s-services, .s-process, .s-projects, .s-testimonials { padding-block: 96px; }
+  .s-services, .s-process, .s-projects, .s-testimonials { padding-block: 96px; }
+  .s-problem { padding-block: 120px; }
   .s-cta { padding-block: 128px; }
   .s-problem-inner, .s-process-inner, .s-services-inner, .s-projects-inner { gap: 56px; }
   .s-footer-inner { gap: 48px; padding-top: 56px; }

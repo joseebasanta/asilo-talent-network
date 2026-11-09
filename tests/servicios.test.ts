@@ -538,6 +538,14 @@ describe("landing de servicios v3", () => {
     expect(css).not.toMatch(/\.s-hero-(title|lead) \{[^}]*text-shadow/);
   });
 
+  it("gives the problem section 120px of vertical padding on desktop and keeps the others at 96px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    const desktop = css.slice(css.lastIndexOf("/* Secciones de escritorio"));
+    expect(desktop).toContain(".s-services, .s-process, .s-projects, .s-testimonials { padding-block: 96px; }");
+    expect(desktop).toContain(".s-problem { padding-block: 120px; }");
+    expect(css.match(/\.s-problem[^{]*\{[^}]*padding-block: 96px/g)).toBeNull();
+  });
+
   it("centers the hero title and subtitle", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: center;[^}]*text-align: center;/);
