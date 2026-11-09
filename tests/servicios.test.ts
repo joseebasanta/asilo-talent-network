@@ -656,6 +656,26 @@ describe("landing de servicios v3", () => {
     expect(html).toContain(`<p class="s-services-panel-body s-label-md">${design.body}</p>`);
   });
 
+  it("renders the Design System panel with the approved copy", async () => {
+    const html = await render();
+    const ds = serviceTabs.find((t) => t.id === "design-system")!;
+    expect(ds.label).toBe("Design System");
+    expect(ds.title).toBe("Diseña y escala tu producto sin perder coherencia.");
+    expect(ds.body).toBe(
+      "Ordenamos las decisiones de tu producto y las convertimos en componentes, estilos y reglas claras que tu equipo puede reutilizar, para que cada pantalla nueva mantenga la coherencia con la anterior.",
+    );
+    expect(ds.items).toEqual([
+      "Auditoría de la interfaz existente",
+      "Tokens de color, tipografía y espaciado",
+      "Librería de componentes",
+      "Documentación de uso",
+      "Traspaso al equipo de desarrollo",
+    ]);
+    expect(ds.price).toBe("Desde USD 800");
+    expect(html).toContain(`<h3 class="s-services-panel-title">${ds.title}</h3>`);
+    expect(html).toContain(`<p class="s-services-panel-body s-label-md">${ds.body}</p>`);
+  });
+
   it("sets the bullet lists of the three services at 15px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-services-list { font-size: 0.9375rem; line-height: 1.5; }");

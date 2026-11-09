@@ -144,8 +144,7 @@ export const servicesSection = {
   subtitle: "Diseño de productos digitales UX/UI desde Venezuela, con enfoque global",
 };
 
-// TODO: en Figma solo está armado el panel de UX Audit. El copy de "Diseño y rediseño" sale de la v2
-// (pestaña Product Design) y el de "Design System" es provisional: confirmarlos con el equipo.
+// Copy de los tres servicios confirmado por el equipo.
 export const serviceTabs: ServiceTab[] = [
   {
     id: "ux-audit",
@@ -179,8 +178,8 @@ export const serviceTabs: ServiceTab[] = [
   {
     id: "design-system",
     label: "Design System",
-    title: "Un sistema que guarde tus decisiones de diseño.",
-    body: "Ordenamos las decisiones de tu producto en componentes, estilos y reglas que tu equipo puede reutilizar, para que cada pantalla nueva mantenga la coherencia de la anterior.",
+    title: "Diseña y escala tu producto sin perder coherencia.",
+    body: "Ordenamos las decisiones de tu producto y las convertimos en componentes, estilos y reglas claras que tu equipo puede reutilizar, para que cada pantalla nueva mantenga la coherencia con la anterior.",
     items: [
       "Auditoría de la interfaz existente",
       "Tokens de color, tipografía y espaciado",
