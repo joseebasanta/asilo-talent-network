@@ -898,7 +898,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-services .s-section-head-text { gap: 4px; }
 .s-services .s-section-lead { line-height: 28px; }
 .s-section-lead { text-wrap: wrap; }
-.s-problem .s-section-lead { max-width: 692px; margin-inline: auto; }
+/* 776px, como Cómo trabajamos: a 18px la bajada de El problema (unos 1480px en una línea) entra en dos líneas desde
+   1024px; en tablet (720px de ancho útil) ocupa tres. */
+.s-problem .s-section-lead { max-width: 776px; margin-inline: auto; }
 .s-process .s-section-lead { max-width: 776px; margin-inline: auto; }
 /* 720px: a 18px la bajada de Proyectos cabe en una línea (con 640px "Venezuela." quedaba sola abajo). */
 .s-projects .s-section-lead { max-width: 720px; margin-inline: auto; }

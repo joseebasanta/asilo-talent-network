@@ -613,6 +613,7 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-problem .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead { font-size: 1.125rem; line-height: 1.5; }");
     expect(css).not.toMatch(/\.s-section-lead[^{]*\{[^}]*font-size: 1rem/);
     expect(css).toContain(".s-projects .s-section-lead { max-width: 720px; margin-inline: auto; }");
+    expect(css).toContain(".s-problem .s-section-lead { max-width: 776px; margin-inline: auto; }");
   });
 
   it("sets the footer tagline at 16px", () => {
