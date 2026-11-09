@@ -616,6 +616,25 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-problem .s-section-lead { max-width: 776px; margin-inline: auto; }");
   });
 
+  it("renders the UX Audit panel with the approved copy", async () => {
+    const html = await render();
+    const ux = serviceTabs.find((t) => t.id === "ux-audit")!;
+    expect(ux.title).toBe("Auditoría de UX/UI");
+    expect(ux.body).toBe(
+      "Para equipos que saben que algo no funciona, pero no saben qué arreglar primero. Revisamos tu producto con heurísticas de UX/UI, flujos, performance, y te entregamos los hallazgos por severidad con una hoja de ruta clara.",
+    );
+    expect(ux.items).toEqual([
+      "Evaluación heurística de UX/UI",
+      "Flujos clave y arquitectura de información",
+      "Revisión de consistencia visual y de marca",
+      "Hallazgos por severidad, prioridades claras y hoja de ruta",
+      "Presentación en vivo con tu equipo",
+    ]);
+    expect(ux.price).toBe("Desde USD 500");
+    expect(html).toContain(`<p class="s-services-panel-body s-label-md">${ux.body}</p>`);
+    for (const item of ux.items) expect(html).toContain(`<li>${item}</li>`);
+  });
+
   it("sets the service tabs at 20px with the label style", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-services-tab { font: var(--text-label-lg); font-size: 1.25rem; letter-spacing: var(--text-label-lg-tracking); color: var(--color-grey-500); }");
