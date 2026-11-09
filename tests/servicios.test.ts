@@ -635,6 +635,11 @@ describe("landing de servicios v3", () => {
     for (const item of ux.items) expect(html).toContain(`<li>${item}</li>`);
   });
 
+  it("sets the bullet lists of the three services at 15px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-services-list { font-size: 0.9375rem; line-height: 1.5; }");
+  });
+
   it("sets the service tabs at 20px with the label style", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-services-tab { font: var(--text-label-lg); font-size: 1.25rem; letter-spacing: var(--text-label-lg-tracking); color: var(--color-grey-500); }");
