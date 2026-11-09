@@ -85,7 +85,7 @@ export interface Project {
   description: string;
   tags: string[];
   image: { src: string; alt: string };
-  /** Recorrido en video (MP4, 4:3, sin audio) que se reproduce sobre la imagen al pasar el mouse. */
+  /** Recorrido en video (MP4, 4:3, sin audio) sobre la imagen: en hover con mouse y, en móvil, al estar a la vista. */
   video?: string;
 }
 

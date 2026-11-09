@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { initProjectVideos } from "../src/scripts/servicios-project-video";
+import { IN_VIEW_RATIO, initProjectVideos } from "../src/scripts/servicios-project-video";
 
 const markup = `
 <ul>
@@ -26,6 +26,34 @@ function stubMedia(canHover: boolean, reduced = false) {
   );
 }
 
+// IntersectionObserver falso: guarda cada observador para disparar "entra/sale de pantalla" a mano.
+type FakeEntry = { isIntersecting: boolean; intersectionRatio: number; target: Element };
+class FakeObserver {
+  static all: FakeObserver[] = [];
+  targets: Element[] = [];
+  constructor(
+    public callback: (entries: FakeEntry[]) => void,
+    public options: IntersectionObserverInit = {},
+  ) {
+    FakeObserver.all.push(this);
+  }
+  observe(el: Element) {
+    this.targets.push(el);
+  }
+  unobserve(el: Element) {
+    this.targets = this.targets.filter((t) => t !== el);
+  }
+  disconnect() {
+    this.targets = [];
+  }
+}
+// Simula que la imagen queda visible en la proporción dada (0 = fuera de pantalla).
+function showVideo(ratio: number) {
+  for (const o of FakeObserver.all) {
+    for (const target of o.targets) o.callback([{ isIntersecting: ratio > 0, intersectionRatio: ratio, target }]);
+  }
+}
+
 describe("project hover video", () => {
   let card: HTMLElement;
   let video: HTMLVideoElement;
@@ -40,9 +68,12 @@ describe("project hover video", () => {
     play = vi.fn(() => Promise.resolve());
     pause = vi.fn();
     Object.assign(video, { play, pause });
+    FakeObserver.all = [];
+    vi.stubGlobal("IntersectionObserver", FakeObserver);
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
@@ -86,10 +117,18 @@ describe("project hover video", () => {
     expect(video.classList.contains("is-playing")).toBe(false);
   });
 
-  it("keeps the still image on touch screens and with reduced motion", () => {
+  it("ignores mouse events on touch screens and keeps the still image with reduced motion", () => {
     stubMedia(false);
     initProjectVideos(document, window);
     card.dispatchEvent(new Event("mouseenter"));
+    expect(play).not.toHaveBeenCalled();
+
+    vi.restoreAllMocks();
+    Object.assign(video, { play, pause });
+    FakeObserver.all = [];
+    stubMedia(false, true);
+    initProjectVideos(document, window);
+    showVideo(1);
     expect(play).not.toHaveBeenCalled();
 
     vi.restoreAllMocks();
@@ -99,5 +138,36 @@ describe("project hover video", () => {
     card.dispatchEvent(new Event("mouseenter"));
     expect(play).not.toHaveBeenCalled();
     expect(video.preload).toBe("none");
+  });
+
+  it("plays on touch screens once the image is mostly in view, and stops when it leaves", () => {
+    stubMedia(false);
+    initProjectVideos(document, window);
+
+    showVideo(0.3);
+    expect(play).not.toHaveBeenCalled();
+    showVideo(IN_VIEW_RATIO);
+    expect(play).toHaveBeenCalledTimes(1);
+    expect(video.preload).toBe("auto");
+    video.dispatchEvent(new Event("playing"));
+    expect(video.classList.contains("is-playing")).toBe(true);
+
+    video.currentTime = 4;
+    showVideo(0);
+    expect(pause).toHaveBeenCalledTimes(1);
+    expect(video.classList.contains("is-playing")).toBe(false);
+    vi.advanceTimersByTime(300);
+    expect(video.currentTime).toBe(0);
+
+    // Al volver a la vista arranca de nuevo.
+    showVideo(0.9);
+    expect(play).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not autoplay on scroll when the device has a mouse (hover keeps control)", () => {
+    stubMedia(true);
+    initProjectVideos(document, window);
+    showVideo(1);
+    expect(play).not.toHaveBeenCalled();
   });
 });
