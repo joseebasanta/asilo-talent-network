@@ -608,6 +608,11 @@ describe("landing de servicios v3", () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\), \(forced-colors: active\) \{\s*\.s-steps::after \{ display: none; \}\s*\.s-steps\.is-in \.s-step-number \{ animation: none; \}/);
   });
 
+  it("sets the services description paragraph at 16px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-services-panel-body { font-size: 1rem; font-weight: 400; line-height: 1.5; }");
+  });
+
   it("centers the hero title and subtitle", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: center;[^}]*text-align: center;/);
