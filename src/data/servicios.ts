@@ -103,8 +103,10 @@ export const projects: Project[] = [
     name: "Intellivia",
     description: PLACEHOLDER_DESCRIPTION,
     tags: ["Landing page", "Legal Tech"],
-    // TODO: reemplazar por la imagen real del proyecto (hoy es un relleno con el logo).
-    image: { src: "/servicios/proyectos/intellivia.svg", alt: "Intellivia (imagen pendiente)" },
+    image: {
+      src: "/servicios/proyectos/intellivia.webp",
+      alt: "Intellivia: inicio del sitio del estudio jurídico, con el título “Acompañamiento legal para impulsar soluciones tecnológicas” y el Kit Legal para Startups",
+    },
   },
   {
     name: "Tillín",
