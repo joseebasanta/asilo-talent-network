@@ -546,9 +546,11 @@ describe("landing de servicios v3", () => {
     expect(css.match(/\.s-problem[^{]*\{[^}]*padding-block: 96px/g)).toBeNull();
   });
 
-  it("draws no divider lines between sections", () => {
+  it("keeps a single divider line, at the bottom of the hero", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    for (const section of ["s-hero", "s-problem", "s-services", "s-process", "s-projects", "s-testimonials", "s-cta", "s-footer"]) {
+    expect(css).toContain(".s-hero { border-bottom: 1px solid var(--color-grey-900); }");
+    expect(css).not.toMatch(/\.s-hero(,[^{]*)? \{[^}]*border-top:\s*1px/);
+    for (const section of ["s-problem", "s-services", "s-process", "s-projects", "s-testimonials", "s-cta", "s-footer"]) {
       expect(css).not.toMatch(new RegExp(`\\.${section}(,[^{]*)? \\{[^}]*border-(top|bottom):\\s*1px`));
     }
   });
