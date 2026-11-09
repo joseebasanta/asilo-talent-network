@@ -920,10 +920,9 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-steps { gap: 24px; }
 }
 
-/* Servicios: radio 12, pestañas de 380px en grey-500 (Label/XL, un paso sobre Label/Large), panel de 520px con 72px a
-   los lados. */
+/* Servicios: radio 12, pestañas de 380px en grey-500 (estilo Label/Large a 20px), panel de 520px con 72px a los lados. */
 .s-services-card { border-radius: 12px; }
-.s-services-tab { font: var(--text-label-xl); letter-spacing: var(--text-label-xl-tracking); color: var(--color-grey-500); }
+.s-services-tab { font: var(--text-label-lg); font-size: 1.25rem; letter-spacing: var(--text-label-lg-tracking); color: var(--color-grey-500); }
 .s-services-tab-arrow { color: var(--color-grey-400); opacity: 0.4; }
 .s-services-panel-body { letter-spacing: -0.006em; max-width: 600px; }
 .s-services-list { gap: 8px; padding-left: 0; list-style: none; letter-spacing: 0; }
