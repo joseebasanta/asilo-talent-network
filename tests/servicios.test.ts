@@ -608,6 +608,12 @@ describe("landing de servicios v3", () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\), \(forced-colors: active\) \{\s*\.s-steps::after \{ display: none; \}\s*\.s-steps\.is-in \.s-step-number \{ animation: none; \}/);
   });
 
+  it("sets the problem section lead at 18px and keeps process and projects at 16px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-problem .s-section-lead { font-size: 1.125rem; line-height: 1.5; }");
+    expect(css).toContain(".s-process .s-section-lead, .s-projects .s-section-lead { font-size: 1rem; line-height: 1.5; }");
+  });
+
   it("sets the services description paragraph at 16px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-services-panel-body { font-size: 1rem; font-weight: 400; line-height: 1.5; }");
