@@ -653,6 +653,9 @@ describe("landing de servicios v3", () => {
     expect(design.price).toBe("Desde USD 600");
     expect(design.priceNote).toBe("o dependiendo del requerimiento");
     expect(html).toContain(`<h3 class="s-services-panel-title">${design.title}</h3>`);
+    // En escritorio el título deja "atención" en la primera línea: necesita 569px y el máximo es 580px.
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-services-panel-title \{[^}]*max-width: 580px; text-wrap: wrap; \}/);
     expect(html).toContain(`<p class="s-services-panel-body s-label-md">${design.body}</p>`);
   });
 

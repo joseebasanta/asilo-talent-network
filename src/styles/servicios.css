@@ -938,7 +938,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-services-panels { flex: 1 1 0; }
   .s-services-tab { padding-inline: 32px; }
   .s-services-panel { justify-content: flex-start; gap: 20px; padding: 46.5px 72px; }
-  .s-services-panel-title { font: var(--text-title-h4); line-height: 42px; letter-spacing: var(--text-title-h4-tracking); max-width: 560px; text-wrap: wrap; }
+  /* 580px: "Interfaces hechas con criterio, atención" (569px) entra en la primera línea del título de Diseño UX/UI. */
+  .s-services-panel-title { font: var(--text-title-h4); line-height: 42px; letter-spacing: var(--text-title-h4-tracking); max-width: 580px; text-wrap: wrap; }
 }
 
 /* Proyectos: imagen con radio 12, textos a 6px, bajada en grey-400 y etiquetas de 26px con radio 6 y borde grey-700. */
