@@ -882,6 +882,28 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-card--feature:hover .s-card-decorator-grid { opacity: 0.22; }
   .s-card--feature:hover .s-card-decorator-icon { transform: scale(1.1); }
 }
+/* Íconos que se dibujan solos (servicios-icon-draw.ts): cada trazo mide 1 (pathLength) y se traza con
+   stroke-dashoffset, uno tras otro. Al aparecer la tarjeta, con el escalonado de su entrada; en hover, en el momento. */
+.s-card-decorator-icon svg > * { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.s-card-decorator-icon svg > :nth-child(2) { --part: 1; }
+.s-card-decorator-icon svg > :nth-child(3) { --part: 2; }
+.s-card-decorator-icon svg > :nth-child(4) { --part: 3; }
+.s-card-decorator-icon.is-drawing svg > * {
+  animation: s-icon-draw 800ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation-delay: calc(var(--draw-delay, 0ms) + var(--part, 0) * 120ms);
+}
+.s-card-decorator-icon.is-first-draw { --draw-delay: calc(var(--reveal-i, 0) * 90ms + 250ms); }
+/* Antes de aparecer (solo con el revelado activo) el ícono está sin dibujar, para que no se vea completo y luego se borre. */
+.s-js [data-icon-draw] .s-card-decorator-icon:not(.is-drawing) svg > * { stroke-dashoffset: 1; opacity: 0; }
+/* Invisible hasta que empieza su trazo: con puntas redondeadas, un trazo de largo 0 igual dejaría un puntito. */
+@keyframes s-icon-draw {
+  0% { stroke-dashoffset: 1; opacity: 0; }
+  1% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s-card-decorator-icon.is-drawing svg > * { animation: none; }
+}
 
 /* Pasos de "Cómo trabajamos": la línea se dibuja de izquierda a derecha y los cuadrados aparecen en orden. */
 @media (min-width: 768px) {

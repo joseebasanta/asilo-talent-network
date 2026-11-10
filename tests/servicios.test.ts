@@ -702,6 +702,26 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
   });
 
+  it("draws the problem card icons stroke by stroke when they appear and on hover", async () => {
+    const html = await render();
+    const start = html.indexOf('<section class="s-problem"');
+    const problem = html.slice(start, html.indexOf("</section>", start));
+    expect(problem.match(/data-icon-draw/g)).toHaveLength(3);
+    // Cada trazo de los íconos mide 1, para poder dibujarlo con stroke-dashoffset.
+    const shapes = problem.match(/<(path|rect|circle|line)\b[^>]*>/g)!;
+    expect(shapes.length).toBeGreaterThanOrEqual(10);
+    expect(shapes.every((s) => s.includes('pathLength="1"'))).toBe(true);
+    const source = readFileSync(new URL("../src/components/servicios/Problem.astro", import.meta.url), "utf8");
+    expect(source).toContain("initIconDraw();");
+
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toContain(".s-card-decorator-icon svg > * { stroke-dasharray: 1; stroke-dashoffset: 0; }");
+    expect(css).toMatch(/\.s-card-decorator-icon\.is-drawing svg > \* \{\s*animation: s-icon-draw 800ms/);
+    expect(css).toMatch(/@keyframes s-icon-draw \{\s*0% \{ stroke-dashoffset: 1; opacity: 0; \}\s*1% \{ opacity: 1; \}\s*100% \{ stroke-dashoffset: 0; opacity: 1; \}/);
+    expect(css).toContain(".s-js [data-icon-draw] .s-card-decorator-icon:not(.is-drawing) svg > * { stroke-dashoffset: 1; opacity: 0; }");
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-card-decorator-icon\.is-drawing svg > \* \{ animation: none; \}/);
+  });
+
   it("fills buttons from left to right on hover without lifting them, and extends the nav veil 8px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     // Capa de relleno detrás del texto que se escala en X: crece desde la izquierda y se retira hacia la derecha.

@@ -9,6 +9,9 @@ const icons: Record<string, string> = {
   branch: '<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
   "eye-off": '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
 };
+// Cada trazo mide 1 (pathLength) para animar el dibujo con stroke-dashoffset igual en cualquier forma
+// (servicios-icon-draw.ts).
+const drawable = (svg: string) => svg.replace(/<(path|rect|circle|line)\b/g, '<$1 pathLength="1"');
 ---
 
 <section class="s-problem" id="problema" aria-labelledby="problema-title">
@@ -21,12 +24,12 @@ const icons: Record<string, string> = {
     <ul class="s-cards">
       {
         problemCards.map((card, i) => (
-          <li class="s-card s-card--feature" data-reveal style={`--reveal-i: ${i + 1}`}>
+          <li class="s-card s-card--feature" data-reveal data-icon-draw style={`--reveal-i: ${i + 1}`}>
             {card.icon && (
               <div class="s-card-decorator" aria-hidden="true">
                 <div class="s-card-decorator-grid" />
                 <div class="s-card-decorator-icon">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={icons[card.icon]} />
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={drawable(icons[card.icon] ?? "")} />
                 </div>
               </div>
             )}
@@ -40,3 +43,9 @@ const icons: Record<string, string> = {
     </ul>
   </div>
 </section>
+
+<script>
+  import { initIconDraw } from "../../scripts/servicios-icon-draw";
+
+  initIconDraw();
+</script>
