@@ -108,10 +108,10 @@ export const projects: Project[] = [
     description: "Diseñando la experiencia web de Intellivia, un estudio jurídico especializado en tecnología",
     tags: ["Landing page", "Legal Tech"],
     image: {
-      src: "/servicios/proyectos/intellivia.webp",
+      src: "/servicios/proyectos/intellivia-poster-v3.webp",
       alt: "Intellivia: inicio del sitio del estudio jurídico, con el título “Acompañamiento legal para impulsar soluciones tecnológicas” y el Kit Legal para Startups",
     },
-    video: "/servicios/proyectos/intellivia-hover-azul.mp4",
+    video: "/servicios/proyectos/intellivia-hover-v3.mp4",
   },
   {
     name: "Tillín",

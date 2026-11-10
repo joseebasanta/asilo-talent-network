@@ -216,12 +216,12 @@ describe("landing de servicios v3", () => {
     // Marco 4:3 para todas las fotos; Intellivia ya tiene su imagen real (1440×1080, webp).
     expect(css).toMatch(/\.s-project-image \{[^}]*height: auto; aspect-ratio: 4 \/ 3; object-fit: cover;/);
     expect(section.match(/width="1440"\s+height="1080"/g)).toHaveLength(3);
-    expect(projects[0]!.image.src).toBe("/servicios/proyectos/intellivia.webp");
+    expect(projects[0]!.image.src).toBe("/servicios/proyectos/intellivia-poster-v3.webp");
     expect(projects[0]!.image.alt).not.toMatch(/pendiente/i);
     expect(projects[0]!.description).toBe("Diseñando la experiencia web de Intellivia, un estudio jurídico especializado en tecnología");
     expect(section).toContain(`<p class="s-project-description s-paragraph-md">${projects[0]!.description}</p>`);
     // Intellivia lleva un recorrido en video que se reproduce sobre la imagen al pasar el mouse; los demás, solo imagen.
-    expect(projects[0]!.video).toBe("/servicios/proyectos/intellivia-hover-azul.mp4");
+    expect(projects[0]!.video).toBe("/servicios/proyectos/intellivia-hover-v3.mp4");
     expect(existsSync(new URL(`../public${projects[0]!.video}`, import.meta.url))).toBe(true);
     expect(projects.filter((p) => p.video)).toHaveLength(1);
     expect(section.match(/<video\b/g)).toHaveLength(1);
@@ -232,7 +232,7 @@ describe("landing de servicios v3", () => {
     expect(section.match(/<div class="s-project-media">/g)).toHaveLength(3);
     expect(css).toContain(".s-project-video.is-playing { opacity: 1; }");
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-project-video \{ display: none; \}/);
-    for (const old of ["intellivia_recorrido_web_4x3.mp4", "intellivia-recorrido.mp4", "intellivia-hover.mp4"]) {
+    for (const old of ["intellivia_recorrido_web_4x3.mp4", "intellivia-recorrido.mp4", "intellivia-hover.mp4", "intellivia-hover-azul.mp4", "intellivia.webp", "intellivia-poster-v3.jpg"]) {
       expect(existsSync(new URL(`../public/servicios/proyectos/${old}`, import.meta.url))).toBe(false);
     }
     const page = readFileSync(new URL("../src/pages/servicios.astro", import.meta.url), "utf8");
