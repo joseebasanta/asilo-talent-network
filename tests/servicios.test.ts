@@ -690,6 +690,23 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
   });
 
+  it("draws a blue hover stroke on the project cards that fades out in the middle of the sides", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    const ring = css.match(/\.s-project-media::after \{[^}]*\}/)![0];
+    // Anillo de 1px con la misma máscara que el haz de Servicios: solo se pinta el borde.
+    expect(ring).toContain("padding: 1px;");
+    expect(ring).toContain("mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);");
+    // Degradado vertical azul: lleno arriba y abajo, transparente en el medio de los costados.
+    expect(ring).toMatch(/linear-gradient\(\s*to bottom,\s*var\(--color-blue-400\) 0%,[\s\S]*transparent 35%,\s*transparent 65%,[\s\S]*var\(--color-blue-400\) 100%\s*\)/);
+    expect(ring).toContain("opacity: 0;");
+    expect(css).toContain(".s-project:hover .s-project-media::after { opacity: 1; transform: translateY(-8px); }");
+    expect(css).toContain(".s-project-media::after { border-radius: 12px; }");
+    // En hover ya no hay anillo blanco uniforme que tape el degradado; en reposo sigue el de siempre.
+    const hoverShadow = css.match(/--shadow-media-hover:([^;]*);/)![1];
+    expect(hoverShadow).not.toContain("0 0 0 1px");
+    expect(css).toMatch(/--shadow-media-rest:\s*0 0 0 1px rgb\(255 255 255 \/ 0\.1\)/);
+  });
+
   it("keeps the original reveal and only slows the project cards to 1s", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     // Entrada original para todo: 700ms, misma curva, 28px y 90ms entre elementos.
