@@ -61,6 +61,24 @@ export function edgeColor(a: number, from: RGB, to: RGB): string {
   return `rgba(${mix[0]}, ${mix[1]}, ${mix[2]}, ${alpha.toFixed(3)})`;
 }
 
+/** Velocidad máxima del cursor fantasma al volver a su órbita (px/s) y suavidad del acercamiento. */
+export const GHOST_MAX_SPEED = 420;
+export const GHOST_EASE_MS = 900;
+
+/**
+ * Acerca (x, y) a (tx, ty) en un cuadro de dt ms: un acercamiento exponencial suave (rápido lejos, lento cerca),
+ * sin pasar de GHOST_MAX_SPEED. Así el fantasma vuelve a su órbita deslizándose desde donde dejó el mouse.
+ */
+export function approach(x: number, y: number, tx: number, ty: number, dt: number): [number, number] {
+  const dx = tx - x;
+  const dy = ty - y;
+  const dist = Math.hypot(dx, dy);
+  if (dist < 0.5) return [tx, ty];
+  const eased = dist * (1 - Math.exp(-dt / GHOST_EASE_MS));
+  const step = Math.min(eased, (GHOST_MAX_SPEED * dt) / 1000);
+  return [x + (dx / dist) * step, y + (dy / dist) * step];
+}
+
 export interface Zone {
   x0: number;
   y0: number;
@@ -111,6 +129,8 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
   let inView = false;
   let ghostTime = 0;
   const pointer = { x: 0, y: 0, inside: false };
+  // Posición actual del cursor fantasma (se coloca en su órbita la primera vez que corre).
+  const ghost = { x: 0, y: 0, placed: false };
 
   // El fantasma corre siempre que la sección está a la vista, salvo mientras el mouse está adentro.
   const ghostOn = () => !reduceMotion.matches && inView && !pointer.inside;
@@ -183,13 +203,28 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
       n.a = decay(n.a, dt);
       if (n.a > 0) any = true;
     }
-    if (pointer.inside) energize(pointer.x, pointer.y);
+    if (pointer.inside) {
+      energize(pointer.x, pointer.y);
+      // El fantasma acompaña al mouse: cuando el mouse sale, arranca desde ahí y no aparece de golpe en otro lugar.
+      ghost.x = pointer.x;
+      ghost.y = pointer.y;
+      ghost.placed = true;
+    }
     if (ghostOn()) {
       // Cursor fantasma: una órbita lenta alrededor del texto (una vuelta cada ~14s), que se abre y se cierra un poco.
+      // No salta a la órbita: se desliza hacia ella con velocidad limitada, así la estela sigue un camino continuo.
       ghostTime += dt;
       const angle = ghostTime / 2200;
       const breathe = 1 + 0.08 * Math.sin(ghostTime / 3100);
-      energize(width * (0.5 + 0.42 * breathe * Math.cos(angle)), height * (0.5 + 0.4 * breathe * Math.sin(angle)));
+      const tx = width * (0.5 + 0.42 * breathe * Math.cos(angle));
+      const ty = height * (0.5 + 0.4 * breathe * Math.sin(angle));
+      if (!ghost.placed) {
+        ghost.x = tx;
+        ghost.y = ty;
+        ghost.placed = true;
+      }
+      [ghost.x, ghost.y] = approach(ghost.x, ghost.y, tx, ty, dt);
+      energize(ghost.x, ghost.y);
       any = true;
     }
     draw();

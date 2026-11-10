@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildNodes, decay, edgeColor, edgeLength, FADE_MS, falloff, GAP, parseHex, RADIUS, ZONE_FEATHER, zoneMask } from "../src/scripts/servicios-dot-grid";
+import { approach, buildNodes, decay, edgeColor, edgeLength, FADE_MS, falloff, GAP, GHOST_MAX_SPEED, parseHex, RADIUS, ZONE_FEATHER, zoneMask } from "../src/scripts/servicios-dot-grid";
 
 describe("servicios CTA dot grid", () => {
   it("lays a centred grid of dots every 48px that covers the whole area", () => {
@@ -65,5 +65,25 @@ describe("servicios CTA dot grid", () => {
     expect(zoneMask(200, 0, zone)).toBe(1);
     // Sin zona (no hay texto), se dibuja todo.
     expect(zoneMask(200, 150, null)).toBe(1);
+  });
+
+  it("glides the ghost cursor back to its orbit from where the mouse left, without jumping", () => {
+    // Lejos: avanza como mucho GHOST_MAX_SPEED px/s.
+    const [x1, y1] = approach(0, 0, 1000, 0, 16);
+    expect(y1).toBe(0);
+    expect(x1).toBeCloseTo((GHOST_MAX_SPEED * 16) / 1000);
+    // Siempre se acerca, sin pasarse, y termina llegando.
+    let x = 0;
+    let y = 0;
+    let prev = Infinity;
+    for (let t = 0; t < 9000; t += 16) {
+      [x, y] = approach(x, y, 600, 300, 16);
+      const d = Math.hypot(600 - x, 300 - y);
+      expect(d).toBeLessThanOrEqual(prev);
+      prev = d;
+    }
+    expect(prev).toBeLessThan(1);
+    // Ya en el objetivo, se queda ahí.
+    expect(approach(600, 300, 600, 300, 16)).toEqual([600, 300]);
   });
 });
