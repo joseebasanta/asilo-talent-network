@@ -389,11 +389,18 @@ describe("landing de servicios v3", () => {
     expect(section).toContain(`<a class="s-btn s-btn--lg s-btn--primary s-label-md" href="${CTA_HREF}">${finalCta.ctaLabel}</a>`);
     for (const link of navLinks) expect(html).toContain(`id="${link.href.slice(1)}"`);
 
-    // Fondo decorativo: la grilla animada azul, detrás del contenido y sobre el fondo plano de la página.
-    expect(section).toMatch(/<div class="s-cta-bg" aria-hidden="true">\s*<div class="s-grid" aria-hidden="true">/);
+    // Fondo decorativo: resplandor azul y grilla de puntos interactiva (canvas), detrás del contenido.
+    expect(section).toMatch(/<div class="s-cta-bg" aria-hidden="true">\s*<div class="s-cta-glow"><\/div>\s*<canvas class="s-cta-dots" data-cta-dots><\/canvas>/);
     expect(section.indexOf("s-cta-bg")).toBeLessThan(section.indexOf("s-cta-inner"));
+    const ctaSource = readFileSync(new URL("../src/components/servicios/FinalCta.astro", import.meta.url), "utf8");
+    expect(ctaSource).toContain('document.querySelectorAll<HTMLCanvasElement>("[data-cta-dots]").forEach(initDotGrid);');
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-cta-bg \{ position: absolute; inset: 0; z-index: -1; pointer-events: none; \}/);
+    expect(css).toMatch(/\.s-cta-dots \{\s*--dot-color: var\(--color-grey-600\);\s*--line-from: var\(--color-blue-500\);\s*--line-to: var\(--color-blue-200\);/);
+    expect(css).toMatch(/\.s-cta-glow \{[^}]*radial-gradient\(45% 45% at 50% 50%, color-mix\(in oklab, var\(--color-blue-500\) 22%, transparent\)/);
+    // La grilla animada en CSS que tenía antes ya no se usa en ninguna parte.
+    expect(css).not.toMatch(/\.s-grid\b/);
+    expect(existsSync(new URL("../src/components/servicios/AnimatedGrid.astro", import.meta.url))).toBe(false);
     // Ya no hay degradado azul, cuadritos ni sombras de texto (eran lo que lo hacía distinto al resto de la landing).
     for (const gone of ["--cta-gradient", "--cta-dot", "--cta-text-halo", "--s-cta-dots", "--s-cta-fade"]) expect(css).not.toContain(gone);
     expect(css).not.toMatch(/\.s-cta[^{]*\{[^}]*text-shadow/);

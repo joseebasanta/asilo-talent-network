@@ -761,9 +761,25 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 
 /* CTA final (Figma: Asilo Core): título centrado y el botón al formulario. */
 .s-cta { position: relative; isolation: isolate; overflow: hidden; padding: 64px var(--page-gutter); }
-/* Fondo del CTA: la grilla animada azul (AnimatedGrid, ver .s-grid) sobre el fondo plano de la página,
-   sin degradado, cuadritos ni halos de texto, para que se vea como el resto de la landing. */
+/* Fondo del CTA: resplandor azul suave en el centro y, encima, la grilla de puntos interactiva (servicios-dot-grid.ts):
+   donde pasa el mouse los puntos se estiran en líneas azules que se apagan como una estela. Se desvanece arriba y
+   abajo para no cortarse en seco. */
 .s-cta-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.s-cta-bg {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+.s-cta-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(45% 45% at 50% 50%, color-mix(in oklab, var(--color-blue-500) 22%, transparent), transparent 70%);
+}
+/* El script lee estos colores: puntos grises, líneas del azul de marca (borde del efecto) al azul claro (centro). */
+.s-cta-dots {
+  --dot-color: var(--color-grey-600);
+  --line-from: var(--color-blue-500);
+  --line-to: var(--color-blue-200);
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+}
 .s-cta-inner {
   display: flex; flex-direction: column; align-items: center; gap: 32px;
   max-width: 768px; margin-inline: auto; text-align: center;
@@ -1077,60 +1093,6 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-cta { padding-block: 128px; }
   .s-problem-inner, .s-process-inner, .s-services-inner, .s-projects-inner { gap: 56px; }
   .s-footer-inner { gap: 48px; padding-top: 56px; }
-}
-
-/* Grilla animada del CTA final (adaptada de "animated-grid"): dos grillas con degradados que derivan despacio y un
-   resplandor azul que pulsa. El color de línea es grey-600 (sobre el fondo casi negro grey-800 no se ve) y el
-   acento, el azul de marca (blue-500). */
-.s-grid {
-  --grid-size: 36px; --grid-major: calc(var(--grid-size) * 4);
-  --grid-line: var(--color-grey-600); --grid-accent: var(--color-blue-500); --grid-opacity: 0.7;
-  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse at center, #000 38%, transparent 80%);
-  mask-image: radial-gradient(ellipse at center, #000 38%, transparent 80%);
-}
-.s-grid::before, .s-grid::after { content: ""; position: absolute; inset: calc(-1 * var(--grid-major)); will-change: background-position; }
-.s-grid::before {
-  background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: var(--grid-size) var(--grid-size);
-  opacity: calc(var(--grid-opacity) * 0.6);
-  animation: s-grid-drift 26s linear infinite;
-}
-.s-grid::after {
-  background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--grid-accent) 55%, var(--grid-line)) 1.2px, transparent 1.2px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--grid-accent) 55%, var(--grid-line)) 1.2px, transparent 1.2px);
-  background-size: var(--grid-major) var(--grid-major);
-  opacity: calc(var(--grid-opacity) * 0.5);
-  animation: s-grid-drift 26s linear infinite;
-}
-.s-grid-glow {
-  position: absolute; inset: 0; will-change: transform, opacity;
-  background: radial-gradient(45% 45% at 50% 42%, color-mix(in oklab, var(--grid-accent) 26%, transparent), transparent 70%);
-  animation: s-grid-pulse 9s ease-in-out infinite;
-}
-.s-grid-fc { display: none; }
-@keyframes s-grid-drift {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: var(--grid-major) var(--grid-major), var(--grid-major) var(--grid-major); }
-}
-@keyframes s-grid-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.12); opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .s-grid::before, .s-grid::after, .s-grid-glow { animation: none; }
-}
-/* Colores forzados (Windows alto contraste): sin degradados, una grilla estática con colores del sistema. */
-@media (forced-colors: active) {
-  .s-grid::before, .s-grid::after, .s-grid-glow { display: none; }
-  .s-grid-fc {
-    display: block; position: absolute; inset: 0; forced-color-adjust: none; opacity: 0.3;
-    background-image: linear-gradient(to right, CanvasText 1px, transparent 1px), linear-gradient(to bottom, CanvasText 1px, transparent 1px);
-    background-size: var(--grid-major) var(--grid-major);
-  }
 }
 
 /* Móvil (< 768px): los enlaces van en un menú burger. El botón de 44×44 queda a la derecha del logo y el panel se

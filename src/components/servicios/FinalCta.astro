@@ -1,11 +1,12 @@
 ---
 import { CTA_HREF, finalCta } from "../../data/servicios";
-import AnimatedGrid from "./AnimatedGrid.astro";
 ---
 
 <section class="s-cta" id="contacto" aria-labelledby="contacto-title">
+  <!-- Fondo: resplandor azul suave y grilla de puntos que se convierte en líneas donde pasa el mouse (servicios-dot-grid.ts). -->
   <div class="s-cta-bg" aria-hidden="true">
-    <AnimatedGrid />
+    <div class="s-cta-glow"></div>
+    <canvas class="s-cta-dots" data-cta-dots></canvas>
   </div>
   <div class="s-cta-inner" data-reveal>
     <div class="s-cta-text">
@@ -16,3 +17,9 @@ import AnimatedGrid from "./AnimatedGrid.astro";
     <a class="s-btn s-btn--lg s-btn--primary s-label-md" href={CTA_HREF}>{finalCta.ctaLabel}</a>
   </div>
 </section>
+
+<script>
+  import { initDotGrid } from "../../scripts/servicios-dot-grid";
+
+  document.querySelectorAll<HTMLCanvasElement>("[data-cta-dots]").forEach(initDotGrid);
+</script>
