@@ -723,13 +723,13 @@ describe("landing de servicios v3", () => {
     expect(ring).toContain("padding: 1px;");
     expect(ring).toContain("mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);");
     // Degradado vertical azul: lleno arriba y abajo, transparente en el medio de los costados.
-    // El medio (35-65 %) usa --ring-mid: transparente en Proyectos, tinte azul al 10 % en El problema.
+    // El medio (35-65 %) usa --ring-mid: transparente en Proyectos, tinte azul al 20 % en El problema.
     expect(ring).toMatch(/linear-gradient\(\s*to bottom,\s*var\(--color-blue-400\) 0%,[\s\S]*var\(--ring-mid, transparent\) 35%,\s*var\(--ring-mid, transparent\) 65%,[\s\S]*var\(--color-blue-400\) 100%\s*\)/);
     expect(ring).toContain("opacity: 0;");
     expect(css).toContain(".s-project:hover .s-project-media::after { opacity: 1; transform: translateY(-8px); }");
     expect(css).toContain(".s-project-media::after, .s-card--feature::after { border-radius: 12px; }");
     // Las tarjetas de El problema usan el mismo anillo, sobre su borde de 1px, que se vuelve transparente en hover.
-    expect(css).toContain(".s-card--feature { position: relative; --ring-mid: color-mix(in srgb, var(--color-blue-500) 10%, transparent); }");
+    expect(css).toContain(".s-card--feature { position: relative; --ring-mid: color-mix(in srgb, var(--color-blue-500) 20%, transparent); }");
     expect(css).toContain(".s-card--feature::after { inset: -1px; }");
     expect(css).toContain(".s-card--feature:hover { border-color: transparent; }");
     expect(css).toContain(".s-card--feature:hover::after { opacity: 1; }");
