@@ -718,7 +718,7 @@ describe("landing de servicios v3", () => {
 
   it("draws a blue hover stroke on the project cards that fades out in the middle of the sides", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    const ring = css.match(/\.s-project-media::after \{[^}]*\}/)![0];
+    const ring = css.match(/\.s-project-media::after, \.s-card--feature::after \{[^}]*\}/)![0];
     // Anillo de 1px con la misma máscara que el haz de Servicios: solo se pinta el borde.
     expect(ring).toContain("padding: 1px;");
     expect(ring).toContain("mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);");
@@ -726,7 +726,13 @@ describe("landing de servicios v3", () => {
     expect(ring).toMatch(/linear-gradient\(\s*to bottom,\s*var\(--color-blue-400\) 0%,[\s\S]*transparent 35%,\s*transparent 65%,[\s\S]*var\(--color-blue-400\) 100%\s*\)/);
     expect(ring).toContain("opacity: 0;");
     expect(css).toContain(".s-project:hover .s-project-media::after { opacity: 1; transform: translateY(-8px); }");
-    expect(css).toContain(".s-project-media::after { border-radius: 12px; }");
+    expect(css).toContain(".s-project-media::after, .s-card--feature::after { border-radius: 12px; }");
+    // Las tarjetas de El problema usan el mismo anillo, sobre su borde de 1px, que se vuelve transparente en hover.
+    expect(css).toContain(".s-card--feature { position: relative; }");
+    expect(css).toContain(".s-card--feature::after { inset: -1px; }");
+    expect(css).toContain(".s-card--feature:hover { border-color: transparent; }");
+    expect(css).toContain(".s-card--feature:hover::after { opacity: 1; }");
+    expect(css).not.toContain(".s-card--feature:hover { border-color: var(--color-grey-700); }");
     // En hover ya no hay anillo blanco uniforme que tape el degradado; en reposo sigue el de siempre.
     const hoverShadow = css.match(/--shadow-media-hover:([^;]*);/)![1];
     expect(hoverShadow).not.toContain("0 0 0 1px");
