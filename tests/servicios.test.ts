@@ -702,6 +702,11 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
   });
 
+  it("makes the mobile nav solid black while the menu is open", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/\.s-nav\[data-open\]::before \{\s*inset: 0; background: var\(--surface-page\);\s*-webkit-backdrop-filter: none; backdrop-filter: none;\s*-webkit-mask-image: none; mask-image: none;\s*\}/);
+  });
+
   it("draws the problem card icons stroke by stroke when they appear and on hover", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-problem"');

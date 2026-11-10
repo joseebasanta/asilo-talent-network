@@ -1142,6 +1142,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
     background: var(--surface-page); border-bottom: 1px solid var(--border-subtle);
   }
   .s-menu-js .s-nav:not([data-open]) .s-nav-menu { display: none; }
+  /* Menú abierto: la franja del logo deja el vidrio translúcido y queda negra sólida, igual que el panel, sin el
+     desvanecido de abajo; así no se ve el fondo de la página entre el nav y los enlaces. */
+  .s-nav[data-open]::before {
+    inset: 0; background: var(--surface-page);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    -webkit-mask-image: none; mask-image: none;
+  }
   .s-nav-links { flex-direction: column; gap: 0; }
   .s-nav-links li + li { border-top: 1px solid var(--color-grey-900); }
   .s-nav-links a { width: 100%; min-height: 52px; font-size: 1rem; }
