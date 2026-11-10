@@ -871,15 +871,17 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-js .s-steps:not(.is-in)::before { transform: scaleX(0); }
 }
 
-/* Destello: cuando la línea termina de dibujarse, una luz azul muy suave la recorre una vez de izquierda a derecha
-   y se apaga al llegar al centro del tercer cuadrado. Pasa por detrás de los cuadrados (que tapan la línea) y el
-   borde de cada uno se enciende en azul justo cuando la luz lo cruza. Solo en tablet y escritorio, donde está la
-   línea; con prefers-reduced-motion o colores forzados no aparece. */
+/* Destello: cuando la línea termina de dibujarse, una luz azul muy suave la recorre una vez de punta a punta, de
+   izquierda a derecha, y se apaga al llegar al final de la línea. Pasa por detrás de los cuadrados (que tapan la
+   línea) y el borde de cada uno se enciende en azul justo cuando la luz lo cruza. Solo en tablet y escritorio, donde
+   está la línea; con prefers-reduced-motion o colores forzados no aparece. */
 @media (min-width: 768px) {
+  /* Al final, la mitad de la luz sale del contenedor: se recorta a lo ancho para que no aparezca scroll horizontal. */
+  .s-process { overflow-x: clip; }
   .s-steps {
-    --flash-start: 1300ms; --flash-dur: 1800ms;
-    /* El centro del tercer cuadrado: 3 columnas iguales con 24px entre ellas. */
-    --flash-end: calc(100% - (100% - 48px) / 6);
+    /* 2,15s para todo el largo: la misma velocidad que tenía cuando terminaba en el tercer cuadrado. */
+    --flash-start: 1300ms; --flash-dur: 2150ms;
+    --flash-end: 100%;
   }
   .s-steps::after {
     content: ""; position: absolute; top: 24px; left: 0; width: 160px; height: 1px; pointer-events: none;
@@ -888,10 +890,11 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
     transform: translateX(-50%); opacity: 0;
   }
   .s-steps.is-in::after { animation: s-steps-flash var(--flash-dur) linear var(--flash-start) both; }
-  /* Momento en que la luz cruza cada cuadrado, como fracción del recorrido (centros a 19 %, 59,5 % y 100 %). */
-  .s-step:nth-child(1) { --flash-at: 0.19; }
-  .s-step:nth-child(2) { --flash-at: 0.595; }
-  .s-step:nth-child(3) { --flash-at: 1; }
+  /* Momento en que la luz cruza cada cuadrado, como fracción del recorrido: los centros de las 3 columnas (con 24px
+     entre ellas) quedan al 16 %, 50 % y 84 % del largo de la línea. */
+  .s-step:nth-child(1) { --flash-at: 0.16; }
+  .s-step:nth-child(2) { --flash-at: 0.5; }
+  .s-step:nth-child(3) { --flash-at: 0.84; }
   /* El brillo del borde llega a su punto máximo (25 % de 900ms) justo cuando la luz pasa por el cuadrado. */
   .s-steps.is-in .s-step-number {
     animation: s-step-flash 900ms ease-out calc(var(--flash-start) + var(--flash-dur) * var(--flash-at) - 225ms) both;
@@ -899,8 +902,8 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 }
 @keyframes s-steps-flash {
   0% { left: 0; opacity: 0; }
-  10% { opacity: 1; }
-  85% { opacity: 1; }
+  8% { opacity: 1; }
+  90% { opacity: 1; }
   100% { left: var(--flash-end); opacity: 0; }
 }
 @keyframes s-step-flash {

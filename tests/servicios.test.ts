@@ -597,11 +597,15 @@ describe("landing de servicios v3", () => {
     expect(css).not.toMatch(/\.s-step-number \{[^}]*border-radius: 50%/);
     // El destello corre una sola vez, tras dibujarse la línea, y termina en el centro del tercer cuadrado.
     expect(css).toContain(".s-steps.is-in::after { animation: s-steps-flash var(--flash-dur) linear var(--flash-start) both; }");
-    expect(css).toContain("--flash-end: calc(100% - (100% - 48px) / 6);");
+    // Recorre la línea de punta a punta: termina al final (100 %), no en el tercer cuadrado.
+    expect(css).toContain("--flash-end: 100%;");
+    expect(css).toContain("--flash-start: 1300ms; --flash-dur: 2150ms;");
     expect(css).toMatch(/@keyframes s-steps-flash \{[^@]*100% \{ left: var\(--flash-end\); opacity: 0; \}/);
+    expect(css).toContain(".s-process { overflow-x: clip; }");
     // Cada cuadrado enciende su borde cuando la luz lo cruza, en orden.
-    expect(css).toContain(".s-step:nth-child(1) { --flash-at: 0.19; }");
-    expect(css).toContain(".s-step:nth-child(3) { --flash-at: 1; }");
+    expect(css).toContain(".s-step:nth-child(1) { --flash-at: 0.16; }");
+    expect(css).toContain(".s-step:nth-child(2) { --flash-at: 0.5; }");
+    expect(css).toContain(".s-step:nth-child(3) { --flash-at: 0.84; }");
     expect(css).toMatch(/\.s-steps\.is-in \.s-step-number \{\s*animation: s-step-flash 900ms/);
     // Sin destello con movimiento reducido ni con colores forzados.
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\), \(forced-colors: active\) \{\s*\.s-steps::after \{ display: none; \}\s*\.s-steps\.is-in \.s-step-number \{ animation: none; \}/);
