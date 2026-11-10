@@ -1016,6 +1016,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 .s-process .s-section-lead { max-width: 776px; margin-inline: auto; }
 /* 720px: a 18px la bajada de Proyectos cabe en una línea (con 640px "Venezuela." quedaba sola abajo). */
 .s-projects .s-section-lead { max-width: 720px; margin-inline: auto; }
+/* En móvil las bajadas de El problema, Nuestros servicios, Cómo trabajamos y Proyectos bajan a 16px (en tablet y
+   escritorio siguen en 18px). */
+@media (max-width: 767px) {
+  .s-problem .s-section-lead, .s-services .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead {
+    font-size: 1rem; line-height: 1.5;
+  }
+}
 /* En Figma, "Tu app crece…" va en peso 400 y el resto de los títulos en 500. */
 .s-problem .s-section-title { font-weight: 400; }
 

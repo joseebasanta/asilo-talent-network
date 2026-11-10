@@ -622,7 +622,8 @@ describe("landing de servicios v3", () => {
   it("sets the problem, process and projects section leads at 18px", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-problem .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead { font-size: 1.125rem; line-height: 1.5; }");
-    expect(css).not.toMatch(/\.s-section-lead[^{]*\{[^}]*font-size: 1rem/);
+    // Las únicas bajadas en 16px son las de El problema, Nuestros servicios, Cómo trabajamos y Proyectos, y solo en móvil.
+    expect(css.match(/\.s-section-lead[^{]*\{[^}]*font-size: 1rem/g)).toEqual([".s-section-lead, .s-services .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead {\n    font-size: 1rem"]);
     expect(css).toContain(".s-projects .s-section-lead { max-width: 720px; margin-inline: auto; }");
     expect(css).toContain(".s-problem .s-section-lead { max-width: 776px; margin-inline: auto; }");
   });
@@ -700,6 +701,13 @@ describe("landing de servicios v3", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toContain(".s-nav-links .s-nav-cta, .s-nav-links .s-nav-cta:hover { min-height: 32px; color: var(--color-white); }");
     expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
+  });
+
+  it("sets the problem, services, process and projects section leads at 16px on mobile", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/@media \(max-width: 767px\) \{\s*\.s-problem \.s-section-lead, \.s-services \.s-section-lead, \.s-process \.s-section-lead, \.s-projects \.s-section-lead \{\s*font-size: 1rem; line-height: 1\.5;\s*\}\s*\}/);
+    // Va después de la regla de 28px de Servicios para ganarle en móvil.
+    expect(css.lastIndexOf(".s-services .s-section-lead { line-height: 28px; }")).toBeLessThan(css.indexOf(".s-problem .s-section-lead, .s-services .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead {"));
   });
 
   it("makes the mobile nav solid black while the menu is open", () => {
