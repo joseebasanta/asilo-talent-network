@@ -1093,9 +1093,18 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
   .s-testimonials-inner { grid-template-columns: minmax(0, 1fr) 640px; gap: 64px; align-items: start; }
   .s-testimonials .s-section-head { padding-top: 24px; }
 }
+/* Móvil y tablet: el encabezado va sobre el carrusel, centrado como el de las demás secciones (en escritorio queda a
+   la izquierda, al lado del carrusel). */
+@media (max-width: 1023px) {
+  .s-testimonials .s-section-head--start { align-items: center; margin-inline: auto; text-align: center; }
+}
 
 /* CTA: título de 42px con 48px de alto de línea. */
 .s-cta .s-section-title { line-height: 48px; }
+/* En móvil el título del CTA final baja a 32px (alto de línea 40px). */
+@media (max-width: 767px) {
+  .s-cta .s-section-title { font-size: 2rem; line-height: 40px; }
+}
 
 /* Footer: tagline en grey-300, créditos en grey-500, íconos a 20px entre sí, logo sin alto mínimo. */
 .s-footer-tagline { color: var(--fg-body); }

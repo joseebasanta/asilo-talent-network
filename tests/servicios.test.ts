@@ -710,6 +710,19 @@ describe("landing de servicios v3", () => {
     expect(css.lastIndexOf(".s-services .s-section-lead { line-height: 28px; }")).toBeLessThan(css.indexOf(".s-problem .s-section-lead, .s-services .s-section-lead, .s-process .s-section-lead, .s-projects .s-section-lead {"));
   });
 
+  it("sets the final CTA title at 32px on mobile", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/@media \(max-width: 767px\) \{\s*\.s-cta \.s-section-title \{ font-size: 2rem; line-height: 40px; \}\s*\}/);
+    // Va después de la regla de 48px de alto de línea para ganarle en móvil.
+    expect(css.indexOf(".s-cta .s-section-title { line-height: 48px; }")).toBeLessThan(css.indexOf(".s-cta .s-section-title { font-size: 2rem; line-height: 40px; }"));
+  });
+
+  it("centers the testimonials heading on mobile and tablet, keeping it left on desktop", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    expect(css).toMatch(/@media \(max-width: 1023px\) \{\s*\.s-testimonials \.s-section-head--start \{ align-items: center; margin-inline: auto; text-align: center; \}\s*\}/);
+    expect(css).toContain(".s-section-head--start { align-items: flex-start; max-width: none; margin-inline: 0; text-align: left; }");
+  });
+
   it("makes the mobile nav solid black while the menu is open", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-nav\[data-open\]::before \{\s*inset: 0; background: var\(--surface-page\);\s*-webkit-backdrop-filter: none; backdrop-filter: none;\s*-webkit-mask-image: none; mask-image: none;\s*\}/);
