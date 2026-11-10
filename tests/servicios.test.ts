@@ -690,6 +690,28 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-nav-links li.s-nav-links-cta { border-top: 0; padding-top: 12px; }");
   });
 
+  it("fills buttons from left to right on hover without lifting them, and extends the nav veil 8px", () => {
+    const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
+    // Capa de relleno detrás del texto que se escala en X: crece desde la izquierda y se retira hacia la derecha.
+    expect(css).toMatch(/\.s-btn::before, \.s-carousel-arrow::before \{[^}]*transform: scaleX\(0\); transform-origin: right center;/);
+    expect(css).toContain(".s-btn:hover::before, .s-carousel-arrow:hover::before { transform: scaleX(1); transform-origin: left center; }");
+    expect(css).toContain(".s-btn:focus-visible::before, .s-carousel-arrow:focus-visible::before { transform: scaleX(1); transform-origin: left center; }");
+    expect(css).toMatch(/\.s-btn \{\s*position: relative; isolation: isolate; overflow: hidden;/);
+    // Colores del relleno: azul más oscuro en el primario, gris claro en el secundario, velo blanco en las flechas.
+    expect(css).toContain("--btn-fill: var(--color-blue-600);");
+    expect(css).toContain("--btn-fill: var(--color-grey-200);");
+    expect(css).toContain(".s-carousel-arrow { --btn-fill: rgb(255 255 255 / 0.1); }");
+    // Ya no cambian el fondo de golpe ni suben al pasar el mouse.
+    expect(css).not.toMatch(/\.s-btn--(primary|secondary):hover \{[^}]*background/);
+    expect(css).not.toMatch(/\.s-carousel-arrow:hover \{[^}]*background/);
+    expect(css).not.toContain(".s-btn:hover { transform: translateY(-2px); }");
+    expect(css).toContain(".s-btn:active { transform: scale(0.97); }");
+    // Con movimiento reducido, el color aparece de una vez.
+    expect(css).toContain("  .s-btn::before, .s-carousel-arrow::before { transition: none; }");
+    // El velo del nav baja 8px más.
+    expect(css).toMatch(/\.s-nav::before \{\s*content: ""; position: absolute; inset: 0 0 -8px;/);
+  });
+
   it("draws a blue hover stroke on the project cards that fades out in the middle of the sides", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     const ring = css.match(/\.s-project-media::after \{[^}]*\}/)![0];
