@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildNodes, decay, edgeColor, edgeLength, FADE_MS, falloff, GAP, parseHex, RADIUS } from "../src/scripts/servicios-dot-grid";
+import { buildNodes, decay, edgeColor, edgeLength, FADE_MS, falloff, GAP, parseHex, RADIUS, ZONE_FEATHER, zoneMask } from "../src/scripts/servicios-dot-grid";
 
 describe("servicios CTA dot grid", () => {
   it("lays a centred grid of dots every 48px that covers the whole area", () => {
@@ -52,5 +52,18 @@ describe("servicios CTA dot grid", () => {
     expect(parseHex("#0066ff", [1, 1, 1])).toEqual([0, 102, 255]);
     expect(parseHex(" #fff", [1, 1, 1])).toEqual([255, 255, 255]);
     expect(parseHex("var(--x)", [1, 2, 3])).toEqual([1, 2, 3]);
+  });
+
+  it("keeps the area around the text free of lines, with a soft edge", () => {
+    const zone = { x0: 100, y0: 100, x1: 300, y1: 200 };
+    // Dentro de la zona del texto no se dibuja nada.
+    expect(zoneMask(200, 150, zone)).toBe(0);
+    expect(zoneMask(100, 100, zone)).toBe(0);
+    // Afuera se va permitiendo de a poco hasta ZONE_FEATHER px del borde.
+    expect(zoneMask(300 + ZONE_FEATHER / 2, 150, zone)).toBeCloseTo(0.5);
+    expect(zoneMask(300 + ZONE_FEATHER, 150, zone)).toBe(1);
+    expect(zoneMask(200, 0, zone)).toBe(1);
+    // Sin zona (no hay texto), se dibuja todo.
+    expect(zoneMask(200, 150, null)).toBe(1);
   });
 });

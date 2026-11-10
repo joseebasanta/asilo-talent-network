@@ -761,17 +761,13 @@ html:has(body.servicios) { color-scheme: dark; background: #0f0f0f; scroll-behav
 
 /* CTA final (Figma: Asilo Core): título centrado y el botón al formulario. */
 .s-cta { position: relative; isolation: isolate; overflow: hidden; padding: 64px var(--page-gutter); }
-/* Fondo del CTA: resplandor azul suave en el centro y, encima, la grilla de puntos interactiva (servicios-dot-grid.ts):
-   donde pasa el mouse los puntos se estiran en líneas azules que se apagan como una estela. Se desvanece arriba y
-   abajo para no cortarse en seco. */
+/* Fondo del CTA: la grilla de puntos interactiva (servicios-dot-grid.ts): donde pasa el mouse (o el cursor fantasma,
+   que orbita alrededor del texto) los puntos se estiran en líneas azules que se apagan como una estela; alrededor del
+   título y el botón no hay líneas. Se desvanece arriba y abajo para no cortarse en seco. */
 .s-cta-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .s-cta-bg {
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
-}
-.s-cta-glow {
-  position: absolute; inset: 0;
-  background: radial-gradient(45% 45% at 50% 50%, color-mix(in oklab, var(--color-blue-500) 22%, transparent), transparent 70%);
 }
 /* El script lee estos colores: puntos grises, líneas del azul de marca (borde del efecto) al azul claro (centro). */
 .s-cta-dots {

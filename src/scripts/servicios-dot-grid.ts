@@ -1,7 +1,8 @@
 // Grilla de puntos interactiva del CTA final: una retícula de puntos pequeños; donde pasa el mouse, los puntos se
 // "estiran" en segmentos hacia sus vecinos y forman una grilla azul (blanca en el centro) que se apaga detrás del
-// cursor como una estela. En pantallas sin hover (móvil y tablet) un cursor fantasma recorre la sección despacio
-// mientras está a la vista. Con prefers-reduced-motion solo se dibujan los puntos, quietos.
+// cursor como una estela. Mientras la sección está a la vista, un cursor fantasma la recorre despacio para que el
+// efecto se vea sin mover el mouse; cuando el mouse entra, toma el control. Alrededor del título y del botón no se
+// dibujan líneas (zona libre con borde difuminado). Con prefers-reduced-motion solo se dibujan los puntos, quietos.
 // Se dibuja en un <canvas> del tamaño del fondo de la sección; solo anima mientras la sección está a la vista y hay
 // algo encendido. Los colores salen de --dot-color, --line-from y --line-to del canvas.
 
@@ -60,6 +61,25 @@ export function edgeColor(a: number, from: RGB, to: RGB): string {
   return `rgba(${mix[0]}, ${mix[1]}, ${mix[2]}, ${alpha.toFixed(3)})`;
 }
 
+export interface Zone {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+/** Margen libre alrededor del texto y ancho del difuminado del borde de esa zona. */
+export const ZONE_PAD = 24;
+export const ZONE_FEATHER = 56;
+
+/** Cuánto se permite dibujar en (x, y): 0 dentro de la zona del texto, sube hasta 1 a ZONE_FEATHER px de su borde. */
+export function zoneMask(x: number, y: number, zone: Zone | null, feather = ZONE_FEATHER): number {
+  if (!zone) return 1;
+  const dx = Math.max(zone.x0 - x, 0, x - zone.x1);
+  const dy = Math.max(zone.y0 - y, 0, y - zone.y1);
+  return clamp01(Math.hypot(dx, dy) / feather);
+}
+
 /** Lee un color #rgb o #rrggbb; si no se puede, usa el de respaldo. */
 export function parseHex(value: string, fallback: RGB): RGB {
   const hex = value.trim().replace("#", "");
@@ -80,7 +100,8 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
   const to = parseHex(style.getPropertyValue("--line-to"), [153, 194, 255]);
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const noHover = window.matchMedia("(hover: none)");
+  // Zonas libres de líneas: el título y el botón del CTA, por separado (así quedan líneas a los lados del botón).
+  const textEls = Array.from(section.querySelectorAll<HTMLElement>(".s-cta-inner .s-section-title, .s-cta-inner .s-btn"));
 
   let grid = buildNodes(0, 0);
   let width = 0;
@@ -91,7 +112,27 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
   let ghostTime = 0;
   const pointer = { x: 0, y: 0, inside: false };
 
-  const ghostOn = () => noHover.matches && !reduceMotion.matches && inView;
+  // El fantasma corre siempre que la sección está a la vista, salvo mientras el mouse está adentro.
+  const ghostOn = () => !reduceMotion.matches && inView && !pointer.inside;
+
+  // Rectángulos del título y del botón en coordenadas del canvas, con margen. Se miden en cada cuadro porque el texto
+  // entra con una animación (sube unos px) y puede cambiar de tamaño.
+  const textZones = (): Zone[] => {
+    const c = canvas.getBoundingClientRect();
+    // En pantallas chicas el texto ocupa casi todo el ancho: el margen se achica para que quede lugar para las líneas.
+    const pad = Math.min(ZONE_PAD, width * 0.03);
+    return textEls.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x0: r.left - c.left - pad, y0: r.top - c.top - pad, x1: r.right - c.left + pad, y1: r.bottom - c.top + pad };
+    });
+  };
+  const feather = () => Math.min(ZONE_FEATHER, width * 0.08);
+  /** Lo que se permite dibujar en (x, y): el mínimo entre todas las zonas de texto. */
+  const textMask = (x: number, y: number, zones: Zone[], fz: number) => {
+    let m = 1;
+    for (const z of zones) m = Math.min(m, zoneMask(x, y, z, fz));
+    return m;
+  };
 
   const energize = (px: number, py: number) => {
     for (const n of grid.nodes) {
@@ -106,13 +147,15 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
     for (const n of grid.nodes) ctx.fillRect(n.x - 0.75, n.y - 0.75, 1.5, 1.5);
     if (reduceMotion.matches) return;
     const { nodes, cols, rows } = grid;
+    const zones = textZones();
+    const fz = feather();
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const n = nodes[r * cols + c]!;
-        // Segmento hacia la derecha y hacia abajo, centrado entre los dos puntos.
+        // Segmento hacia la derecha y hacia abajo, centrado entre los dos puntos; se apaga cerca del texto.
         if (c < cols - 1) {
           const m = nodes[r * cols + c + 1]!;
-          const ea = (n.a + m.a) / 2;
+          const ea = ((n.a + m.a) / 2) * textMask(n.x + GAP / 2, n.y, zones, fz);
           if (ea > 0.01) {
             const len = edgeLength(ea);
             ctx.fillStyle = edgeColor(ea, from, to);
@@ -121,7 +164,7 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
         }
         if (r < rows - 1) {
           const m = nodes[(r + 1) * cols + c]!;
-          const ea = (n.a + m.a) / 2;
+          const ea = ((n.a + m.a) / 2) * textMask(n.x, n.y + GAP / 2, zones, fz);
           if (ea > 0.01) {
             const len = edgeLength(ea);
             ctx.fillStyle = edgeColor(ea, from, to);
@@ -142,9 +185,11 @@ export function initDotGrid(canvas: HTMLCanvasElement): void {
     }
     if (pointer.inside) energize(pointer.x, pointer.y);
     if (ghostOn()) {
-      // Cursor fantasma: una curva de Lissajous lenta que recorre casi toda la sección.
+      // Cursor fantasma: una órbita lenta alrededor del texto (una vuelta cada ~14s), que se abre y se cierra un poco.
       ghostTime += dt;
-      energize(width * (0.5 + 0.4 * Math.sin(ghostTime / 2600)), height * (0.5 + 0.35 * Math.sin(ghostTime / 1700 + 1)));
+      const angle = ghostTime / 2200;
+      const breathe = 1 + 0.08 * Math.sin(ghostTime / 3100);
+      energize(width * (0.5 + 0.42 * breathe * Math.cos(angle)), height * (0.5 + 0.4 * breathe * Math.sin(angle)));
       any = true;
     }
     draw();
