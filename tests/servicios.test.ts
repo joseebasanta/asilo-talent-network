@@ -399,9 +399,8 @@ describe("landing de servicios v3", () => {
     expect(css).toMatch(/\.s-cta-bg \{ position: absolute; inset: 0; z-index: -1; pointer-events: none; \}/);
     expect(css).toMatch(/\.s-cta-dots \{\s*--dot-color: var\(--color-grey-600\);\s*--line-from: var\(--color-blue-500\);\s*--line-to: var\(--color-blue-200\);/);
     expect(css).not.toContain(".s-cta-glow");
-    // La grilla animada en CSS que tenía antes ya no se usa en ninguna parte.
-    expect(css).not.toMatch(/\.s-grid\b/);
-    expect(existsSync(new URL("../src/components/servicios/AnimatedGrid.astro", import.meta.url))).toBe(false);
+    // La grilla animada en CSS ya no se usa en el CTA: quedó solo en el hero.
+    expect(section).not.toContain('class="s-grid"');
     // Ya no hay degradado azul, cuadritos ni sombras de texto (eran lo que lo hacía distinto al resto de la landing).
     for (const gone of ["--cta-gradient", "--cta-dot", "--cta-text-halo", "--s-cta-dots", "--s-cta-fade"]) expect(css).not.toContain(gone);
     expect(css).not.toMatch(/\.s-cta[^{]*\{[^}]*text-shadow/);
@@ -519,16 +518,17 @@ describe("landing de servicios v3", () => {
     expect(hero).not.toMatch(/webflow|relume/i);
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    // 80s por vuelta con seis logos (~33px/s); la duración escala con la cantidad de logos.
-    expect(css).toContain("animation: s-logos-scroll calc(var(--logos-count, 6) * 80s / 6) linear infinite;");
+    // 80s por vuelta mientras se desplaza (por debajo de 1280px).
+    expect(css).toContain("animation: s-logos-scroll 80s linear infinite;");
     expect(css).toContain("@keyframes s-logos-scroll { to { transform: translateX(-50%); } }");
-    expect(strip).toContain(`<div class="s-logos-track" style="--logos-count: ${clientLogos.length}">`);
+    expect(strip).toContain('<div class="s-logos-track">');
     expect(css).toContain(".s-logos:hover .s-logos-track { animation-play-state: paused; }");
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-logos-track \{ animation: none; \}/);
-    // La pista arranca a la izquierda: centrada dejaba un hueco al final de cada vuelta.
-    expect(css).toMatch(/\.s-logos \{\s*display: flex; justify-content: flex-start; overflow: hidden;/);
+    // La pista va centrada: desde 1280px los cinco logos caben en una fila quieta, sin copias.
+    expect(css).toMatch(/\.s-logos \{\s*display: flex; justify-content: center; overflow: hidden;/);
+    expect(css).toMatch(/@media \(min-width: 1280px\) \{\s*\.s-logos \{ -webkit-mask-image: none; mask-image: none; \}\s*\.s-logos-track \{ animation: none; \}\s*\.s-logos-set:not\(:first-child\) \{ display: none; \}/);
     expect(css).toContain("margin: 64px calc(-1 * var(--page-gutter)) 0;");
-    // Cinco clientes reales (Figma 8990:3056); la franja se desplaza en todos los tamaños.
+    // Cinco clientes reales (Figma 8990:3056).
     expect(clientLogos.map((l) => l.alt)).toEqual(["Empléate", "Tilín", "Trazando Futuros", "CRT", "Intellivia"]);
     for (const logo of clientLogos) expect(hero).toContain(`width="${logo.width}" height="${logo.height}"`);
     // Empléate un 30 % más grande, Intellivia un 25 % y CRT un 15 % más chicos que la altura base de 28px.
@@ -537,40 +537,39 @@ describe("landing de servicios v3", () => {
     expect(hero).toContain("--logo-scale: 0.75");
     expect(hero).toContain("--logo-scale: 0.85");
     expect(css).toContain("height: calc(28px * var(--logo-scale, 1));");
-    expect(css).not.toContain(".s-logos-set:not(:first-child) { display: none; }");
     expect(css).not.toContain("opacity: 0.58");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent)");
     expect(css).toContain("mask-image: linear-gradient(90deg, transparent 15%, #000 35%, #000 65%, transparent 85%)");
   });
 
-  it("draws the v2 pixel background (canvas and vignette) behind a solid white hero title", async () => {
+  it("draws only the animated grid behind a solid white hero title, without pixels or text shadows", async () => {
     const html = await render();
     const start = html.indexOf('<section class="s-hero"');
     const hero = html.slice(start, html.indexOf("</section>", start));
 
-    // Fondo de píxeles de la v2: canvas animado por servicios-pixels.ts y viñeta, decorativos y detrás del contenido.
-    expect(hero).toMatch(/<div class="s-hero-bg" aria-hidden="true">\s*<canvas class="s-hero-pixels" data-hero-pixels><\/canvas>\s*<div class="s-hero-vignette"><\/div>/);
-    expect(existsSync(new URL("../src/scripts/servicios-pixels.ts", import.meta.url))).toBe(true);
+    // Fondo: grilla animada azul (solo CSS), decorativa, con tres capas y detrás del contenido.
+    expect(hero).toMatch(/<div class="s-hero-bg" aria-hidden="true">\s*<div class="s-grid" aria-hidden="true">\s*<span class="s-grid-glow"><\/span>\s*<span class="s-grid-fc"><\/span>/);
     expect(hero.indexOf("s-hero-bg")).toBeLessThan(hero.indexOf("s-hero-inner"));
-    // La grilla animada azul queda solo para el CTA final.
-    expect(hero).not.toContain('class="s-grid"');
+    // El fondo de píxeles de la v2 (canvas y viñeta) no está.
+    expect(hero).not.toContain("data-hero-pixels");
+    expect(hero).not.toContain("<canvas");
+    expect(hero).not.toContain("s-hero-vignette");
+    expect(existsSync(new URL("../src/scripts/servicios-pixels.ts", import.meta.url))).toBe(false);
     expect(hero).not.toContain("s-hline");
     expect(html).not.toMatch(/silent precision|explore design|github\.com"/i);
-    const heroSource = readFileSync(new URL("../src/components/servicios/Hero.astro", import.meta.url), "utf8");
-    expect(heroSource).toContain('document.querySelectorAll<HTMLCanvasElement>("[data-hero-pixels]").forEach(initPixels);');
 
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
     expect(css).toMatch(/\.s-hero-bg \{[^}]*z-index: -1/);
-    expect(css).toMatch(/\.s-hero-pixels \{\s*--pixel-muted: var\(--color-grey-400\);\s*--pixel-accent: var\(--color-blue-500\);/);
-    expect(css).toMatch(/\.s-hero-vignette \{[^}]*radial-gradient\(circle at center, transparent 0%, var\(--surface-page\) 100%\)/);
+    expect(css).toContain("--grid-accent: var(--color-blue-500);");
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\) \{\s*\.s-grid::before, \.s-grid::after, \.s-grid-glow \{ animation: none; \}/);
+    expect(css).not.toContain("--pixel-accent");
     // El título va en blanco sólido, sin el efecto de vidrio del componente original.
     expect(css).not.toContain("s-glass-shimmer");
     expect(css).not.toContain("background-clip: text");
     expect(css).toContain(".s-hero .s-logos { animation: none; }");
-    // Halo y sombra del color de fondo para separar el título y la bajada de los píxeles.
-    expect(css).toMatch(/\.s-hero-text::before \{[^}]*radial-gradient\(closest-side/);
-    expect(css).toContain(".s-hero-title { text-shadow: 0 0 32px var(--surface-page), 0 0 12px var(--surface-page); }");
-    expect(css).toContain(".s-hero-lead { text-shadow: 0 0 16px var(--surface-page), 0 0 6px var(--surface-page); }");
+    // Sin halo ni sombras de texto: eran para separar el título de los píxeles.
+    expect(css).not.toMatch(/\.s-hero-text::before/);
+    expect(css).not.toMatch(/\.s-hero-(title|lead) \{[^}]*text-shadow/);
   });
 
   it("gives the problem section 120px of vertical padding on desktop and keeps the others at 96px", () => {
@@ -837,10 +836,10 @@ describe("landing de servicios v3", () => {
     expect(css).toContain(".s-services-panel-body { font-size: 1rem; font-weight: 400; line-height: 1.5; }");
   });
 
-  it("centers the hero title and subtitle", () => {
+  it("aligns the hero title and subtitle to the left", () => {
     const css = readFileSync(new URL("../src/styles/servicios.css", import.meta.url), "utf8");
-    expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: center;[^}]*text-align: center;/);
-    expect(css).toMatch(/\.s-hero-text \{[^}]*align-items: center;/);
-    expect(css).toContain(".s-hero-lead { max-width: 860px; margin-inline: auto; }");
+    expect(css).toMatch(/\.s-hero-inner \{[^}]*align-items: flex-start;[^}]*text-align: left;/);
+    expect(css).not.toMatch(/\.s-hero-text \{[^}]*align-items: center;/);
+    expect(css).toContain(".s-hero-lead { max-width: 860px; margin-inline: 0; }");
   });
 });
