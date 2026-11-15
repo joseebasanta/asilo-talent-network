@@ -21,8 +21,6 @@ const SURFACES: Array<{ file: string; envVar: string }> = [
   { file: "pages/api/projects/submit.ts", envVar: "APPWRITE_ENDPOINT" },
   { file: "pages/api/projects/submit.ts", envVar: "APPWRITE_PROJECT_ID" },
   { file: "pages/api/projects/submit.ts", envVar: "APPWRITE_API_KEY" },
-  { file: "pages/api/community/submit.ts", envVar: "GOOGLE_COMMUNITY_SHEETS_ID" },
-  { file: "pages/api/community/submit.ts", envVar: "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64" },
   { file: "lib/turnstile.ts", envVar: "TURNSTILE_SITE_KEY" },
   { file: "lib/turnstile.ts", envVar: "TURNSTILE_SECRET_KEY" },
   { file: "pages/api/projects/submit.ts", envVar: "DEV_ALLOW_DUPLICATE_WEBSITE" },
