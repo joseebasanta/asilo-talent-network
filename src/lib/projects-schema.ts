@@ -46,7 +46,39 @@ const textField = (min: number, max: number, message: string) =>
 
 const websiteMessage = "Ingresa una URL válida de un sitio público (http:// o https://).";
 
-export const submissionSchema = z.object({
+const categoriesMessage = "Selecciona entre 1 y 3 categorías válidas.";
+const invalidCategoryMessage = "Selecciona categorías válidas.";
+const KNOWN_CATEGORIES = new Set<string>(CATEGORIES);
+
+/**
+ * Categories an edit request may keep although they are no longer offered:
+ * the published project's tags (browser) or, before the server knows them,
+ * any plausible tag (\`"any"\`) that the endpoint then checks against the sheet.
+ */
+export type LegacyCategories = readonly string[] | "any";
+
+export function isLegacyCategoryText(value: string): boolean {
+  return value.length >= 1 && value.length <= 60 &&
+    !/[,;\u0000-\u001F\u007F]/.test(value);
+}
+
+/** Tags of a published project that the current allowlist does not offer. */
+export function legacyCategoriesOf(tags: readonly string[]): string[] {
+  return tags.filter((tag) => !KNOWN_CATEGORIES.has(tag) && isLegacyCategoryText(tag));
+}
+
+function categoriesSchema(legacy: LegacyCategories = []) {
+  const allowed = (value: string) => KNOWN_CATEGORIES.has(value) ||
+    (legacy === "any" ? isLegacyCategoryText(value) : legacy.includes(value));
+  return z.array(
+    z.string({ error: invalidCategoryMessage }).trim().refine(allowed, invalidCategoryMessage),
+    { error: categoriesMessage },
+  ).min(1, categoriesMessage)
+    .max(MAX_CATEGORIES, categoriesMessage)
+    .refine((values) => new Set(values).size === values.length, "No repitas categorías.");
+}
+
+const baseSubmissionSchema = z.object({
   nombre: textField(2, 80, "El nombre debe tener entre 2 y 80 caracteres."),
   website: z.string({ error: websiteMessage }).trim().max(2048, websiteMessage)
     .transform((value, ctx) => {
@@ -66,12 +98,14 @@ export const submissionSchema = z.object({
     }, websiteMessage),
   descripcion: textField(10, 140, "La descripción debe tener entre 10 y 140 caracteres."),
   fundadores: textField(1, 160, "Indica quién fundó el proyecto (hasta 160 caracteres)."),
-  categorias: z.array(z.enum(CATEGORIES, { error: "Selecciona categorías válidas." }), {
-    error: "Selecciona entre 1 y 3 categorías válidas.",
-  }).min(1, "Selecciona entre 1 y 3 categorías válidas.")
-    .max(MAX_CATEGORIES, "Selecciona entre 1 y 3 categorías válidas.")
-    .refine((values) => new Set(values).size === values.length, "No repitas categorías."),
+  categorias: categoriesSchema(),
 });
+
+export const submissionSchema = baseSubmissionSchema;
+
+function schemaFor(legacy?: LegacyCategories) {
+  return legacy ? baseSubmissionSchema.extend({ categorias: categoriesSchema(legacy) }) : baseSubmissionSchema;
+}
 
 export type SubmissionInput = z.input<typeof submissionSchema>;
 export type NormalizedSubmission = z.output<typeof submissionSchema>;
@@ -81,8 +115,8 @@ export type ValidationResult =
   | { ok: false; field: string; message: string; errors: Record<string, string> };
 
 /** Validate untrusted values without coercing files, arrays or objects to text. */
-export function validateSubmission(input: unknown): ValidationResult {
-  const result = submissionSchema.safeParse(input);
+export function validateSubmission(input: unknown, legacy?: LegacyCategories): ValidationResult {
+  const result = schemaFor(legacy).safeParse(input);
   if (result.success) return { ok: true, value: result.data };
   const issue = result.error.issues[0];
   const errors: Record<string, string> = {};
@@ -99,7 +133,7 @@ export function validateSubmission(input: unknown): ValidationResult {
 }
 
 /** Scalar fields must occur exactly once; categories are intentionally repeated. */
-export function validateSubmissionForm(form: FormData): ValidationResult {
+export function validateSubmissionForm(form: FormData, legacy?: LegacyCategories): ValidationResult {
   const fields = ["nombre", "website", "descripcion", "fundadores"] as const;
   for (const field of fields) {
     if (form.getAll(field).length > 1) {
@@ -110,7 +144,7 @@ export function validateSubmissionForm(form: FormData): ValidationResult {
   return validateSubmission({
     ...Object.fromEntries(fields.map((field) => [field, form.get(field)])),
     categorias: form.getAll("categorias"),
-  });
+  }, legacy);
 }
 
 /**

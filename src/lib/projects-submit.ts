@@ -87,7 +87,7 @@ function columnIndex(headerRow: string[], keys: string[]): number {
 export function findLatestApprovedRevision(
   values: string[][],
   website: string,
-): { logoId: string; revisionId: string } | null {
+): { logoId: string; revisionId: string; tags: string[] } | null {
   const key = normalizeWebsiteKey(website);
   if (!key) return null;
   const [headerRow = [], ...rows] = values;
@@ -96,6 +96,7 @@ export function findLatestApprovedRevision(
   if (site < 0 || approved < 0) return null;
   const logo = columnIndex(headerRow, ["id del logo", "logo", "logo file id"]);
   const revision = columnIndex(headerRow, ["id de revision", "revision_id", "revision id"]);
+  const tags = columnIndex(headerRow, ["categorias", "categoria", "tags", "categories", "category"]);
 
   for (let i = rows.length - 1; i >= 0; i -= 1) {
     const row = rows[i];
@@ -104,6 +105,7 @@ export function findLatestApprovedRevision(
     return {
       logoId: logo < 0 ? "" : (row[logo] ?? "").trim(),
       revisionId: revision < 0 ? "" : (row[revision] ?? "").trim(),
+      tags: tags < 0 ? [] : (row[tags] ?? "").split(/[,;]/).map((tag) => tag.trim()).filter(Boolean),
     };
   }
   return null;
@@ -307,6 +309,13 @@ export function resolveSubmissionColumns(
   return { ok: true, columns };
 }
 
+/** First notes column (edit requests store the requester's contact there), or -1. */
+export function notesColumnIndex(headerRow: string[]): number {
+  return headerRow.findIndex(
+    (cell) => SUBMISSION_HEADER_ALIASES[normalizeHeader(cell)] === "notes",
+  );
+}
+
 /**
  * Shapes a validated submission into a header-aligned `PENDIENTE` row sized
  * to `headerRow.length`. Submission values land on their named columns
@@ -347,12 +356,12 @@ export function buildRowForHeaders(
   }
   // Edit requests carry the requester's contact. There is no dedicated column
   // on the live sheet, so it goes in the FIRST notes column; new-project
-  // submissions leave every notes column empty (moderator-owned).
+  // submissions leave every notes column empty (moderator-owned). Without a
+  // notes column the contact would be lost, so the edit fails closed.
   if (options.notes) {
-    const notesIndex = headerRow.findIndex(
-      (cell) => SUBMISSION_HEADER_ALIASES[normalizeHeader(cell)] === "notes",
-    );
-    if (notesIndex >= 0) row[notesIndex] = options.notes;
+    const notesIndex = notesColumnIndex(headerRow);
+    if (notesIndex < 0) throw new Error("Missing notes column for edit request");
+    row[notesIndex] = options.notes;
   }
   return row;
 }

@@ -1,13 +1,21 @@
 import { startProjectRefresh } from "../lib/project-refresh";
 import { filterProjects, limitProjects, normalizeVisibleLimit, PROJECTS_PAGE_SIZE } from "../lib/project-search";
-import { DEFAULT_SORT, parseSortMode } from "../lib/project-sort";
+import { DEFAULT_SORT, parseSortMode, type SortMode } from "../lib/project-sort";
 import { track } from "./analytics";
 
 const form = document.querySelector<HTMLFormElement>("#project-filters")!;
 const search = document.querySelector<HTMLInputElement>("#project-query")!;
 const orderOptions = Array.from(form.querySelectorAll<HTMLInputElement>('[name="orden"]'));
-const getOrder = () => parseSortMode(orderOptions.find(option => option.checked)?.value);
-const setOrder = (value: string) => orderOptions.forEach(option => { option.checked = option.value === value; });
+// Legacy modes without a tab (e.g. ?orden=za) stay active until another tab is chosen.
+let unlistedOrder: SortMode | null = null;
+const getOrder = (): SortMode => {
+  const checked = orderOptions.find(option => option.checked);
+  return checked ? parseSortMode(checked.value) : unlistedOrder ?? DEFAULT_SORT;
+};
+const setOrder = (value: SortMode) => {
+  orderOptions.forEach(option => { option.checked = option.value === value; });
+  unlistedOrder = orderOptions.some(option => option.checked) ? null : value;
+};
 let boxes = Array.from(form.querySelectorAll<HTMLInputElement>('[name="categoria"]'));
 const grid = document.querySelector<HTMLElement>("#project-results")!;
 const count = document.querySelector<HTMLElement>("#project-count")!;
@@ -126,11 +134,13 @@ document.querySelectorAll<HTMLAnchorElement>("[data-clear-filters]").forEach(lin
 showMoreButton.addEventListener("click", event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  const firstNew = cards.filter(card => !card.hidden).length;
+  const shown = new Set(cards.filter(card => !card.hidden));
   visibleLimit += PROJECTS_PAGE_SIZE;
   render(true, false, true);
-  // The button disappears once everything is shown; keep keyboard focus on the new content.
-  const revealed = cards.filter(card => !card.hidden)[firstNew];
+  // The button disappears once everything is shown; keep keyboard focus on the
+  // first new card in the current (sorted) order.
+  const revealed = Array.from(grid.querySelectorAll<HTMLElement>("[data-project-index]"))
+    .find(card => !card.hidden && !shown.has(card));
   if (showMore.hidden) revealed?.querySelector<HTMLElement>(".prj-link")?.focus({ preventScroll: false });
 });
 window.addEventListener("popstate", restore);

@@ -38,6 +38,7 @@ import {
   buildRowForHeaders,
   findDuplicateWebsite,
   findLatestApprovedRevision,
+  notesColumnIndex,
   websiteColumnIndex,
   MIN_FILL_MS,
   validateContact,
@@ -47,6 +48,7 @@ import { json } from "../../../lib/http";
 import { createRateLimiter } from "../../../lib/rate-limit";
 import { LOGO_BUCKET_ID, validateLogo, validateRequiredLogo } from "../../../lib/projects-logo";
 import { checkTurnstile } from "../../../lib/turnstile";
+import { CATEGORIES } from "../../../lib/projects-schema";
 
 export const prerender = false;
 
@@ -134,7 +136,9 @@ export async function POST({ request, clientAddress }: APIContext) {
     }
   }
 
-  const validation = validateSubmissionForm(form);
+  // An edit may keep categories no longer offered; they are checked against
+  // the published revision once the sheet is read.
+  const validation = validateSubmissionForm(form, mode === "edit" ? "any" : undefined);
   if (!validation.ok) {
     return json(
       { ok: false, field: validation.field, error: validation.message, errors: validation.errors },
@@ -192,7 +196,7 @@ export async function POST({ request, clientAddress }: APIContext) {
   // Edit: the website MUST belong to a published project; the request carries
   // its current logo forward and records which revision it replaces.
   let headerRow: string[];
-  let current: { logoId: string; revisionId: string } | null = null;
+  let current: { logoId: string; revisionId: string; tags: string[] } | null = null;
   try {
     const { data } = await sheets.spreadsheets.values.get({
       spreadsheetId: import.meta.env.GOOGLE_SHEETS_ID!,
@@ -202,11 +206,21 @@ export async function POST({ request, clientAddress }: APIContext) {
     headerRow = values[0] ?? [];
     if (mode === "edit") {
       if (websiteColumnIndex(headerRow) < 0) throw new Error("Missing website column");
+      // The requester's contact needs a notes column; check before uploading.
+      if (notesColumnIndex(headerRow) < 0) throw new Error("Missing notes column");
       current = findLatestApprovedRevision(values, validation.value.website);
       if (!current) {
         return json(
           { ok: false, error: "No encontramos un proyecto publicado con ese sitio web." },
           404,
+        );
+      }
+      const known = new Set<string>(CATEGORIES);
+      const published = new Set(current.tags);
+      if (validation.value.categorias.some((tag) => !known.has(tag) && !published.has(tag))) {
+        return json(
+          { ok: false, field: "categorias", error: "Selecciona categorías válidas." },
+          400,
         );
       }
     } else if (!devOverride) {

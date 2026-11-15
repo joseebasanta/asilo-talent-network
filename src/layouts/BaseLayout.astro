@@ -5,6 +5,7 @@ import "../styles/motion.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SeoHead from "../components/SeoHead.astro";
+import ThemeInit from "../components/ThemeInit.astro";
 
 interface Props {
   title?: string;
@@ -28,6 +29,7 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#000a11" />
+    <ThemeInit />
     <SeoHead title={title} description={description} canonical={canonical} noindex={noindex} />
     <link rel="preload" href="/fonts/averia-serif-libre-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />

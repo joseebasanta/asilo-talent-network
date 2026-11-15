@@ -2,7 +2,9 @@
 /**
  * Project detail page: the home for edit requests.
  * Only the trailing id in the slug resolves the project (see
- * project-identity.ts); any other spelling 301s to the canonical slug.
+ * project-identity.ts); any other spelling redirects to the canonical slug.
+ * Titles (and so slugs) can change, so the redirect is temporary: a cached
+ * 301 could loop after a project is renamed back.
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectFormModal from "../../components/ProjectFormModal.astro";
@@ -15,7 +17,7 @@ const id = idFromSlug(slug);
 const project = id ? await findProject(id) : null;
 
 if (project?.slug && project.slug !== slug) {
-  return Astro.redirect(`/proyectos/${project.slug}`, 301);
+  return Astro.redirect(`/proyectos/${project.slug}`, 302);
 }
 if (!project) Astro.response.status = 404;
 

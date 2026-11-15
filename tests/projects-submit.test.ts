@@ -355,7 +355,7 @@ describe("edit requests", () => {
       row("https://panapay.com", "PENDIENTE", "logo-3", "rev-3"),
       row("https://otro.com", "SI", "logo-x", "rev-x"),
     ];
-    expect(findLatestApprovedRevision(values, "panapay.com")).toEqual({ logoId: "logo-2", revisionId: "rev-2" });
+    expect(findLatestApprovedRevision(values, "panapay.com")).toMatchObject({ logoId: "logo-2", revisionId: "rev-2" });
   });
 
   it("returns null for unpublished or unknown websites", () => {

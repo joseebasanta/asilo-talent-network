@@ -12,6 +12,7 @@
  */
 import type { Project } from "../data/projects";
 import { CATEGORIES, MAX_CATEGORIES } from "../lib/projects-submit";
+import { legacyCategoriesOf } from "../lib/projects-schema";
 import { turnstileSiteKey } from "../lib/turnstile";
 
 interface Props {
@@ -42,12 +43,15 @@ const copy = editing
       logoHint: "PNG, JPG o WebP · máximo permitido: 1 MB · sin animación · hasta 4096 × 4096 px y 16 MP",
     };
 const selected = new Set(editing ? project.tags : []);
+// Published tags no longer offered stay selectable so an unrelated edit keeps them.
+const legacyCategories = editing ? legacyCategoriesOf(project.tags) : [];
+const categoryOptions = [...CATEGORIES, ...legacyCategories];
 const description = editing ? project.description : "";
 // Public site key — safe to embed; widget only renders when it's configured.
 const TURNSTILE_SITE_KEY = turnstileSiteKey();
 ---
 
-<dialog class="modal" id="project-modal" aria-labelledby="project-modal-title" data-mode={editing ? "edit" : "create"} data-submit-label={copy.submit}>
+<dialog class="modal" id="project-modal" aria-labelledby="project-modal-title" data-mode={editing ? "edit" : "create"} data-submit-label={copy.submit} data-legacy-categories={JSON.stringify(legacyCategories)}>
   <form class="modal-card" novalidate>
     <!-- Honeypot: humans never see it; bots fill it and get a fake success. -->
     <input class="honeypot" type="text" name="contact_email" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
@@ -132,7 +136,7 @@ const TURNSTILE_SITE_KEY = turnstileSiteKey();
             </span>
           </div>
           <div class="combo-popup" id="category-listbox" role="listbox" aria-multiselectable="true" aria-label="Categorías" data-combo-popup hidden>
-            {CATEGORIES.map((cat) => (
+            {categoryOptions.map((cat) => (
               <label class="cat-row" role="option" aria-selected={selected.has(cat) ? "true" : "false"} data-combo-option data-name={cat}>
                 <input class="cat-checkbox" type="checkbox" name="categorias" value={cat} tabindex="-1" checked={selected.has(cat)} />
                 <span class="cat-box" aria-hidden="true">
@@ -200,6 +204,7 @@ const TURNSTILE_SITE_KEY = turnstileSiteKey();
     const MAX = MAX_CATEGORIES;
     const MAX_DESC = 140;
     const submitLabel = dialog.dataset.submitLabel ?? "Enviar";
+    const legacyCategories = JSON.parse(dialog.dataset.legacyCategories ?? "[]") as string[];
     const form = dialog.querySelector("form");
     const formView = form?.querySelector<HTMLElement>("[data-form-view]") ?? null;
     const successView = form?.querySelector<HTMLElement>("[data-success-view]") ?? null;
@@ -380,8 +385,12 @@ const TURNSTILE_SITE_KEY = turnstileSiteKey();
     };
     boxes.forEach((b) => b.addEventListener("change", syncCats));
     comboControl?.addEventListener("mousedown", (event) => {
-      if (event.target !== comboInput) { event.preventDefault(); comboInput?.focus(); }
-      if (comboPopup?.hidden) openCombo(); else if (event.target !== comboInput) closeCombo();
+      // Read the state before focusing: focus itself opens the list.
+      const wasOpen = comboPopup ? !comboPopup.hidden : false;
+      if (event.target === comboInput) { openCombo(); return; }
+      event.preventDefault();
+      if (wasOpen) closeCombo();
+      else { comboInput?.focus(); openCombo(); }
     });
     // Keep focus in the text field while options are clicked.
     comboPopup?.addEventListener("mousedown", (event) => event.preventDefault());
@@ -492,7 +501,7 @@ const TURNSTILE_SITE_KEY = turnstileSiteKey();
       if (submitting) return;
       const field = (e.target as HTMLInputElement).name;
       if (!["nombre", "website", "descripcion", "fundadores"].includes(field)) return;
-      const result = validateSubmissionForm(new FormData(form));
+      const result = validateSubmissionForm(new FormData(form), legacyCategories);
       if (!result.ok && result.errors[field]) setFieldError(field, result.errors[field], false);
       else clearFieldError(field);
     });
@@ -539,7 +548,7 @@ const TURNSTILE_SITE_KEY = turnstileSiteKey();
       FIELD_NAMES.forEach(clearFieldError);
       if (statusEl) statusEl.hidden = true;
       const body = new FormData(form);
-      const validation = validateSubmissionForm(body);
+      const validation = validateSubmissionForm(body, legacyCategories);
       if (!validation.ok) {
         for (const [field, message] of Object.entries(validation.errors)) setFieldError(field, message, false);
         setStatus("Revisa los campos marcados antes de enviar.", true);

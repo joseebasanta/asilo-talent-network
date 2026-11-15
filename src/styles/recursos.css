@@ -124,16 +124,17 @@
   /* Single gap between the intro and the sidebar/results. */
   margin-top: clamp(3rem, 6vw, 4.5rem);
 }
-/* The header scrolls away with the page, so the sidebar sticks near the top
-   edge and fills the viewport; only its category list scrolls. */
+/* The header stays fixed, so the sidebar sticks just below it and fills the
+   rest of the viewport; only its category list scrolls. */
 .library-side {
   position: sticky;
   top: var(--side-top);
-  height: calc(100dvh - 2 * var(--side-top));
+  height: calc(100dvh - var(--side-top) - var(--side-gap));
   display: flex;
   flex-direction: column;
   min-height: 0;
-  --side-top: 1.5rem;
+  --side-gap: 1.5rem;
+  --side-top: calc(var(--header-h) + var(--side-gap));
 }
 .library-nav-title {
   flex: none;

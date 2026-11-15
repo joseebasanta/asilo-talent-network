@@ -136,7 +136,8 @@ export function resetProjectsCache(): void {
  * Rows are append-only revisions, so several approved rows can describe the
  * same project (same normalized website). The LAST approved revision wins —
  * that is how an approved edit request replaces the published card — while
- * `addedIndex` keeps the position of the first one for "Últimos añadidos".
+ * `addedIndex` keeps the position of the first one for "Últimos añadidos",
+ * and counters missing from the latest revision carry over from earlier ones.
  */
 export function parseProjects(values: string[][]): Project[] {
   const [headerRow = [], ...dataRows] = values;
@@ -157,10 +158,18 @@ export function parseProjects(values: string[][]): Project[] {
     const project = toProject(row, headerMap, rowIndex);
     if (!project?.id) return;
     const previous = byId.get(project.id);
-    byId.set(
-      project.id,
-      previous ? { ...project, addedIndex: previous.addedIndex } : project,
-    );
+    if (!previous) {
+      byId.set(project.id, project);
+      return;
+    }
+    // Edit requests never carry counters: keep the published ones unless the
+    // approved revision sets its own (an explicit 0 included).
+    byId.set(project.id, {
+      ...project,
+      addedIndex: previous.addedIndex,
+      visits: project.visits ?? previous.visits,
+      trending: project.trending ?? previous.trending,
+    });
   });
 
   return [...byId.values()].sort((a, b) => a.title.localeCompare(b.title));
