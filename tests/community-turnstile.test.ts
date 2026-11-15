@@ -27,6 +27,7 @@ const withToken = (token: string) => (form: FormData) => form.set("cf-turnstile-
 
 beforeEach(() => {
   vi.stubEnv("GOOGLE_SHEETS_ID", "projects");
+  vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "community");
   vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_RANGE", "");
   vi.stubEnv("GOOGLE_SERVICE_ACCOUNT_JSON_BASE64", Buffer.from(JSON.stringify({ client_email: "service@example.com", private_key: "test" })).toString("base64"));
   vi.stubEnv("TURNSTILE_SITE_KEY", "");

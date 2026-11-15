@@ -14,6 +14,7 @@ function context(overrides = {}, ip = `test-${++nextIp}`) {
 }
 function configure() {
   vi.stubEnv("GOOGLE_SHEETS_ID", "projects");
+  vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "community");
   vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_RANGE", "");
   vi.stubEnv("GOOGLE_SERVICE_ACCOUNT_JSON_BASE64", Buffer.from(JSON.stringify({ client_email: "service@example.com", private_key: "test" })).toString("base64"));
 }
@@ -24,8 +25,8 @@ describe("membership submissions", () => {
     expect(communitySchema.safeParse({ ...valid, linkedin: "https://linkedin.com.evil.test/in/ana" }).success).toBe(false);
     expect(communityRow(valid).slice(1)).toEqual([...Object.values(valid), "PENDIENTE"]);
   });
-  it("fails closed when the shared spreadsheet or credentials are missing", async () => {
-    vi.stubEnv("GOOGLE_SHEETS_ID", "");
+  it("fails closed when the community spreadsheet or credentials are missing", async () => {
+    vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "");
     vi.stubEnv("GOOGLE_SERVICE_ACCOUNT_JSON_BASE64", Buffer.from(JSON.stringify({ client_email: "service@example.com", private_key: "test" })).toString("base64"));
     expect((await POST(context())).status).toBe(503);
     configure();
@@ -36,7 +37,7 @@ describe("membership submissions", () => {
   it("writes literal values to the shared spreadsheet", async () => {
     configure(); append.mockResolvedValue({ data: { updates: { updatedRows: 1 } } });
     expect((await POST(context({ project: "=1+1" }))).status).toBe(201);
-    expect(append).toHaveBeenCalledWith(expect.objectContaining({ spreadsheetId: "projects", range: "Builders!A:J", valueInputOption: "RAW", requestBody: { values: [expect.arrayContaining(["=1+1", "PENDIENTE"])] } }), expect.objectContaining({ retry: false }));
+    expect(append).toHaveBeenCalledWith(expect.objectContaining({ spreadsheetId: "community", range: "Builders!A:J", valueInputOption: "RAW", requestBody: { values: [expect.arrayContaining(["=1+1", "PENDIENTE"])] } }), expect.objectContaining({ retry: false }));
   });
   it("rejects invalid data without writing", async () => {
     configure();

@@ -7,9 +7,11 @@ export const prerender = false;
 const hits = new Map<string, number[]>();
 const reply = (body: object, status: number) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
 export async function POST({ request, clientAddress }: APIContext) {
-  const sheetId = import.meta.env.GOOGLE_SHEETS_ID?.trim();
+  // Applications live in their own spreadsheet, never the project directory's.
+  const sheetId = import.meta.env.GOOGLE_COMMUNITY_SHEETS_ID?.trim();
+  const projectsSheetId = import.meta.env.GOOGLE_SHEETS_ID?.trim();
   const credentials = import.meta.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64;
-  if (!sheetId || !credentials) return reply({ error: "El formulario no está disponible en este momento. Intenta más tarde." }, 503);
+  if (!sheetId || sheetId === projectsSheetId || !credentials) return reply({ error: "El formulario no está disponible en este momento. Intenta más tarde." }, 503);
   const tableRange = import.meta.env.GOOGLE_COMMUNITY_SHEETS_RANGE?.trim() || "Builders!A1:J";
   const bang = tableRange.indexOf("!");
   const tab = bang >= 0 ? tableRange.slice(0, bang) : "Builders";

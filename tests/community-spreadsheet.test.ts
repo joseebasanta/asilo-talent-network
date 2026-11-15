@@ -30,15 +30,15 @@ function context(ip = `shared-${Math.random()}`) {
   } as Parameters<typeof POST>[0];
 }
 
-describe("POST /api/community/submit shared workbook", () => {
+describe("POST /api/community/submit spreadsheet", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.clearAllMocks();
   });
 
-  it("writes to the shared spreadsheet ID in the Builders range", async () => {
-    vi.stubEnv("GOOGLE_SHEETS_ID", "shared-workbook");
-    vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "should-be-ignored");
+  it("writes to the separate community spreadsheet in the Builders range", async () => {
+    vi.stubEnv("GOOGLE_SHEETS_ID", "projects");
+    vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "community");
     vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_RANGE", "");
     vi.stubEnv(
       "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64",
@@ -50,17 +50,30 @@ describe("POST /api/community/submit shared workbook", () => {
     const response = await POST(context());
     expect(response.status).toBe(201);
     expect(get).toHaveBeenCalledWith(
-      expect.objectContaining({ spreadsheetId: "shared-workbook", range: "Builders!A1:J1" }),
+      expect.objectContaining({ spreadsheetId: "community", range: "Builders!A1:J1" }),
       expect.anything(),
     );
     expect(append).toHaveBeenCalledWith(
-      expect.objectContaining({ spreadsheetId: "shared-workbook", range: "Builders!A:J" }),
+      expect.objectContaining({ spreadsheetId: "community", range: "Builders!A:J" }),
       expect.anything(),
     );
   });
 
+  it("never writes applications to the project directory spreadsheet", async () => {
+    vi.stubEnv("GOOGLE_SHEETS_ID", "projects");
+    vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "projects");
+    vi.stubEnv(
+      "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64",
+      Buffer.from(JSON.stringify({ client_email: "service@example.com", private_key: "test" })).toString("base64"),
+    );
+    expect((await POST(context())).status).toBe(503);
+    expect(get).not.toHaveBeenCalled();
+    expect(append).not.toHaveBeenCalled();
+  });
+
   it("honors a configured community range for header check and append", async () => {
-    vi.stubEnv("GOOGLE_SHEETS_ID", "shared-workbook");
+    vi.stubEnv("GOOGLE_SHEETS_ID", "projects");
+    vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "community");
     vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_RANGE", "Postulantes!A1:J");
     vi.stubEnv(
       "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64",
@@ -72,11 +85,11 @@ describe("POST /api/community/submit shared workbook", () => {
     const response = await POST(context());
     expect(response.status).toBe(201);
     expect(get).toHaveBeenCalledWith(
-      expect.objectContaining({ spreadsheetId: "shared-workbook", range: "Postulantes!A1:J1" }),
+      expect.objectContaining({ spreadsheetId: "community", range: "Postulantes!A1:J1" }),
       expect.anything(),
     );
     expect(append).toHaveBeenCalledWith(
-      expect.objectContaining({ spreadsheetId: "shared-workbook", range: "Postulantes!A:J" }),
+      expect.objectContaining({ spreadsheetId: "community", range: "Postulantes!A:J" }),
       expect.anything(),
     );
   });

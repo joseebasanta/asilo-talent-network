@@ -32,6 +32,7 @@ function context(ip = `norm-${++nextIp}`) {
 
 function configure() {
   vi.stubEnv("GOOGLE_SHEETS_ID", "projects");
+  vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_ID", "community");
   vi.stubEnv("GOOGLE_COMMUNITY_SHEETS_RANGE", "");
   vi.stubEnv(
     "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64",
@@ -62,7 +63,7 @@ describe("community header normalization", () => {
       const response = await POST(context());
       expect(response.status).toBe(201);
       expect(append).toHaveBeenCalledWith(
-        expect.objectContaining({ spreadsheetId: "projects", range: "Builders!A:J" }),
+        expect.objectContaining({ spreadsheetId: "community", range: "Builders!A:J" }),
         expect.anything(),
       );
     }
