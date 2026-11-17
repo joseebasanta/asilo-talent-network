@@ -1,0 +1,8 @@
+---
+import MemberLayout from "../../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+const id = Astro.params.id ?? "";
+---
+{enabled ? <MemberLayout title="Anuncio demo | Asilo Builders"><section class="panel account-demo account-demo-panel" data-demo-detail data-post-id={id}><div class="panel-inner narrow"><a class="back-link" href="/demo-cuentas/anuncios">← Volver a anuncios</a><div data-demo-detail-body hidden><div data-demo-post></div><h2 class="aside-title comments-title">Comentarios</h2><form class="composer" data-demo-comment><label class="field"><span class="field-label">Escribe un comentario</span><textarea class="field-input field-area" name="text" rows="2"></textarea></label><p class="field-error" data-demo-error role="alert" hidden></p><button class="button button-primary" type="submit">Comentar en demo</button></form></div></div></section><script>import "../../../scripts/demo-feed.ts";</script></MemberLayout> : <html lang="es"><head><meta charset="utf-8" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>}

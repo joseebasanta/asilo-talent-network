@@ -1,0 +1,8 @@
+---
+import MemberLayout from "../../../layouts/MemberLayout.astro";
+import PromotionsDemo from "../../../components/accounts/PromotionsDemo.astro";
+import { isaacAccountsPrototypeEnabled } from "../../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? <MemberLayout title="Promociones demo | Asilo Builders"><section class="panel account-demo account-demo-panel"><div class="panel-inner narrow"><div class="demo-gate" data-demo-promotion-gate><p class="demo-eyebrow">Promociones · demo</p><h1 class="wizard-title">Entra al demo para continuar</h1><a class="button button-primary" href="/demo-cuentas/entrar">Entrar sin credenciales</a></div><PromotionsDemo /></div></section><script>import "../../../scripts/demo-promotions.ts";</script></MemberLayout> : <html lang="es"><head><meta charset="utf-8" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>}

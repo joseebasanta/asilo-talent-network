@@ -1,0 +1,7 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? <MemberLayout title="Notificaciones demo | Asilo Builders"><section class="panel account-demo account-demo-panel" data-demo-notifications><div class="panel-inner narrow"><div data-demo-notifications-body hidden><p class="demo-eyebrow">Comunidad · simulación</p><h1 class="wizard-title">Notificaciones</h1><ul class="notice-list" data-demo-notification-list></ul><p><a class="back-link" href="/demo-cuentas/anuncios">← Volver a anuncios</a></p></div><div class="demo-gate" data-demo-gate><p class="demo-eyebrow">Notificaciones · demo</p><h1 class="wizard-title">Entra al demo para verlas</h1><p class="wizard-lead">Las reacciones y comentarios son sintéticos y viven solo en memoria.</p><a class="button button-primary" href="/demo-cuentas/entrar">Entrar sin credenciales</a></div></div></section><script>import "../../scripts/demo-feed.ts";</script></MemberLayout> : <html lang="es"><head><meta charset="utf-8" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>}
