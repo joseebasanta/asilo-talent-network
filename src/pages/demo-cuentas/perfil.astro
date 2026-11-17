@@ -1,0 +1,59 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? (
+  <MemberLayout title="Perfil demo | Asilo Builders" description="Perfil sintético del prototipo de cuentas.">
+    <section class="panel account-demo account-demo-panel" aria-labelledby="demo-profile-title" data-demo-profile>
+      <div class="panel-inner narrow">
+        <div class="demo-gate" data-demo-gate>
+          <p class="demo-eyebrow">Perfil · demo sintético</p>
+          <h1 class="wizard-title">Entra al demo para ver tu perfil</h1>
+          <p class="wizard-lead">La sesión solo muestra una identidad ficticia en esta pestaña. No es autenticación real.</p>
+          <a class="button button-primary" href="/demo-cuentas/entrar">Entrar sin credenciales</a>
+        </div>
+        <div data-demo-profile-body hidden>
+          <p class="demo-eyebrow">Cuenta · prototipo local</p>
+          <h1 id="demo-profile-title" class="wizard-title">Tu perfil</h1>
+          <p class="demo-lead">Edita la experiencia de Isaac con datos sintéticos. Los cambios viven solo en memoria y no llegan a Sheets, Appwrite ni servicios remotos.</p>
+          <form class="settings-block" data-profile-form novalidate>
+            <h2 class="aside-title">Datos personales</h2>
+            <div class="form-grid">
+              <label class="field"><span class="field-label">Nombre de muestra</span><input class="field-input" name="name" maxlength="100" required /></label>
+              <label class="field"><span class="field-label">Rol</span><select class="field-input" name="role"><option>Founder</option><option>Builder</option><option>Diseñadora</option></select></label>
+              <label class="field"><span class="field-label">Ciudad</span><input class="field-input" name="city" maxlength="80" required /></label>
+              <label class="field"><span class="field-label">País</span><input class="field-input" name="country" maxlength="80" required /></label>
+            </div>
+            <label class="field"><span class="field-label">Bio corta</span><textarea class="field-input field-area" name="bio" rows="3" maxlength="280"></textarea></label>
+            <label class="check"><input type="checkbox" name="inWhatsappGroup" /> Ya estoy en el grupo de WhatsApp</label>
+            <p class="field-error form-error" data-profile-error role="alert" hidden></p>
+            <p class="auth-note" data-profile-saved role="status" hidden>Cambios guardados en esta demo.</p>
+            <button class="button button-primary" type="submit">Guardar perfil</button>
+          </form>
+          <form class="settings-block" data-contact-form novalidate>
+            <h2 class="aside-title">Datos de contacto</h2>
+            <p class="field-hint">Son valores ficticios. Elige qué mostraría un perfil público; no se publica nada.</p>
+            {([
+              ["phone", "Teléfono o WhatsApp", "tel"],
+              ["contactEmail", "Correo de contacto", "email"],
+              ["linkedin", "LinkedIn", "url"],
+              ["x", "X", "url"],
+            ] as const).map(([key, label, type]) => (
+              <div class="contact-row" data-contact-row={key}>
+                <label class="field"><span class="field-label">{label}</span><input class="field-input" name={key} type={type} maxlength="200" /></label>
+                <label class="field"><span class="field-label">Visibilidad</span><select class="field-input" name={`${key}-visibility`}><option value="visible">Visible en el demo</option><option value="hidden">Oculto</option></select></label>
+              </div>
+            ))}
+            <p class="auth-note" data-contact-saved role="status" hidden>Cambios guardados en esta demo.</p>
+            <button class="button button-primary" type="submit">Guardar contacto</button>
+          </form>
+        </div>
+      </div>
+    </section>
+    <script>import "../../scripts/demo-profile.ts";</script>
+  </MemberLayout>
+) : (
+  <html lang="es"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>
+)}

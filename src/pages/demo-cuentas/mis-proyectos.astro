@@ -1,0 +1,37 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? (
+  <MemberLayout title="Mis proyectos demo | Asilo Builders" description="Gestión sintética de proyectos.">
+    <section class="panel account-demo account-demo-panel" aria-labelledby="demo-projects-title" data-demo-projects>
+      <div class="panel-inner">
+        <div class="demo-gate" data-demo-gate>
+          <p class="demo-eyebrow">Mis proyectos · demo sintético</p>
+          <h1 class="wizard-title">Entra al demo para ver tus proyectos</h1>
+          <p class="wizard-lead">Aquí puedes revisar estados y acciones del prototipo. No se registra ni publica ningún proyecto real.</p>
+          <a class="button button-primary" href="/demo-cuentas/entrar">Entrar sin credenciales</a>
+        </div>
+        <div data-demo-projects-body hidden>
+          <header class="panel-head">
+            <div><p class="demo-eyebrow">Mis proyectos · prototipo local</p><h1 id="demo-projects-title" class="wizard-title" data-demo-greeting>Hola</h1></div>
+            <button class="button button-primary" type="button" data-demo-new>Registrar proyecto de muestra</button>
+          </header>
+          <p class="demo-notice" role="note">Solo datos sintéticos. Las acciones cambian esta vista en memoria; no usan Google Sheets, Appwrite ni una API.</p>
+          <div class="tabs" role="tablist" aria-label="Estado de los proyectos">
+            <button class="tab" role="tab" type="button" data-demo-tab="published" aria-selected="true">Publicados <span data-demo-count="published"></span></button>
+            <button class="tab" role="tab" type="button" data-demo-tab="draft" aria-selected="false">Borradores <span data-demo-count="draft"></span></button>
+            <button class="tab" role="tab" type="button" data-demo-tab="archived" aria-selected="false">Archivados <span data-demo-count="archived"></span></button>
+          </div>
+          <div data-demo-project-list role="tabpanel" aria-live="polite"></div>
+          <aside class="aside-card demo-project-aside"><h2 class="aside-title">Tu perfil</h2><p class="field-hint">Completa tu perfil de founder para que otras personas puedan conocerte.</p><a class="button button-secondary" href="/demo-cuentas/perfil">Ver perfil</a></aside>
+        </div>
+      </div>
+    </section>
+    <script>import "../../scripts/demo-projects.ts";</script>
+  </MemberLayout>
+) : (
+  <html lang="es"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>
+)}

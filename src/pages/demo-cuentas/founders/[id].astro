@@ -1,0 +1,25 @@
+---
+import MemberLayout from "../../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+const id = Astro.params.id ?? "";
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? (
+  <MemberLayout title="Founder demo | Asilo Builders" description="Perfil sintético de founder.">
+    <section class="panel account-demo account-demo-panel" aria-labelledby="demo-founder-title" data-demo-founder data-demo-founder-id={id}>
+      <div class="panel-inner narrow">
+        <div class="demo-gate" data-demo-gate>
+          <p class="demo-eyebrow">Perfil de founder · demo sintético</p>
+          <h1 class="wizard-title">Entra al demo para ver este perfil</h1>
+          <p class="wizard-lead">Los datos son ficticios y solo sirven para revisar el flujo original de Isaac.</p>
+          <a class="button button-primary" href="/demo-cuentas/entrar">Entrar sin credenciales</a>
+        </div>
+        <div data-demo-founder-body hidden></div>
+      </div>
+    </section>
+    <script>import "../../../scripts/demo-profile.ts";</script>
+  </MemberLayout>
+) : (
+  <html lang="es"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>
+)}

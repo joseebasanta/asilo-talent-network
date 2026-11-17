@@ -12,8 +12,8 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 
 ## Tasks
 - [x] T1 (S1-S4): Reconcile prototype and release boundaries; establish isolated integration and safe demo access. Route: worker, context backstop. Commit: 6739000.
-- [~] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commit: pending.
-- [ ] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commit: pending.
+- [x] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commit: 2d356cd.
+- [~] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commit: pending.
 - [ ] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: pending.
 - [ ] T5 (S1-S6): Verify release and prototype, mobile/desktop/keyboard/error states and independently verify security risks. Route: parent plus verifier. Commit: pending.
 
@@ -25,3 +25,5 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 - L5: T1 commit 6739000; focused tests 7 passed, full suite 267 passed, pnpm check/build passed; local server returned disabled 404 and enabled 200. Production artifact compiled DEV=false; preview unsupported by Vercel adapter; no live production request. Independent verifier accepted boundary with limitations. Sitemap differential: all 4 release URLs unchanged. Slice 1: 6739000.
 - L6: User requested «Haz el commit + merge + push» and clarified «quería era merge - revisión - commit/merge/push»; integrate and review before final merge/push; do not publish incomplete work.
 - L7: «NO hagas tantas verificaciones. Commit + push + merge y todo en una sola rama llamada develop o similar». Delivery changed to single-pr on develop; no chain. Keep applicable essential checks and independent verification for named high-risk items.
+- L8: T2 commit 2d356cd; 270 tests passed before session correction, focused 9 passed and pnpm check after correction; browser test written but not run because Astro lock conflict. Demo remains reduced versus Isaac; T3/T4 required. Final review and browser verification remain in T5.
+- L9: User requested «Apenas puedas, puedes ir subiendo lo que tienes al github que te mandé». Created remote branch joseebasanta/asilo-talent-network:develop by pushing commit 2d356cd. No merge to main or PR creation.
