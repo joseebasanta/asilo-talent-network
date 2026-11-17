@@ -12,9 +12,9 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 
 ## Tasks
 - [x] T1 (S1-S4): Reconcile prototype and release boundaries; establish isolated integration and safe demo access. Route: worker, context backstop. Commit: 6739000.
-- [x] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commit: 2d356cd.
-- [x] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commit: f23e258.
-- [~] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: pending.
+- [~] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commit: 2d356cd; reopened: original onboarding materially incomplete.
+- [ ] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commit: f23e258; reopened: original profile/account flows materially incomplete.
+- [ ] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: 0a6dd55; reopened: demo gates and original feed flows materially incomplete.
 - [ ] T5 (S1-S6): Verify release and prototype, mobile/desktop/keyboard/error states and independently verify security risks. Route: parent plus verifier. Commit: pending.
 
 ## Log
@@ -27,4 +27,6 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 - L7: «NO hagas tantas verificaciones. Commit + push + merge y todo en una sola rama llamada develop o similar». Delivery changed to single-pr on develop; no chain. Keep applicable essential checks and independent verification for named high-risk items.
 - L8: T2 commit 2d356cd; 270 tests passed before session correction, focused 9 passed and pnpm check after correction; browser test written but not run because Astro lock conflict. Demo remains reduced versus Isaac; T3/T4 required. Final review and browser verification remain in T5.
 - L9: User requested «Apenas puedas, puedes ir subiendo lo que tienes al github que te mandé». Created remote branch joseebasanta/asilo-talent-network:develop by pushing commit 2d356cd. No merge to main or PR creation.
-- L10: T3 commit f23e258; 6 focused tests, pnpm check and build passed; demo profiles/projects are synthetic and in-memory, not production persistence. Browser verification remains T5.
+- L10: T3 commit f23e258, pushed to joseebasanta/asilo-talent-network:develop; 6 focused tests, pnpm check and build passed; demo profiles/projects are synthetic and in-memory, not production persistence. Browser verification remains T5.
+- L11: T4 commit 0a6dd55, pushed to joseebasanta/asilo-talent-network:develop; 5 focused tests, pnpm check and build passed. Notifications synchronization, link previews, image uploads, actual moderation, persistence and payments remain unimplemented.
+- L12: Independent verifier FAIL: T2-T4 materially simplify original Isaac flows; moderation and detail routes lack consistent demo sign-in gates; privacy copy misstates storage. Reopen affected tasks; safe demo must retain original user-visible workflows without real credentials/services. Final suite: pnpm test 281 passed, pnpm check/build passed, first E2E attempt missing Chromium; installation and E2E rerun pending.
