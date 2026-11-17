@@ -1,30 +1,28 @@
 ---
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/accounts.css";
 import { isaacAccountsPrototypeEnabled } from "../lib/accounts/demo-gate";
 
 const enabled = isaacAccountsPrototypeEnabled();
-if (!enabled) {
-  Astro.response.status = 404;
-}
+if (!enabled) Astro.response.status = 404;
 ---
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{enabled ? "Cuentas de Isaac" : "Página no encontrada"}</title>
-    {!enabled && <meta name="robots" content="noindex, nofollow" />}
-  </head>
-  <body>
-    {enabled ? (
-      <main>
-        <h1>Cuentas de Isaac</h1>
-        <p>Esta ruta es solo una integración de desarrollo.</p>
-        <p>No hay autenticación ni persistencia conectada.</p>
+{enabled ? (
+  <html lang="es">
+    <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><meta name="robots" content="noindex, nofollow" /><title>Cuentas de Isaac · Demo</title></head>
+    <body>
+      <main id="contenido" class="account-demo">
+        <p class="demo-eyebrow">Demo de cuentas · prototipo local · solo desarrollo</p>
+        <h1 id="demo-title">Cuentas de Isaac · Demo</h1>
+        <p class="demo-lead">Esta ruta es solo una integración de desarrollo: explora la entrada y el onboarding con datos sintéticos. Esto no es autenticación real.</p>
+        <div class="demo-notice" role="note"><strong>Experiencia de prueba.</strong> No pide credenciales, no verifica correos y no guarda datos en el navegador.</div>
+        <div class="demo-actions">
+          <a class="button button-primary" href="/demo-cuentas/entrar">Entrar al demo</a>
+          <a class="button button-secondary" href="/demo-cuentas/onboarding?demo=1">Ver onboarding</a>
+        </div>
       </main>
-    ) : (
-      <main>
-        <h1>Página no encontrada</h1>
-      </main>
-    )}
-  </body>
-</html>
+    </body>
+  </html>
+) : (
+  <html lang="es"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>
+)}

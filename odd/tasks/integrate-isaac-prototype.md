@@ -1,5 +1,5 @@
 # Integrate Isaac prototype with release
-Branch: develop (base 6a35238aa1f887831e9e0979ab5f8cf77cd1a111); delivery: auto-chain, feature-branch-chain; forecast >4,500 authored changed lines.
+Branch: develop (base 6a35238aa1f887831e9e0979ab5f8cf77cd1a111); delivery: single-pr; forecast >4,500 authored changed lines.
 Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests and browser checks.
 
 ## Specs
@@ -11,8 +11,8 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 - S6: «en local me funcionó lo de Cloudflare».
 
 ## Tasks
-- [~] T1 (S1-S4): Reconcile prototype and release boundaries; establish isolated integration and safe demo access. Route: worker, context backstop. Commit: pending.
-- [ ] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commit: pending.
+- [x] T1 (S1-S4): Reconcile prototype and release boundaries; establish isolated integration and safe demo access. Route: worker, context backstop. Commit: 6739000.
+- [~] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commit: pending.
 - [ ] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commit: pending.
 - [ ] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: pending.
 - [ ] T5 (S1-S6): Verify release and prototype, mobile/desktop/keyboard/error states and independently verify security risks. Route: parent plus verifier. Commit: pending.
@@ -22,3 +22,6 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 - L2: Previous request: «Ok, entonces quiero ver como podemos juntar PR + la rama de feat/cuentas-proyectos para hacer una solida rama develop + antes de hacer merge, resumen de todo lo que tenemos a nivel de features / happy path».
 - L3: Base PR #6; Isaac commit e4e4ff554084c0578611f3c2b3fe13be22865945, divergent by 45 release commits and one prototype commit; prototype stores plaintext passwords in localStorage. No push, PR creation, merge to main, production deployment, or remote data writes authorized.
 - L4: User selected «Cadena sobre develop (recomendado)»; chain_strategy=feature-branch-chain. Fetched Isaac branch as refs/remotes/isaac/feat/cuentas-proyectos; no merge performed.
+- L5: T1 commit 6739000; focused tests 7 passed, full suite 267 passed, pnpm check/build passed; local server returned disabled 404 and enabled 200. Production artifact compiled DEV=false; preview unsupported by Vercel adapter; no live production request. Independent verifier accepted boundary with limitations. Sitemap differential: all 4 release URLs unchanged. Slice 1: 6739000.
+- L6: User requested «Haz el commit + merge + push» and clarified «quería era merge - revisión - commit/merge/push»; integrate and review before final merge/push; do not publish incomplete work.
+- L7: «NO hagas tantas verificaciones. Commit + push + merge y todo en una sola rama llamada develop o similar». Delivery changed to single-pr on develop; no chain. Keep applicable essential checks and independent verification for named high-risk items.

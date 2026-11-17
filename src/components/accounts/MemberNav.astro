@@ -1,0 +1,19 @@
+---
+interface Props { demo?: boolean }
+const { demo = false } = Astro.props;
+const path = Astro.url?.pathname ?? "/";
+const items = demo
+  ? [
+      { label: "Inicio del demo", href: "/demo-cuentas" },
+      { label: "Onboarding", href: "/demo-cuentas/onboarding?demo=1" },
+    ]
+  : [];
+---
+<nav class="member-nav" aria-label="Mi cuenta">
+  <p class="member-nav-title">{demo ? "Prototipo" : "Comunidad"}</p>
+  <ul>
+    {items.map((item) => (
+      <li><a href={item.href} aria-current={path === item.href.split("?")[0] ? "page" : undefined}>{item.label}</a></li>
+    ))}
+  </ul>
+</nav>

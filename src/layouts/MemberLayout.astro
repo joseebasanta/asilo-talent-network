@@ -1,0 +1,14 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import MemberNav from "../components/accounts/MemberNav.astro";
+import "../styles/accounts.css";
+
+interface Props { title: string; description?: string }
+const { title, description } = Astro.props;
+---
+<BaseLayout title={title} description={description} noindex>
+  <div class="member-shell member-shell--demo">
+    <MemberNav demo />
+    <div class="member-content"><slot /></div>
+  </div>
+</BaseLayout>

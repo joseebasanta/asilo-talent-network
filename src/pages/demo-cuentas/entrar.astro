@@ -1,0 +1,23 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? (
+  <MemberLayout title="Entrar al demo | Asilo Builders">
+    <section class="auth account-demo" aria-labelledby="auth-title" data-demo-auth>
+      <div class="auth-card">
+        <p class="demo-eyebrow">Demo sintético · no es autenticación real</p>
+        <h1 id="auth-title" class="auth-title">Entrar al espacio de builders</h1>
+        <p class="auth-lead">Continúa con una identidad ficticia para revisar el flujo de onboarding de Isaac.</p>
+        <div class="demo-notice" role="note">No uses una cuenta real: esta demo no solicita ni procesa credenciales.</div>
+        <button class="button button-primary auth-submit" type="button" data-demo-enter data-demo-target="/demo-cuentas/onboarding?demo=1">Entrar sin credenciales</button>
+        <p class="auth-switch"><a href="/demo-cuentas">Volver al inicio del demo</a></p>
+      </div>
+    </section>
+    <script>import "../../scripts/auth-pages.ts";</script>
+  </MemberLayout>
+) : (
+  <html lang="es"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>
+)}

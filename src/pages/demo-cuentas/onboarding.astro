@@ -1,0 +1,55 @@
+---
+import MemberLayout from "../../layouts/MemberLayout.astro";
+import { isaacAccountsPrototypeEnabled } from "../../lib/accounts/demo-gate";
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) Astro.response.status = 404;
+---
+{enabled ? (
+  <MemberLayout title="Onboarding demo | Asilo Builders">
+    <section class="wizard account-demo" aria-labelledby="wizard-title" data-demo-onboarding>
+      <div class="wizard-inner">
+        <div class="demo-gate" data-demo-gate>
+          <p class="demo-eyebrow">Onboarding · simulación local</p>
+          <h1 class="wizard-title">Entra al demo para continuar</h1>
+          <p class="wizard-lead">Esta pantalla no es autenticación ni seguridad. Solo muestra el flujo con una identidad sintética.</p>
+          <div class="demo-actions"><a class="button button-primary" href="/demo-cuentas/entrar">Entrar al demo</a><a class="button button-secondary" href="/demo-cuentas">Volver</a></div>
+        </div>
+        <div data-demo-flow hidden>
+        <p class="demo-eyebrow">Onboarding · experiencia sintética · No es autenticación real</p>
+        <div class="demo-flow-head"><span>Sesión sintética activa solo en esta pestaña.</span><button class="link-button" type="button" data-demo-sign-out>Salir del demo</button></div>
+        <ol class="stepper" aria-label="Pasos del onboarding">
+          <li class="is-current" data-demo-step="profile"><span>1</span> Tu perfil</li>
+          <li data-demo-step="project"><span>2</span> Tu proyecto</li>
+          <li data-demo-step="done"><span>3</span> Listo</li>
+        </ol>
+        <form class="step" data-demo-form="profile">
+          <h1 id="wizard-title" class="wizard-title">Cuéntanos quién eres</h1>
+          <p class="wizard-lead">Campos de muestra para revisar la experiencia. No se guardan al salir.</p>
+          <div class="form-grid">
+            <label class="field"><span class="field-label">Nombre de muestra</span><input class="field-input" name="name" value="Lucía Demo" /></label>
+            <label class="field"><span class="field-label">Rol</span><select class="field-input" name="role"><option>Builder</option><option>Diseñadora</option><option>Emprendedora</option></select></label>
+          </div>
+          <label class="field"><span class="field-label">¿Qué te gustaría construir?</span><textarea class="field-input field-area" name="bio" rows="3" placeholder="Una idea breve"></textarea></label>
+          <div class="step-actions"><button class="button button-primary" type="submit">Continuar</button></div>
+        </form>
+        <form class="step" data-demo-form="project" hidden>
+          <h1 class="wizard-title">Tu proyecto</h1>
+          <p class="wizard-lead">La segunda pantalla queda lista para el futuro registro de proyectos. T2 no conecta Sheets ni Appwrite.</p>
+          <label class="field"><span class="field-label">Nombre del proyecto (sintético)</span><input class="field-input" name="project" placeholder="Ej. Pana Pay" /></label>
+          <label class="check"><input type="checkbox" name="community" /> Quiero conocer la comunidad</label>
+          <div class="step-actions"><button class="button button-secondary" type="button" data-demo-back>Anterior</button><button class="button button-primary" type="submit">Ver confirmación</button></div>
+        </form>
+        <section class="step" data-demo-form="done" hidden>
+          <h1 class="wizard-title">¡Listo para revisar!</h1>
+          <p class="wizard-lead">El recorrido de onboarding terminó con datos sintéticos. No se creó una cuenta ni se envió nada.</p>
+          <div class="demo-notice" role="status"><strong>Demo completada.</strong> Los campos se borrarán al recargar.</div>
+          <div class="step-actions"><a class="button button-primary" href="/demo-cuentas">Volver al demo</a></div>
+        </section>
+        </div>
+      </div>
+    </section>
+    <script>import "../../scripts/onboarding.ts";</script>
+  </MemberLayout>
+) : (
+  <html lang="es"><head><meta charset="utf-8" /><meta name="robots" content="noindex, nofollow" /><title>Página no encontrada</title></head><body><main><h1>Página no encontrada</h1></main></body></html>
+)}

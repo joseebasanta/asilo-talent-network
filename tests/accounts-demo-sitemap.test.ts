@@ -74,12 +74,21 @@ afterEach(() => {
 });
 
 describe("production sitemap", () => {
-  it("excludes the development-only accounts demo while preserving release URLs", () => {
-    expect(sitemapUrls(buildSitemapInIsolation())).toEqual([
+  it("excludes the accounts demo and all descendants while preserving release URLs", () => {
+    const urls = sitemapUrls(buildSitemapInIsolation());
+    const demoUrls = [
+      "https://builders.asilodigital.com/demo-cuentas",
+      "https://builders.asilodigital.com/demo-cuentas/entrar",
+      "https://builders.asilodigital.com/demo-cuentas/onboarding",
+    ];
+    const releaseUrls = [
       "https://builders.asilodigital.com/",
       "https://builders.asilodigital.com/partials/proyectos",
       "https://builders.asilodigital.com/proyectos",
       "https://builders.asilodigital.com/recursos",
-    ]);
+    ];
+
+    expect(urls).toEqual(releaseUrls);
+    expect(urls).not.toEqual(expect.arrayContaining(demoUrls));
   }, 120_000);
 });
