@@ -1,0 +1,30 @@
+---
+import { isaacAccountsPrototypeEnabled } from "../lib/accounts/demo-gate";
+
+const enabled = isaacAccountsPrototypeEnabled();
+if (!enabled) {
+  Astro.response.status = 404;
+}
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{enabled ? "Cuentas de Isaac" : "Página no encontrada"}</title>
+    {!enabled && <meta name="robots" content="noindex, nofollow" />}
+  </head>
+  <body>
+    {enabled ? (
+      <main>
+        <h1>Cuentas de Isaac</h1>
+        <p>Esta ruta es solo una integración de desarrollo.</p>
+        <p>No hay autenticación ni persistencia conectada.</p>
+      </main>
+    ) : (
+      <main>
+        <h1>Página no encontrada</h1>
+      </main>
+    )}
+  </body>
+</html>

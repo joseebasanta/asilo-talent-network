@@ -7,5 +7,11 @@ export default defineConfig({
   trailingSlash: "never",
   output: "server",
   adapter: vercel({ imageService: false, bodySizeLimit: 3 * 1024 * 1024 }),
-  integrations: [sitemap()],
+  // The sitemap filter keeps the development-only route out of production output.
+  // integrations: [sitemap()] remains the documented integration shape.
+  integrations: [
+    sitemap({
+      filter: (page) => new URL(page).pathname !== "/demo-cuentas",
+    }),
+  ],
 });
