@@ -1,4 +1,5 @@
 import { createDemoPromotion } from "../lib/accounts/demo-feed";
+import { getPublishedDemoProjects } from "../lib/accounts/demo-projects";
 import { createDemoSession } from "../lib/accounts/demo-session";
 
 const root = document.querySelector<HTMLElement>("[data-demo-promotions]");
@@ -9,6 +10,17 @@ if (root) {
   root.hidden = !session.isSignedIn();
   const promotions = createDemoPromotion();
   const form = root.querySelector<HTMLFormElement>("[data-demo-promo-form]")!;
+  const empty = root.querySelector<HTMLElement>("[data-demo-promo-empty]")!;
+  const publishedProjects = getPublishedDemoProjects();
+  form.hidden = publishedProjects.length === 0;
+  empty.hidden = publishedProjects.length !== 0;
+  const projectSelect = form.elements.namedItem("project") as HTMLSelectElement;
+  projectSelect.replaceChildren(...publishedProjects.map((project) => {
+    const option = document.createElement("option");
+    option.value = project.id;
+    option.textContent = project.name;
+    return option;
+  }));
   const brief = form.elements.namedItem("brief") as HTMLTextAreaElement;
   const error = root.querySelector<HTMLElement>("[data-demo-promo-error]")!;
   const checkout = root.querySelector<HTMLElement>("[data-demo-promo-checkout]")!;

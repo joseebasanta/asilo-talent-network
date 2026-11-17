@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEMO_PROFILE, updateDemoProfile } from "../src/lib/accounts/demo-profile";
+import { DEMO_PROFILE, resetDemoProfile, updateDemoAccess, updateDemoPhoto, updateDemoProfile } from "../src/lib/accounts/demo-profile";
 
 describe("perfil demo", () => {
   it("provides synthetic profile data without credentials", () => {
@@ -13,6 +13,13 @@ describe("perfil demo", () => {
     expect(result.ok).toBe(true);
     expect(result.profile.bio).toContain("builders");
   });
+
+  it("supports a local photo preview and simulated access change", () => {
+    expect(updateDemoPhoto("data:image/png;base64,synthetic").profile.photo).toContain("data:image/png");
+    expect(updateDemoAccess().profile.accessStatus).toBe("updated");
+    expect(JSON.stringify(DEMO_PROFILE)).not.toMatch(/password|contraseña/i);
+    resetDemoProfile();
+  });
 });
 
 describe("perfil demo route contract", () => {
@@ -20,6 +27,9 @@ describe("perfil demo route contract", () => {
     const source = await import("node:fs/promises").then((fs) => fs.readFile("src/pages/demo-cuentas/perfil.astro", "utf8"));
     expect(source).toContain("isaacAccountsPrototypeEnabled");
     expect(source).toContain("data-demo-profile");
+    expect(source).toContain("data-photo-input");
+    expect(source).toContain("data-access-form");
+    expect(source).toContain("data-delete-account");
     expect(source).not.toMatch(/fetch\s*\(|\/api\//i);
   });
 });

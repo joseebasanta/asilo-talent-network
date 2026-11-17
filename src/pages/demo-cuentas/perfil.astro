@@ -20,6 +20,12 @@ if (!enabled) Astro.response.status = 404;
           <p class="demo-lead">Edita la experiencia de Isaac con datos sintéticos. Los cambios viven solo en memoria y no llegan a Sheets, Appwrite ni servicios remotos.</p>
           <form class="settings-block" data-profile-form novalidate>
             <h2 class="aside-title">Datos personales</h2>
+            <div class="photo-row">
+              <span class="demo-avatar" data-photo aria-label="Vista previa de foto"></span>
+              <label class="button button-secondary">Cambiar foto<input class="logo-upload-input" data-photo-input type="file" name="photo" accept="image/png,image/jpeg,image/webp" /></label>
+              <button class="button button-secondary" data-photo-clear type="button" hidden>Quitar foto</button>
+            </div>
+            <p class="field-hint">La foto se previsualiza localmente; nunca se sube ni se guarda.</p>
             <div class="form-grid">
               <label class="field"><span class="field-label">Nombre de muestra</span><input class="field-input" name="name" maxlength="100" required /></label>
               <label class="field"><span class="field-label">Rol</span><select class="field-input" name="role"><option>Founder</option><option>Builder</option><option>Diseñadora</option></select></label>
@@ -43,12 +49,25 @@ if (!enabled) Astro.response.status = 404;
             ] as const).map(([key, label, type]) => (
               <div class="contact-row" data-contact-row={key}>
                 <label class="field"><span class="field-label">{label}</span><input class="field-input" name={key} type={type} maxlength="200" /></label>
-                <label class="field"><span class="field-label">Visibilidad</span><select class="field-input" name={`${key}-visibility`}><option value="visible">Visible en el demo</option><option value="hidden">Oculto</option></select></label>
+                <label class="field"><span class="field-label">Visibilidad</span><select class="field-input" name={`${key}-visibility`}><option value="visible">Visible para registrados</option><option value="hidden">Oculto</option></select></label>
               </div>
             ))}
             <p class="auth-note" data-contact-saved role="status" hidden>Cambios guardados en esta demo.</p>
             <button class="button button-primary" type="submit">Guardar contacto</button>
           </form>
+          <form class="settings-block" data-access-form novalidate>
+            <h2 class="aside-title">Acceso</h2>
+            <p class="field-hint">Esta demo no solicita ni almacena contraseñas reales. El acceso actual es un marcador sintético de esta pestaña.</p>
+            <p class="auth-note" data-access-status role="status">Acceso simulado sin cambios.</p>
+            <button class="button button-secondary" type="submit">Simular cambio de acceso</button>
+          </form>
+          <section class="settings-block danger" aria-labelledby="demo-delete-title">
+            <h2 class="aside-title" id="demo-delete-title">Eliminar cuenta</h2>
+            <p class="field-hint">Simula la eliminación de la cuenta y cierra el marcador de esta pestaña. No borra datos reales.</p>
+            <label class="check"><input type="checkbox" data-delete-confirm /> Entiendo que es una simulación</label>
+            <button class="button button-secondary" data-delete-account type="button" disabled>Eliminar cuenta demo</button>
+            <p class="auth-note" data-delete-status role="status" hidden>Cuenta demo eliminada. Puedes volver a entrar cuando quieras.</p>
+          </section>
         </div>
       </div>
     </section>

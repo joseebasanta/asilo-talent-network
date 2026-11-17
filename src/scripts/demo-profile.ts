@@ -1,4 +1,4 @@
-import { DEMO_PROFILE, updateDemoContact, updateDemoProfile } from "../lib/accounts/demo-profile";
+import { DEMO_PROFILE, resetDemoProfile, updateDemoAccess, updateDemoContact, updateDemoPhoto, updateDemoProfile } from "../lib/accounts/demo-profile";
 import { DEMO_PROJECTS } from "../lib/accounts/demo-projects";
 import { createDemoSession } from "../lib/accounts/demo-session";
 
@@ -15,7 +15,24 @@ if (profileRoot) {
   gate(profileRoot);
   const form = profileRoot.querySelector<HTMLFormElement>("[data-profile-form]")!;
   const contactForm = profileRoot.querySelector<HTMLFormElement>("[data-contact-form]")!;
+  const photo = profileRoot.querySelector<HTMLElement>("[data-photo]")!;
+  const photoInput = profileRoot.querySelector<HTMLInputElement>("[data-photo-input]")!;
+  const photoClear = profileRoot.querySelector<HTMLButtonElement>("[data-photo-clear]")!;
+  const renderPhoto = () => {
+    photo.replaceChildren();
+    if (DEMO_PROFILE.photo) {
+      const image = document.createElement("img");
+      image.src = DEMO_PROFILE.photo;
+      image.alt = "Foto de perfil demo";
+      photo.append(image);
+      photoClear.hidden = false;
+    } else {
+      photo.textContent = DEMO_PROFILE.name.charAt(0);
+      photoClear.hidden = true;
+    }
+  };
   const fill = () => {
+    renderPhoto();
     for (const key of ["name", "role", "city", "country", "bio"] as const) (form.elements.namedItem(key) as HTMLInputElement).value = DEMO_PROFILE[key];
     (form.elements.namedItem("inWhatsappGroup") as HTMLInputElement).checked = DEMO_PROFILE.inWhatsappGroup;
     for (const [key, value] of Object.entries(DEMO_PROFILE.contacts)) {
@@ -24,6 +41,17 @@ if (profileRoot) {
     }
   };
   if (session.isSignedIn()) fill();
+  photoInput.addEventListener("change", () => {
+    const file = photoInput.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      updateDemoPhoto(typeof reader.result === "string" ? reader.result : null);
+      renderPhoto();
+    });
+    reader.readAsDataURL(file);
+  });
+  photoClear.addEventListener("click", () => { updateDemoPhoto(null); photoInput.value = ""; renderPhoto(); });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = new FormData(form);
@@ -40,6 +68,23 @@ if (profileRoot) {
     const data = new FormData(contactForm);
     for (const key of ["phone", "contactEmail", "linkedin", "x"] as const) updateDemoContact(key, String(data.get(key) ?? ""), data.get(`${key}-visibility`) === "visible");
     profileRoot.querySelector<HTMLElement>("[data-contact-saved]")!.hidden = false;
+  });
+  const accessForm = profileRoot.querySelector<HTMLFormElement>("[data-access-form]")!;
+  accessForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    updateDemoAccess();
+    profileRoot.querySelector<HTMLElement>("[data-access-status]")!.textContent = "Cambio de acceso simulado en esta sesión; no se guardó ninguna contraseña.";
+  });
+  const deleteConfirm = profileRoot.querySelector<HTMLInputElement>("[data-delete-confirm]")!;
+  const deleteButton = profileRoot.querySelector<HTMLButtonElement>("[data-delete-account]")!;
+  deleteConfirm.addEventListener("change", () => { deleteButton.disabled = !deleteConfirm.checked; });
+  deleteButton.addEventListener("click", () => {
+    if (!deleteConfirm.checked) return;
+    resetDemoProfile();
+    session.signOut();
+    profileRoot.querySelector<HTMLElement>("[data-demo-profile-body]")!.hidden = true;
+    profileRoot.querySelector<HTMLElement>("[data-demo-gate]")!.hidden = false;
+    profileRoot.querySelector<HTMLElement>("[data-delete-status]")!.hidden = false;
   });
 }
 

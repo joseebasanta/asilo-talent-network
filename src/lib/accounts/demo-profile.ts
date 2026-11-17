@@ -7,6 +7,8 @@ export type DemoProfile = {
   country: string;
   bio: string;
   inWhatsappGroup: boolean;
+  photo: string | null;
+  accessStatus: "unchanged" | "updated";
   contacts: Record<DemoContact, { value: string; visible: boolean }>;
 };
 
@@ -17,6 +19,8 @@ const initial: DemoProfile = {
   country: "Venezuela",
   bio: "Construyo herramientas sencillas para negocios pequeños.",
   inWhatsappGroup: false,
+  photo: null,
+  accessStatus: "unchanged",
   contacts: {
     phone: { value: "+58 412 0000000", visible: true },
     contactEmail: { value: "hola@panapay.example", visible: true },
@@ -34,6 +38,16 @@ export function updateDemoProfile(patch: Partial<Pick<DemoProfile, "name" | "rol
 
 export function updateDemoContact(key: DemoContact, value: string, visible: boolean) {
   DEMO_PROFILE.contacts[key] = { value: value.trim(), visible };
+  return { ok: true as const, profile: DEMO_PROFILE };
+}
+
+export function updateDemoPhoto(photo: string | null) {
+  DEMO_PROFILE.photo = photo;
+  return { ok: true as const, profile: DEMO_PROFILE };
+}
+
+export function updateDemoAccess() {
+  DEMO_PROFILE.accessStatus = "updated";
   return { ok: true as const, profile: DEMO_PROFILE };
 }
 
