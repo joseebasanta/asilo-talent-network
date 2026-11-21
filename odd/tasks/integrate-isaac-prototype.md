@@ -13,8 +13,8 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 ## Tasks
 - [x] T1 (S1-S4): Reconcile prototype and release boundaries; establish isolated integration and safe demo access. Route: worker, context backstop. Commit: 6739000.
 - [x] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commits: 2d356cd, 6908e63; synthetic limitations in L13.
-- [ ] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commits: f23e258, 74c00f6; pending: original project editor fields and permissions not yet ported.
-- [ ] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: 0a6dd55; reopened: demo gates and original feed flows materially incomplete; worker cancelled on user stop, partial uncommitted edits preserved.
+- [ ] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commits: f23e258, 74c00f6; in progress: original project editor fields and permissions not yet ported.
+- [x] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commits: 0a6dd55, 4242b90.
 - [ ] T5 (S1-S6): Verify release and prototype, mobile/desktop/keyboard/error states and independently verify security risks. Route: parent plus verifier. Commit: pending.
 
 ## Log
@@ -33,3 +33,4 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 - L13: T2 follow-up 6908e63 restores synthetic onboarding steps; 6 focused tests and pnpm check passed. Still no persisted onboarding resume or existing-project edit, real invitation acceptance/revocation, WhatsApp integration, public project creation, backend logo storage or external autofill.
 - L14: T3 follow-up 74c00f6 adds synthetic profile and project editing/invitation controls; 12 focused tests and pnpm check passed; pushed to joseebasanta/asilo-talent-network:develop. Original project editor fields and founder permissions remain incomplete; T3 stays pending.
 - L15: «Seguimos mañana. Stop todo lo pendiente - detener sub agentes». Cancelled active T4 worker mwk2bpkv-m-ged9 and stopped Chromium/E2E job-13. Preserved uncommitted T4 edits; no checks or commit after cancellation. Local dev server remains stopped. Resume by reconciling T4 edits and worker status; do not assume the stopped E2E passed.
+- L16: «Continua con lo pendiente». Reverted pnpm-generated allowScripts block in package.json; verified uncommitted T4 edits (moderation/detail gates present, sessionStorage disclosure accurate, 10 focused tests and pnpm check passed); commit 4242b90 pushed. Chromium install + E2E relaunched in background.

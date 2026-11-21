@@ -13,4 +13,6 @@ El perfil demo ahora cubre la foto con vista previa local en memoria, visibilida
 
 La promoción demo cubre la selección de proyectos publicados, el estado vacío cuando no hay proyectos publicables, el pedido y el pago simulado. No cubre cobros, contacto editorial ni persistencia real.
 
-La gestión demo también cubre edición detallada de proyecto e invitaciones con identidades sintéticas (crear, aceptar y revocar), siempre en memoria y sin correos. La versión aislada no incluye persistencia entre pestañas de los datos del perfil/proyectos, vista previa remota de enlaces, carga de imágenes al backend, invitaciones reales ni sincronización real de notificaciones. Esas piezas requieren backend y no se activan en esta integración.
+La gestión demo también cubre edición detallada de proyecto e invitaciones con identidades sintéticas (logo con vista previa local, website, descripción larga, redes, ciudad y slug; crear, aceptar y revocar), siempre en memoria y sin correos. El propietario conserva las acciones administrativas de estado e invitaciones; un founder invitado puede editar los datos del proyecto, pero no publicar, archivar, restaurar ni administrar founders.
+
+Lo que permanece sin portar del editor original es deliberado: autocompletado remoto de websites, almacenamiento de logos en backend, persistencia entre pestañas o sesiones, historial/redirects de slugs, invitaciones por correo y eliminación real de founders. Tampoco hay sincronización real de notificaciones. Esas piezas requieren backend y no se activan en esta integración.

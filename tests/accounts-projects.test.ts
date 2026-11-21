@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEMO_PROJECTS, acceptDemoInvitation, createDemoInvitation, getPublishedDemoProjects, updateDemoProject, updateDemoProjectStatus } from "../src/lib/accounts/demo-projects";
+import { DEMO_PROJECTS, acceptDemoInvitation, canManageDemoProject, createDemoInvitation, getPublishedDemoProjects, updateDemoProject, updateDemoProjectStatus } from "../src/lib/accounts/demo-projects";
 
 describe("mis proyectos demo", () => {
   it("contains fictional projects with the prototype states", () => {
@@ -16,11 +16,29 @@ describe("mis proyectos demo", () => {
     expect(getPublishedDemoProjects().map((project) => project.id)).toEqual(["demo-pana-pay"]);
   });
 
-  it("edits synthetic project details in memory", () => {
-    const result = updateDemoProject("demo-ruta-viva", { short: "Nueva descripción demo", stage: "Crecimiento" });
-    expect(result.short).toBe("Nueva descripción demo");
-    expect(result.stage).toBe("Crecimiento");
-    updateDemoProject("demo-ruta-viva", { short: "Seguimiento de entregas de última milla con WhatsApp.", stage: "MVP" });
+  it("edits the original editor fields in memory", () => {
+    const result = updateDemoProject("demo-ruta-viva", {
+      logo: "data:image/png;base64,synthetic",
+      website: "https://ruta-viva.demo",
+      long: "Descripción larga demo.",
+      socials: { instagram: "@ruta", tiktok: "", x: "@ruta", linkedin: "" },
+      city: "Caracas",
+      slug: "ruta-viva-demo",
+    });
+    expect(result.logo).toContain("data:image/png");
+    expect(result.website).toBe("https://ruta-viva.demo");
+    expect(result.long).toBe("Descripción larga demo.");
+    expect(result.socials.instagram).toBe("@ruta");
+    expect(result.city).toBe("Caracas");
+    expect(result.slug).toBe("ruta-viva-demo");
+    updateDemoProject("demo-ruta-viva", { logo: null, website: "", long: "", socials: { instagram: "", tiktok: "", x: "", linkedin: "" }, city: "", slug: "ruta-viva" });
+  });
+
+  it("limits owner-only demo actions while founders can edit", () => {
+    expect(canManageDemoProject("demo-pana-pay", "Lucía Demo")).toBe(true);
+    expect(canManageDemoProject("demo-pana-pay", "Andrés Demo")).toBe(false);
+    expect(() => updateDemoProjectStatus("demo-pana-pay", "archived", "Andrés Demo")).toThrow("administrador");
+    expect(() => createDemoInvitation("demo-pana-pay", "Marta Demo", "Founder", "Andrés Demo")).toThrow("administrador");
   });
 
   it("creates and accepts a synthetic invitation without email or network data", () => {
