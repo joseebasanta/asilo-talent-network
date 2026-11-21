@@ -13,8 +13,8 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 ## Tasks
 - [x] T1 (S1-S4): Reconcile prototype and release boundaries; establish isolated integration and safe demo access. Route: worker, context backstop. Commit: 6739000.
 - [x] T2 (S1-S4): Integrate account shell and demo login/onboarding while preserving release flows. Route: worker, context backstop. Commits: 2d356cd, 6908e63; synthetic limitations in L13.
-- [~] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commit: f23e258; reopened: original profile/account flows materially incomplete.
-- [ ] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: 0a6dd55; reopened: demo gates and original feed flows materially incomplete.
+- [ ] T3 (S1-S4): Integrate prototype project management and profile without changing real project storage. Route: worker, context backstop. Commits: f23e258, 74c00f6; pending: original project editor fields and permissions not yet ported.
+- [ ] T4 (S1-S4): Integrate prototype announcements and promotions as isolated demo. Route: worker, context backstop. Commit: 0a6dd55; reopened: demo gates and original feed flows materially incomplete; worker cancelled on user stop, partial uncommitted edits preserved.
 - [ ] T5 (S1-S6): Verify release and prototype, mobile/desktop/keyboard/error states and independently verify security risks. Route: parent plus verifier. Commit: pending.
 
 ## Log
@@ -31,3 +31,5 @@ Verification: pnpm test, pnpm check, pnpm build, pnpm test:e2e; focused tests an
 - L11: T4 commit 0a6dd55, pushed to joseebasanta/asilo-talent-network:develop; 5 focused tests, pnpm check and build passed. Notifications synchronization, link previews, image uploads, actual moderation, persistence and payments remain unimplemented.
 - L12: Independent verifier FAIL: T2-T4 materially simplify original Isaac flows; moderation and detail routes lack consistent demo sign-in gates; privacy copy misstates storage. Reopen affected tasks; safe demo must retain original user-visible workflows without real credentials/services. Final suite: pnpm test 281 passed, pnpm check/build passed, first E2E attempt missing Chromium; installation and E2E rerun pending.
 - L13: T2 follow-up 6908e63 restores synthetic onboarding steps; 6 focused tests and pnpm check passed. Still no persisted onboarding resume or existing-project edit, real invitation acceptance/revocation, WhatsApp integration, public project creation, backend logo storage or external autofill.
+- L14: T3 follow-up 74c00f6 adds synthetic profile and project editing/invitation controls; 12 focused tests and pnpm check passed; pushed to joseebasanta/asilo-talent-network:develop. Original project editor fields and founder permissions remain incomplete; T3 stays pending.
+- L15: «Seguimos mañana. Stop todo lo pendiente - detener sub agentes». Cancelled active T4 worker mwk2bpkv-m-ged9 and stopped Chromium/E2E job-13. Preserved uncommitted T4 edits; no checks or commit after cancellation. Local dev server remains stopped. Resume by reconciling T4 edits and worker status; do not assume the stopped E2E passed.

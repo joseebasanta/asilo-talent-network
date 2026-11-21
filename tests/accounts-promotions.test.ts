@@ -14,6 +14,7 @@ describe("demo promotions", () => {
 
   it("validates the brief and never exposes real credentials or calls", () => {
     const promotions = createDemoPromotion();
+    expect(promotions.create("demo-ruta-viva", "Una historia de crecimiento y pagos sencillos para comercios venezolanos.").ok).toBe(false);
     expect(promotions.create("demo-pana-pay", "corto").ok).toBe(false);
     expect(promotions.create("demo-pana-pay", "x".repeat(601)).ok).toBe(false);
     expect(promotions.source()).not.toMatch(/fetch|localStorage|password|token|GOOGLE|APPWRITE/i);
