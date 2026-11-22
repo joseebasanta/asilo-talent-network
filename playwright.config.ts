@@ -42,6 +42,7 @@ export default defineConfig({
       GOOGLE_COMMUNITY_SHEETS_ID: "",
       GOOGLE_BUILDERS_SHEETS_ID: "",
       GOOGLE_BUILDERS_SHEETS_RANGE: "",
+      PUBLIC_MIXPANEL_TOKEN: "",
     },
   },
 });
