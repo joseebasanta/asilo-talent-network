@@ -48,8 +48,20 @@ export async function prepareLogo(file: File): Promise<
   }
 }
 
-export async function uploadLogo(logo: PreparedLogo, baseUrl: string, key: string): Promise<string> {
-  const endpoint = new URL("/api/asilo/logos", baseUrl);
+export function logoUploadEndpoint(baseUrl: string | undefined): URL | null {
+  if (!baseUrl) return null;
+  try {
+    const endpoint = new URL("/api/asilo/logos", baseUrl);
+    if (endpoint.username || endpoint.password) return null;
+    if (endpoint.protocol === "https:") return endpoint;
+    const loopback = ["localhost", "127.0.0.1", "[::1]"].includes(endpoint.hostname);
+    return endpoint.protocol === "http:" && loopback ? endpoint : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function uploadLogo(logo: PreparedLogo, endpoint: URL, key: string): Promise<string> {
   const body = new FormData();
   body.set("file", new Blob([new Uint8Array(logo.buffer)], { type: "image/webp" }), logo.filename);
   const response = await fetch(endpoint, {

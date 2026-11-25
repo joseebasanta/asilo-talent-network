@@ -28,7 +28,7 @@
  */
 
 import { readSubmissionForm } from "../../../lib/submission-body";
-import { prepareLogo, uploadLogo } from "../../../lib/projects-logo-server";
+import { logoUploadEndpoint, prepareLogo, uploadLogo } from "../../../lib/projects-logo-server";
 import type { APIContext } from "astro";
 import googleSheets from "@googleapis/sheets";
 import {
@@ -241,13 +241,13 @@ export async function POST({ request, clientAddress }: APIContext) {
 
   let logoId = current?.logoId;
   if (preparedLogo?.ok) {
-    const baseUrl = import.meta.env.BUILDERS_BACKEND_BASE_URL?.trim();
+    const endpoint = logoUploadEndpoint(import.meta.env.BUILDERS_BACKEND_BASE_URL?.trim());
     const key = import.meta.env.ASILO_LOGO_UPLOAD_KEY?.trim();
-    if (!baseUrl || !key) {
+    if (!endpoint || !key) {
       return json({ ok: false, field: "logo", error: "La carga de logos no está disponible. Inténtalo más tarde." }, 503);
     }
     try {
-      logoId = await uploadLogo(preparedLogo, baseUrl, key);
+      logoId = await uploadLogo(preparedLogo, endpoint, key);
     } catch {
       return json(
         {

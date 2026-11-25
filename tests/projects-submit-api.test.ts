@@ -170,6 +170,26 @@ describe("POST /api/projects/submit validation", () => {
     expect(sheets.append).not.toHaveBeenCalled();
   });
 
+  it.each(["http://builders-api.example", "http://localhost.example", "ftp://localhost", "not-a-url"])(
+    "treats the upload origin %s as unconfigured",
+    async (origin) => {
+      vi.stubEnv("BUILDERS_BACKEND_BASE_URL", origin);
+      const response = await submit();
+      expect(response.status).toBe(503);
+      expect(await response.json()).toEqual({
+        ok: false, field: "logo", error: "La carga de logos no está disponible. Inténtalo más tarde.",
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(sheets.append).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["localhost", "127.0.0.1", "[::1]"])("allows local HTTP uploads to %s", async (host) => {
+    vi.stubEnv("BUILDERS_BACKEND_BASE_URL", `http://${host}:4388`);
+    expect((await submit()).status).toBe(201);
+    expect(String(fetchMock.mock.calls[0][0])).toBe(`http://${host}:4388/api/asilo/logos`);
+  });
+
   it("checks CAPTCHA token cardinality and length before verification", async () => {
     vi.stubEnv("TURNSTILE_SITE_KEY", "site");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "secret");
@@ -212,7 +232,7 @@ describe("POST /api/projects/submit validation", () => {
     expect((await submit({}, edit)).status).toBe(201);
     const [url, init] = fetchMock.mock.calls[0];
     expect(String(url)).toBe("https://builders-api.example/api/asilo/logos");
-    expect(init).toMatchObject({ method: "POST", headers: { Authorization: "Bearer test-logo-key" } });
+    expect(init).toMatchObject({ method: "POST", headers: { Authorization: "Bearer test-logo-key" }, redirect: "error" });
     const body = init?.body as FormData;
     expect([...body.keys()]).toEqual(["file"]);
     const file = body.get("file") as File;
