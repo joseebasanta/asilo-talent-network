@@ -10,7 +10,8 @@ Astro SSR with the Vercel adapter, TypeScript, plain CSS, and pnpm.
 - Keep user-facing copy in Spanish. For UI changes, read
   [the design system](docs/DESIGN-SYSTEM.md) and reuse existing styles.
 - Google Sheets stores projects and private membership applications in separate
-  documents. Appwrite stores project logos. Keep credentials and applicant data
+  documents. builders-backend stores new project logos; Appwrite serves legacy
+  logos. Keep credentials and applicant data
   out of client bundles, logs, issues, and PR evidence.
 - Current source and `package.json` take precedence over historical planning
   docs (`BASELINE.md`, `docs/astro-appwrite-migration.md`, and `openspec/`).
@@ -22,7 +23,7 @@ Astro SSR with the Vercel adapter, TypeScript, plain CSS, and pnpm.
   mobile and desktop, including keyboard use and relevant error states.
 - For documentation-only changes, check links and `git diff --check`.
 - Report what actually ran and any failures or skipped checks. Mocked tests do
-  not prove live Google Sheets or Appwrite writes work.
+  not prove live Google Sheets or builders-backend writes work.
 
 ## Issues and pull requests
 

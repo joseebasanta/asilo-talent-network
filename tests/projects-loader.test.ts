@@ -311,6 +311,21 @@ describe("parseProjects", () => {
       if (prev !== undefined) process.env.APPWRITE_ENDPOINT = prev;
     }
   });
+
+  it("uses the uploaded public logo URL without Appwrite configuration", () => {
+    vi.stubEnv("APPWRITE_ENDPOINT", "");
+    vi.stubEnv("APPWRITE_PROJECT_ID", "");
+    try {
+      const url = "https://builders-api.example/uploads/logos/project/logo.webp";
+      const [project] = parseProjects([
+        ["Nombre del proyecto", "Website URL", "ID del logo", "Aprobado"],
+        ["Logo", "https://logo.example", url, "SI"],
+      ]);
+      expect(project.logoUrl).toBe(url);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
 });
 
 describe("loadApprovedProjects", () => {

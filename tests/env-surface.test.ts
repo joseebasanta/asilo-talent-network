@@ -18,9 +18,10 @@ const SURFACES: Array<{ file: string; envVar: string }> = [
   { file: "pages/api/projects/submit.ts", envVar: "GOOGLE_SHEETS_ID" },
   { file: "pages/api/projects/submit.ts", envVar: "GOOGLE_SERVICE_ACCOUNT_JSON_BASE64" },
   { file: "pages/api/projects/submit.ts", envVar: "GOOGLE_SHEETS_RANGE" },
-  { file: "pages/api/projects/submit.ts", envVar: "APPWRITE_ENDPOINT" },
-  { file: "pages/api/projects/submit.ts", envVar: "APPWRITE_PROJECT_ID" },
-  { file: "pages/api/projects/submit.ts", envVar: "APPWRITE_API_KEY" },
+  { file: "lib/projects-loader.ts", envVar: "APPWRITE_ENDPOINT" },
+  { file: "lib/projects-loader.ts", envVar: "APPWRITE_PROJECT_ID" },
+  { file: "pages/api/projects/submit.ts", envVar: "BUILDERS_BACKEND_BASE_URL" },
+  { file: "pages/api/projects/submit.ts", envVar: "ASILO_LOGO_UPLOAD_KEY" },
   { file: "lib/turnstile.ts", envVar: "TURNSTILE_SITE_KEY" },
   { file: "lib/turnstile.ts", envVar: "TURNSTILE_SECRET_KEY" },
   { file: "pages/api/projects/submit.ts", envVar: "DEV_ALLOW_DUPLICATE_WEBSITE" },
@@ -30,7 +31,7 @@ const SURFACES: Array<{ file: string; envVar: string }> = [
 ];
 
 describe("env read surface", () => {
-  it("reads Google and Appwrite config via import.meta.env, never process.env", () => {
+  it("reads integration config via import.meta.env, never process.env", () => {
     for (const { file, envVar } of SURFACES) {
       const text = readFileSync(src(file), "utf8");
       expect(
