@@ -18,7 +18,6 @@
     "@googleapis/sheets": "^14.0.0",
     "astro": "^7.2.10",
     "mixpanel-browser": "^2.83.0",
-    "node-appwrite": "^29.0.0",
     "sharp": "^0.35.4",
     "zod": "^4.5.4"
   },

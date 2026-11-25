@@ -1,9 +1,11 @@
 import sharp from "sharp";
 import { LOGO_MAX_BYTES, LOGO_MAX_DIMENSION, LOGO_MAX_PIXELS, validateLogo } from "./projects-logo";
 
+type PreparedLogo = { buffer: Buffer; filename: string };
+
 /** Decode untrusted pixels and store a fresh static WebP, without embedded metadata. */
 export async function prepareLogo(file: File): Promise<
-  { ok: true; buffer: Buffer; filename: string } | { ok: false; error: string }
+  (PreparedLogo & { ok: true }) | { ok: false; error: string }
 > {
   const check = validateLogo(file);
   if (!check.ok) return check;
@@ -44,4 +46,37 @@ export async function prepareLogo(file: File): Promise<
   } catch {
     return { ok: false, error: "No se pudo leer el logo. Usa una imagen válida de hasta 16 megapíxeles." };
   }
+}
+
+export function logoUploadEndpoint(baseUrl: string | undefined): URL | null {
+  if (!baseUrl) return null;
+  try {
+    const endpoint = new URL("/api/asilo/logos", baseUrl);
+    if (endpoint.username || endpoint.password) return null;
+    if (endpoint.protocol === "https:") return endpoint;
+    const loopback = ["localhost", "127.0.0.1", "[::1]"].includes(endpoint.hostname);
+    return endpoint.protocol === "http:" && loopback ? endpoint : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function uploadLogo(logo: PreparedLogo, endpoint: URL, key: string): Promise<string> {
+  const body = new FormData();
+  body.set("file", new Blob([new Uint8Array(logo.buffer)], { type: "image/webp" }), logo.filename);
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}` },
+    body,
+    redirect: "error",
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (response.status !== 201) throw new Error("Logo upload failed");
+  const data = await response.json() as { logoUrl?: unknown } | null;
+  if (typeof data?.logoUrl !== "string") throw new Error("Missing logo URL");
+  const url = new URL(data.logoUrl);
+  if ((url.protocol !== "https:" && url.protocol !== "http:") || url.username || url.password) {
+    throw new Error("Invalid logo URL");
+  }
+  return url.href;
 }

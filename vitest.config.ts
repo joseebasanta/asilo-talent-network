@@ -1,7 +1,7 @@
 import { getViteConfig } from "astro/config";
 import { defineConfig } from "vitest/config";
 
-// Tests must never reach the production Sheet or Appwrite project, even when
+// Tests must never reach production integrations, even when
 // the shell running them has real credentials exported. Blank every
 // integration variable; individual tests opt back in with fake values.
 const BLANK_INTEGRATION_ENV = Object.fromEntries(
@@ -11,7 +11,8 @@ const BLANK_INTEGRATION_ENV = Object.fromEntries(
     "GOOGLE_SHEETS_RANGE",
     "APPWRITE_ENDPOINT",
     "APPWRITE_PROJECT_ID",
-    "APPWRITE_API_KEY",
+    "BUILDERS_BACKEND_BASE_URL",
+    "ASILO_LOGO_UPLOAD_KEY",
     "TURNSTILE_SITE_KEY",
     "TURNSTILE_SECRET_KEY",
     "cloudflare_turnstile_site_key",

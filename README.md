@@ -2,7 +2,7 @@
 
 Spanish-language community site and project directory for Venezuelan builders.
 Built with Astro SSR and the Vercel adapter. Project submissions and approved
-listings use Google Sheets; uploaded logos use Appwrite.
+listings use Google Sheets; new logos are uploaded through builders-backend.
 
 Browse projects at `/proyectos` or apply to join the community from the homepage.
 
@@ -27,9 +27,15 @@ Sheets integrations; see [membership form setup](docs/community-form.md).
 Membership applications must use a separate spreadsheet from projects and the
 member roster. Keep credentials server-only and out of commits.
 
-Project logo uploads use `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID` and
-`APPWRITE_API_KEY`; new projects must include a logo (edit requests may keep
-the current one). Optional spam protection (Cloudflare Turnstile on the
+For project logo uploads, set `BUILDERS_BACKEND_BASE_URL` to the HTTPS origin
+of builders-backend and configure the same `ASILO_LOGO_UPLOAD_KEY` on both
+servers. Never use a `PUBLIC_` prefix for the key. The Asilo server sends logos
+to `POST /api/asilo/logos` and stores the returned public URL in the existing
+`ID del logo` column. Keep `APPWRITE_ENDPOINT` and `APPWRITE_PROJECT_ID` to
+display existing logos; the Appwrite API key is no longer needed. New projects
+must include a logo (edit requests may keep the current one).
+
+Optional spam protection (Cloudflare Turnstile on the
 project and community join forms) uses `TURNSTILE_SITE_KEY` and
 `TURNSTILE_SECRET_KEY` (the lowercase names `cloudflare_turnstile_site_key`
 and `turnstile_secret_key` are also accepted). These keys are included in
