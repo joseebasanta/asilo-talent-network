@@ -31,7 +31,6 @@ import {
   projects as placeholderProjects,
   type Project,
 } from "../data/projects";
-import { LOGO_BUCKET_ID } from "./projects-logo";
 import { projectIconUrl } from "./project-icons";
 import { normalizeHeader } from "./normalize";
 import { projectIdFor, projectSlug } from "./project-identity";
@@ -315,21 +314,21 @@ function parseCount(raw: string): number | undefined {
 }
 
 /**
- * Builds the public Appwrite view URL for a logo file id, or `undefined` when
- * there is no logo or the Appwrite config is absent. The logo bucket is public
+ * Uses a public URL directly or builds the Appwrite view URL for a legacy file id.
+ * The logo bucket is public
  * (read `any`, `fileSecurity:false`), so a browser can render it directly. The
  * `?project=` query param is REQUIRED for anonymous (session-less) requests so
  * Appwrite knows which project resolves the file — omitting it returns 404.
  */
 function logoViewUrl(logoId: string): string | undefined {
   const id = (logoId ?? "").trim();
+  if (isSafeHttpUrl(id)) return id;
+  if (!id) return undefined;
   const endpoint = import.meta.env.APPWRITE_ENDPOINT;
   const projectId = import.meta.env.APPWRITE_PROJECT_ID;
-  if (!id || !endpoint || !projectId) return undefined;
+  if (!endpoint || !projectId) return undefined;
   const base = endpoint.replace(/\/+$/, "");
-  return `${base}/storage/buckets/${encodeURIComponent(
-    LOGO_BUCKET_ID,
-  )}/files/${encodeURIComponent(id)}/view?project=${encodeURIComponent(projectId)}`;
+  return `${base}/storage/buckets/project-logos/files/${encodeURIComponent(id)}/view?project=${encodeURIComponent(projectId)}`;
 }
 
 // Rejects malformed URLs and any scheme other than http/https

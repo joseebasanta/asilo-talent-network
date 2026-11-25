@@ -131,7 +131,7 @@ export function formatFecha(date: Date): string {
  * LEGACY: positional layout with logo at H and revision at I. Kept for
  * backwards-compatible sheets/tests — new code must use `buildRowForHeaders`.
  * `revisionId`/`submittedAt`/`logoId` are injectable for deterministic tests;
- * `logoId` is the Appwrite Storage file id of the uploaded logo, empty when
+ * `logoId` is the public logo URL or legacy Appwrite file id, empty when
  * no logo was provided.
  */
 export function buildRow(
@@ -154,7 +154,7 @@ export function buildRow(
     submission.fundadores, // Fundadores
     submission.categorias.join(", "), // Categorías (submission order)
     "PENDIENTE", // Aprobado — quarantined until reviewed
-    options.logoId ?? "", // ID del logo (Appwrite Storage file id)
+    options.logoId ?? "", // ID del logo
     revisionId, // ID de revisión (unique identifier)
     options.notes ?? "", // Notas adicionales
   ];

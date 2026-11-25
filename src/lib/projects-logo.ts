@@ -1,16 +1,12 @@
 import { z } from "zod";
 
 /**
- * Pure, network-free gate for the optional project-logo upload. The submit
- * endpoint only touches Appwrite Storage after this validation passes; the
- * modal mirrors these rules client-side for instant feedback. No Appwrite
- * import here so this module stays unit-testable without a network.
+ * The form and server share these project-logo validation rules.
  */
 
-export const LOGO_BUCKET_ID = "project-logos";
 export const LOGO_MAX_DIMENSION = 4096;
 export const LOGO_MAX_PIXELS = 16_000_000;
-export const LOGO_MAX_BYTES = 1_048_576; // bucket limit: 1 MB
+export const LOGO_MAX_BYTES = 1_048_576;
 
 export const LOGO_MIME_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 

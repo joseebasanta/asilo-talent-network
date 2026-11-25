@@ -4,7 +4,7 @@ const PORT = 4399;
 
 // Browser tests run against the dev server in demo mode (DEMO_DATA=1):
 // fictional projects. Credentials are
-// blanked so a run can never reach the production Sheet or Appwrite.
+// blanked so a run can never reach production integrations.
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: false,
@@ -34,7 +34,8 @@ export default defineConfig({
       GOOGLE_SERVICE_ACCOUNT_JSON_BASE64: "",
       APPWRITE_ENDPOINT: "",
       APPWRITE_PROJECT_ID: "",
-      APPWRITE_API_KEY: "",
+      BUILDERS_BACKEND_BASE_URL: "",
+      ASILO_LOGO_UPLOAD_KEY: "",
       TURNSTILE_SITE_KEY: "",
       TURNSTILE_SECRET_KEY: "",
       cloudflare_turnstile_site_key: "",

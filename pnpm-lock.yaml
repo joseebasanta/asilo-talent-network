@@ -20,9 +20,6 @@ importers:
       mixpanel-browser:
         specifier: ^2.83.0
         version: 2.83.0
-      node-appwrite:
-        specifier: ^29.0.0
-        version: 29.0.0
       sharp:
         specifier: ^0.35.4
         version: 0.35.4(@types/node@26.4.0)
@@ -1742,9 +1739,6 @@ packages:
   nlcst-to-string@4.0.0:
     resolution: {integrity: sha512-YKLBCcUYKAg0FNlOBT6aI91qFmSiFKiluk655WzPF+DDMA02qIyy8uiRqI8QXtcFpEvll12LpL5MXqEmAZ+dcA==}
 
-  node-appwrite@29.0.0:
-    resolution: {integrity: sha512-c2lkV5uiHrOXEs2VqyQYmXomEGgeHS21neCJHb0tyGfeQ0KqIPKYz9O3TQrRtRJk7YMBRoJfjorR527371TRdQ==}
-
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
@@ -2146,10 +2140,6 @@ packages:
 
   undici-types@8.3.0:
     resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
-
-  undici@6.28.0:
-    resolution: {integrity: sha512-LIY910g9TI13YS95lrMFrs8Rm/u/irgHeTWoKCoteeJ04CUJ92eEfj0rVn+7VKMPBpUPiUoBKfhNyLI23EE/KA==}
-    engines: {node: '>=18.17'}
 
   undici@8.10.1:
     resolution: {integrity: sha512-YQ3WlbqjYMmNpdvDH64jAgLjxuAR9+649calDWhbshYaeQGO2bR4nI94ORJmwI3J9YhoKQnpyGOK+0zlWS5N5Q==}
@@ -4209,11 +4199,6 @@ snapshots:
     dependencies:
       '@types/nlcst': 2.0.3
 
-  node-appwrite@29.0.0:
-    dependencies:
-      json-bigint: 1.0.0
-      undici: 6.28.0
-
   node-domexception@1.0.0: {}
 
   node-fetch-native@1.6.7: {}
@@ -4625,8 +4610,6 @@ snapshots:
   undici-types@7.18.2: {}
 
   undici-types@8.3.0: {}
-
-  undici@6.28.0: {}
 
   undici@8.10.1: {}
 
